@@ -1,11 +1,104 @@
-@import "~bootstrap/scss/bootstrap";
 @import 'scss/reset';
 @import 'scss/variables';
 @import 'scss/mixins';
 
-// Your custom SASS here
+#non-fatal-container {
+    font-family: sans-serif;
+    color: #333;
+    .cdc-map-inner-container .single-geo {
+        stroke: #fff !important;
+        stroke-width: 3px;
+    }
+    
+    g.geo-group {
+        transition: .3s all;
+    }
+    
+    .map-container {
+        display: flex;
+    }
 
-// Example styles
-.container p + p {
-    padding-top: 1em;
+    .time-select {
+        background-color: #B890BB;
+        display: flex;
+        justify-content: stretch;
+        color: #fff;
+        border-radius: 2em;
+        font-size: .8em;
+        width: 70%;
+        li {
+            padding: .5em;
+            border-right: rgba(255,255,255,.3) 1px solid;
+            cursor: pointer;
+            margin: 0;
+        }
+    }
+    
+    aside {
+        align-self: flex-end;
+        width: 30%;
+        .legend-title {
+            background-color: #606060;
+            color: #fff;
+            font-size: 1em;
+            margin-bottom: 1em;
+            padding: .3em .5em;
+        }
+        ul {
+            margin-bottom: 2em;
+        }
+        li {
+            display: flex;
+            text-transform: uppercase;
+            align-items: center;
+            font-size: .8em;
+            font-weight: 600;
+            + li {
+                margin-top: .5em;
+            }
+            svg {
+                max-width: 1.4em;
+                margin-right: .5em;
+            }
+        }
+        p {
+            font-size: .8em;
+            font-style: italic;
+        }
+    }
+
+    .sub-drawer {
+        background-color: #F7F2F7;
+        margin-top: 2.5em;
+        padding: 1em .5em;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        .state-info {
+            width: 30%;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            h3 {
+                font-size: 1.7em;
+                margin-bottom: .1em;
+            }
+            svg {
+                margin: 0 auto;
+                position: absolute;
+                z-index: 0;
+                max-width: 150px;
+                left: 50%;
+                top: 50%;
+                margin-top: -80px;
+                margin-left: -75px;
+            }
+        }
+        .bar-chart {
+            width: 55%;
+            min-height: 200px;
+        }
+    }
 }

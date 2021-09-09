@@ -2,6 +2,15 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const svgToMiniDataURI = require('mini-svg-data-uri');
 
+const babelLoader = {
+  loader: 'babel-loader',
+  options: {
+    presets: [
+      '@babel/preset-react', // TODO: Enable automatic runtime support
+    ]
+  },
+}
+
 // Development Configuration
 module.exports = (env, { mode }) => ({
   mode,
@@ -35,7 +44,7 @@ module.exports = (env, { mode }) => ({
     }
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.js'],
   },
   module: {
     rules: [
@@ -78,15 +87,44 @@ module.exports = (env, { mode }) => ({
         ],
       },
       {
+        // SVG
         test: /\.svg$/i,
-        use: [
+        oneOf: [
+          // When referenced in CSS, they are inlined and encoded with the url-loader package.
           {
-            loader: 'url-loader',
-            options: {
-              generator: (content) => svgToMiniDataURI(content.toString()),
-            },
+            issuer: /\.s[ac]ss$/,
+            use: [
+              {
+                loader: 'url-loader',
+                options: {
+                  generator: (content) => svgToMiniDataURI(content.toString()),
+                },
+              },
+            ]
           },
-        ],
+          // If you want to import into a JS/TS file as an encoded string for use inside of a <img /> element, append ?inline to the import.
+          // Example: import icon from './icon.svg?inline'
+          {
+            resourceQuery: /inline/,
+            use: [
+              {
+                loader: 'url-loader',
+                options: {
+                  generator: (content) => svgToMiniDataURI(content.toString()),
+                },
+              },
+            ]
+          },
+          // When imported into a JS/TS file, they are imported as React Components exposing the full markup of the SVG.
+          {
+            use: [
+              babelLoader,
+              {
+                loader: 'react-svg-loader'
+              }
+            ]
+          }
+        ]
       },
       {
         test: /\.tsx?$/,

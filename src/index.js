@@ -7,5 +7,5 @@ ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
-  document.querySelector('#react-container')
+  document.querySelector('#non-fatal-container')
 );
