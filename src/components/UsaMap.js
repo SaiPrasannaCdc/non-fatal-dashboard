@@ -108,7 +108,7 @@ const UsaMap = () => {
 
     return (
       <g transform={`translate(${centroid})`}>
-        <text x={x} y={y} fontSize={14} strokeWidth="0" style={{fill: textColor, fontFamily: 'sans-serif'}} textAnchor="middle">
+        <text x={x} y={y} fontSize={16} strokeWidth="0" style={{fill: textColor, fontFamily: 'sans-serif'}} textAnchor="middle">
           {abbr.substring(3)}
         </text>
       </g>

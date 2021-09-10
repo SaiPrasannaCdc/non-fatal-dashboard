@@ -18,17 +18,64 @@
         display: flex;
     }
 
-    .time-select {
-        background-color: #B890BB;
+    .callouts {
         display: flex;
-        justify-content: stretch;
-        color: #fff;
-        border-radius: 2em;
-        font-size: .8em;
-        width: 70%;
-        li {
+        justify-content: space-between;
+        margin-bottom: 1em;
+        > div {
+            border: 1px solid rgba(0,0,0,.125);
+            border-left: 5px solid #B890BB;
+            border-radius: .25rem;
+            min-height: 100px;
             padding: .5em;
-            border-right: rgba(255,255,255,.3) 1px solid;
+            width: 32.5%;
+            display: flex;
+            align-items: center;
+            svg {
+                flex-shrink: 0;
+            }
+            span.callout {
+                font-size: 2.5em;
+                font-weight: 500;
+                color: #712177;
+                padding: 0 .5em;
+                font-family: "Merriweather", serif;
+            }
+            p {
+                font-size: .9em;
+            }
+        }
+    }
+
+    .time-select {
+        margin-bottom: 1em;
+        > ul {
+            font-size: 1.1em;
+            padding: 0 0 .5em 0;
+            max-height: 175px;
+            overflow-y: scroll;
+        }
+        .legend-title {
+            margin-bottom: 0;
+        }
+        li {
+            font-size: .8em;
+            padding: .6em .5em;
+            line-height: 1em;
+            border-radius: .3rem;
+            + li {
+                margin-top: .2em;
+            }
+            &.active {
+                background-color: #F7F2F7;
+                color: #712177;
+            }
+            &:not(.year) {
+                &:hover {
+                    color: #712177;
+                }
+            }
+            font-weight: 500;
             cursor: pointer;
             margin: 0;
         }
@@ -44,21 +91,21 @@
             margin-bottom: 1em;
             padding: .3em .5em;
         }
-        ul {
+        ul.legend {
             margin-bottom: 2em;
-        }
-        li {
-            display: flex;
-            text-transform: uppercase;
-            align-items: center;
-            font-size: .8em;
-            font-weight: 600;
-            + li {
-                margin-top: .5em;
-            }
-            svg {
-                max-width: 1.4em;
-                margin-right: .5em;
+            li {
+                display: flex;
+                text-transform: uppercase;
+                align-items: center;
+                font-size: .8em;
+                font-weight: 600;
+                + li {
+                    margin-top: .5em;
+                }
+                svg {
+                    max-width: 1.4em;
+                    margin-right: .5em;
+                }
             }
         }
         p {
@@ -68,9 +115,11 @@
     }
 
     .sub-drawer {
-        background-color: #F7F2F7;
+        border: 1px solid rgba(0,0,0,.125);
+        background-color: #FFF;
         margin-top: 2.5em;
         padding: 1em .5em;
+        border-radius: .25rem;
         display: flex;
         justify-content: space-between;
         position: relative;
