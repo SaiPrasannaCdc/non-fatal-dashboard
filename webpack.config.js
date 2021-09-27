@@ -87,6 +87,13 @@ module.exports = (env, { mode }) => ({
         ],
       },
       {
+        test: /\.css$/,
+        use: [
+            { loader: 'style-loader' },
+            { loader: 'css-loader' }
+        ]
+      },
+      {
         // SVG
         test: /\.svg$/i,
         oneOf: [

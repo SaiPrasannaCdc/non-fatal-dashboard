@@ -13,6 +13,17 @@
     g.geo-group {
         transition: .3s all;
     }
+
+    .range-container {
+        padding: 20px 50px;
+
+        .rc-slider {
+            .rc-slider-tooltip-inner {
+                padding: 6px 7px;
+                white-space: nowrap;
+            }
+        }
+    }
     
     .map-container {
         display: flex;
@@ -82,7 +93,7 @@
     }
     
     aside {
-        align-self: flex-end;
+        /*align-self: flex-end;*/
         width: 30%;
         .legend-title {
             background-color: #606060;

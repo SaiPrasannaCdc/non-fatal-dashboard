@@ -91,6 +91,7 @@ const nudges = {
 
 const UsaMap = () => {
   const { data, applyLegendToRow, setSelected, selected } = useContext(Context);
+  
   const geoLabel = (geo, bgColor = "#FFFFFF", projection) => {
     let centroid = projection(geoCentroid(geo))
     let abbr = geo.properties.iso
@@ -128,11 +129,11 @@ const UsaMap = () => {
       let geoKey = geo.properties.iso
 
       // Manually add Washington D.C. in for Hex maps
-      if(geoKey === 'US-DC') {
-        geoKey = 'District of Columbia'
-      } else {
-        geoKey = supportedStates[geoKey] ? supportedStates[geoKey][0] : null;
-      }
+      // if(geoKey === 'US-DC') {
+      //   geoKey = 'District of Columbia'
+      // } else {
+      //   geoKey = supportedStates[geoKey] ? supportedStates[geoKey][0] : null;
+      // }
 
       if(!geoKey) return
 

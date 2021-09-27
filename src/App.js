@@ -1,803 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-
+import "babel-polyfill";
 import chroma from 'chroma-js';
-
+import Papa, { readRemoteFile } from 'papaparse';
 import UsaMap from './components/UsaMap';
 import BarChart from './components/BarChart';
 import HeaderLineChart from './components/HeaderLineChart';
+import Slider, { Range, createSliderWithTooltip } from 'rc-slider';
 import Context from './context';
-
+import 'rc-slider/assets/index.css';
 import './styles.scss';
 
-const PRIMARY_COL = 'Coverage Status'
-const STATE_COL = 'state'
-
-const data = [
-  {
-    "Insured Rate": "43",
-    "Coverage Status": "Significant Increase",
-    "state": "AL",
-    "Year (Good filter option)": 2010,
-    "link": ""
-  },
-  {
-    "Insured Rate": "20",
-    "Coverage Status": "Significant Increase",
-    "state": "AL",
-    "Year (Good filter option)": 2003,
-    "link": ""
-  },
-  {
-    "Insured Rate": "0",
-    "Coverage Status": "No Significant Change",
-    "state": "Alaska",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "72.7",
-    "Coverage Status": "Significant Increase",
-    "state": "Arizona",
-    "Year (Good filter option)": "2010",
-    "link": "#lorem"
-  },
-  {
-    "Insured Rate": "78.7",
-    "Coverage Status": "Significant Increase",
-    "state": "Arkansas",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "37.2",
-    "Coverage Status": "Significant Increase",
-    "state": "California",
-    "Year (Good filter option)": "2010",
-    "link": "https://search.cdc.gov/search/?query=California&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "50.6",
-    "Coverage Status": "Significant Increase",
-    "state": "Colorado",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.2",
-    "Coverage Status": "Significant Increase",
-    "state": "Connecticut",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "90",
-    "Coverage Status": "Significant Increase",
-    "state": "Delaware",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "77",
-    "Coverage Status": "Significant Increase",
-    "state": "District of Columbia",
-    "Year (Good filter option)": "2010",
-    "link": "https://search.cdc.gov/search/index.html?query=Washington+D.C.&sitelimit=&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "83",
-    "Coverage Status": "Significant Increase",
-    "state": "Florida",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.7",
-    "Coverage Status": "No Significant Change",
-    "state": "Georgia",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "N/A",
-    "Coverage Status": "Significant Increase",
-    "state": "Hawaii",
-    "Year (Good filter option)": "2010",
-    "link": "https://cdc.gov/"
-  },
-  {
-    "Insured Rate": "80.96",
-    "Coverage Status": "Significant Increase",
-    "state": "Idaho",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "86.9",
-    "Coverage Status": "Significant Increase",
-    "state": "Illinois",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "85",
-    "Coverage Status": "Significant Increase",
-    "state": "Indiana",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "89.6",
-    "Coverage Status": "Significant Increase",
-    "state": "Iowa",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "N/A",
-    "Coverage Status": "Significant Increase",
-    "state": "Kansas",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "0",
-    "Coverage Status": "Significant Increase",
-    "state": "Kentucky",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "79.2",
-    "Coverage Status": "Significant Increase",
-    "state": "Louisiana",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88",
-    "Coverage Status": "Significant Increase",
-    "state": "Maine",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "9.1",
-    "Coverage Status": "Significant Increase",
-    "state": "Maryland",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "95.7",
-    "Coverage Status": "Significant Increase",
-    "state": "Massachusetts",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "86.1",
-    "Coverage Status": "Significant Increase",
-    "state": "Michigan",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "21",
-    "Coverage Status": "Significant Increase",
-    "state": "Minnesota",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "78.46",
-    "Coverage Status": "Significant Increase",
-    "state": "Mississippi",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "85",
-    "Coverage Status": "Significant Increase",
-    "state": "Missouri",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "81.599",
-    "Coverage Status": "No Significant Change",
-    "state": "Montana",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "86.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Nebraska",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "80.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Nevada",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.7",
-    "Coverage Status": "Significant Increase",
-    "state": "New Hampshire",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.5",
-    "Coverage Status": "Significant Increase",
-    "state": "New Jersey",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "80.96",
-    "Coverage Status": "Significant Increase",
-    "state": "New Mexico",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.6",
-    "Coverage Status": "Significant Increase",
-    "state": "New York",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "81",
-    "Coverage Status": "No Significant Change",
-    "state": "North Carolina",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.9",
-    "Coverage Status": "Significant Increase",
-    "state": "North Dakota",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "57.2",
-    "Coverage Status": "Significant Increase",
-    "state": "Ohio",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "80.8",
-    "Coverage Status": "Significant Increase",
-    "state": "Oklahoma",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.5",
-    "Coverage Status": "Data not available",
-    "state": "Oregon",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.5",
-    "Coverage Status": "Significant Increase",
-    "state": "Pennsylvania",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "87.7",
-    "Coverage Status": "Data not available",
-    "state": "Rhode Island",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "81.2",
-    "Coverage Status": "Significant Increase",
-    "state": "South Carolina",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "89.4",
-    "Coverage Status": "Significant Increase",
-    "state": "South Dakota",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.5",
-    "Coverage Status": "Significant Increase",
-    "state": "Tennessee",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "8",
-    "Coverage Status": "Significant Increase",
-    "state": "Texas",
-    "Year (Good filter option)": "2010",
-    "link": "https://search.cdc.gov/search/?query=Texas&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "44.1",
-    "Coverage Status": "Significant Increase",
-    "state": "Utah",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "45.2",
-    "Coverage Status": "Data not available",
-    "state": "Vermont",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "55",
-    "Coverage Status": "Significant Increase",
-    "state": "Virginia",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "55",
-    "Coverage Status": "Significant Increase",
-    "state": "Washington",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "82.5",
-    "Coverage Status": "Significant Increase",
-    "state": "West Virginia",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "26",
-    "Coverage Status": "Significant Increase",
-    "state": "Wisconsin",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "59.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Los Angeles",
-    "Year (Good filter option)": "2010",
-    "link": "https://cdc.gov/"
-  },
-  {
-    "Insured Rate": "23",
-    "Coverage Status": "Significant Increase",
-    "state": "Dallas",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.5",
-    "Coverage Status": "Significant Increase",
-    "state": "Wyoming",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "18",
-    "Coverage Status": "Significant Increase",
-    "state": "Virgin Islands",
-    "Year (Good filter option)": "2010",
-    "link": ""
-  },
-  {
-    "Insured Rate": "43",
-    "Coverage Status": "Significant Increase",
-    "state": "PR",
-    "Year (Good filter option)": "2010",
-    "link": "https://cdc.gov/"
-  },
-  {
-    "Insured Rate": "43",
-    "Coverage Status": "Significant Increase",
-    "state": "Alabama",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "72.7",
-    "Coverage Status": "No Significant Change",
-    "state": "Alaska",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "0",
-    "Coverage Status": "Significant Increase",
-    "state": "Arizona",
-    "Year (Good filter option)": "2015",
-    "link": "https://search.cdc.gov/search/?query=Arizona&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "67",
-    "Coverage Status": "SIGnificant Decrease",
-    "state": "Arkansas",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "29",
-    "Coverage Status": "Significant Increase",
-    "state": "California",
-    "Year (Good filter option)": "2015",
-    "link": "https://search.cdc.gov/search/?query=California&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "50.6",
-    "Coverage Status": "Significant Increase",
-    "state": "Colorado",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "90",
-    "Coverage Status": "Significant Increase",
-    "state": "Connecticut",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.2",
-    "Coverage Status": "Significant Increase",
-    "state": "Delaware",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "95",
-    "Coverage Status": "Significant Increase",
-    "state": "District of Columbia",
-    "Year (Good filter option)": "2015",
-    "link": "https://search.cdc.gov/search/index.html?query=Washington+D.C.&sitelimit=&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "95",
-    "Coverage Status": "Significant Increase",
-    "state": "Puerto Rico",
-    "Year (Good filter option)": "2015",
-    "link": "https://search.cdc.gov/search/index.html?query=Washington+D.C.&sitelimit=&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "83.7",
-    "Coverage Status": "Significant Increase",
-    "state": "Florida",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83",
-    "Coverage Status": "No Significant Change",
-    "state": "Georgia",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "15",
-    "Coverage Status": "Significant Increase",
-    "state": "Hawaii",
-    "Year (Good filter option)": "2015",
-    "link": "https://cdc.gov/"
-  },
-  {
-    "Insured Rate": "80.96",
-    "Coverage Status": "Significant Increase",
-    "state": "Idaho",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "86.9",
-    "Coverage Status": "Significant Increase",
-    "state": "Illinois",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "85",
-    "Coverage Status": "Significant Increase",
-    "state": "Indiana",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "89.6",
-    "Coverage Status": "Significant Increase",
-    "state": "Iowa",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "87.5",
-    "Coverage Status": "Significant Increase",
-    "state": "Kansas",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.1",
-    "Coverage Status": "Significant Increase",
-    "state": "Kentucky",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "79.2",
-    "Coverage Status": "Significant Increase",
-    "state": "Louisiana",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88",
-    "Coverage Status": "Significant Increase",
-    "state": "Maine",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "9.1",
-    "Coverage Status": "Significant Increase",
-    "state": "Maryland",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "95.7",
-    "Coverage Status": "Significant Increase",
-    "state": "Massachusetts",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "86.1",
-    "Coverage Status": "Significant Increase",
-    "state": "Michigan",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "21",
-    "Coverage Status": "Significant Increase",
-    "state": "Minnesota",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "78.46",
-    "Coverage Status": "Significant Increase",
-    "state": "Mississippi",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "85",
-    "Coverage Status": "Significant Increase",
-    "state": "Missouri",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "81.599",
-    "Coverage Status": "No Significant Change",
-    "state": "Montana",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "86.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Nebraska",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "80.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Nevada",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.7",
-    "Coverage Status": "Significant Increase",
-    "state": "New Hampshire",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.5",
-    "Coverage Status": "Significant Increase",
-    "state": "New Jersey",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "80.96",
-    "Coverage Status": "Significant Increase",
-    "state": "New Mexico",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.6",
-    "Coverage Status": "Significant Increase",
-    "state": "New York",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "81",
-    "Coverage Status": "No Significant Change",
-    "state": "North Carolina",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.9",
-    "Coverage Status": "Significant Increase",
-    "state": "North Dakota",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "57.2",
-    "Coverage Status": "Significant Increase",
-    "state": "Ohio",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "80.8",
-    "Coverage Status": "Significant Increase",
-    "state": "Oklahoma",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.5",
-    "Coverage Status": "Data not available",
-    "state": "Oregon",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "88.5",
-    "Coverage Status": "Significant Increase",
-    "state": "Pennsylvania",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "87.7",
-    "Coverage Status": "Data not available",
-    "state": "Rhode Island",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "81.2",
-    "Coverage Status": "Significant Increase",
-    "state": "South Carolina",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "89.4",
-    "Coverage Status": "Significant Increase",
-    "state": "South Dakota",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.5",
-    "Coverage Status": "Significant Increase",
-    "state": "Tennessee",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "26.96",
-    "Coverage Status": "Significant Increase",
-    "state": "Texas",
-    "Year (Good filter option)": "2015",
-    "link": "https://search.cdc.gov/search/?query=Texas&utf8=%E2%9C%93&affiliate=cdc-main"
-  },
-  {
-    "Insured Rate": "44.1",
-    "Coverage Status": "Significant Increase",
-    "state": "Utah",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "45.2",
-    "Coverage Status": "Data not available",
-    "state": "Vermont",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "27.8",
-    "Coverage Status": "Significant Increase",
-    "state": "Virginia",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "55",
-    "Coverage Status": "Significant Increase",
-    "state": "Washington",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "82.5",
-    "Coverage Status": "Significant Increase",
-    "state": "West Virginia",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "89.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Wisconsin",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "59.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Los Angeles",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "89.3",
-    "Coverage Status": "Significant Increase",
-    "state": "Dallas",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "83.5",
-    "Coverage Status": "Significant Increase",
-    "state": "Wyoming",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "18",
-    "Coverage Status": "Significant Increase",
-    "state": "Virgin Islands",
-    "Year (Good filter option)": "2015",
-    "link": ""
-  },
-  {
-    "Insured Rate": "33.5",
-    "Coverage Status": "Significant Increase",
-    "state": "PR",
-    "Year (Good filter option)": "2015",
-    "link": "https://cdc.gov/"
-  }
-]
+const STATE_COL = 'geo';
+const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
 
 const generateColorsArray = (color = '#000000') => {
   let colorObj = chroma(color)
@@ -833,11 +47,205 @@ const Hexagon = ({fill}) => {
   )
 }
 
+const supportedStates = {
+  // States
+  'US-AL': ['Alabama', 'AL'],
+  'US-AK': ['Alaska', 'AK'],
+  'US-AZ': ['Arizona', 'AZ'],
+  'US-AR': ['Arkansas', 'AR'],
+  'US-CA': ['California', 'CA'],
+  'US-CO': ['Colorado', 'CO'],
+  'US-CT': ['Connecticut', 'CT'],
+  'US-DE': ['Delaware', 'DE'],
+  'US-FL': ['Florida', 'FL'],
+  'US-GA': ['Georgia', 'GA'],
+  'US-HI': ['Hawaii', 'HI'],
+  'US-ID': ['Idaho', 'ID'],
+  'US-IL': ['Illinois', 'IL'],
+  'US-IN': ['Indiana', 'IN'],
+  'US-IA': ['Iowa', 'IA'],
+  'US-KS': ['Kansas', 'KS'],
+  'US-KY': ['Kentucky', 'KY'],
+  'US-LA': ['Louisiana', 'LA'],
+  'US-ME': ['Maine', 'ME'],
+  'US-MD': ['Maryland', 'MD'],
+  'US-MA': ['Massachusetts', 'MA'],
+  'US-MI': ['Michigan', 'MI'],
+  'US-MN': ['Minnesota', 'MN'],
+  'US-MS': ['Mississippi', 'MS'],
+  'US-MO': ['Missouri', 'MO'],
+  'US-MT': ['Montana', 'MT'],
+  'US-NE': ['Nebraska', 'NE'],
+  'US-NV': ['Nevada', 'NV'],
+  'US-NH': ['New Hampshire', 'NH'],
+  'US-NJ': ['New Jersey', 'NJ'],
+  'US-NM': ['New Mexico', 'NM'],
+  'US-NY': ['New York', 'NY'],
+  'US-NC': ['North Carolina', 'NC'],
+  'US-ND': ['North Dakota', 'ND'],
+  'US-OH': ['Ohio', 'OH'],
+  'US-OK': ['Oklahoma', 'OK'],
+  'US-OR': ['Oregon', 'OR'],
+  'US-PA': ['Pennsylvania', 'PA'],
+  'US-RI': ['Rhode Island', 'RI'],
+  'US-SC': ['South Carolina', 'SC'],
+  'US-SD': ['South Dakota', 'SD'],
+  'US-TN': ['Tennessee', 'TN'],
+  'US-TX': ['Texas', 'TX'],
+  'US-UT': ['Utah', 'UT'],
+  'US-VT': ['Vermont', 'VT'],
+  'US-VA': ['Virginia', 'VA'],
+  'US-WA': ['Washington', 'WA'],
+  'US-WV': ['West Virginia', 'WV'],
+  'US-WI': ['Wisconsin', 'WI'],
+  'US-WY': ['Wyoming', 'WY'],
+  'US-PR': ['Puerto Rico']
+};
+
+const legendOrder = [
+  'Significant Increase',
+  'No Significant Change',
+  'Significant Decrease',
+  'Data Not Available/Not Reported',
+  'Unfunded State'
+]
+
+const drugScreenOptions = {
+  'all': {
+    'titleSingular': 'All Drug',
+    'titlePlural': 'All Drugs',
+    'significanceColumn': 'allSignificance',
+    'color': '#',
+  },
+  'opioids': {
+    'titleSingular': 'Opioid',
+    'titlePlural': 'Opioids',
+    'significanceColumn': 'opioidSignificance',
+    'color': '#',
+  },
+  'heroin': {
+    'titleSingular': 'Heroin',
+    'titlePlural': 'Heroin',
+    'significanceColumn': 'heroinSignificance',
+    'color': '#',
+  },
+  'stimulants': {
+    'titleSingular': 'Stimulant',
+    'titlePlural': 'Stimulants',
+    'significanceColumn': 'stimulantSignificance',
+    'color': '#',
+  },
+}
+
+const months = [
+  'January',
+  'Feburary',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+];
+
 export default function App() {
   const [runtimeLegend, setRuntimeLegend] = useState([])
   const [runtimeData, setRuntimeData] = useState([])
   const [selected, setSelected] = useState(null)
-  const [timeframe, setTimeframe] = useState('March 2020')
+  const [timeframe, setTimeframe] = useState('March 2020');
+  const [keyedRawData, setKeyedRawdata] = useState([]);
+  const [rawData, setRawData] = useState([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [keyIndex, setKeyIndex] = useState({});
+  const [timeframes, setTimeframes] = useState({});
+  const [rangePoints, setRangePoints] = useState([]);
+  const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
+
+  const fetchData = async () => {
+    try {
+      //const response = await fetch('./data/non-fatal.json')
+      const response = await fetch('http://localhost:8081/mainAggData.csv')
+        //.then(response => response.json())
+        .then(v => v.text())
+        .then(v => Papa.parse(v))
+        .then(
+          v => {
+            return { success: true, data: v };
+          }
+        )
+        .catch(err => {
+          console.log(err)
+        });
+        
+      return response;
+      
+    } catch (error) {
+      console.log(error);
+      return { success: false, data: [] };
+    }
+  }
+
+  let first = true;
+  let keyCounts = {};
+  useEffect(() => {
+    (async () => {
+      setDataLoaded(false);
+
+      let tempTimeframes = {};
+      let res = await fetchData();
+      if (res && res.success) {
+        let keyedRawData = {};
+        res.data.data.map((row) => {
+          if (first) {
+            row.forEach(key => {
+              let index = row.indexOf(key);
+              if (index !== -1) {
+                keyIndex[key] = index;
+                keyCounts[key] = {};
+              } else {
+                throw ('Cannot find key ' + key);
+              }
+            });
+      
+            first = false;
+          } else {
+            let obj = {};
+            Object.keys(keyIndex).map((key) => {
+              obj[key] = row[keyIndex[key]];
+            })
+            keyedRawData[row[keyIndex['key']]] = obj;
+
+            const startMonth = row[keyIndex['startMonth']];
+            const startYear = row[keyIndex['startYear']];
+            const endMonth = row[keyIndex['endMonth']];
+            const endYear = row[keyIndex['endYear']];
+
+            const yearMonthIndex1 = startYear + '|' + startMonth;
+            if (!tempTimeframes.hasOwnProperty(yearMonthIndex1)) {
+              tempTimeframes[yearMonthIndex1] = months[startMonth - 1] + ' ' + startYear;
+            }
+            const yearMonthIndex2 = endYear + '|' + endMonth;
+            if (!tempTimeframes.hasOwnProperty(yearMonthIndex2)) {
+              tempTimeframes[yearMonthIndex2] = months[endMonth - 1] + ' ' + endYear;
+            }
+          }
+        });
+        setKeyedRawdata(keyedRawData);
+        setTimeframes(tempTimeframes);
+        setRangePoints([Object.keys(tempTimeframes).length-2, Object.keys(tempTimeframes).length-1]);
+
+        const shifted = [...res.data.data];
+        shifted.shift();
+        setRawData(shifted);
+        
+        setDataLoaded(true);
+      }
+    })();
+  }, []);
 
   const applyLegendToRow = (rowObj) => {
     let hash = hashObj(rowObj)
@@ -849,23 +257,23 @@ export default function App() {
     return generateColorsArray(runtimeLegend[idx]?.color)
   }
 
-  const timeframes = [
-    'March 2020',
-    'February 2020',
-    'January 2020',
-    'December 2019',
-    'November 2019',
-    'October 2019',
-    'September 2019',
-    'August 2019',
-    'July 2019',
-    'June 2019',
-    'May 2019',
-    'April 2019',
-    'March 2019',
-    'February 2019',
-    'January 2019'
-  ]
+  // const timeframes = [
+  //   'March 2020',
+  //   'February 2020',
+  //   'January 2020',
+  //   'December 2019',
+  //   'November 2019',
+  //   'October 2019',
+  //   'September 2019',
+  //   'August 2019',
+  //   'July 2019',
+  //   'June 2019',
+  //   'May 2019',
+  //   'April 2019',
+  //   'March 2019',
+  //   'February 2019',
+  //   'January 2019'
+  // ]
 
   let legendMemo = useRef(new Map())
 
@@ -898,7 +306,8 @@ export default function App() {
 
     for(let i = 0; i < dataSet.length; i++) {
       let row = dataSet[i]
-      let value = row[PRIMARY_COL]
+
+      let value = row[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
 
       if(undefined === value) continue
 
@@ -911,24 +320,28 @@ export default function App() {
 
     let sorted = [...uniqueValues.keys()]
 
-    // Apply custom sorting or regular sorting
-    let configuredOrder = []
+    sorted.sort((a, b) => {
+      return legendOrder.indexOf(a) - legendOrder.indexOf(b);
+    });
 
-    // Coerce strings to numbers inside configuredOrder property
-    for(let i = 0; i < configuredOrder.length; i++) {
-        configuredOrder[i] = numberFromString(configuredOrder[i])
-    }
+    // // Apply custom sorting or regular sorting
+    // let configuredOrder = []
 
-    if(configuredOrder.length) {
-        sorted.sort( (a, b) => {
-            return configuredOrder.indexOf(a) - configuredOrder.indexOf(b);
-        })
-    } else {
-        sorted.sort((a, b) => a - b)
-    }
+    // // Coerce strings to numbers inside configuredOrder property
+    // for(let i = 0; i < configuredOrder.length; i++) {
+    //     configuredOrder[i] = numberFromString(configuredOrder[i])
+    // }
+
+    // if(configuredOrder.length) {
+    //     sorted.sort( (a, b) => {
+    //         return configuredOrder.indexOf(a) - configuredOrder.indexOf(b);
+    //     })
+    // } else {
+    //     sorted.sort((a, b) => a - b)
+    // }
 
     // Add legend item for each
-    sorted.forEach((val) => {
+    legendOrder.forEach((val) => {
         result.push({
             value: val,
         })
@@ -954,31 +367,47 @@ export default function App() {
 
   // Calculates what's going to be displayed on the map and data table at render.
   const generateRuntimeData = (data, filters = []) => {
-      const result = {}
+    const startTimeframe = Object.keys(timeframes)[rangePoints[0]].split('|');
+    const startMonth = startTimeframe[1];
+    const startYear = startTimeframe[0];;
 
-      data.forEach(row => {
-          // Filters
-          if(filters.length) {
-              for(let i = 0; i < filters.length; i++) {
-                  const {columnName, active} = filters[i]
+    const endTimeframe = Object.keys(timeframes)[rangePoints[1]].split('|');
+    const endMonth = endTimeframe[1];;
+    const endYear = endTimeframe[0];;
 
-                  if (row[columnName] != active) return false // Bail out, not part of filter
-              }
-          }
+    let filteredData = {};
+    for (const [key, value] of Object.entries(supportedStates)) {
+      const rowKey = value[1] + '|' + startYear + '|' + startMonth + '|all|all:' + value[1] + '|' + endYear + '|' + endMonth + '|all|all';
+      const foundRow = keyedRawData[rowKey];
+      if (foundRow) {
+        filteredData[key] = Object.values(foundRow);
+      }
+    }
 
-          result[row[STATE_COL]] = row
-      })
+      // data.forEach(row => {
+      //     // Filters
+      //     if(filters.length) {
+      //         for(let i = 0; i < filters.length; i++) {
+      //             const {columnName, active} = filters[i]
 
-      return result
+      //             if (row[columnName] != active) return false // Bail out, not part of filter
+      //         }
+      //     }
+      //     result[row[keyIndex[STATE_COL]]] = row
+      // })
+
+    return filteredData;
   }
 
   useEffect(() => {
-    const processedData = generateRuntimeData(data)
-    const processedLegend = generateRuntimeLegend(processedData)
+    if (true === dataLoaded) {
+      const processedData = generateRuntimeData(rawData);
+      const processedLegend = generateRuntimeLegend(processedData);
 
-    setRuntimeData(processedData)
-    setRuntimeLegend(processedLegend)
-  }, [])
+      setRuntimeData(processedData)
+      setRuntimeLegend(processedLegend)
+    }
+  }, [dataLoaded,rangePoints,currentDrug])
 
   const StateInfo = () => {
     return (
@@ -998,8 +427,19 @@ export default function App() {
     )
   }
 
+  const tooltipFormatter = (data) => {
+    return timeframes[Object.keys(timeframes)[data]];
+  }
+
+  if (!runtimeData || Object.keys(runtimeData).length === 0) {
+    return <h1>Loading</h1>;
+  }
+
   return (
-    <Context.Provider value={{applyLegendToRow, data: runtimeData, selected, setSelected}}>
+    <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setSelected }}>
+      <select onChange={(e) => {setCurrentDrug(e.target.value)}}>
+        {Object.keys(drugScreenOptions).map((key) => <option value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
+      </select>
       <header className="theme-purple" style={{backgroundColor: '#712177', color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
         <span style={{textTransform: 'uppercase', fontSize: '.8em'}}>Trends in Emergency Room Visits</span>
         <span style={{fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500'}}>Suspected Drug Overdoses</span>
@@ -1022,14 +462,38 @@ export default function App() {
           </div>
         </div>
       </div>
+      <div className="range-container">
+      <SliderWithTooltip
+          tipFormatter={tooltipFormatter}
+          tipProps={{ overlayClassName: 'foo' }}
+          pushable={1}
+          allowCross={false}
+          onChange={setRangePoints}
+          defaultValue={rangePoints}
+          min={0}
+          align={{
+            offset: [0, -5],
+          }}
+          max={Object.keys(timeframes).length - 1}
+          //handle={SliderHandle}
+      />
+        {/* <Range
+          pushable={1}
+          allowCross={false}
+          onChange={setRangePoints}
+          defaultValue={rangePoints}
+          min={0}
+          max={Object.keys(timeframes).length-1}
+        /> */}
+      </div>
       <div className="map-container">
         <UsaMap />
         <aside>
-          <div className="time-select">
+          {/* <div className="time-select">
             <ul>
               {timeframes.map(item => <li className={item === timeframe ? 'active' : ''} onClick={() => setTimeframe(item)}>{item}</li>)}
             </ul>
-          </div>
+          </div> */}
           <div className="legend-title">Legend</div>
           <ul className="legend">
             {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
