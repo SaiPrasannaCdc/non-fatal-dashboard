@@ -367,6 +367,11 @@ export default function App() {
 
   // Calculates what's going to be displayed on the map and data table at render.
   const generateRuntimeData = (data, filters = []) => {
+
+    if (!timeframes) {
+      return {};
+    }
+
     const startTimeframe = Object.keys(timeframes)[rangePoints[0]].split('|');
     const startMonth = startTimeframe[1];
     const startYear = startTimeframe[0];;
