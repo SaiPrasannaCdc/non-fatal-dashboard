@@ -152,7 +152,7 @@ const months = [
   'December'
 ];
 
-export default function App() {
+export default function App({ dataUrl }) {
   const [runtimeLegend, setRuntimeLegend] = useState([])
   const [runtimeData, setRuntimeData] = useState([])
   const [selected, setSelected] = useState(null)
@@ -168,7 +168,7 @@ export default function App() {
   const fetchData = async () => {
     try {
       //const response = await fetch('./data/non-fatal.json')
-      const response = await fetch('http://localhost:8081/mainAggData.csv')
+      const response = await fetch(dataUrl)
         //.then(response => response.json())
         .then(v => v.text())
         .then(v => Papa.parse(v))
