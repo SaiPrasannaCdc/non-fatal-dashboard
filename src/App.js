@@ -108,32 +108,32 @@ const legendOrder = [
   'Significant Decrease',
   'Data Not Available/Not Reported',
   'Unfunded State'
-]
+];
 
 const drugScreenOptions = {
   'all': {
-    'titleSingular': 'All Drug',
-    'titlePlural': 'All Drugs',
+    'titleSingular': 'Drug',
+    'titlePlural': 'Drugs',
     'significanceColumn': 'allSignificance',
-    'color': '#',
+    'color': '#2B2D73',
   },
   'opioids': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
     'significanceColumn': 'opioidSignificance',
-    'color': '#',
+    'color': '#4A2866',
   },
   'heroin': {
     'titleSingular': 'Heroin',
     'titlePlural': 'Heroin',
     'significanceColumn': 'heroinSignificance',
-    'color': '#',
+    'color': '#353535',
   },
   'stimulants': {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
     'significanceColumn': 'stimulantSignificance',
-    'color': '#',
+    'color': '#24574E',
   },
 }
 
@@ -287,16 +287,16 @@ export default function App({ dataUrl }) {
     const applyColorToLegend = (legendIdx) => {
       // Default to "bluegreen" color scheme if the passed color isn't valid
       let mapColorPalette = [
-        '#EF6E2E',
-        '#802C74',
-        '#313380',
-        '#BBD2EB',
-        '#E4CEE1',
+        '#A62434',
+        '#F2594B',
+        '#FFC175',
+        '#DCDCDC',
+        '#FFFFFF',
         '#3690c0',
         '#02818a',
         '#016c59',
         '#014636'
-      ]
+      ];
 
       return mapColorPalette[legendIdx]
     }
@@ -440,28 +440,33 @@ export default function App({ dataUrl }) {
     return <h1>Loading</h1>;
   }
 
+  const drugColor = drugScreenOptions[currentDrug].color;
+
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setSelected }}>
       <select onChange={(e) => {setCurrentDrug(e.target.value)}}>
         {Object.keys(drugScreenOptions).map((key) => <option value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
       </select>
-      <header className="theme-purple" style={{backgroundColor: '#712177', color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
+      <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
         <span style={{textTransform: 'uppercase', fontSize: '.8em'}}>Trends in Emergency Room Visits</span>
-        <span style={{fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500'}}>Suspected Drug Overdoses</span>
+        <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected All {drugScreenOptions[currentDrug]['titleSingular']} Overdoses</span>
       </header>
       <div className="callouts">
-        <div>
-          <HeaderLineChart width={150} height={100} />
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div style={{'borderLeft': '5px solid' + drugColor}}>
+          <HeaderLineChart width={150} height={100} lineColor={drugColor} />
+          <div>
+            <h3>{selected ?? 'U.S.A.'}</h3>
+            <p>{Object.values(timeframes)[rangePoints[1]]} compared to {Object.values(timeframes)[rangePoints[0]]}</p>
+          </div>
         </div>
-        <div>
-          <span className="callout">75%</span>
+        <div style={{'borderLeft': '5px solid' + drugColor}}>
+          <span className="callout" style={{'color': drugColor}}>75%</span>
           <div>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
           </div>
         </div>
-        <div>
-          <span className="callout">23%</span>
+        <div style={{'borderLeft': '5px solid' + drugColor}}>
+          <span className="callout" style={{'color': drugColor}}>23%</span>
           <div>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
           </div>
