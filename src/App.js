@@ -104,8 +104,8 @@ const supportedStates = {
 
 const legendOrder = [
   'Significant Increase',
-  'No Significant Change',
   'Significant Decrease',
+  'No Significant Change',
   'Data Not Available/Not Reported',
   'Unfunded State'
 ];
@@ -161,7 +161,7 @@ export default function App({ dataUrl }) {
   const [rawData, setRawData] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [keyIndex, setKeyIndex] = useState({});
-  const [timeframes, setTimeframes] = useState({});
+  const [timeframes, setTimeframes] = useState([]);
   const [rangePoints, setRangePoints] = useState([]);
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
 
@@ -191,11 +191,12 @@ export default function App({ dataUrl }) {
 
   let first = true;
   let keyCounts = {};
+
   useEffect(() => {
     (async () => {
       setDataLoaded(false);
-
-      let tempTimeframes = {};
+      let tempTimeframes = [];
+      let addedTimeframes = [];
       let res = await fetchData();
       if (res && res.success) {
         let keyedRawData = {};
@@ -225,18 +226,45 @@ export default function App({ dataUrl }) {
             const endYear = row[keyIndex['endYear']];
 
             const yearMonthIndex1 = startYear + '|' + startMonth;
-            if (!tempTimeframes.hasOwnProperty(yearMonthIndex1)) {
-              tempTimeframes[yearMonthIndex1] = months[startMonth - 1] + ' ' + startYear;
+            if (!addedTimeframes.includes(yearMonthIndex1)) {
+              tempTimeframes.push(
+                {
+                  'key': yearMonthIndex1,
+                  'label': months[startMonth - 1] + ' ' + startYear,
+                  'year': Number.parseInt(startYear),
+                  'month': Number.parseInt(startMonth)
+                }
+              );
             }
+            addedTimeframes.push(yearMonthIndex1);
             const yearMonthIndex2 = endYear + '|' + endMonth;
-            if (!tempTimeframes.hasOwnProperty(yearMonthIndex2)) {
-              tempTimeframes[yearMonthIndex2] = months[endMonth - 1] + ' ' + endYear;
+            if (!addedTimeframes.includes(yearMonthIndex2)) {
+              tempTimeframes.push(
+                {
+                  'key': yearMonthIndex2,
+                  'label': months[endMonth - 1] + ' ' + endYear,
+                  'year': Number.parseInt(endYear),
+                  'month': Number.parseInt(endMonth)
+                }
+              );
+              addedTimeframes.push(yearMonthIndex2);
             }
           }
         });
         setKeyedRawdata(keyedRawData);
+
+        tempTimeframes.sort((a, b) => {
+          if (a['year'] < b['year']) {
+            return -1;
+          } else if (a['year'] === b['year'] && a['month'] < b['month']) {
+            return -1;
+          } else {
+            return 1;
+          }
+        });
+
         setTimeframes(tempTimeframes);
-        setRangePoints([Object.keys(tempTimeframes).length-2, Object.keys(tempTimeframes).length-1]);
+        setRangePoints([0, tempTimeframes.length-1]);
 
         const shifted = [...res.data.data];
         shifted.shift();
@@ -365,6 +393,11 @@ export default function App({ dataUrl }) {
     return result
   }
 
+  const handleRangeChange = (data) => {
+    debugger;
+    setRangePoints(data);
+  };
+
   // Calculates what's going to be displayed on the map and data table at render.
   const generateRuntimeData = (data, filters = []) => {
 
@@ -372,13 +405,11 @@ export default function App({ dataUrl }) {
       return {};
     }
 
-    const startTimeframe = Object.keys(timeframes)[rangePoints[0]].split('|');
-    const startMonth = startTimeframe[1];
-    const startYear = startTimeframe[0];;
+    const startMonth = timeframes[rangePoints[0]]['month'];
+    const startYear = timeframes[rangePoints[0]]['year'];
 
-    const endTimeframe = Object.keys(timeframes)[rangePoints[1]].split('|');
-    const endMonth = endTimeframe[1];;
-    const endYear = endTimeframe[0];;
+    const endMonth = timeframes[rangePoints[1]]['month'];
+    const endYear = timeframes[rangePoints[1]]['year'];
 
     let filteredData = {};
     for (const [key, value] of Object.entries(supportedStates)) {
@@ -406,6 +437,7 @@ export default function App({ dataUrl }) {
 
   useEffect(() => {
     if (true === dataLoaded) {
+      debugger;
       const processedData = generateRuntimeData(rawData);
       const processedLegend = generateRuntimeLegend(processedData);
 
@@ -433,10 +465,10 @@ export default function App({ dataUrl }) {
   }
 
   const tooltipFormatter = (data) => {
-    return timeframes[Object.keys(timeframes)[data]];
+    return timeframes[data]['label'];
   }
 
-  if (!runtimeData || Object.keys(runtimeData).length === 0) {
+  if (!runtimeData || Object.keys(runtimeData).length === 0 || !timeframes) {
     return <h1>Loading</h1>;
   }
 
@@ -444,7 +476,7 @@ export default function App({ dataUrl }) {
 
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setSelected }}>
-      <select onChange={(e) => {setCurrentDrug(e.target.value)}}>
+      <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
         {Object.keys(drugScreenOptions).map((key) => <option value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
       </select>
       <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
@@ -453,10 +485,10 @@ export default function App({ dataUrl }) {
       </header>
       <div className="callouts">
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <HeaderLineChart width={150} height={100} lineColor={drugColor} />
+          {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
           <div>
-            <h3>{selected ?? 'U.S.A.'}</h3>
-            <p>{Object.values(timeframes)[rangePoints[1]]} compared to {Object.values(timeframes)[rangePoints[0]]}</p>
+            <h3>{selected ?? 'US'}</h3>
+            <p><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></p>
           </div>
         </div>
         <div style={{'borderLeft': '5px solid' + drugColor}}>
@@ -473,28 +505,21 @@ export default function App({ dataUrl }) {
         </div>
       </div>
       <div className="range-container">
-      <SliderWithTooltip
-          tipFormatter={tooltipFormatter}
-          tipProps={{ overlayClassName: 'foo' }}
-          pushable={1}
-          allowCross={false}
-          onChange={setRangePoints}
-          defaultValue={rangePoints}
-          min={0}
-          align={{
-            offset: [0, -5],
-          }}
-          max={Object.keys(timeframes).length - 1}
-          //handle={SliderHandle}
-      />
-        {/* <Range
-          pushable={1}
-          allowCross={false}
-          onChange={setRangePoints}
-          defaultValue={rangePoints}
-          min={0}
-          max={Object.keys(timeframes).length-1}
-        /> */}
+        <SliderWithTooltip
+            tipFormatter={tooltipFormatter}
+            tipProps={{overlayClassName: 'foo'}}
+            pushable={1}
+            allowCross={false}
+            onChange={(e) => {handleRangeChange(e)}}
+            defaultValue={rangePoints}
+            min={0}
+            tipProps={{visible:true}}
+            align={{
+              offset: [0, -5],
+            }}
+            max={timeframes.length - 1}
+            //handle={SliderHandle}
+        />
       </div>
       <div className="map-container">
         <UsaMap />
