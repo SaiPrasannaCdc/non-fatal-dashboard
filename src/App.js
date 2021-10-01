@@ -115,24 +115,28 @@ const drugScreenOptions = {
     'titleSingular': 'Drug',
     'titlePlural': 'Drugs',
     'significanceColumn': 'allSignificance',
+    'percentageColumn': 'allPercentageChange',
     'color': '#2B2D73',
   },
   'opioids': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
     'significanceColumn': 'opioidSignificance',
+    'percentageColumn': 'opioidPercentageChange',
     'color': '#4A2866',
   },
   'heroin': {
     'titleSingular': 'Heroin',
     'titlePlural': 'Heroin',
     'significanceColumn': 'heroinSignificance',
+    'percentageColumn': 'heroinPercentageChange',
     'color': '#353535',
   },
   'stimulants': {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
     'significanceColumn': 'stimulantSignificance',
+    'percentageColumn': 'stimulantPercentageChange',
     'color': '#24574E',
   },
 }
@@ -155,10 +159,13 @@ const months = [
 export default function App({ dataUrl }) {
   const [runtimeLegend, setRuntimeLegend] = useState([])
   const [runtimeData, setRuntimeData] = useState([])
+  const [runtimeUSData, setRuntimeUSData] = useState([])
   const [selected, setSelected] = useState(null)
   const [timeframe, setTimeframe] = useState('March 2020');
   const [keyedRawData, setKeyedRawdata] = useState([]);
   const [rawData, setRawData] = useState([]);
+  const [keyedRawUSData, setKeyedRawUSdata] = useState([]);
+  const [rawUSData, setRawUSData] = useState([]);  
   const [dataLoaded, setDataLoaded] = useState(false);
   const [keyIndex, setKeyIndex] = useState({});
   const [timeframes, setTimeframes] = useState([]);
@@ -199,7 +206,8 @@ export default function App({ dataUrl }) {
       let addedTimeframes = [];
       let res = await fetchData();
       if (res && res.success) {
-        let keyedRawData = {};
+        let tempKeyedRawData = {};
+        let tempKeyedRawUSData = {};
         res.data.data.map((row) => {
           if (first) {
             row.forEach(key => {
@@ -218,7 +226,12 @@ export default function App({ dataUrl }) {
             Object.keys(keyIndex).map((key) => {
               obj[key] = row[keyIndex[key]];
             })
-            keyedRawData[row[keyIndex['key']]] = obj;
+            
+            if ('US' === row[keyIndex['jurisdiction']]) {
+              tempKeyedRawUSData[row[keyIndex['key']]] = obj;
+            } else {
+              tempKeyedRawData[row[keyIndex['key']]] = obj;
+            }
 
             const startMonth = row[keyIndex['startMonth']];
             const startYear = row[keyIndex['startYear']];
@@ -251,7 +264,9 @@ export default function App({ dataUrl }) {
             }
           }
         });
-        setKeyedRawdata(keyedRawData);
+
+        setKeyedRawdata(tempKeyedRawData);
+        setKeyedRawUSdata(tempKeyedRawUSData);
 
         tempTimeframes.sort((a, b) => {
           if (a['year'] < b['year']) {
@@ -318,8 +333,8 @@ export default function App({ dataUrl }) {
         '#A62434',
         '#F2594B',
         '#FFC175',
-        '#DCDCDC',
-        '#FFFFFF',
+        '#D3D3D3',
+        '#F8F8F8',
         '#3690c0',
         '#02818a',
         '#016c59',
@@ -394,8 +409,22 @@ export default function App({ dataUrl }) {
   }
 
   const handleRangeChange = (data) => {
-    debugger;
     setRangePoints(data);
+  };
+
+  const generateRuntimeUSData = (data, filters = []) => {
+    
+    if (!timeframes) {
+      return {};
+    }
+
+    const startMonth = timeframes[rangePoints[0]]['month'];
+    const startYear = timeframes[rangePoints[0]]['year'];
+    const endMonth = timeframes[rangePoints[1]]['month'];
+    const endYear = timeframes[rangePoints[1]]['year'];
+
+    const rowKey = 'US|' + startYear + '|' + startMonth + '|all|all:US|' + endYear + '|' + endMonth + '|all|all';
+    return keyedRawUSData[rowKey];
   };
 
   // Calculates what's going to be displayed on the map and data table at render.
@@ -412,6 +441,7 @@ export default function App({ dataUrl }) {
     const endYear = timeframes[rangePoints[1]]['year'];
 
     let filteredData = {};
+
     for (const [key, value] of Object.entries(supportedStates)) {
       const rowKey = value[1] + '|' + startYear + '|' + startMonth + '|all|all:' + value[1] + '|' + endYear + '|' + endMonth + '|all|all';
       const foundRow = keyedRawData[rowKey];
@@ -420,28 +450,17 @@ export default function App({ dataUrl }) {
       }
     }
 
-      // data.forEach(row => {
-      //     // Filters
-      //     if(filters.length) {
-      //         for(let i = 0; i < filters.length; i++) {
-      //             const {columnName, active} = filters[i]
-
-      //             if (row[columnName] != active) return false // Bail out, not part of filter
-      //         }
-      //     }
-      //     result[row[keyIndex[STATE_COL]]] = row
-      // })
-
     return filteredData;
-  }
+  };
 
   useEffect(() => {
     if (true === dataLoaded) {
-      debugger;
       const processedData = generateRuntimeData(rawData);
+      const processedUSData = generateRuntimeUSData(rawData);
       const processedLegend = generateRuntimeLegend(processedData);
 
       setRuntimeData(processedData)
+      setRuntimeUSData(processedUSData)
       setRuntimeLegend(processedLegend)
     }
   }, [dataLoaded,rangePoints,currentDrug])
@@ -474,6 +493,10 @@ export default function App({ dataUrl }) {
 
   const drugColor = drugScreenOptions[currentDrug].color;
 
+  let usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
+
+  let selectedPercentage = selected ? Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]) : false;
+  
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setSelected }}>
       <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
@@ -483,23 +506,38 @@ export default function App({ dataUrl }) {
         <span style={{textTransform: 'uppercase', fontSize: '.8em'}}>Trends in Emergency Room Visits</span>
         <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected All {drugScreenOptions[currentDrug]['titleSingular']} Overdoses</span>
       </header>
+      <div style={{'marginBottom':'15px','marginLeft':'15px'}}><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></div>
       <div className="callouts">
+        {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
+          <span className="callout" style={{ 'color': drugColor }}>{usPercent}%</span>
           <div>
-            <h3>{selected ?? 'US'}</h3>
-            <p><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></p>
+            <h3>US</h3>
+            <p>Percent change estimates in rates of suspected drug overdoses</p>
           </div>
         </div>
-        <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{'color': drugColor}}>75%</span>
+        {selected &&
+          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+          <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
+            <div>
+              <h3>{selected}</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+          </div>
+        }
+        {!selected && 
+          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+          <span className="callout" style={{ 'color': drugColor }}>??%</span>
           <div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <h3>US - Something</h3>
+            <p>Some other general US statistic</p>
           </div>
         </div>
+        }
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{'color': drugColor}}>23%</span>
+          <span className="callout" style={{'color': drugColor}}>XX</span>
           <div>
+            <h3>Placeholder</h3>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
           </div>
         </div>
