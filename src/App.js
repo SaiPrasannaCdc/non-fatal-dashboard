@@ -169,8 +169,9 @@ export default function App({ dataUrl }) {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [keyIndex, setKeyIndex] = useState({});
   const [timeframes, setTimeframes] = useState([]);
-  const [rangePoints, setRangePoints] = useState([]);
+  const [rangePoints, setRangePoints] = useState([0,1]);
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
+  const [count, setCount] = useState(0);
 
   const fetchData = async () => {
     try {
@@ -279,12 +280,21 @@ export default function App({ dataUrl }) {
         });
 
         setTimeframes(tempTimeframes);
-        setRangePoints([0, tempTimeframes.length-1]);
+        setCount(tempTimeframes.length - 1);
+        setRangePoints([0, 1]);
 
         const shifted = [...res.data.data];
         shifted.shift();
         setRawData(shifted);
         
+        //Range animation
+        for (let i = 0; i < tempTimeframes.length - 1; i++) {
+          setTimeout(() => {
+            console.log('timeout!!!');
+              setRangePoints([i,i+1]);
+          }, 300 * (i + 1));
+      }
+
         setDataLoaded(true);
       }
     })();
@@ -299,24 +309,6 @@ export default function App({ dataUrl }) {
 
     return generateColorsArray(runtimeLegend[idx]?.color)
   }
-
-  // const timeframes = [
-  //   'March 2020',
-  //   'February 2020',
-  //   'January 2020',
-  //   'December 2019',
-  //   'November 2019',
-  //   'October 2019',
-  //   'September 2019',
-  //   'August 2019',
-  //   'July 2019',
-  //   'June 2019',
-  //   'May 2019',
-  //   'April 2019',
-  //   'March 2019',
-  //   'February 2019',
-  //   'January 2019'
-  // ]
 
   let legendMemo = useRef(new Map())
 
@@ -366,22 +358,6 @@ export default function App({ dataUrl }) {
     sorted.sort((a, b) => {
       return legendOrder.indexOf(a) - legendOrder.indexOf(b);
     });
-
-    // // Apply custom sorting or regular sorting
-    // let configuredOrder = []
-
-    // // Coerce strings to numbers inside configuredOrder property
-    // for(let i = 0; i < configuredOrder.length; i++) {
-    //     configuredOrder[i] = numberFromString(configuredOrder[i])
-    // }
-
-    // if(configuredOrder.length) {
-    //     sorted.sort( (a, b) => {
-    //         return configuredOrder.indexOf(a) - configuredOrder.indexOf(b);
-    //     })
-    // } else {
-    //     sorted.sort((a, b) => a - b)
-    // }
 
     // Add legend item for each
     legendOrder.forEach((val) => {
@@ -463,8 +439,8 @@ export default function App({ dataUrl }) {
       setRuntimeUSData(processedUSData)
       setRuntimeLegend(processedLegend)
     }
-  }, [dataLoaded,rangePoints,currentDrug])
-
+  }, [dataLoaded, rangePoints, currentDrug])
+  
   const StateInfo = () => {
     return (
       <section className="sub-drawer">
@@ -491,6 +467,34 @@ export default function App({ dataUrl }) {
     return <h1>Loading</h1>;
   }
 
+  const getSliderMarks = () => {
+    let marks = {};
+    
+    //Add the month/year for the first mark
+    //marks[0] = timeframes[0].label;
+    debugger;
+    //Get year marks in between beginning and end
+    const lastIndex = Object.entries(timeframes).length - 1;
+
+    let tempYear = timeframes[0].year;
+    timeframes.forEach((element, index, array) => {
+      if (0 === index) {
+        marks[index] = element.label;
+      }
+
+      if (tempYear !== element.year) {
+        marks[index] = element.year;
+        tempYear = element.year;
+      }
+
+      if (lastIndex === index) {
+        marks[index] = element.label;
+      }
+    });
+
+    return marks;
+  }
+
   const drugColor = drugScreenOptions[currentDrug].color;
 
   let usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
@@ -506,7 +510,6 @@ export default function App({ dataUrl }) {
         <span style={{textTransform: 'uppercase', fontSize: '.8em'}}>Trends in Emergency Room Visits</span>
         <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected All {drugScreenOptions[currentDrug]['titleSingular']} Overdoses</span>
       </header>
-      <div style={{'marginBottom':'15px','marginLeft':'15px'}}><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></div>
       <div className="callouts">
         {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
@@ -543,21 +546,31 @@ export default function App({ dataUrl }) {
         </div>
       </div>
       <div className="range-container">
-        <SliderWithTooltip
+        <div style={{ 'marginBottom': '25px'}}>Select a date range: <strong>{timeframes[rangePoints[0]]['label']}</strong> &mdash; <strong>{timeframes[rangePoints[1]]['label']}</strong></div>
+        <div></div>
+        <div className="range-inner-container">
+          <div>Play Button</div>
+          <SliderWithTooltip
             tipFormatter={tooltipFormatter}
-            tipProps={{overlayClassName: 'foo'}}
             pushable={1}
             allowCross={false}
             onChange={(e) => {handleRangeChange(e)}}
             defaultValue={rangePoints}
             min={0}
-            tipProps={{visible:true}}
+            value={rangePoints}
+            //tipProps={{visible:true, overlayClassName: 'foo'}}
             align={{
               offset: [0, -5],
             }}
             max={timeframes.length - 1}
-            //handle={SliderHandle}
-        />
+            marks={getSliderMarks()}
+            handleStyle={{
+              borderColor: drugColor,
+              backgroundColor: drugColor,
+            }}
+          />
+        </div>
+        <div></div>
       </div>
       <div className="map-container">
         <UsaMap />
