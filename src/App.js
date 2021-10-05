@@ -16,14 +16,31 @@ import './styles.scss';
 
 const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
 
+/**
+ * Generates variations of the primary color for hover and active
+ * 
+ * @param {*} color 
+ * @returns 
+ */
 const generateColorsArray = (color = '#000000') => {
   let colorObj = chroma(color)
 
-  return [
+  //Do not saturate grays because they turn pink
+  const colorRgb = colorObj.rgb();
+  if (colorRgb[0] === colorRgb[1] && colorRgb[1] === colorRgb[2]) {
+    return [
+      color,
+      colorObj.darken(1.25).hex(),
+      colorObj.darken(1.5).hex()
+    ];
+  } else {
+    return [
       color,
       colorObj.saturate(1.75).hex(),
       colorObj.darken(0.5).saturate(1.75).hex()
-  ]
+    ];
+  }
+  
 }
 
 const hashObj = (row) => {
@@ -174,6 +191,7 @@ export default function App({ dataUrl }) {
   const [rangePoints, setRangePoints] = useState([0,1]);
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
   const [count, setCount] = useState(0);
+  const [statesParticipating, setStatesParticipating] = useState(0);
 
   const fetchData = async () => {
     try {
@@ -420,13 +438,22 @@ export default function App({ dataUrl }) {
 
     let filteredData = {};
 
+    let tempStatesParticipating = 0;
     for (const [key, value] of Object.entries(supportedStates)) {
       const rowKey = value[1] + '|' + startYear + '|' + startMonth + '|all|all:' + value[1] + '|' + endYear + '|' + endMonth + '|all|all';
       const foundRow = keyedRawData[rowKey];
       if (foundRow) {
         filteredData[key] = Object.values(foundRow);
+
+        //Count the states that have data
+        if (![legendOrder[3], legendOrder[4]].includes(foundRow[drugScreenOptions[currentDrug]['significanceColumn']])) {
+          console.log(value[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]]);
+          tempStatesParticipating++;
+        }
       }
     }
+
+    setStatesParticipating(tempStatesParticipating);
 
     return filteredData;
   };
@@ -437,6 +464,7 @@ export default function App({ dataUrl }) {
       const processedUSData = generateRuntimeUSData(rawData);
       const processedLegend = generateRuntimeLegend(processedData);
 
+      debugger;
       setRuntimeData(processedData)
       setRuntimeUSData(processedUSData)
       setRuntimeLegend(processedLegend)
@@ -543,10 +571,10 @@ export default function App({ dataUrl }) {
         </div>
         }
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{'color': drugColor}}>XX</span>
+          <span className="callout" style={{'color': drugColor}}>{statesParticipating}</span>
           <div>
-            <h3>Placeholder</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <h3>States Participating</h3>
+            <p>Funded states with reported data</p>
           </div>
         </div>
       </div>
@@ -591,7 +619,7 @@ export default function App({ dataUrl }) {
         <UsaMap />
         <aside>
           <div className="legend-title">Time Range</div>
-          <div className="range-aside-container" style={{color: drugColor,minHeight:'65px'}}>
+          <div className="range-aside-container" style={{color: drugColor}}>
             <SliderWithTooltip
               tipFormatter={tooltipFormatter}
               pushable={1}
