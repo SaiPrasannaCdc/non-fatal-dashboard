@@ -14,7 +14,6 @@ import Context from './context';
 import 'rc-slider/assets/index.css';
 import './styles.scss';
 
-const STATE_COL = 'geo';
 const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
 
 const generateColorsArray = (color = '#000000') => {
@@ -117,7 +116,7 @@ const legendOrder = [
 const drugScreenOptions = {
   'all': {
     'titleSingular': 'Drug',
-    'titlePlural': 'Drugs',
+    'titlePlural': 'All Drugs',
     'significanceColumn': 'allSignificance',
     'percentageColumn': 'allPercentageChange',
     'color': '#2B2D73',
@@ -495,6 +494,14 @@ export default function App({ dataUrl }) {
     return marks;
   }
 
+  const getDrugTabs = () => {
+    let items = [];
+    for (const [key, value] of Object.entries(drugScreenOptions)) {
+      items.push()
+    }
+
+  }
+
   const drugColor = drugScreenOptions[currentDrug].color;
   let usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
   let selectedPercentage = selected ? Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]) : false;
@@ -508,6 +515,11 @@ export default function App({ dataUrl }) {
         <span style={{textTransform: 'uppercase', fontSize: '.8em'}}>Trends in Emergency Room Visits</span>
         <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected All {drugScreenOptions[currentDrug]['titleSingular']} Overdoses</span>
       </header>
+      <div className="drug-selection" style={{ borderTopColor: drugColor }}>
+        {Object.keys(drugScreenOptions).map((key) => {
+          return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titlePlural']}</div>
+        })}
+      </div>
       <div className="callouts">
         {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
@@ -546,7 +558,7 @@ export default function App({ dataUrl }) {
       <div className="range-container">
         <div style={{ 'marginBottom': '25px'}}>Select a date range: <strong>{timeframes[rangePoints[0]]['label']}</strong> &mdash; <strong>{timeframes[rangePoints[1]]['label']}</strong></div>
         <div></div>
-        <div className="range-inner-container">
+        <div className="range-inner-container" style={{color: drugColor}}>
           <div className="animation-controls" style={{color: drugColor}}>
             <PlayIcon />
             {/* <PauseIcon />
