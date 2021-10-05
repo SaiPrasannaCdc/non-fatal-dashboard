@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "babel-polyfill";
 import chroma from 'chroma-js';
-import Papa, { readRemoteFile } from 'papaparse';
+import Papa from 'papaparse';
 import UsaMap from './components/UsaMap';
 import BarChart from './components/BarChart';
-import HeaderLineChart from './components/HeaderLineChart';
-import Slider, { Range, createSliderWithTooltip } from 'rc-slider';
+//import HeaderLineChart from './components/HeaderLineChart';
+import Slider, { createSliderWithTooltip } from 'rc-slider';
+import PlayIcon from './assets/play.svg';
+import StopIcon from './assets/stop.svg';
+import PauseIcon from './assets/pause.svg';
+
 import Context from './context';
 import 'rc-slider/assets/index.css';
 import './styles.scss';
@@ -164,8 +168,7 @@ export default function App({ dataUrl }) {
   const [timeframe, setTimeframe] = useState('March 2020');
   const [keyedRawData, setKeyedRawdata] = useState([]);
   const [rawData, setRawData] = useState([]);
-  const [keyedRawUSData, setKeyedRawUSdata] = useState([]);
-  const [rawUSData, setRawUSData] = useState([]);  
+  const [keyedRawUSData, setKeyedRawUSdata] = useState([]); 
   const [dataLoaded, setDataLoaded] = useState(false);
   const [keyIndex, setKeyIndex] = useState({});
   const [timeframes, setTimeframes] = useState([]);
@@ -280,18 +283,18 @@ export default function App({ dataUrl }) {
         });
 
         setTimeframes(tempTimeframes);
-        setCount(tempTimeframes.length - 1);
-        setRangePoints([0, 1]);
+        setCount(tempTimeframes.length - 1); //Range slider animation count
+        setRangePoints([0, 1]); //Default range points are the first two month
 
         const shifted = [...res.data.data];
-        shifted.shift();
+        shifted.shift(); //Get rid of header row
         setRawData(shifted);
         
         //Range animation
+        //TODO: Handle stopping of the animation when user interacts with the map
         for (let i = 0; i < tempTimeframes.length - 1; i++) {
           setTimeout(() => {
-            console.log('timeout!!!');
-              setRangePoints([i,i+1]);
+            setRangePoints([i,i+1]);
           }, 300 * (i + 1));
       }
 
@@ -324,7 +327,7 @@ export default function App({ dataUrl }) {
       let mapColorPalette = [
         '#A62434',
         '#F2594B',
-        '#FFC175',
+        '#FFD97D',
         '#D3D3D3',
         '#F8F8F8',
         '#3690c0',
@@ -470,9 +473,6 @@ export default function App({ dataUrl }) {
   const getSliderMarks = () => {
     let marks = {};
     
-    //Add the month/year for the first mark
-    //marks[0] = timeframes[0].label;
-    debugger;
     //Get year marks in between beginning and end
     const lastIndex = Object.entries(timeframes).length - 1;
 
@@ -496,9 +496,7 @@ export default function App({ dataUrl }) {
   }
 
   const drugColor = drugScreenOptions[currentDrug].color;
-
   let usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
-
   let selectedPercentage = selected ? Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]) : false;
   
   return (
@@ -549,7 +547,11 @@ export default function App({ dataUrl }) {
         <div style={{ 'marginBottom': '25px'}}>Select a date range: <strong>{timeframes[rangePoints[0]]['label']}</strong> &mdash; <strong>{timeframes[rangePoints[1]]['label']}</strong></div>
         <div></div>
         <div className="range-inner-container">
-          <div>Play Button</div>
+          <div className="animation-controls" style={{color: drugColor}}>
+            <PlayIcon />
+            {/* <PauseIcon />
+            <StopIcon /> */}
+          </div>
           <SliderWithTooltip
             tipFormatter={tooltipFormatter}
             pushable={1}

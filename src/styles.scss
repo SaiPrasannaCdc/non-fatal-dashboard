@@ -31,6 +31,19 @@
             display: flex;
             align-items: center;
 
+            .animation-controls {
+                width: 20px;
+                margin-right: 20px;
+
+                > svg {
+                    color: currentColor;
+    
+                    path {
+                        fill: currentColor;
+                    }
+                }
+            }
+
             .rc-slider {
                 .rc-slider-tooltip-inner {
                     padding: 6px 7px;
@@ -39,6 +52,19 @@
 
                 .rc-slider-track {
                     background-color: rgba(215, 215, 215, 1);
+                }
+
+                .rc-slider-mark {
+                    
+                    .rc-slider-mark-text {
+                        max-width: 50px;
+                    }
+                }
+
+                .rc-slider-handle {
+                    width: 20px;
+                    height: 20px;
+                    margin-top: -8px;
                 }
             }
         }
