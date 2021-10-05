@@ -283,7 +283,7 @@ export default function App({ dataUrl }) {
 
         setTimeframes(tempTimeframes);
         setCount(tempTimeframes.length - 1); //Range slider animation count
-        setRangePoints([0, 1]); //Default range points are the first two month
+        setRangePoints([0, tempTimeframes.length - 1]); //Default range points are the first two month
 
         const shifted = [...res.data.data];
         shifted.shift(); //Get rid of header row
@@ -291,11 +291,11 @@ export default function App({ dataUrl }) {
         
         //Range animation
         //TODO: Handle stopping of the animation when user interacts with the map
-        for (let i = 0; i < tempTimeframes.length - 1; i++) {
-          setTimeout(() => {
-            setRangePoints([i,i+1]);
-          }, 300 * (i + 1));
-      }
+        // for (let i = 0; i < tempTimeframes.length - 1; i++) {
+        //   setTimeout(() => {
+        //     setRangePoints([i,i+1]);
+        //   }, 300 * (i + 1));
+        // }
 
         setDataLoaded(true);
       }
@@ -327,8 +327,8 @@ export default function App({ dataUrl }) {
         '#A62434',
         '#F2594B',
         '#FFD97D',
-        '#D3D3D3',
-        '#F8F8F8',
+        '#CCCCCC',
+        '#EBEBEB',
         '#3690c0',
         '#02818a',
         '#016c59',
@@ -508,18 +508,13 @@ export default function App({ dataUrl }) {
   
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setSelected }}>
-      <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
+      {/* <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
         {Object.keys(drugScreenOptions).map((key) => <option value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
-      </select>
+      </select> */}
       <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
         <span style={{textTransform: 'uppercase', fontSize: '.8em'}}>Trends in Emergency Room Visits</span>
         <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected All {drugScreenOptions[currentDrug]['titleSingular']} Overdoses</span>
       </header>
-      <div className="drug-selection" style={{ borderTopColor: drugColor }}>
-        {Object.keys(drugScreenOptions).map((key) => {
-          return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titlePlural']}</div>
-        })}
-      </div>
       <div className="callouts">
         {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
@@ -555,7 +550,13 @@ export default function App({ dataUrl }) {
           </div>
         </div>
       </div>
-      <div className="range-container">
+      <div style={{ 'marginBottom': '25px'}}><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></div>
+      <div className="drug-selection" style={{ borderTopColor: drugColor }}>
+        {Object.keys(drugScreenOptions).map((key) => {
+          return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titlePlural']}</div>
+        })}
+      </div>
+      <div className="range-container" style={{ display: "none" }}>
         <div style={{ 'marginBottom': '25px'}}>Select a date range: <strong>{timeframes[rangePoints[0]]['label']}</strong> &mdash; <strong>{timeframes[rangePoints[1]]['label']}</strong></div>
         <div></div>
         <div className="range-inner-container" style={{color: drugColor}}>
@@ -564,7 +565,7 @@ export default function App({ dataUrl }) {
             {/* <PauseIcon />
             <StopIcon /> */}
           </div>
-          <SliderWithTooltip
+          {/* <SliderWithTooltip
             tipFormatter={tooltipFormatter}
             pushable={1}
             allowCross={false}
@@ -582,13 +583,35 @@ export default function App({ dataUrl }) {
               borderColor: drugColor,
               backgroundColor: drugColor,
             }}
-          />
+          /> */}
         </div>
         <div></div>
       </div>
       <div className="map-container">
         <UsaMap />
         <aside>
+          <div className="legend-title">Time Range</div>
+          <div className="range-aside-container" style={{color: drugColor,minHeight:'65px'}}>
+            <SliderWithTooltip
+              tipFormatter={tooltipFormatter}
+              pushable={1}
+              allowCross={false}
+              onChange={(e) => {handleRangeChange(e)}}
+              defaultValue={rangePoints}
+              min={0}
+              value={rangePoints}
+              //tipProps={{visible:true, overlayClassName: 'foo'}}
+              align={{
+                offset: [0, -5],
+              }}
+              max={timeframes.length - 1}
+              marks={getSliderMarks()}
+              handleStyle={{
+                borderColor: drugColor,
+                backgroundColor: drugColor,
+              }}
+            />
+          </div>
           {/* <div className="time-select">
             <ul>
               {timeframes.map(item => <li className={item === timeframe ? 'active' : ''} onClick={() => setTimeframe(item)}>{item}</li>)}

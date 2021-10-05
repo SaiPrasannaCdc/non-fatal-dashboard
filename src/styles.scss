@@ -40,6 +40,8 @@
         }
     }
 
+    
+
     .range-container {
         padding: 20px 50px;
         display: flex;
@@ -175,8 +177,43 @@
     }
     
     aside {
-        /*align-self: flex-end;*/
         width: 30%;
+
+        .range-aside-container {
+            min-height: 70px;
+            width: 90%;
+            margin: 0 auto;
+            padding-top: 10px;
+            .rc-slider {
+                
+                .rc-slider-tooltip-inner {
+                    padding: 6px 7px;
+                    white-space: nowrap;
+                }
+
+                .rc-slider-track {
+                    background-color: currentColor;
+                }
+
+                .rc-slider-rail {
+                    background-color: rgba(215, 215, 215, 1);
+                }
+
+                .rc-slider-mark {
+                    
+                    .rc-slider-mark-text {
+                        max-width: 50px;
+                    }
+                }
+
+                .rc-slider-handle {
+                    width: 17px;
+                    height: 17px;
+                    margin-top: -6px;
+                }
+            }
+        }
+
         .legend-title {
             background-color: #606060;
             color: #fff;
