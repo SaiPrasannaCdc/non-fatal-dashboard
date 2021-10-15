@@ -143,10 +143,6 @@ const UsaMap = () => {
 
       // Once we receive data for this geographic item, setup variables.
       if (geoData !== undefined) {
-
-        if ('US-RI' === geoKey) {
-          debugger;
-        }
         legendColors = applyLegendToRow(geoData);
       }
 

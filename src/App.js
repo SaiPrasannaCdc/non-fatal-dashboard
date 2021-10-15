@@ -4,6 +4,7 @@ import chroma from 'chroma-js';
 import Papa from 'papaparse';
 import UsaMap from './components/UsaMap';
 import BarChart from './components/BarChart';
+import Datatable from './components/Datatable';
 //import HeaderLineChart from './components/HeaderLineChart';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import PlayIcon from './assets/play.svg';
@@ -107,6 +108,7 @@ const supportedStates = {
   'US-OK': ['Oklahoma', 'OK'],
   'US-OR': ['Oregon', 'OR'],
   'US-PA': ['Pennsylvania', 'PA'],
+  'US-PR': ['Puerto Rico', 'PR'],
   'US-RI': ['Rhode Island', 'RI'],
   'US-SC': ['South Carolina', 'SC'],
   'US-SD': ['South Dakota', 'SD'],
@@ -118,8 +120,7 @@ const supportedStates = {
   'US-WA': ['Washington', 'WA'],
   'US-WV': ['West Virginia', 'WV'],
   'US-WI': ['Wisconsin', 'WI'],
-  'US-WY': ['Wyoming', 'WY'],
-  'US-PR': ['Puerto Rico']
+  'US-WY': ['Wyoming', 'WY']
 };
 
 const legendOrder = [
@@ -134,6 +135,7 @@ const drugScreenOptions = {
   'all': {
     'titleSingular': 'Drug',
     'titlePlural': 'All Drugs',
+    'titleAll': 'All Drug',
     'significanceColumn': 'allSignificance',
     'percentageColumn': 'allPercentageChange',
     'color': '#2B2D73',
@@ -141,6 +143,7 @@ const drugScreenOptions = {
   'opioids': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
+    'titleAll': 'All Opioid',
     'significanceColumn': 'opioidSignificance',
     'percentageColumn': 'opioidPercentageChange',
     'color': '#4A2866',
@@ -148,6 +151,7 @@ const drugScreenOptions = {
   'heroin': {
     'titleSingular': 'Heroin',
     'titlePlural': 'Heroin',
+    'titleAll': 'Heroin',
     'significanceColumn': 'heroinSignificance',
     'percentageColumn': 'heroinPercentageChange',
     'color': '#353535',
@@ -155,6 +159,7 @@ const drugScreenOptions = {
   'stimulants': {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
+    'titleAll': 'All Stimulant',
     'significanceColumn': 'stimulantSignificance',
     'percentageColumn': 'stimulantPercentageChange',
     'color': '#24574E',
@@ -464,7 +469,6 @@ export default function App({ dataUrl }) {
       const processedUSData = generateRuntimeUSData(rawData);
       const processedLegend = generateRuntimeLegend(processedData);
 
-      debugger;
       setRuntimeData(processedData)
       setRuntimeUSData(processedUSData)
       setRuntimeLegend(processedLegend)
@@ -533,7 +537,20 @@ export default function App({ dataUrl }) {
   const drugColor = drugScreenOptions[currentDrug].color;
   let usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
   let selectedPercentage = selected ? Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]) : false;
+
+  const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
+  const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
   
+  debugger;
+  let runtimeTableData = Object.values(runtimeData);
+  if (selected) {
+    debugger;
+    runtimeTableData = runtimeTableData.filter((row) => {
+      debugger;
+      return selected === row[keyIndex['geo']];
+    });
+  }
+
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setSelected }}>
       {/* <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
@@ -557,7 +574,7 @@ export default function App({ dataUrl }) {
           <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
             <div>
               <h3>{selected}</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <p>Percent change estimates in rates of suspected drug overdoses</p>
             </div>
           </div>
         }
@@ -653,6 +670,11 @@ export default function App({ dataUrl }) {
         </aside>
       </div>
       {selected && <StateInfo />}
+      <div className="datatable-container">
+        <h3>Monthly Trends by State</h3>
+        <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {timeframes[rangePoints[0]]['label']} to {timeframes[rangePoints[1]]['label']},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
+        <Datatable runtimeUSData={Object.values(runtimeUSData)} runtimeData={runtimeTableData} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColor}/>
+      </div>
     </Context.Provider>
   );
 }

@@ -248,6 +248,7 @@
         border: 1px solid rgba(0,0,0,.125);
         background-color: #FFF;
         margin-top: 2.5em;
+        margin-bottom: 2.5em;
         padding: 1em .5em;
         border-radius: .25rem;
         display: flex;
@@ -278,6 +279,45 @@
         .bar-chart {
             width: 55%;
             min-height: 200px;
+        }
+    }
+
+    .is-significant {
+        font-weight: bold;
+    }
+
+    .datatable-container {
+
+        h3 {
+            margin-bottom: 10px;
+        }
+
+        .datatable-description {
+            margin-bottom: 15px;
+        }
+
+        #main-data-table {
+            border-collapse: collapse;
+
+            tr {
+                &.state-header {
+                    th {
+                        color: #000 !important;
+                    }
+                }
+
+                th {
+                    border: 1px solid #dee2e6;
+                    padding: .3rem;
+                    text-align: left;
+                    color: white;
+                }
+
+                td {
+                    border: 1px solid #dee2e6;
+                    padding: .3rem;
+                }
+            }
         }
     }
 }
