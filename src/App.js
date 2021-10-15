@@ -540,13 +540,10 @@ export default function App({ dataUrl }) {
 
   const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
   const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
-  
-  debugger;
+
   let runtimeTableData = Object.values(runtimeData);
   if (selected) {
-    debugger;
     runtimeTableData = runtimeTableData.filter((row) => {
-      debugger;
       return selected === row[keyIndex['geo']];
     });
   }
