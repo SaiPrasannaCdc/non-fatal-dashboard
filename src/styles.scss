@@ -39,69 +39,6 @@
             }
         }
     }
-
-    
-
-    .range-container {
-        padding: 20px 50px;
-        display: flex;
-        flex-wrap: wrap;
-
-        > div:nth-child(odd) {
-            width: 70%;
-        }
-
-        > div:nth-child(even) {
-            width: 30%;
-        }
-
-        .range-inner-container {
-            display: flex;
-            align-items: center;
-
-            .animation-controls {
-                width: 20px;
-                margin-right: 20px;
-
-                > svg {
-                    color: currentColor;
-    
-                    path {
-                        fill: currentColor;
-                    }
-                }
-            }
-
-            .rc-slider {
-                
-                .rc-slider-tooltip-inner {
-                    padding: 6px 7px;
-                    white-space: nowrap;
-                }
-
-                .rc-slider-track {
-                    background-color: currentColor;
-                }
-
-                .rc-slider-rail {
-                    background-color: rgba(215, 215, 215, 1);
-                }
-
-                .rc-slider-mark {
-                    
-                    .rc-slider-mark-text {
-                        max-width: 50px;
-                    }
-                }
-
-                .rc-slider-handle {
-                    width: 20px;
-                    height: 20px;
-                    margin-top: -8px;
-                }
-            }
-        }
-    }
     
     .map-container {
         display: flex;
@@ -175,6 +112,10 @@
             margin: 0;
         }
     }
+
+    [data-icon="play"] {
+        cursor: pointer;
+    }
     
     aside {
         width: 30%;
@@ -184,6 +125,21 @@
             width: 90%;
             margin: 0 auto;
             padding-top: 35px;
+            display: flex;
+
+            .animation-controls {
+                width: 20px;
+                margin-right: 40px;
+
+                > svg {
+                    color: currentColor;
+    
+                    path {
+                        fill: currentColor;
+                    }
+                }
+            }
+
             .rc-slider {
                 
                 .rc-slider-tooltip-inner {

@@ -90,7 +90,7 @@ const nudges = {
 }
 
 const UsaMap = () => {
-  const { data, applyLegendToRow, setSelected, selected } = useContext(Context);
+  const { data, applyLegendToRow, setStateSelected, selected } = useContext(Context);
   
   const geoLabel = (geo, bgColor = "#FFFFFF", projection) => {
     let centroid = projection(geoCentroid(geo))
@@ -167,7 +167,7 @@ const UsaMap = () => {
             key={key}         
             className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
             css={styles}
-            onClick={() => setSelected(geoKey)}
+            onClick={() => setStateSelected(geoKey)}
           >
             <path
               tabIndex={-1}
