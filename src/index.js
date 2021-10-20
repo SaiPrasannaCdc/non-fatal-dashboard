@@ -5,7 +5,7 @@ import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App dataUrl={document.querySelector('#non-fatal-container').attributes['data-url']?.value}/>
   </React.StrictMode>,
   document.querySelector('#non-fatal-container')
 );

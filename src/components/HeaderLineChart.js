@@ -13,7 +13,7 @@ function HeaderLineChart(params) {
     {date: 'June', value: 25}
   ];
   
-  const { width, height } = params;
+  const { width, height, lineColor } = params;
 
   const margin = {top: 10, bottom: 10, left: 0, right: 0};
   const adjustedHeight = height - margin.top - margin.bottom;
@@ -46,7 +46,7 @@ function HeaderLineChart(params) {
             data={data}
             x={d => xScale(d.date)}
             y={d => yScale(d.value)}
-            stroke="#712177"
+            stroke={lineColor}
             strokeWidth={3}
           />
       </svg>

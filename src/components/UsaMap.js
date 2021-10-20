@@ -90,7 +90,8 @@ const nudges = {
 }
 
 const UsaMap = () => {
-  const { data, applyLegendToRow, setSelected, selected } = useContext(Context);
+  const { data, applyLegendToRow, setStateSelected, selected } = useContext(Context);
+  
   const geoLabel = (geo, bgColor = "#FFFFFF", projection) => {
     let centroid = projection(geoCentroid(geo))
     let abbr = geo.properties.iso
@@ -128,11 +129,11 @@ const UsaMap = () => {
       let geoKey = geo.properties.iso
 
       // Manually add Washington D.C. in for Hex maps
-      if(geoKey === 'US-DC') {
-        geoKey = 'District of Columbia'
-      } else {
-        geoKey = supportedStates[geoKey] ? supportedStates[geoKey][0] : null;
-      }
+      // if(geoKey === 'US-DC') {
+      //   geoKey = 'District of Columbia'
+      // } else {
+      //   geoKey = supportedStates[geoKey] ? supportedStates[geoKey][0] : null;
+      // }
 
       if(!geoKey) return
 
@@ -146,7 +147,7 @@ const UsaMap = () => {
       }
 
       // If a legend applies, return it with appropriate information.
-      if (legendColors && legendColors[0] !== '#000000') {
+      if (legendColors && legendColors[0] !== '#EBEBEB') {
         styles = {
           fill: legendColors[0],
           cursor: 'pointer',
@@ -166,7 +167,7 @@ const UsaMap = () => {
             key={key}         
             className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
             css={styles}
-            onClick={() => setSelected(geoKey)}
+            onClick={() => setStateSelected(geoKey)}
           >
             <path
               tabIndex={-1}
