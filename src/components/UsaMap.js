@@ -117,7 +117,8 @@ const UsaMap = () => {
   }
 
   const constructGeoJsx = (geographies, projection) => {
-    return geographies.map(( {feature: geo, path = ''}) => {
+    return geographies.map(({ feature: geo, path = '' }) => {
+
       const key = geo.properties.iso + '-hex-group'
 
       let styles = {
@@ -127,6 +128,10 @@ const UsaMap = () => {
 
       // Map the name from the geo data with the appropriate key for the processed data
       let geoKey = geo.properties.iso
+
+      if ('US-PR' === geoKey) {
+        return false;
+      }
 
       // Manually add Washington D.C. in for Hex maps
       // if(geoKey === 'US-DC') {
@@ -161,6 +166,8 @@ const UsaMap = () => {
 
         if(selected && selected !== geoKey) styles.opacity = 0.4 
         if(selected && selected === geoKey) styles.fill = legendColors[1]
+
+        
 
         return (
           <g

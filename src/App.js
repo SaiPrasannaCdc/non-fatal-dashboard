@@ -78,6 +78,7 @@ const supportedStates = {
   'US-CO': ['Colorado', 'CO'],
   'US-CT': ['Connecticut', 'CT'],
   'US-DE': ['Delaware', 'DE'],
+  'US-DC': ['District of Columbia', 'DC'],
   'US-FL': ['Florida', 'FL'],
   'US-GA': ['Georgia', 'GA'],
   'US-HI': ['Hawaii', 'HI'],
@@ -108,7 +109,7 @@ const supportedStates = {
   'US-OK': ['Oklahoma', 'OK'],
   'US-OR': ['Oregon', 'OR'],
   'US-PA': ['Pennsylvania', 'PA'],
-  'US-PR': ['Puerto Rico', 'PR'],
+  //'US-PR': ['Puerto Rico', 'PR'],
   'US-RI': ['Rhode Island', 'RI'],
   'US-SC': ['South Carolina', 'SC'],
   'US-SD': ['South Dakota', 'SD'],
@@ -123,12 +124,18 @@ const supportedStates = {
   'US-WY': ['Wyoming', 'WY']
 };
 
+const unfundedStates = [
+  'US-WY',
+  'US-ND',
+  'US-TX'
+];
+
 const legendOrder = [
   'Significant Increase',
   'Significant Decrease',
   'No Significant Change',
   'Data Not Available/Not Reported',
-  'Unfunded State'
+  'Unfunded Jurisdiction'
 ];
 
 const drugScreenOptions = {
@@ -143,7 +150,7 @@ const drugScreenOptions = {
   'opioids': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
-    'titleAll': 'All Opioid',
+    'titleAll': 'All Opioids',
     'significanceColumn': 'opioidSignificance',
     'percentageColumn': 'opioidPercentageChange',
     'color': '#4A2866',
@@ -159,7 +166,7 @@ const drugScreenOptions = {
   'stimulants': {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
-    'titleAll': 'All Stimulant',
+    'titleAll': 'All Stimulants',
     'significanceColumn': 'stimulantSignificance',
     'percentageColumn': 'stimulantPercentageChange',
     'color': '#24574E',
@@ -476,6 +483,17 @@ export default function App({ dataUrl }) {
   }, [dataLoaded, rangePoints, currentDrug])
   
   const StateInfo = () => {
+
+    let stateData = [];
+    
+    Object.values(drugScreenOptions).map((drugScreenOption) => {
+      stateData.push({
+        'type': drugScreenOption['titleAll'],
+        'percent': runtimeTableData[0][keyIndex[drugScreenOption['percentageColumn']]],
+        'color': ''
+      })
+    });
+
     return (
       <section className="sub-drawer">
         <a href="#" style={{textDecoration: 'none', color: '#333', position: 'absolute', right: '1em', fontSize: '1.2em', top: '.3em'}}onClick={(e) => {e.preventDefault(); setSelected(null);}}>⨉</a>
@@ -487,7 +505,7 @@ export default function App({ dataUrl }) {
           {/* <Hexagon fill="#E3D3E4" /> */}
         </div>
         <div className="bar-chart">
-          <BarChart width={544} height={200} />
+          <BarChart width={544} height={200} data={stateData} />
         </div>
       </section>
     )
@@ -534,9 +552,55 @@ export default function App({ dataUrl }) {
 
   }
 
+  const constructStateDataBite = () => {
+    const selectedPercentageRaw = selected ? runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]] : false;
+    let selectedPercentage = false;
+    
+    if ('missing' === selectedPercentageRaw) {
+      return (
+        <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+          <span className="callout" style={{ 'color': drugColor }}>N/A</span>
+          <div>
+            <h3>{supportedStates[selected][0]}</h3>
+            <p>Data not available/reported for this jurisdiction and time range.</p>
+          </div>
+        </div>
+      )
+    } else {
+      selectedPercentage = Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]);
+      return (
+        <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+          <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
+          <div>
+            <h3>{supportedStates[selected][0]}</h3>
+            <p>Percent change estimates in rates of suspected drug overdoses</p>
+          </div>
+        </div>
+      )
+    }
+
+  }
+
+  const constructUSSignificantIncreaseDataBite = (significanceColumn) => {
+    
+    const numStatesWithSignificantIncrease = Object.values(runtimeData).filter((obj) => {
+      return obj[significanceColumn] === 'Significant Increase';
+    }).length;
+
+    return (
+      <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+        <span className="callout" style={{ 'color': drugColor }}>{numStatesWithSignificantIncrease}</span>
+        <div>
+          <h3>Number of Jursidictions with a Significant Increase</h3>
+          {/* <p>Some other general US statistic</p> */}
+        </div>
+      </div>
+    );
+  }
+
   const animateTimeSeries = () => {
-  //Range animation
-  //TODO: Handle stopping of the animation when user interacts with the map
+    //Range animation
+    //TODO: Handle stopping of the animation when user interacts with the map
     for (let i = 0; i < timeframes.length - 1; i++) {
       setTimeout(() => {
         setRangePoints([i,i+1]);
@@ -544,9 +608,14 @@ export default function App({ dataUrl }) {
     }
   }
 
+  const getPostiveSign = (number) => {
+    if (number > 0) {
+      return ('+');
+    }
+  }
+
   const drugColor = drugScreenOptions[currentDrug].color;
-  let usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
-  let selectedPercentage = selected ? Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]) : false;
+  const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
 
   const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
   const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
@@ -557,43 +626,39 @@ export default function App({ dataUrl }) {
       return selected === row[keyIndex['geo']];
     });
   }
-
+  
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected }}>
-      <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
+      {/* <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
         {Object.keys(drugScreenOptions).map((key) => <option value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
-      </select>
+      </select> */}
+      <h1>Nonfatal Suspected Drug Overdoses Presenting to Emergency Departments and Reported to CDC's DOSE System.</h1>
+      <div>
+        Select a State:
+        <select style={{ "marginBottom": "20px", 'marginLeft': '10px' }} onChange={(e) => { setSelected(e.target.value) }}>
+          <option value="">All States</option>
+          {Object.keys(supportedStates).map((key) => {
+            const optionSelected = key === selected ? ' selected ' : '';
+            return (<option value={key} selected={optionSelected}>{supportedStates[key][0]}</option>)
+          })
+          }
+        </select>
+      </div>
       <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
-        <span style={{textTransform: 'uppercase', fontSize: '.8em'}}>Trends in Emergency Room Visits</span>
-        <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected All {drugScreenOptions[currentDrug]['titleSingular']} Overdoses</span>
+        <span style={{ textTransform: 'uppercase', fontSize: '.8em' }}>Trends in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</span>
+        <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</span>
       </header>
       <div className="callouts">
         {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{ 'color': drugColor }}>{usPercent}%</span>
+          <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{usPercent}%</span>
           <div>
             <h3>US</h3>
-            <p>Percent change estimates in rates of suspected drug overdoses</p>
+            <p>Percent change in suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {timeframes[rangePoints[0]]['label']} to {timeframes[rangePoints[1]]['label']}</p>
           </div>
         </div>
-        {selected &&
-          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-          <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
-            <div>
-              <h3>{selected}</h3>
-              <p>Percent change estimates in rates of suspected drug overdoses</p>
-            </div>
-          </div>
-        }
-        {!selected && 
-          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-          <span className="callout" style={{ 'color': drugColor }}>??%</span>
-          <div>
-            <h3>US - Something</h3>
-            <p>Some other general US statistic</p>
-          </div>
-        </div>
-        }
+        {selected && constructStateDataBite()}
+        {!selected && constructUSSignificantIncreaseDataBite(significanceColumn)}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{'color': drugColor}}>{statesParticipating}</span>
           <div>
@@ -602,12 +667,14 @@ export default function App({ dataUrl }) {
           </div>
         </div>
       </div>
-      <div style={{ 'marginBottom': '25px'}}><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></div>
+      <div style={{ 'marginBottom': '25px' }}><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></div>
+      <div style={{'marginBottom': '15px'}}>Select a drug:</div>
       <div className="drug-selection" style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
-          return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titlePlural']}</div>
+          return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
         })}
       </div>
+      <div><em>* Click on a state to see more.</em></div>
       <div className="map-container">
         <UsaMap />
         <aside>
