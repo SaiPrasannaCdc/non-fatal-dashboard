@@ -3,12 +3,9 @@ import { BarGroupHorizontal, Bar } from '@visx/shape';
 import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { scaleBand, scaleLinear, scaleOrdinal } from '@visx/scale';
-
+import chroma from 'chroma-js';
 import {Motion, spring} from 'react-motion';
 
-const blue = '#aeeef8';
-const green = '#e5fd3d';
-const purple = '#9caff6';
 const defaultMargin = { top: 10, right: 20, bottom: 30, left: 100 };
 
 function max(arr, fn) {
@@ -27,15 +24,16 @@ function BarChart({
   data,
   width,
   height,
-  margin = defaultMargin
+  margin = defaultMargin,
+  barColors
 }) {
-  debugger;
+
   const keys = ['percent'];
 
   let highest = 0;
   data.map((drug) => {
-    if (Number.parseInt(drug.percent) && Number.parseInt(drug.percent) > highest) {
-      highest = Number.parseInt(drug.percent);
+    if (Number.parseInt(drug.percent) && Math.abs(Number.parseInt(drug.percent)) > highest) {
+      highest = Math.abs(Number.parseInt(drug.percent));
     }
   });
 
@@ -54,10 +52,6 @@ function BarChart({
   const percentScale = scaleLinear({
     domain: [highest * - 1, highest],
   });
-  const colorScale = scaleOrdinal({
-    domain: keys,
-    range: [blue, green, purple],
-  });
 
   // bounds
   const xMax = width - margin.left - margin.right;
@@ -69,9 +63,8 @@ function BarChart({
   cityScale.rangeRound([0, typeScale.bandwidth()]);
   percentScale.rangeRound([0, xMax]);
 
-  const blackColor = '#444'
-
-  const center = xMax / 2
+  const center = xMax / 2;
+  const blackColor = '#444';
 
   return width < 10 ? null : (
     <svg width={width} height={height}>
@@ -84,20 +77,32 @@ function BarChart({
           y0Scale={typeScale}
           y1Scale={cityScale}
           xScale={percentScale}
-          color={colorScale}
+          color={() => {return '';}}
         >
         {barGroups => (
           <Group>
-            {barGroups.map(barGroup => (
+            {barGroups.map((barGroup, index) => (
               <Group
                 key={`bar-group-horizontal-${barGroup.index}-${barGroup.y0}`}
                 top={barGroup.y0}
               > 
                 {barGroup.bars.map(bar => {
-                  const x = bar.value > 0 ? center : (xMax - center - bar.width)
-                  const width = bar.value > 0 ? bar.width - center : bar.width
+                  const width = bar.value > 0 ? bar.width - center : center - Math.abs(bar.width);
+                  const x = bar.value > 0 ? center : (center - width)
                   let offset = bar.value.length * 10
-                  let textInset = bar.value > 0 ? center - offset : center + 5 
+                  let textInset = bar.value > 0 ? center - offset : center + 5
+
+                  const barColor = barColors[index];
+                  let labelColor = "#000000";
+                  if (chroma.contrast(labelColor, barColor) < 4.9) {
+                    labelColor = '#FFFFFF';
+                  }
+
+                  let barValue = '';
+                  if (Number.parseInt(bar.value)) {
+                    barValue = bar.value + '%';
+                  } 
+
                   return (
                   <Motion defaultStyle={{width: 0, x: center}} style={{width: spring(width), x: spring(x)}}>
                     {interpolated => 
@@ -108,14 +113,14 @@ function BarChart({
                         y={bar.y}
                         width={interpolated.width}
                         height={bar.height}
-                        fill={'#EF6D2E'}
+                        fill={barColor}
                       />
                       <text
                         x={bar.value > 0 ? textInset + interpolated.width : textInset - interpolated.width}
                         y={bar.y + 16}
-                        style={{fontSize: '13px'}}
-                        fill="#FFF">
-                          {bar.value}%
+                        style={{ fontSize: '13px' }}
+                        fill={labelColor}>
+                        {barValue}
                       </text>
                     </>
                     }

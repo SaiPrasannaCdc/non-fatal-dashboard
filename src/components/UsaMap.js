@@ -6,6 +6,7 @@ import { feature } from 'topojson-client';
 import hexTopoJSON from '../data/hex-topo.json';
 import chroma from 'chroma-js';
 import { Mercator } from '@visx/geo';
+import ReactTooltip from 'react-tooltip';
 
 import Context from '../context';
 
@@ -90,7 +91,7 @@ const nudges = {
 }
 
 const UsaMap = () => {
-  const { data, applyLegendToRow, setStateSelected, selected } = useContext(Context);
+  const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo } = useContext(Context);
   
   const geoLabel = (geo, bgColor = "#FFFFFF", projection) => {
     let centroid = projection(geoCentroid(geo))
@@ -117,9 +118,12 @@ const UsaMap = () => {
   }
 
   const constructGeoJsx = (geographies, projection) => {
+
     return geographies.map(({ feature: geo, path = '' }) => {
 
       const key = geo.properties.iso + '-hex-group'
+
+      const tooltip = applyTooltipsToGeo(geo.properties.iso);
 
       let styles = {
         fill: '#E6E6E6',
@@ -167,14 +171,15 @@ const UsaMap = () => {
         if(selected && selected !== geoKey) styles.opacity = 0.4 
         if(selected && selected === geoKey) styles.fill = legendColors[1]
 
-        
-
         return (
           <g
-            key={key}         
+            key={key}
             className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
             css={styles}
             onClick={() => setStateSelected(geoKey)}
+            data-tip={tooltip}
+            data-html={true}
+            
           >
             <path
               tabIndex={-1}
@@ -209,11 +214,19 @@ const UsaMap = () => {
   };
 
   return (
-    <svg viewBox="0 0 880 500">
-      <Mercator data={unitedStatesHex} scale={650} translate={[1600, 775]}>
-        {({ features, projection }) => constructGeoJsx(features, projection)}
-      </Mercator>
-    </svg>
+    <>
+      <ReactTooltip
+            place="top"
+            type="light"
+            html={true}
+            className="tooltip"
+          />
+      <svg viewBox="0 0 880 500">
+        <Mercator data={unitedStatesHex} scale={650} translate={[1600, 775]}>
+          {({ features, projection }) => constructGeoJsx(features, projection)}
+        </Mercator>
+      </svg>
+    </>
   )
 }
 
