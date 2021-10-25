@@ -517,6 +517,9 @@ export default function App({ dataUrl }) {
 
     let stateData = [];
     const barColors = [];
+
+    let usData = [];
+    const usBarColors = [];
     
     Object.values(drugScreenOptions).map((drugScreenOption) => {
       const percent = runtimeTableData[0][keyIndex[drugScreenOption['percentageColumn']]];
@@ -528,20 +531,38 @@ export default function App({ dataUrl }) {
         'type': drugScreenOption['titleAll'],
         'percent': percent
       })
+
+      const usPercent = runtimeUSData[drugScreenOption['percentageColumn']];
+      const usSignificance = runtimeUSData[drugScreenOption['significanceColumn']];
+
+      usBarColors.push(mapColorPalette[legendOrder.indexOf(usSignificance)]);
+
+      usData.push({
+        'type': drugScreenOption['titleAll'],
+        'percent': usPercent
+      })
     });
 
     return (
       <section className="sub-drawer">
         <a href="#" style={{textDecoration: 'none', color: '#333', position: 'absolute', right: '1em', fontSize: '1.2em', top: '.3em'}}onClick={(e) => {e.preventDefault(); setSelected(null);}}>⨉</a>
-        <div className="state-info">
+        {/* <div className="state-info">
           <div style={{position: 'relative', zIndex: '2'}}>
             <h3>{getStateName(selected)}</h3>
             <p style={{maxWidth: '200px'}}>{timeframe} compared to the previous year.</p>
           </div>
-          {/* <Hexagon fill="#E3D3E4" /> */}
-        </div>
-        <div className="bar-chart">
-          <BarChart width={544} height={200} data={stateData} barColors={barColors} />
+          <Hexagon fill="#E3D3E4" />
+        </div> */}
+        <h3>Percent change estimates in rates of suspected overdoses per 10,000 ED visits from {timeframes[rangePoints[0]]['label']} to {timeframes[rangePoints[1]]['label']}.</h3>
+        <div className={'bar-chart-container'}>
+          <div className="bar-chart">
+            <h3>United States</h3>
+            <BarChart width={544} height={250} data={usData} barColors={usBarColors} />
+          </div>
+          <div className="bar-chart">
+            <h3>{getStateName(selected)}</h3>
+            <BarChart width={544} height={250} data={stateData} barColors={barColors} />
+          </div>
         </div>
       </section>
     )
@@ -717,7 +738,7 @@ export default function App({ dataUrl }) {
           <UsaMap/>
         </div>
         <aside>
-          <div className="legend-title">Time Range</div>
+          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
           <div className="range-aside-container" style={{ color: drugColor }}>
             <div className="animation-controls" style={{color: drugColor}}>
               <PlayIcon onClick={animateTimeSeries}/>
@@ -747,7 +768,7 @@ export default function App({ dataUrl }) {
               {timeframes.map(item => <li className={item === timeframe ? 'active' : ''} onClick={() => setTimeframe(item)}>{item}</li>)}
             </ul>
           </div> */}
-          <div className="legend-title">Legend</div>
+          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Legend</div>
           <ul className="legend">
             {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
           </ul>

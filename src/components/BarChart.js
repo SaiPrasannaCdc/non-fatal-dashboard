@@ -6,7 +6,7 @@ import { scaleBand, scaleLinear, scaleOrdinal } from '@visx/scale';
 import chroma from 'chroma-js';
 import {Motion, spring} from 'react-motion';
 
-const defaultMargin = { top: 10, right: 20, bottom: 30, left: 100 };
+const defaultMargin = { top: 10, right: 20, bottom: 80, left: 100 };
 
 function max(arr, fn) {
   return Math.max(...arr.map(fn));
@@ -145,13 +145,19 @@ function BarChart({
         <AxisBottom
           top={155}
           scale={percentScale}
+          label={'Percent Change'}
+          tickFormat={function tickFormat(d){
+            return d + '%';
+          }}
+          labelClassName={'bar-chart-xaxis-label'}
+          labelOffset={20}
           stroke={blackColor}
           numTicks={7}
           tickStroke={blackColor}
           tickLabelProps={() => ({
             fill: blackColor,
             fontSize: 13,
-            textAnchor: 'end',
+            textAnchor: 'middle',
             dy: '0.33em',
           })}
         />
