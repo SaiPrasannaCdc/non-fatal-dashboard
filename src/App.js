@@ -16,7 +16,7 @@ import Context from './context';
 import 'rc-slider/assets/index.css';
 import './styles.scss';
 
-const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
+const SliderWithTooltip = createSliderWithTooltip(Slider);
 
 /**
  * Generates variations of the primary color for hover and active
@@ -204,10 +204,14 @@ export default function App({ dataUrl }) {
   const [keyedRawUSData, setKeyedRawUSdata] = useState([]); 
   const [dataLoaded, setDataLoaded] = useState(false);
   const [keyIndex, setKeyIndex] = useState({});
-  const [timeframes, setTimeframes] = useState([]);
-  const [rangePoints, setRangePoints] = useState([0,1]);
+  const [yearTimeframes, setYearTimeframes] = useState([]);
+  const [monthTimeframes, setMonthTimeframes] = useState([]);
+  const [allTimeframes, setAllTimeframes] = useState([]);
+  const [selectedTimeframe, setSelectedTimeframe] = useState('month');
+  const [sliderPointMonth, setSliderPointMonth] = useState(0);
+  const [sliderPointYear, setSliderPointYear] = useState(0);
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
-  const [count, setCount] = useState(0);
+  const [monthCount, setMonthCount] = useState(0);
   const [statesParticipating, setStatesParticipating] = useState(0);
   const [modal, setModal] = useState(null);
 
@@ -249,8 +253,12 @@ export default function App({ dataUrl }) {
   useEffect(() => {
     (async () => {
       setDataLoaded(false);
-      let tempTimeframes = [];
-      let addedTimeframes = [];
+      let tempMonthTimeframes = [];
+      let addedMonthTimeframes = [];
+
+      let tempYearTimeframes = [];
+      let addedYearTimeframes = [];
+
       let res = await fetchData();
       if (res && res.success) {
         let tempKeyedRawData = {};
@@ -286,8 +294,8 @@ export default function App({ dataUrl }) {
             const endYear = row[keyIndex['endYear']];
 
             const yearMonthIndex1 = startYear + '|' + startMonth;
-            if (!addedTimeframes.includes(yearMonthIndex1)) {
-              tempTimeframes.push(
+            if (!addedMonthTimeframes.includes(yearMonthIndex1)) {
+              tempMonthTimeframes.push(
                 {
                   'key': yearMonthIndex1,
                   'label': months[startMonth - 1] + ' ' + startYear,
@@ -296,10 +304,10 @@ export default function App({ dataUrl }) {
                 }
               );
             }
-            addedTimeframes.push(yearMonthIndex1);
+            addedMonthTimeframes.push(yearMonthIndex1);
             const yearMonthIndex2 = endYear + '|' + endMonth;
-            if (!addedTimeframes.includes(yearMonthIndex2)) {
-              tempTimeframes.push(
+            if (!addedMonthTimeframes.includes(yearMonthIndex2)) {
+              tempMonthTimeframes.push(
                 {
                   'key': yearMonthIndex2,
                   'label': months[endMonth - 1] + ' ' + endYear,
@@ -307,7 +315,7 @@ export default function App({ dataUrl }) {
                   'month': Number.parseInt(endMonth)
                 }
               );
-              addedTimeframes.push(yearMonthIndex2);
+              addedMonthTimeframes.push(yearMonthIndex2);
             }
           }
         });
@@ -315,7 +323,7 @@ export default function App({ dataUrl }) {
         setKeyedRawdata(tempKeyedRawData);
         setKeyedRawUSdata(tempKeyedRawUSData);
 
-        tempTimeframes.sort((a, b) => {
+        tempMonthTimeframes.sort((a, b) => {
           if (a['year'] < b['year']) {
             return -1;
           } else if (a['year'] === b['year'] && a['month'] < b['month']) {
@@ -325,9 +333,14 @@ export default function App({ dataUrl }) {
           }
         });
 
-        setTimeframes(tempTimeframes);
-        setCount(tempTimeframes.length - 1); //Range slider animation count
-        setRangePoints([0, tempTimeframes.length - 1]); //Default range points are the first two month
+        setYearTimeframes(tempMonthTimeframes.slice(13));
+        setMonthTimeframes(tempMonthTimeframes.slice(1)); //Remove the first month/year combo since it doesn't have a previous month
+        setAllTimeframes(tempMonthTimeframes); //Remove the first month/year combo since it doesn't have a previous month
+        
+        setMonthCount(tempMonthTimeframes.length - 2); //Range slider animation count
+        
+        setSliderPointMonth(tempMonthTimeframes.slice(1).length - 1); //Default range points are the first two month
+        setSliderPointYear(tempMonthTimeframes.slice(13).length - 1); //Default range points are the first two month
 
         const shifted = [...res.data.data];
         shifted.shift(); //Get rid of header row
@@ -366,6 +379,8 @@ export default function App({ dataUrl }) {
 
       if ('missing' === selectedPercentageRaw || 'suppressed' === selectedPercentageRaw) {
         toolTipText += `<dl><div><dt>${drugScreenOptions[currentDrug]['titleAll']}</dt><dd>Data not available/Not Reported</dd></div></dl>`;
+      } else if ('unfunded'===selectedPercentageRaw) {
+        toolTipText += `<div>Unfunded Jurisdiction</div>`;
       } else {
         toolTipText += `<dl><div><dt>${drugScreenOptions[currentDrug]['titleAll']}</dt><dd>${formatPercentage(selectedPercentageRaw)}</dd></div></dl>`;
       }
@@ -447,20 +462,44 @@ export default function App({ dataUrl }) {
     return result
   }
 
-  const handleRangeChange = (data) => {
-    setRangePoints(data);
+  const handleMonthSliderChange = (data) => {
+    setSliderPointMonth(data);
+  };
+
+  const handleYearSliderChange = (data) => {
+    setSliderPointYear(data);
+  };
+
+  const handleTimeframeChange = (timeframe) => {
+    let tempTimeframes = monthTimeframes;
+    if ('year' === timeframe) {
+      tempTimeframes = monthTimeframes.slice(12);
+    }
+    setSelectedTimeframe(timeframe);
   };
 
   const generateRuntimeUSData = (data, filters = []) => {
     
-    if (!timeframes) {
-      return {};
-    }
+    // if (!runtimeTimeframes) {
+    //   return {};
+    // }
 
-    const startMonth = timeframes[rangePoints[0]]['month'];
-    const startYear = timeframes[rangePoints[0]]['year'];
-    const endMonth = timeframes[rangePoints[1]]['month'];
-    const endYear = timeframes[rangePoints[1]]['year'];
+    let startMonth;
+    let startYear;
+    let endMonth;
+    let endYear;
+
+    if ('year' === selectedTimeframe) {
+      startMonth = allTimeframes[sliderPointYear+12]['month'];
+      startYear = allTimeframes[sliderPointYear+12]['year'];
+      endMonth = allTimeframes[sliderPointYear+13]['month'];
+      endYear = allTimeframes[sliderPointYear+13]['year'];
+    } else {
+      startMonth = allTimeframes[sliderPointMonth]['month'];
+      startYear = allTimeframes[sliderPointMonth]['year'];
+      endMonth = allTimeframes[sliderPointMonth+1]['month'];
+      endYear = allTimeframes[sliderPointMonth+1]['year'];
+    }
 
     const rowKey = 'US|' + startYear + '|' + startMonth + '|all|all:US|' + endYear + '|' + endMonth + '|all|all';
     return keyedRawUSData[rowKey];
@@ -469,15 +508,26 @@ export default function App({ dataUrl }) {
   // Calculates what's going to be displayed on the map and data table at render.
   const generateRuntimeData = (data, filters = []) => {
 
-    if (!timeframes) {
+    if (!monthTimeframes) {
       return {};
     }
 
-    const startMonth = timeframes[rangePoints[0]]['month'];
-    const startYear = timeframes[rangePoints[0]]['year'];
+    let startMonth;
+    let startYear;
+    let endMonth;
+    let endYear;
 
-    const endMonth = timeframes[rangePoints[1]]['month'];
-    const endYear = timeframes[rangePoints[1]]['year'];
+    if ('year' === selectedTimeframe) {
+      startMonth = allTimeframes[sliderPointYear + 12]['month'];
+      startYear = allTimeframes[sliderPointYear + 12]['year'];
+      endMonth = allTimeframes[sliderPointYear + 13]['month'];
+      endYear = allTimeframes[sliderPointYear + 13]['year'];
+    } else {
+      startMonth = allTimeframes[sliderPointMonth]['month']; 
+      startYear = allTimeframes[sliderPointMonth]['year'];
+      endMonth = allTimeframes[sliderPointMonth + 1]['month'];
+      endYear = allTimeframes[sliderPointMonth + 1]['year'];
+    }
 
     let filteredData = {};
 
@@ -490,7 +540,6 @@ export default function App({ dataUrl }) {
 
         //Count the states that have data
         if (![legendOrder[3], legendOrder[4]].includes(foundRow[drugScreenOptions[currentDrug]['significanceColumn']])) {
-          console.log(value[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]]);
           tempStatesParticipating++;
         }
       }
@@ -507,11 +556,11 @@ export default function App({ dataUrl }) {
       const processedUSData = generateRuntimeUSData(rawData);
       const processedLegend = generateRuntimeLegend(processedData);
 
-      setRuntimeData(processedData)
-      setRuntimeUSData(processedUSData)
-      setRuntimeLegend(processedLegend)
+      setRuntimeData(processedData);
+      setRuntimeUSData(processedUSData);
+      setRuntimeLegend(processedLegend);
     }
-  }, [dataLoaded, rangePoints, currentDrug])
+  }, [dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe])
   
   const StateInfo = () => {
 
@@ -568,33 +617,50 @@ export default function App({ dataUrl }) {
     )
   }
 
-  const tooltipFormatter = (data) => {
-    return timeframes[data]['label'];
+  const tooltipFormatterMonth = (data) => {
+    return monthTimeframes[data]['label'];
   }
 
-  if (!runtimeData || Object.keys(runtimeData).length === 0 || !timeframes) {
+  const tooltipFormatterYear = (data) => {
+    return yearTimeframes[data]['label'];
+  }
+
+  if (!runtimeData || Object.keys(runtimeData).length === 0 || !monthTimeframes) {
     return <h1>Loading</h1>;
   }
 
-  const getSliderMarks = () => {
+  const getSliderMarks = (type) => {
     let marks = {};
     
     //Get year marks in between beginning and end
-    const lastIndex = Object.entries(timeframes).length - 1;
+    let indexOffset = 0;
 
-    let tempYear = timeframes[0].year;
-    timeframes.forEach((element, index, array) => {
+    let tempTimeframes;
+    if ('month' === type) {
+      tempTimeframes = [...monthTimeframes];
+    } else {
+      tempTimeframes = [...yearTimeframes];
+    }
+
+    let tempYear = tempTimeframes[0].year;
+    const lastIndex = tempTimeframes.length - 1;
+
+    tempTimeframes.forEach((element, index, array) => {
+
       if (0 === index) {
         marks[index] = element.label;
+        return;
       }
 
       if (tempYear !== element.year) {
         marks[index] = element.year;
         tempYear = element.year;
+        return;
       }
 
       if (lastIndex === index) {
         marks[index] = element.label;
+        return;
       }
     });
 
@@ -654,15 +720,15 @@ export default function App({ dataUrl }) {
     );
   }
 
-  const animateTimeSeries = () => {
-    //Range animation
-    //TODO: Handle stopping of the animation when user interacts with the map
-    for (let i = 0; i < timeframes.length - 1; i++) {
-      setTimeout(() => {
-        setRangePoints([i,i+1]);
-      }, 300 * (i + 1));
-    }
-  }
+  // const animateTimeSeries = () => {
+  //   //Range animation
+  //   //TODO: Handle stopping of the animation when user interacts with the map
+  //   for (let i = 0; i < timeframes.length - 1; i++) {
+  //     setTimeout(() => {
+  //       setRangePoints([i,i+1]);
+  //     }, 300 * (i + 1));
+  //   }
+  // }
 
   const getPostiveSign = (number) => {
     if (number > 0) {
@@ -678,29 +744,36 @@ export default function App({ dataUrl }) {
 
   let runtimeTableData = Object.values(runtimeData);
 
-  let selectedStateColors;
   if (selected) {
     runtimeTableData = runtimeTableData.filter((row) => {
       return selected === row[keyIndex['geo']];
     });
   }
-  
+
+  let fromLabel;
+  let toLabel;
+  if ('month' === selectedTimeframe) {
+    toLabel = allTimeframes[sliderPointMonth+1]['label'];
+    fromLabel = allTimeframes[sliderPointMonth]['label'];
+  } else {
+    toLabel = allTimeframes[sliderPointYear + 12]['label'];
+    fromLabel = allTimeframes[sliderPointYear + 11]['label'];
+  }
+
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo }}>
-      {/* <select style={{"marginBottom":"20px"}} onChange={(e) => {setCurrentDrug(e.target.value)}}>
-        {Object.keys(drugScreenOptions).map((key) => <option value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
-      </select> */}
-      <h1>Nonfatal Suspected Drug Overdoses Presenting to Emergency Departments and Reported to CDC's DOSE System.</h1>
-      <div>
-        Select a State:
-        <select style={{ "marginBottom": "20px", 'marginLeft': '10px' }} onChange={(e) => { setSelected(e.target.value) }}>
-          <option value="">All States</option>
-          {Object.keys(supportedStates).map((key) => {
-            const optionSelected = key === selected ? ' selected ' : '';
-            return (<option value={key} selected={optionSelected}>{getStateName(key)}</option>)
-          })
-          }
-        </select>
+      <div class="filters">
+        <div>
+            Select a Drug: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setCurrentDrug(e.target.value) }}>
+            {Object.keys(drugScreenOptions).map((key) => <option selected={currentDrug===key} value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
+          </select>
+        </div>
+        <div>
+          Select a Jurisdiction: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setStateSelected(e.target.value) }}>
+            <option value="">United States</option>
+            {Object.keys(supportedStates).map((key) => <option selected={selected===key}  value={key}>{supportedStates[key][0]}</option>)}
+          </select>
+        </div>
       </div>
       <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
         <span style={{ textTransform: 'uppercase', fontSize: '.8em' }}>Trends in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</span>
@@ -712,7 +785,7 @@ export default function App({ dataUrl }) {
           <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{usPercent}%</span>
           <div>
             <h3>US</h3>
-            <p>Percent change in suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {timeframes[rangePoints[0]]['label']} to {timeframes[rangePoints[1]]['label']}</p>
+            <p>Percent change in suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {fromLabel} to {toLabel}</p>
           </div>
         </div>
         {selected && constructStateDataBite()}
@@ -725,8 +798,7 @@ export default function App({ dataUrl }) {
           </div>
         </div>
       </div>
-      <div style={{ 'marginBottom': '25px' }}><strong>{timeframes[rangePoints[1]]['label']}</strong> compared to <strong>{timeframes[rangePoints[0]]['label']}</strong></div>
-      <div style={{'marginBottom': '15px'}}>Select a drug:</div>
+      <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{fromLabel}</strong></div>
       <div className="drug-selection" style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
           return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
@@ -739,29 +811,73 @@ export default function App({ dataUrl }) {
         </div>
         <aside>
           <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
-          <div className="range-aside-container" style={{ color: drugColor }}>
-            <div className="animation-controls" style={{color: drugColor}}>
-              <PlayIcon onClick={animateTimeSeries}/>
+          <div class="time-frame-container">
+            <div>Compare {toLabel} with the previous: </div>
+            <div className="radio">
+              <label>
+                <input
+                  type="radio"
+                  value="month"
+                  name="time-selector"
+                  checked={selectedTimeframe === 'month'}
+                  onChange={(e) => {handleTimeframeChange(e.target.value)}}
+                />
+                Month
+              </label>
             </div>
-            <SliderWithTooltip
-              tipFormatter={tooltipFormatter}
-              pushable={1}
-              allowCross={false}
-              onChange={(e) => {handleRangeChange(e)}}
-              defaultValue={rangePoints}
-              min={0}
-              value={rangePoints}
-              //tipProps={{visible:true, overlayClassName: 'foo'}}
-              align={{
-                offset: [0, -5],
-              }}
-              max={timeframes.length - 1}
-              marks={getSliderMarks()}
-              handleStyle={{
-                borderColor: drugColor,
-                backgroundColor: drugColor,
-              }}
-            />
+            <div className="radio">
+              <label>
+                <input
+                  type="radio"
+                  value="year"
+                  name="time-selector"
+                  checked={selectedTimeframe === 'year'}
+                  onChange={(e) => {handleTimeframeChange(e.target.value)}}
+                />
+                Year
+              </label>
+            </div>
+          </div>
+          <div className="range-aside-container" style={{ color: drugColor }}>
+            {/* <div className="animation-controls" style={{color: drugColor}}>
+              <PlayIcon onClick={animateTimeSeries}/>
+            </div> */}
+            {'month' === selectedTimeframe &&
+              <SliderWithTooltip
+                tipFormatter={tooltipFormatterMonth}
+                onChange={(e) => { handleMonthSliderChange(e) }}
+                min={0}
+                step={1}
+                value={sliderPointMonth}
+                align={{
+                  offset: [0, -5],
+                }}
+                max={monthTimeframes.length - 1}
+                marks={getSliderMarks('month')}
+                handleStyle={{
+                  borderColor: drugColor,
+                  backgroundColor: drugColor,
+                }}
+              />
+            }
+            {'year' === selectedTimeframe &&
+              <SliderWithTooltip
+                tipFormatter={tooltipFormatterYear}
+                onChange={(e) => { handleYearSliderChange(e) }}
+                min={0}
+                step={1}
+                value={sliderPointYear}
+                align={{
+                  offset: [0, -5],
+                }}
+                max={yearTimeframes.length - 1}
+                marks={getSliderMarks('year')}
+                handleStyle={{
+                  borderColor: drugColor,
+                  backgroundColor: drugColor,
+                }}
+              />
+            }
           </div>
           {/* <div className="time-select">
             <ul>
@@ -778,7 +894,7 @@ export default function App({ dataUrl }) {
       {selected && <StateInfo />}
       <div className="datatable-container">
         <h3>Monthly Trends by State</h3>
-        <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {timeframes[rangePoints[0]]['label']} to {timeframes[rangePoints[1]]['label']},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
+        <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
         <Datatable runtimeUSData={Object.values(runtimeUSData)} runtimeData={runtimeTableData} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColor}/>
       </div>
     </Context.Provider>

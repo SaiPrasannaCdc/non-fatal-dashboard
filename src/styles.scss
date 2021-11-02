@@ -40,6 +40,14 @@
         }
     }
     
+    .filters {
+        display: flex;
+
+        > div {
+            margin-right: 20px;
+        }
+    }
+
     .map-container {
         display: flex;
 
@@ -155,6 +163,16 @@
     aside {
         width: 30%;
 
+        .time-frame-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+
+            > * {
+                margin-right: 10px;
+            }
+        }
+
         .range-aside-container {
             min-height: 120px;
             width: 90%;
@@ -183,7 +201,7 @@
                 }
 
                 .rc-slider-track {
-                    background-color: currentColor;
+                    background-color: rgba(215, 215, 215, 1);   
                 }
 
                 .rc-slider-rail {

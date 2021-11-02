@@ -123,6 +123,9 @@ const UsaMap = () => {
 
       const key = geo.properties.iso + '-hex-group'
 
+      if ('US-ND' === geo.properties.iso) {
+        //debugger;
+      }
       const tooltip = applyTooltipsToGeo(geo.properties.iso);
 
       let styles = {
