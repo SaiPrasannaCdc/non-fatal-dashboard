@@ -22,18 +22,23 @@ function absMax(arr, fn) {
 
 function BarChart({
   data,
+  usBarColors,
+  stateBarColors,
   width,
   height,
+  dataKeys,
   margin = defaultMargin,
-  barColors
+  formatPercentage
 }) {
-
-  const keys = ['percent'];
 
   let highest = 0;
   data.map((drug) => {
-    if (Number.parseInt(drug.percent) && Math.abs(Number.parseInt(drug.percent)) > highest) {
-      highest = Math.abs(Number.parseInt(drug.percent));
+    if (Number.parseFloat(drug.usPercent) && Math.abs(Number.parseFloat(drug.usPercent)) > highest) {
+      highest = Math.abs(Number.parseFloat(drug.usPercent));
+    }
+    
+    if (Number.parseFloat(drug.statePercent) && Math.abs(Number.parseFloat(drug.statePercent)) > highest) {
+      highest = Math.abs(Number.parseFloat(drug.statePercent));
     }
   });
 
@@ -45,37 +50,41 @@ function BarChart({
     domain: data.map(row => row['type']),
     padding: 0.2,
   });
-  const cityScale = scaleBand({
-    domain: keys,
+
+  const keysScale = scaleBand({
+    domain: dataKeys,
     padding: 0.1,
   });
+
   const percentScale = scaleLinear({
     domain: [highest * - 1, highest],
   });
 
   // bounds
   const xMax = width - margin.left - margin.right;
-  const xMin = min(data, d => min(keys, key => Number.parseInt(d[key])))
+  const xMin = min(data, d => min(dataKeys, key => Number.parseFloat(d[key])))
   const yMax = height - margin.top - margin.bottom;
 
   // update scale output dimensions
   typeScale.rangeRound([0, yMax]);
-  cityScale.rangeRound([0, typeScale.bandwidth()]);
+  keysScale.rangeRound([0, typeScale.bandwidth()]);
   percentScale.rangeRound([0, xMax]);
 
   const center = xMax / 2;
   const blackColor = '#444';
+
+  const hasState = stateBarColors.length > 0;
 
   return width < 10 ? null : (
     <svg width={width} height={height}>
       <Group top={margin.top} left={margin.left}>
         <BarGroupHorizontal
           data={data}
-          keys={keys}
+          keys={dataKeys}
           width={xMax}
           y0={getType}
           y0Scale={typeScale}
-          y1Scale={cityScale}
+          y1Scale={keysScale}
           xScale={percentScale}
           color={() => {return '';}}
         >
@@ -86,43 +95,76 @@ function BarChart({
                 key={`bar-group-horizontal-${barGroup.index}-${barGroup.y0}`}
                 top={barGroup.y0}
               > 
-                {barGroup.bars.map(bar => {
+                {barGroup.bars.map((bar, barIndex) => {
+                  const isState = 1 === barIndex;
                   const width = bar.value > 0 ? bar.width - center : center - Math.abs(bar.width);
                   const x = bar.value > 0 ? center : (center - width)
                   let offset = bar.value.length * 10
-                  let textInset = bar.value > 0 ? center - offset : center + 5
+                  let textInset = bar.value > 0 ? center - offset : center + 5;
 
-                  const barColor = barColors[index];
+                  //Optionally move the text to outside the bar
+                  if (width < 50) {
+                    if (bar.value < 0) {
+                      textInset = textInset - 50;
+                    } else {
+                      textInset = textInset + 50;
+                    }
+                  }
+
+                  let barColor = usBarColors[barGroup.index];
+                  if (isState) {
+                    barColor = stateBarColors[barGroup.index];
+                  }
+
                   let labelColor = "#000000";
                   if (chroma.contrast(labelColor, barColor) < 4.9) {
                     labelColor = '#FFFFFF';
                   }
 
                   let barValue = '';
-                  if (Number.parseInt(bar.value)) {
-                    barValue = bar.value + '%';
+                  if (Number.parseFloat(bar.value)) {
+                    barValue = formatPercentage(bar.value);
                   } 
+
+                  let barFill = barColor;
+                  if (isState) {
+                    barFill = `url(#checkerboard-${barGroup.index}-${bar.index}-${bar.key})`;
+                  }
+
+                  let textVerticalOffset = 24;
+                  if (hasState) {
+                    textVerticalOffset = 15
+                  }
 
                   return (
                   <Motion defaultStyle={{width: 0, x: center}} style={{width: spring(width), x: spring(x)}}>
                     {interpolated => 
-                    <>
-                      <Bar
-                        key={`${barGroup.index}-${bar.index}-${bar.key}`}
-                        x={interpolated.x}
-                        y={bar.y}
-                        width={interpolated.width}
-                        height={bar.height}
-                        fill={barColor}
-                      />
-                      <text
-                        x={bar.value > 0 ? textInset + interpolated.width : textInset - interpolated.width}
-                        y={bar.y + 16}
-                        style={{ fontSize: '13px' }}
-                        fill={labelColor}>
-                        {barValue}
-                      </text>
-                    </>
+                      <>
+                          {isState && <defs>
+                            <pattern id={`checkerboard-${barGroup.index}-${bar.index}-${bar.key}`} patternUnits="userSpaceOnUse"
+                              width="3" height="3">
+                              <rect x="0" y="0" width="1" height="1" fill={barColor} />
+                              <rect x="1" y="1" width="1" height="1" fill={barColor} />
+                            </pattern>
+                          </defs>}
+                        <Bar
+                          key={`${barGroup.index}-${bar.index}-${bar.key}`}
+                          x={interpolated.x}
+                          y={bar.y}
+                          width={interpolated.width}
+                          height={bar.height}
+                          fill={barFill}
+                          //fill={`url(#checkerboard-${barGroup.index}-${bar.index}-${bar.key})`}
+                          stroke='#ccc'
+                          />
+                        <text
+                          x={bar.value > 0 ? textInset + interpolated.width : textInset - interpolated.width}
+                          y={bar.y + textVerticalOffset}
+                          style={{ fontSize: '13px' }}
+                          fill={labelColor}>
+                          {barValue}
+                        </text>
+                      </>
                     }
                   </Motion>
                 )})}
@@ -143,7 +185,7 @@ function BarChart({
           })}
         />
         <AxisBottom
-          top={155}
+          top={255}
           scale={percentScale}
           label={'Percent Change'}
           tickFormat={function tickFormat(d){

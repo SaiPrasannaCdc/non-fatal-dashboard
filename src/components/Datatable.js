@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColumn,keyIndex,supportedStates,drugColor}) {
+function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColumn,keyIndex,supportedStates,drugColor,Hexagon,applyLegendToRow}) {
 
   const getPercentageColumn = (row) => {
 
@@ -50,10 +50,19 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
         </tr>
         {runtimeData.map((row) => {
           let stateName = supportedStates[row[keyIndex['geo']]][0];
+          const stateColors = applyLegendToRow(row);
+
           return (
             <tr>
               <td>{stateName}{getSymbols(row)}</td>
-              <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>{getPercentageColumn(row)}</td>
+              <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>
+                <div className="datatable-hex-container">
+                  <div className="datatable-hex">
+                    <Hexagon fill={stateColors[0]} />
+                  </div>
+                  {getPercentageColumn(row)}
+                </div>
+              </td>
               <td>{row[significanceColumn]}</td>
             </tr>
           )

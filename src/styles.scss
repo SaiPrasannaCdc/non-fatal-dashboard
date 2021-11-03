@@ -2,6 +2,9 @@
 @import 'scss/variables';
 @import 'scss/mixins';
 
+line { stroke: #ccc; stroke-width: 1; }
+#checkerboard { fill: #ccc; }
+
 #non-fatal-container {
     font-family: sans-serif;
     color: #333;
@@ -9,6 +12,34 @@
         stroke: #fff !important;
         stroke-width: 3px;
     }
+
+    .btn {
+        background: #005eaa;
+        color: #fff;
+        border: 0;
+        padding: .4em .8em;
+        font-size: 1em;
+        display: inline-block;
+        border-radius: .3em;
+        transition: .1s background-color;
+        cursor: pointer;
+        &.full-width {
+          width: 100%;
+        }
+        &:hover {
+          transition: .1s background-color;
+        }
+    }
+
+    .btn-download {
+        color: #fff;
+        text-decoration: none;
+        transition: .3s all;
+        margin: 1em 0;
+        &:hover {
+          transition: .3s all;
+        }
+      }
     
     g.geo-group {
         transition: .3s all;
@@ -254,7 +285,7 @@
     }
 
     .sub-drawer {
-        border: 1px solid rgba(0,0,0,.125);
+        //border: 1px solid rgba(0,0,0,.125);
         background-color: #FFF;
         margin-top: 2.5em;
         margin-bottom: 2.5em;
@@ -268,10 +299,10 @@
     
         .bar-chart-container {
             display: flex;
-            justify-content: space-evenly;
+            justify-content: flex-start;
 
             .bar-chart {
-                width: 50%;
+                width: 60%;
                 min-height: 250px;
 
                 h3 {
@@ -281,6 +312,10 @@
                 .bar-chart-xaxis-label {
                     font-size: 1.5em;
                 }
+            }
+
+            .text-section {
+                width: 40%;
             }
         }
     }
@@ -319,7 +354,56 @@
                 td {
                     border: 1px solid #dee2e6;
                     padding: .3rem;
+
+                    .datatable-hex-container {
+                        display: flex;
+                        justify-items: flex-start;
+
+                        .datatable-hex {
+                            width: 18px;
+                            margin-right: 5px;
+                        }
+                    }
                 }
+            }
+        }
+    }
+
+    .gender-age-section {
+        margin-top: 25px;
+
+        .bar-chart-container {
+            display: flex;
+            justify-content: flex-start;
+
+            .bar-chart {
+                min-height: 250px;
+                max-width: 100%;
+
+                h3 {
+                    text-align: center;
+                }
+
+                .bar-chart-xaxis-label {
+                    font-size: 1.5em;
+                }
+            }
+        }
+
+        h3 {
+            position: relative;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        
+            &:before {
+                content: " ";
+                position: absolute;
+                display: inline-block;
+                width: 80%;
+                height: 3px;
+                background-color: #000;
+                margin-left: 10%;
+                top: -0.25em;
             }
         }
     }

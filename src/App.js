@@ -7,6 +7,8 @@ import BarChart from './components/BarChart';
 import Datatable from './components/Datatable';
 //import HeaderLineChart from './components/HeaderLineChart';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
+import { Base64 } from 'js-base64';
+
 import PlayIcon from './assets/play.svg';
 import StopIcon from './assets/stop.svg';
 import PauseIcon from './assets/pause.svg';
@@ -362,7 +364,10 @@ export default function App({ dataUrl }) {
   }
 
   const formatPercentage = (percentage) => {
-    if (Number.parseInt(percentage) > 0) {
+    if ('undefined' === percentage || '' === percentage) {
+      return '';
+    }
+    if (Number.parseFloat(percentage) > 0) {
       percentage = '+' + percentage;
     }
     percentage += '%';
@@ -564,53 +569,100 @@ export default function App({ dataUrl }) {
   
   const StateInfo = () => {
 
-    let stateData = [];
+    let barChartKeys = ['usPercent'];
+    if (selected) {
+      barChartKeys.push('statePercent');
+    }
     const barColors = [];
 
-    let usData = [];
+    let barChartData = [];
     const usBarColors = [];
     
-    Object.values(drugScreenOptions).map((drugScreenOption) => {
-      const percent = runtimeTableData[0][keyIndex[drugScreenOption['percentageColumn']]];
-      const significance = runtimeTableData[0][keyIndex[drugScreenOption['significanceColumn']]];
+    Object.values(drugScreenOptions).map((drugScreenOption, index) => {
 
-      barColors.push(mapColorPalette[legendOrder.indexOf(significance)]);
-
-      stateData.push({
-        'type': drugScreenOption['titleAll'],
-        'percent': percent
-      })
-
-      const usPercent = runtimeUSData[drugScreenOption['percentageColumn']];
       const usSignificance = runtimeUSData[drugScreenOption['significanceColumn']];
-
       usBarColors.push(mapColorPalette[legendOrder.indexOf(usSignificance)]);
 
-      usData.push({
-        'type': drugScreenOption['titleAll'],
-        'percent': usPercent
-      })
+      barChartData.push(
+        {
+          'index': index,
+          'usPercent': runtimeUSData[drugScreenOption['percentageColumn']],
+          'type': drugScreenOption['titleAll']
+        }
+      );
+
+      if (selected) {
+        const statePercentage = runtimeTableData[0][keyIndex[drugScreenOption['percentageColumn']]];
+        const stateSgnificance = runtimeTableData[0][keyIndex[drugScreenOption['significanceColumn']]];
+        barChartData[index]['statePercent'] = statePercentage;
+        barColors.push(mapColorPalette[legendOrder.indexOf(stateSgnificance)]);
+      }
     });
 
     return (
       <section className="sub-drawer">
-        <a href="#" style={{textDecoration: 'none', color: '#333', position: 'absolute', right: '1em', fontSize: '1.2em', top: '.3em'}}onClick={(e) => {e.preventDefault(); setSelected(null);}}>⨉</a>
-        {/* <div className="state-info">
-          <div style={{position: 'relative', zIndex: '2'}}>
-            <h3>{getStateName(selected)}</h3>
-            <p style={{maxWidth: '200px'}}>{timeframe} compared to the previous year.</p>
-          </div>
-          <Hexagon fill="#E3D3E4" />
-        </div> */}
-        <h3>Percent change estimates in rates of suspected overdoses per 10,000 ED visits from {timeframes[rangePoints[0]]['label']} to {timeframes[rangePoints[1]]['label']}.</h3>
+        <h3>Percent change estimates in rates of suspected overdoses per 10,000 ED visits from {fromLabel} to {toLabel}.</h3>
+        <div>
+          Compare United States against: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setStateSelected(e.target.value) }}>
+            <option value="">Select State</option>
+            {Object.keys(supportedStates).map((key) => <option selected={selected===key}  value={key}>{supportedStates[key][0]}</option>)}
+          </select>
+        </div>
+        {/* <a href="#" style={{textDecoration: 'none', color: '#333', position: 'absolute', right: '1em', fontSize: '1.2em', top: '.3em'}}onClick={(e) => {e.preventDefault(); setSelected(null);}}>⨉</a> */}
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
-            <h3>United States</h3>
-            <BarChart width={544} height={250} data={usData} barColors={usBarColors} />
+            {/* <h3>United States{selected && ' compared to ' + getStateName(selected)}</h3> */}
+            <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} />
+          </div>
+          <div className="text-section">
+          A section of text. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const GenderAgeSection = () => {
+
+    let barChartKeys = ['usPercent'];
+    if (selected) {
+      barChartKeys.push('statePercent');
+    }
+    const barColors = [];
+
+    let barChartData = [];
+    const usBarColors = [];
+    
+    Object.values(drugScreenOptions).map((drugScreenOption, index) => {
+
+      const usSignificance = runtimeUSData[drugScreenOption['significanceColumn']];
+      usBarColors.push(mapColorPalette[legendOrder.indexOf(usSignificance)]);
+
+      barChartData.push(
+        {
+          'index': index,
+          'usPercent': runtimeUSData[drugScreenOption['percentageColumn']],
+          'type': drugScreenOption['titleAll']
+        }
+      );
+
+      if (selected) {
+        const statePercentage = runtimeTableData[0][keyIndex[drugScreenOption['percentageColumn']]];
+        const stateSgnificance = runtimeTableData[0][keyIndex[drugScreenOption['significanceColumn']]];
+        barChartData[index]['statePercent'] = statePercentage;
+        barColors.push(mapColorPalette[legendOrder.indexOf(stateSgnificance)]);
+      }
+    });
+
+    return (
+      <section class="gender-age-section">
+        <h3>Gender and Age Section</h3>
+        <div className={'bar-chart-container'}>
+          <div className="bar-chart">
+            <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} />
           </div>
           <div className="bar-chart">
-            <h3>{getStateName(selected)}</h3>
-            <BarChart width={544} height={250} data={stateData} barColors={barColors} />
+            <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} />
           </div>
         </div>
       </section>
@@ -736,6 +788,32 @@ export default function App({ dataUrl }) {
     }
   }
 
+  const DownloadButton = ({ data }) => {
+    const fileName = `download.csv`;
+
+    const csvData = Papa.unparse(data);
+
+    const saveBlob = () => {
+      if (typeof window.navigator.msSaveBlob === 'function') {
+        const dataBlob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+        window.navigator.msSaveBlob(dataBlob, fileName);
+      }
+    }
+
+    return (
+      <a
+        download={fileName}
+        onClick={saveBlob}
+        href={`data:text/csv;base64,${Base64.encode(csvData)}`}
+        aria-label="Download this data in a CSV file format."
+        className={`btn btn-download no-border`}
+        style={{'background-color':drugColor}}
+      >
+        Download Data (CSV)
+      </a>
+    )
+  };
+
   const drugColor = drugScreenOptions[currentDrug].color;
   const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
 
@@ -764,7 +842,7 @@ export default function App({ dataUrl }) {
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo }}>
       <div class="filters">
         <div>
-            Select a Drug: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setCurrentDrug(e.target.value) }}>
+          Select a Drug: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setCurrentDrug(e.target.value) }}>
             {Object.keys(drugScreenOptions).map((key) => <option selected={currentDrug===key} value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
           </select>
         </div>
@@ -879,11 +957,6 @@ export default function App({ dataUrl }) {
               />
             }
           </div>
-          {/* <div className="time-select">
-            <ul>
-              {timeframes.map(item => <li className={item === timeframe ? 'active' : ''} onClick={() => setTimeframe(item)}>{item}</li>)}
-            </ul>
-          </div> */}
           <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Legend</div>
           <ul className="legend">
             {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
@@ -891,12 +964,14 @@ export default function App({ dataUrl }) {
           <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
         </aside>
       </div>
-      {selected && <StateInfo />}
+      <StateInfo />
       <div className="datatable-container">
         <h3>Monthly Trends by State</h3>
         <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
-        <Datatable runtimeUSData={Object.values(runtimeUSData)} runtimeData={runtimeTableData} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColor}/>
+        <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColor} />
+        <DownloadButton data={rawData} />
       </div>
+      {GenderAgeSection()}
     </Context.Provider>
   );
 }
