@@ -198,6 +198,8 @@ const months = [
 export default function App({ dataUrl }) {
   const [runtimeLegend, setRuntimeLegend] = useState([])
   const [runtimeData, setRuntimeData] = useState([])
+  const [runtimeUSGenderData, setRuntimeUSGenderData] = useState([])
+  const [runtimeUSAgeData, setRuntimeUSAgeData] = useState([])
   const [runtimeUSData, setRuntimeUSData] = useState([])
   const [selected, setSelected] = useState(null)
   const [timeframe, setTimeframe] = useState('March 2020');
@@ -555,14 +557,84 @@ export default function App({ dataUrl }) {
     return filteredData;
   };
 
+  // Calculates what's going to be displayed on the map and data table at render.
+  const generateRuntimeUSGenderData = (data, gender, filters = []) => {
+
+    if (!monthTimeframes) {
+      return {};
+    }
+
+    let startMonth;
+    let startYear;
+    let endMonth;
+    let endYear;
+
+    if ('year' === selectedTimeframe) {
+      startMonth = allTimeframes[sliderPointYear + 12]['month'];
+      startYear = allTimeframes[sliderPointYear + 12]['year'];
+      endMonth = allTimeframes[sliderPointYear + 13]['month'];
+      endYear = allTimeframes[sliderPointYear + 13]['year'];
+    } else {
+      startMonth = allTimeframes[sliderPointMonth]['month'];
+      startYear = allTimeframes[sliderPointMonth]['year'];
+      endMonth = allTimeframes[sliderPointMonth + 1]['month'];
+      endYear = allTimeframes[sliderPointMonth + 1]['year'];
+    }
+
+    let filteredData = [];
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|M|all:US|' + endYear + '|' + endMonth + '|M|all']);
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|F|all:US|' + endYear + '|' + endMonth + '|F|all']);
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|Missing|all:US|' + endYear + '|' + endMonth + '|Missing|all']);
+
+    return filteredData;
+  };
+
+  // Calculates what's going to be displayed on the map and data table at render.
+  const generateRuntimeUSAgeData = (data, age, filters = []) => {
+
+    if (!monthTimeframes) {
+      return {};
+    }
+
+    let startMonth;
+    let startYear;
+    let endMonth;
+    let endYear;
+
+    if ('year' === selectedTimeframe) {
+      startMonth = allTimeframes[sliderPointYear + 12]['month'];
+      startYear = allTimeframes[sliderPointYear + 12]['year'];
+      endMonth = allTimeframes[sliderPointYear + 13]['month'];
+      endYear = allTimeframes[sliderPointYear + 13]['year'];
+    } else {
+      startMonth = allTimeframes[sliderPointMonth]['month'];
+      startYear = allTimeframes[sliderPointMonth]['year'];
+      endMonth = allTimeframes[sliderPointMonth + 1]['month'];
+      endYear = allTimeframes[sliderPointMonth + 1]['year'];
+    }
+
+    let filteredData = [];
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|0-14:US|' + endYear + '|' + endMonth + '|all|0-14']);
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|15-24:US|' + endYear + '|' + endMonth + '|all|15-24']);
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|25-34:US|' + endYear + '|' + endMonth + '|all|25-34']);
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|35-54:US|' + endYear + '|' + endMonth + '|all|35-54']);
+    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|55+:US|' + endYear + '|' + endMonth + '|all|55+']);
+
+    return filteredData;
+  };
+
   useEffect(() => {
     if (true === dataLoaded) {
       const processedData = generateRuntimeData(rawData);
-      const processedUSData = generateRuntimeUSData(rawData);
+      const processedUSGenderData = generateRuntimeUSGenderData(rawData);
+      const processedUSAgeData = generateRuntimeUSAgeData(rawData);
+      const processedUSData = generateRuntimeUSData(keyedRawUSData);
       const processedLegend = generateRuntimeLegend(processedData);
 
       setRuntimeData(processedData);
       setRuntimeUSData(processedUSData);
+      setRuntimeUSGenderData(processedUSGenderData);
+      setRuntimeUSAgeData(processedUSAgeData);
       setRuntimeLegend(processedLegend);
     }
   }, [dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe])
@@ -587,7 +659,8 @@ export default function App({ dataUrl }) {
         {
           'index': index,
           'usPercent': runtimeUSData[drugScreenOption['percentageColumn']],
-          'type': drugScreenOption['titleAll']
+          'type': drugScreenOption['titleAll'],
+          'dave': 'cummo'
         }
       );
 
@@ -612,7 +685,7 @@ export default function App({ dataUrl }) {
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
             {/* <h3>United States{selected && ' compared to ' + getStateName(selected)}</h3> */}
-            <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} />
+            {/* <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} /> */}
           </div>
           <div className="text-section">
           A section of text. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -624,34 +697,84 @@ export default function App({ dataUrl }) {
 
   const GenderAgeSection = () => {
 
-    let barChartKeys = ['usPercent'];
-    if (selected) {
-      barChartKeys.push('statePercent');
-    }
-    const barColors = [];
-
-    let barChartData = [];
-    const usBarColors = [];
+    const genderKeys = ['malePercent', 'femalePercent'];
+    const genderColorKeys = ['maleColor','femaleColor'];
+    console.log(runtimeUSGenderData);
+    let genderData = [];
     
     Object.values(drugScreenOptions).map((drugScreenOption, index) => {
-
-      const usSignificance = runtimeUSData[drugScreenOption['significanceColumn']];
-      usBarColors.push(mapColorPalette[legendOrder.indexOf(usSignificance)]);
-
-      barChartData.push(
-        {
-          'index': index,
-          'usPercent': runtimeUSData[drugScreenOption['percentageColumn']],
-          'type': drugScreenOption['titleAll']
-        }
-      );
-
-      if (selected) {
-        const statePercentage = runtimeTableData[0][keyIndex[drugScreenOption['percentageColumn']]];
-        const stateSgnificance = runtimeTableData[0][keyIndex[drugScreenOption['significanceColumn']]];
-        barChartData[index]['statePercent'] = statePercentage;
-        barColors.push(mapColorPalette[legendOrder.indexOf(stateSgnificance)]);
+      const drugPercentColumn = drugScreenOption['percentageColumn'];
+      const drugSignificanceColumn = drugScreenOption['significanceColumn'];
+      let genderBarGroupObject = {
+        'index': index,
+        'malePercent': '',
+        'femalePercent': '',
+        'type': drugScreenOption['titleAll']
       }
+      runtimeUSGenderData.map((row) => {
+        const gender = row['gender'];
+        const significance = row[drugSignificanceColumn];
+        if ('M' === gender) {
+          genderBarGroupObject['malePercent'] = row[drugPercentColumn];
+          genderBarGroupObject['maleSignificance'] = significance;
+          genderBarGroupObject['maleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } else if ('F' === gender) {
+          genderBarGroupObject['femalePercent'] = row[drugPercentColumn];
+          genderBarGroupObject['femaleSignificance'] = significance;
+          genderBarGroupObject['femaleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } else if ('Missing' === gender) {
+          // barGroupObject['missingPercent'] = row[drugPercentColumn];
+          // barGroupObject['missingSignificance'] = significance;
+          // barGroupObject['missingColor'] = mapColorPalette[legendOrder.indexOf(significance)];
+        }
+      });
+
+      genderData.push(genderBarGroupObject);
+    });
+
+    const ageKeys = ['age0to14Percent', 'age15to24Percent', 'age25to34Percent', 'age35to54Percent',  'age55PlusPercent'];
+    const ageColorKeys = ['age0to14Color','age15to24Color','age25to34Color','age35to54Color','age55PlusColor'];
+
+    let ageData = [];
+    Object.values(drugScreenOptions).map((drugScreenOption, index) => {
+      const drugPercentColumn = drugScreenOption['percentageColumn'];
+      const drugSignificanceColumn = drugScreenOption['significanceColumn'];
+      let ageBarGroupObject = {
+        'index': index,
+        'age0to14Percent': '',
+        'age15to24Percent': '',
+        'age25to34Percent': '',
+        'age35to54Percent': '',
+        'age55PlusPercent': '',
+        'type': drugScreenOption['titleAll']
+      }
+      runtimeUSAgeData.map((row) => {
+        const age = row['ageRange'];
+        const significance = row[drugSignificanceColumn];
+        if ('0-14' === age) {
+          ageBarGroupObject['age0to14Percent'] = row[drugPercentColumn];
+          ageBarGroupObject['age0to14Significance'] = significance;
+          ageBarGroupObject['age0to14Color'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } else if ('15-24' === age) {
+          ageBarGroupObject['age15to24Percent'] = row[drugPercentColumn];
+          ageBarGroupObject['age15to24Significance'] = significance;
+          ageBarGroupObject['age15to24Color'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } else if ('25-34' === age) {
+          ageBarGroupObject['age25to34Percent'] = row[drugPercentColumn];
+          ageBarGroupObject['age25to34Significance'] = significance;
+          ageBarGroupObject['age25to34Color'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } else if ('35-54' === age) {
+          ageBarGroupObject['age35to54Percent'] = row[drugPercentColumn];
+          ageBarGroupObject['age35to54Significance'] = significance;
+          ageBarGroupObject['age35to54Color'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } else if ('55+' === age) {
+          ageBarGroupObject['age55PlusPercent'] = row[drugPercentColumn];
+          ageBarGroupObject['age55PlusSignificance'] = significance;
+          ageBarGroupObject['age55PlusColor'] = mapColorPalette[legendOrder.indexOf(significance)];
+        }
+      });
+
+      ageData.push(ageBarGroupObject);
     });
 
     return (
@@ -659,10 +782,10 @@ export default function App({ dataUrl }) {
         <h3>Gender and Age Section</h3>
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
-            <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} />
+            <BarChart width={644} height={350} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} />
           </div>
           <div className="bar-chart">
-            <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} />
+            <BarChart width={644} height={350} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} />
           </div>
         </div>
       </section>
@@ -965,13 +1088,13 @@ export default function App({ dataUrl }) {
         </aside>
       </div>
       <StateInfo />
+      {GenderAgeSection()}
       <div className="datatable-container">
         <h3>Monthly Trends by State</h3>
         <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
         <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColor} />
         <DownloadButton data={rawData} />
       </div>
-      {GenderAgeSection()}
     </Context.Provider>
   );
 }

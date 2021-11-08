@@ -28,18 +28,17 @@ function BarChart({
   height,
   dataKeys,
   margin = defaultMargin,
-  formatPercentage
+  formatPercentage,
+  colorKeys
 }) {
 
   let highest = 0;
-  data.map((drug) => {
-    if (Number.parseFloat(drug.usPercent) && Math.abs(Number.parseFloat(drug.usPercent)) > highest) {
-      highest = Math.abs(Number.parseFloat(drug.usPercent));
-    }
-    
-    if (Number.parseFloat(drug.statePercent) && Math.abs(Number.parseFloat(drug.statePercent)) > highest) {
-      highest = Math.abs(Number.parseFloat(drug.statePercent));
-    }
+  data.map((row) => {
+    dataKeys.map((key) => {
+      if (Number.parseFloat(row[key]) && Math.abs(Number.parseFloat(row[key])) > highest) {
+        highest = Math.abs(Number.parseFloat(row[key]));
+      }
+    });
   });
 
   // accessors
@@ -73,7 +72,7 @@ function BarChart({
   const center = xMax / 2;
   const blackColor = '#444';
 
-  const hasState = stateBarColors.length > 0;
+  const hasState = stateBarColors && stateBarColors.length > 0;
 
   return width < 10 ? null : (
     <svg width={width} height={height}>
@@ -87,6 +86,9 @@ function BarChart({
           y1Scale={keysScale}
           xScale={percentScale}
           color={() => {return '';}}
+          // color={(d, index) => {
+          //   return data[index][colorKeys[index]];
+          // }}
         >
         {barGroups => (
           <Group>
@@ -96,25 +98,34 @@ function BarChart({
                 top={barGroup.y0}
               > 
                 {barGroup.bars.map((bar, barIndex) => {
-                  const isState = 1 === barIndex;
-                  const width = bar.value > 0 ? bar.width - center : center - Math.abs(bar.width);
+
+                  const barColor = data[barGroup.index][colorKeys[barIndex]];
+
+                  //const isState = 1 === barIndex;
+                  const isState = false;
+
+                  let width = 0;
+                  if (Number.parseFloat(bar.value)) {
+                    width = bar.value > 0 ? bar.width - center : center - Math.abs(bar.width);
+                  }
                   const x = bar.value > 0 ? center : (center - width)
-                  let offset = bar.value.length * 10
+                  let offset = bar.value.length * 11.5
                   let textInset = bar.value > 0 ? center - offset : center + 5;
 
                   //Optionally move the text to outside the bar
-                  if (width < 50) {
+                  if (width < 60) {
                     if (bar.value < 0) {
-                      textInset = textInset - 50;
+                      textInset = textInset - 52;
                     } else {
-                      textInset = textInset + 50;
+                      textInset = textInset + 38;
                     }
                   }
 
-                  let barColor = usBarColors[barGroup.index];
-                  if (isState) {
-                    barColor = stateBarColors[barGroup.index];
-                  }
+                  //let barColor = '#FFFFFF';
+                  // let barColor = usBarColors[barGroup.index];
+                  // if (isState) {
+                  //   barColor = stateBarColors[barGroup.index];
+                  // }
 
                   let labelColor = "#000000";
                   if (chroma.contrast(labelColor, barColor) < 4.9) {
@@ -132,7 +143,7 @@ function BarChart({
                   }
 
                   let textVerticalOffset = 24;
-                  if (hasState) {
+                  if (dataKeys.length > 1) {
                     textVerticalOffset = 15
                   }
 
