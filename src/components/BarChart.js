@@ -113,11 +113,11 @@ function BarChart({
                   let textInset = bar.value > 0 ? center - offset : center + 5;
 
                   //Optionally move the text to outside the bar
-                  if (width < 60) {
+                  if (width < 70) {
                     if (bar.value < 0) {
                       textInset = textInset - 52;
                     } else {
-                      textInset = textInset + 38;
+                      textInset = textInset + 52;
                     }
                   }
 
@@ -142,10 +142,10 @@ function BarChart({
                     barFill = `url(#checkerboard-${barGroup.index}-${bar.index}-${bar.key})`;
                   }
 
-                  let textVerticalOffset = 24;
-                  if (dataKeys.length > 1) {
-                    textVerticalOffset = 15
-                  }
+                  let textVerticalOffset = bar.height/2 + 4;
+                  // if (dataKeys.length > 1) {
+                  //   textVerticalOffset = 15
+                  // }
 
                   return (
                   <Motion defaultStyle={{width: 0, x: center}} style={{width: spring(width), x: spring(x)}}>
@@ -196,7 +196,7 @@ function BarChart({
           })}
         />
         <AxisBottom
-          top={255}
+          top={yMax-5}
           scale={percentScale}
           label={'Percent Change'}
           tickFormat={function tickFormat(d){

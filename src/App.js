@@ -8,6 +8,7 @@ import Datatable from './components/Datatable';
 //import HeaderLineChart from './components/HeaderLineChart';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import { Base64 } from 'js-base64';
+import { renderToString } from 'react-dom/server'
 
 import PlayIcon from './assets/play.svg';
 import StopIcon from './assets/stop.svg';
@@ -218,6 +219,7 @@ export default function App({ dataUrl }) {
   const [monthCount, setMonthCount] = useState(0);
   const [statesParticipating, setStatesParticipating] = useState(0);
   const [modal, setModal] = useState(null);
+  const [showDatatable, setShowDatatable] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -377,21 +379,22 @@ export default function App({ dataUrl }) {
   };
 
   const applyTooltipsToGeo = (geoName) => {
-    let toolTipText = '';
+    let toolTipText = '<div class="tooltip-body">';
 
-    if (runtimeData[geoName]) {
-      const selectedPercentageRaw = runtimeData[geoName][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]];
-      
-      toolTipText = `<strong>${getStateName(geoName)}</strong>`;
+    const stateData = runtimeData[geoName] ?? false;
+    if (stateData) {
+      const selectedPercentageRaw = stateData[keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]];
+      const significance = stateData[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
+      const legendColors = applyLegendToRow(stateData);
+      const hexagonHTML = renderToString(<Hexagon fill={legendColors[0]} />);
+      debugger;
+      toolTipText += `<div class="state-name-row"><div>${hexagonHTML}</div><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
-      if ('missing' === selectedPercentageRaw || 'suppressed' === selectedPercentageRaw) {
-        toolTipText += `<dl><div><dt>${drugScreenOptions[currentDrug]['titleAll']}</dt><dd>Data not available/Not Reported</dd></div></dl>`;
-      } else if ('unfunded'===selectedPercentageRaw) {
-        toolTipText += `<div>Unfunded Jurisdiction</div>`;
-      } else {
-        toolTipText += `<dl><div><dt>${drugScreenOptions[currentDrug]['titleAll']}</dt><dd>${formatPercentage(selectedPercentageRaw)}</dd></div></dl>`;
+      if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw) {
+        toolTipText += `<div class="percentage-row"><div>${drugScreenOptions[currentDrug]['titlePlural']}:</div><div>${formatPercentage(selectedPercentageRaw)}</div></div>`;
       }
     }
+    toolTipText += '</div>';
     return (
       [toolTipText]
     )
@@ -399,12 +402,25 @@ export default function App({ dataUrl }) {
 
   let legendMemo = useRef(new Map())
 
+  //Palette with reds and yellow and grays
+  // let mapColorPalette = [
+  //   '#A62434',
+  //   '#F2594B',
+  //   '#FFD97D',
+  //   '#CCCCCC',
+  //   '#EBEBEB',
+  //   '#3690c0',
+  //   '#02818a',
+  //   '#016c59',
+  //   '#014636'
+  // ];
+  //Palette with purple, orange, and grays
   let mapColorPalette = [
-    '#A62434',
-    '#F2594B',
-    '#FFD97D',
-    '#CCCCCC',
-    '#EBEBEB',
+    '#EA6432',
+    '#742867',
+    '#A9A9A9',
+    '#D3D3D3',
+    '#F5F5F5',
     '#3690c0',
     '#02818a',
     '#016c59',
@@ -782,10 +798,12 @@ export default function App({ dataUrl }) {
         <h3>Gender and Age Section</h3>
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
+            <h3>Gender Comparison</h3>
             <BarChart width={644} height={350} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} />
           </div>
           <div className="bar-chart">
-            <BarChart width={644} height={350} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} />
+            <h3>Age Comparison</h3>
+            <BarChart width={644} height={650} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} />
           </div>
         </div>
       </section>
@@ -937,7 +955,13 @@ export default function App({ dataUrl }) {
     )
   };
 
+  const toggleDatatable = () => {
+    setShowDatatable(!showDatatable);
+  };
+
   const drugColor = drugScreenOptions[currentDrug].color;
+  const drugColorLight = chroma(drugScreenOptions[currentDrug].color).darken(-1).hex();
+
   const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
 
   const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
@@ -945,11 +969,12 @@ export default function App({ dataUrl }) {
 
   let runtimeTableData = Object.values(runtimeData);
 
-  if (selected) {
-    runtimeTableData = runtimeTableData.filter((row) => {
-      return selected === row[keyIndex['geo']];
-    });
-  }
+  //If a state is selected, limit the datatable
+  // if (selected) {
+  //   runtimeTableData = runtimeTableData.filter((row) => {
+  //     return selected === row[keyIndex['geo']];
+  //   });
+  // }
 
   let fromLabel;
   let toLabel;
@@ -962,7 +987,7 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo }}>
+    <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon }}>
       <div class="filters">
         <div>
           Select a Drug: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setCurrentDrug(e.target.value) }}>
@@ -1090,10 +1115,17 @@ export default function App({ dataUrl }) {
       <StateInfo />
       {GenderAgeSection()}
       <div className="datatable-container">
-        <h3>Monthly Trends by State</h3>
-        <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
-        <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColor} />
-        <DownloadButton data={rawData} />
+        <h3 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
+          Monthly Trends by State
+          {showDatatable && <span>{String.fromCharCode(8722)}</span>}
+          {!showDatatable && <span>{String.fromCharCode(43)}</span>}
+        </h3>
+        {showDatatable &&
+          <div className="datatable-body">
+            <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
+            <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
+            <DownloadButton data={rawData} />
+          </div>}
       </div>
     </Context.Provider>
   );

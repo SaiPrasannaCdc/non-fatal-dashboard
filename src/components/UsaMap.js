@@ -126,8 +126,7 @@ const UsaMap = () => {
       if ('US-ND' === geo.properties.iso) {
         //debugger;
       }
-      const tooltip = applyTooltipsToGeo(geo.properties.iso);
-
+      
       let styles = {
         fill: '#E6E6E6',
         cursor: 'default'
@@ -158,6 +157,8 @@ const UsaMap = () => {
         legendColors = applyLegendToRow(geoData);
       }
 
+      const tooltip = applyTooltipsToGeo(geo.properties.iso, legendColors[0]);
+
       // If a legend applies, return it with appropriate information.
       if (legendColors && legendColors[0] !== '#EBEBEB') {
         styles = {
@@ -181,7 +182,7 @@ const UsaMap = () => {
             css={styles}
             onClick={() => setStateSelected(geoKey)}
             data-tip={tooltip}
-            data-html={true}
+            //data-html={true}
             
           >
             <path

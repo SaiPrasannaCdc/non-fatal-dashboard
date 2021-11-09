@@ -34,7 +34,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
     <>
       <table id="main-data-table">
         <tr style={{backgroundColor: drugColor}}>
-          <th></th>
+          <th>Jurisdiction</th>
           <th>Percentage Change</th>
           <th>Significance</th>
         </tr>
