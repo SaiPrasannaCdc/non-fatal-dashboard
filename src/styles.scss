@@ -37,10 +37,14 @@ line { stroke: #ccc; stroke-width: 1; }
         transition: .3s all;
         margin: 1em 0;
         &:hover {
-          transition: .3s all;
+            transition: .3s all;
         }
-      }
+    }
     
+    .now-viewing > div {
+        padding-top: 10px;
+    }
+
     g.geo-group {
         transition: .3s all;
     }
@@ -308,7 +312,7 @@ line { stroke: #ccc; stroke-width: 1; }
     
         .bar-chart-container {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
 
             .bar-chart {
                 width: 60%;

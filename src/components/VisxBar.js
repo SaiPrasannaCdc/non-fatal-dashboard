@@ -22,7 +22,7 @@ function max(arr, fn) {
 
 const data = cityTemperature.slice(0, 4);
 const keys = Object.keys(data[0]).filter(d => d !== 'date');
-debugger;
+
 // accessors
 const getDate = (d) => d.date;
 
