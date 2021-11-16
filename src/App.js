@@ -1036,80 +1036,86 @@ export default function App({ dataUrl }) {
           <UsaMap/>
         </div>
         <aside>
-          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
-          <div class="time-frame-container">
-            <div>Compare {toLabel} with the previous: </div>
-            <div className="radio">
-              <label>
-                <input
-                  type="radio"
-                  value="month"
-                  name="time-selector"
-                  checked={selectedTimeframe === 'month'}
-                  onChange={(e) => {handleTimeframeChange(e.target.value)}}
-                />
-                Month
-              </label>
+          
+          
+          <div>
+            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
+            <div class="time-frame-container">
+              <div>Compare {toLabel} with the previous: </div>
+              <div className="radio">
+                <label>
+                  <input
+                    type="radio"
+                    value="month"
+                    name="time-selector"
+                    checked={selectedTimeframe === 'month'}
+                    onChange={(e) => {handleTimeframeChange(e.target.value)}}
+                  />
+                  Month
+                </label>
+              </div>
+              <div className="radio">
+                <label>
+                  <input
+                    type="radio"
+                    value="year"
+                    name="time-selector"
+                    checked={selectedTimeframe === 'year'}
+                    onChange={(e) => {handleTimeframeChange(e.target.value)}}
+                  />
+                  Year
+                </label>
+              </div>
             </div>
-            <div className="radio">
-              <label>
-                <input
-                  type="radio"
-                  value="year"
-                  name="time-selector"
-                  checked={selectedTimeframe === 'year'}
-                  onChange={(e) => {handleTimeframeChange(e.target.value)}}
+            <div className="range-aside-container" style={{ color: drugColor }}>
+              {/* <div className="animation-controls" style={{color: drugColor}}>
+                <PlayIcon onClick={animateTimeSeries}/>
+              </div> */}
+              {'month' === selectedTimeframe &&
+                <SliderWithTooltip
+                  tipFormatter={tooltipFormatterMonth}
+                  onChange={(e) => { handleMonthSliderChange(e) }}
+                  min={0}
+                  step={1}
+                  value={sliderPointMonth}
+                  align={{
+                    offset: [0, -5],
+                  }}
+                  max={monthTimeframes.length - 1}
+                  marks={getSliderMarks('month')}
+                  handleStyle={{
+                    borderColor: drugColor,
+                    backgroundColor: drugColor,
+                  }}
                 />
-                Year
-              </label>
+              }
+              {'year' === selectedTimeframe &&
+                <SliderWithTooltip
+                  tipFormatter={tooltipFormatterYear}
+                  onChange={(e) => { handleYearSliderChange(e) }}
+                  min={0}
+                  step={1}
+                  value={sliderPointYear}
+                  align={{
+                    offset: [0, -5],
+                  }}
+                  max={yearTimeframes.length - 1}
+                  marks={getSliderMarks('year')}
+                  handleStyle={{
+                    borderColor: drugColor,
+                    backgroundColor: drugColor,
+                  }}
+                />
+              }
             </div>
           </div>
-          <div className="range-aside-container" style={{ color: drugColor }}>
-            {/* <div className="animation-controls" style={{color: drugColor}}>
-              <PlayIcon onClick={animateTimeSeries}/>
-            </div> */}
-            {'month' === selectedTimeframe &&
-              <SliderWithTooltip
-                tipFormatter={tooltipFormatterMonth}
-                onChange={(e) => { handleMonthSliderChange(e) }}
-                min={0}
-                step={1}
-                value={sliderPointMonth}
-                align={{
-                  offset: [0, -5],
-                }}
-                max={monthTimeframes.length - 1}
-                marks={getSliderMarks('month')}
-                handleStyle={{
-                  borderColor: drugColor,
-                  backgroundColor: drugColor,
-                }}
-              />
-            }
-            {'year' === selectedTimeframe &&
-              <SliderWithTooltip
-                tipFormatter={tooltipFormatterYear}
-                onChange={(e) => { handleYearSliderChange(e) }}
-                min={0}
-                step={1}
-                value={sliderPointYear}
-                align={{
-                  offset: [0, -5],
-                }}
-                max={yearTimeframes.length - 1}
-                marks={getSliderMarks('year')}
-                handleStyle={{
-                  borderColor: drugColor,
-                  backgroundColor: drugColor,
-                }}
-              />
-            }
+          <div>
+            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Legend</div>
+            <ul className="legend">
+              {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
+            </ul>
+            <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
           </div>
-          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Legend</div>
-          <ul className="legend">
-            {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
-          </ul>
-          <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
         </aside>
       </div>
       <StateInfo />

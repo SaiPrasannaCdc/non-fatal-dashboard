@@ -2,6 +2,14 @@
 @import 'scss/variables';
 @import 'scss/mixins';
 
+body {
+    padding: .75em;
+
+    @include r($md) {
+        padding: 2em;
+    }
+}
+
 line { stroke: #ccc; stroke-width: 1; }
 #checkerboard { fill: #ccc; }
 
@@ -80,10 +88,10 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .map-container {
-        display: flex;
+        display: grid;
 
-        .map-inner-container {
-            width: 70%;
+        @include r($lg) {
+            grid-template-columns: 1fr 300px;
         }
     }
 
@@ -128,16 +136,20 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .callouts {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        gap: 1em;
         margin-bottom: 1em;
+
+        @include r($lg){
+            grid-template-columns: repeat(3, 1fr);
+        }
+
         > div {
             border: 1px solid rgba(0,0,0,.125);
             border-left: 5px solid #B890BB;
             border-radius: .25rem;
             min-height: 100px;
             padding: .5em;
-            width: 32.5%;
             display: flex;
             align-items: center;
 
@@ -201,7 +213,17 @@ line { stroke: #ccc; stroke-width: 1; }
     }
     
     aside {
-        width: 30%;
+        display: grid;
+        gap: .5em;
+
+        @include r($xs) {
+            grid-template-columns: 1fr 300px;
+        }
+
+        @include r($lg) {
+            grid-template-columns: unset;
+        }
+        
 
         .time-frame-container {
             display: flex;
