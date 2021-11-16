@@ -5,6 +5,7 @@ import Papa from 'papaparse';
 import UsaMap from './components/UsaMap';
 import BarChart from './components/BarChart';
 import Datatable from './components/Datatable';
+import DumbbellChart from './components/DumbbellChart';
 //import HeaderLineChart from './components/HeaderLineChart';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import { Base64 } from 'js-base64';
@@ -387,7 +388,6 @@ export default function App({ dataUrl }) {
       const significance = stateData[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
       const legendColors = applyLegendToRow(stateData);
       const hexagonHTML = renderToString(<Hexagon fill={legendColors[0]} />);
-      debugger;
       toolTipText += `<div class="state-name-row"><div>${hexagonHTML}</div><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
       if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw) {
@@ -656,38 +656,11 @@ export default function App({ dataUrl }) {
   }, [dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe])
   
   const StateInfo = () => {
-
-    let barChartKeys = ['usPercent'];
-    if (selected) {
-      barChartKeys.push('statePercent');
-    }
+    let barChartKeys = ['usPercent', 'statePercent'];
     const barColors = [];
-
     let barChartData = [];
     const usBarColors = [];
     
-    Object.values(drugScreenOptions).map((drugScreenOption, index) => {
-
-      const usSignificance = runtimeUSData[drugScreenOption['significanceColumn']];
-      usBarColors.push(mapColorPalette[legendOrder.indexOf(usSignificance)]);
-
-      barChartData.push(
-        {
-          'index': index,
-          'usPercent': runtimeUSData[drugScreenOption['percentageColumn']],
-          'type': drugScreenOption['titleAll'],
-          'dave': 'cummo'
-        }
-      );
-
-      if (selected) {
-        const statePercentage = runtimeTableData[0][keyIndex[drugScreenOption['percentageColumn']]];
-        const stateSgnificance = runtimeTableData[0][keyIndex[drugScreenOption['significanceColumn']]];
-        barChartData[index]['statePercent'] = statePercentage;
-        barColors.push(mapColorPalette[legendOrder.indexOf(stateSgnificance)]);
-      }
-    });
-
     return (
       <section className="sub-drawer">
         <h3>Percent change estimates in rates of suspected overdoses per 10,000 ED visits from {fromLabel} to {toLabel}.</h3>
@@ -697,14 +670,9 @@ export default function App({ dataUrl }) {
             {Object.keys(supportedStates).map((key) => <option selected={selected===key}  value={key}>{supportedStates[key][0]}</option>)}
           </select>
         </div>
-        {/* <a href="#" style={{textDecoration: 'none', color: '#333', position: 'absolute', right: '1em', fontSize: '1.2em', top: '.3em'}}onClick={(e) => {e.preventDefault(); setSelected(null);}}>⨉</a> */}
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
-            {/* <h3>United States{selected && ' compared to ' + getStateName(selected)}</h3> */}
-            {/* <BarChart width={644} height={350} dataKeys={barChartKeys} formatPercentage={formatPercentage} data={barChartData} usBarColors={usBarColors} stateBarColors={barColors} /> */}
-          </div>
-          <div className="text-section">
-          A section of text. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <DumbbellChart width={644} height={350} legendOrder={legendOrder} mapColorPalette={mapColorPalette} keyIndex={keyIndex} drugScreenOptions={drugScreenOptions} formatPercentage={formatPercentage} stateData={Object.values(runtimeData[selected])} usData={Object.values(runtimeUSData)}  />
           </div>
         </div>
       </section>
@@ -795,7 +763,7 @@ export default function App({ dataUrl }) {
 
     return (
       <section class="gender-age-section">
-        <h3>Gender and Age Section</h3>
+        <h3></h3>
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
             <h3>Gender Comparison</h3>
@@ -819,7 +787,7 @@ export default function App({ dataUrl }) {
   }
 
   if (!runtimeData || Object.keys(runtimeData).length === 0 || !monthTimeframes) {
-    return <h1>Loading</h1>;
+    return <h3>Loading</h3>;
   }
 
   const getSliderMarks = (type) => {
@@ -959,14 +927,15 @@ export default function App({ dataUrl }) {
     setShowDatatable(!showDatatable);
   };
 
+  const resetFilters = () => {
+    setSelected(null);
+  };
+
   const drugColor = drugScreenOptions[currentDrug].color;
   const drugColorLight = chroma(drugScreenOptions[currentDrug].color).darken(-1).hex();
-
   const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
-
   const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
   const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
-
   let runtimeTableData = Object.values(runtimeData);
 
   //If a state is selected, limit the datatable
@@ -1030,9 +999,12 @@ export default function App({ dataUrl }) {
           return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
         })}
       </div>
-      <div><em>* Click on a state to see more.</em></div>
       <div className="map-container">
         <div className="map-inner-container">
+          <div className="now-viewing">
+            {!selected && <div><em>* Click on a state to see more.</em></div>}
+            {selected && <div>Now viewing {getStateName(selected)} <span className="btn btn-reset" onClick={resetFilters}>Reset</span></div>}
+          </div>
           <UsaMap/>
         </div>
         <aside>
@@ -1118,11 +1090,11 @@ export default function App({ dataUrl }) {
           </div>
         </aside>
       </div>
-      <StateInfo />
+      {selected && <StateInfo />}
       {GenderAgeSection()}
       <div className="datatable-container">
         <h3 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-          Monthly Trends by State
+          Monthly Trends by State - {drugScreenOptions[currentDrug]['titleAll']}
           {showDatatable && <span>{String.fromCharCode(8722)}</span>}
           {!showDatatable && <span>{String.fromCharCode(43)}</span>}
         </h3>
