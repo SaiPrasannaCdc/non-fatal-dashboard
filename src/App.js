@@ -390,7 +390,7 @@ export default function App({ dataUrl }) {
       const hexagonHTML = renderToString(<Hexagon fill={legendColors[0]} />);
       toolTipText += `<div class="state-name-row"><div>${hexagonHTML}</div><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
-      if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw) {
+      if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw && 'unfunded' !== selectedPercentageRaw) {
         toolTipText += `<div class="percentage-row"><div>${drugScreenOptions[currentDrug]['titlePlural']}:</div><div>${formatPercentage(selectedPercentageRaw)}</div></div>`;
       }
     }
