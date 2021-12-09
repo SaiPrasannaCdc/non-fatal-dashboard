@@ -5,6 +5,7 @@ import Papa from 'papaparse';
 import UsaMap from './components/UsaMap';
 import BarChart from './components/BarChart';
 import BarChartVertical from './components/BarChartVertical';
+import AgeLollipop from './components/AgeLollipop';
 import Datatable from './components/Datatable';
 import DumbbellChart from './components/DumbbellChart';
 //import HeaderLineChart from './components/HeaderLineChart';
@@ -1138,6 +1139,7 @@ export default function App({ dataUrl }) {
         })}
       </div>
       
+
       <div id="toggleLegend" onClick={toggleLegend}>
         {!showLegend &&
           <>Show Legend</>

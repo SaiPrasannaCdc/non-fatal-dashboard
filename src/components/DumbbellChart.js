@@ -102,7 +102,7 @@ function DumbbellChart({
   const blackColor = '#444';
 
   return width < 10 ? null : (
-    <svg width={width} height={height}>
+    <svg viewBox={`0 0 ${width} ${height}`}>
       <line x1={center + 100} x2={center + 100} y1={yMax + 5} y2={10} stroke={blackColor} />
       <Group top={margin.top} left={margin.left}>
       <AxisLeft
@@ -144,16 +144,16 @@ function DumbbellChart({
   
           return (
             <g>
-              <line className="visx-boxplot-max" x1={lineX1} y1={lineY} x2={lineX2} y2={lineY} stroke={'#CCCCCC'} strokeWidth="1"></line>
-              <circle style={{ fill: row['usColor'] }} stroke="black" cx={lineX1} cy={lineY} r="8" />
+              <line className="visx-boxplot-max" x1={lineX1} y1={lineY} x2={lineX2} y2={lineY} stroke={'#CCCCCC'} strokeWidth="3"></line>
+              <circle style={{ fill: row['usColor'] }}  cx={lineX1} cy={lineY} r="10" />
               {/* <circle style={{ fill: row['stateColor'] }} stroke="black" cx={lineX2} cy={lineY} r="5" /> */}
               <Polygon
-                sides={3}
-                size={10}
+                sides={6}
+                size={12}
                 fill={row['stateColor']}
                 rotate={90}
                 center={{ x: lineX2, y: lineY }}
-                stroke={'#CCCCCC'}
+                // stroke={'#CCCCCC'}
               />
             </g>
           );

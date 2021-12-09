@@ -1,3 +1,4 @@
+
 import React, { memo } from 'react';
 import { BarGroupHorizontal, Bar, Circle } from '@visx/shape';
 import { Group } from '@visx/group';
@@ -33,8 +34,10 @@ function BarChart({
   selectedState
 }) {
 
+  
   let highest = 0;
   data.map((row) => {
+    console.log('data ', row)
     dataKeys.map((key) => {
       if (Number.parseFloat(row[key]) && Math.abs(Number.parseFloat(row[key])) > highest) {
         highest = Math.abs(Number.parseFloat(row[key]));
@@ -46,8 +49,66 @@ function BarChart({
   const getType = (d) => d.type;
 
   // scales
+  console.log('keys', dataKeys)
+  
+  const ageMapping = {
+    '0': '0-14',
+    '1': '15-24',
+    '2': '25-34',
+    '3': '35-44',
+    '4': '45-54',
+    '5': '55-64',
+    '6': '65+'
+  };
+
+  const data0 = data[0];
+
+  // let dataPercents = dataKeys.map( dataKeys => d)
+
+  // const found = data0.some(r=> dataKeys.indexOf(r) >= 0)
+
+  // console.log('found: ', found)
+  console.log('data>', data)
+  // console.log('data', data0.age0to14Percent)
+
+  let chartData = []
+
+  // var map = new Map();
+
+  // yScale.push(data0.age0to14Percent);
+
+  let obj = {};
+
+  for (const dk of dataKeys){
+    // let obj = {};
+    console.log(dk);
+    // yScale.push(data0[dk]);
+
+    // age15to24Percent: -10.7
+
+    // map.set(dk, data0[dk]);
+
+    obj[dk] = data0[dk];
+console.log('obj', obj)
+    // chartData.push(obj);
+}
+chartData.push(obj);
+console.log('chartData', chartData)
+
+
+  // const findValue = (arr, key) => {
+  //   return arr.find( (item) => { 
+  //     return item{ return o.key===key }).value;
+  //   }
+  // }
+
+  // var val = findValue(data0,"age0to14Percent");
+
+//  console.log('val: ', val)
+
   const typeScale = scaleBand({
-    domain: data.map(row => row['type']),
+    // range: [ 0, height ],
+    domain: dataKeys, // todo fix names
     padding: 0.2,
   });
 
@@ -74,12 +135,14 @@ function BarChart({
   const blackColor = '#444';
 
   const hasState = stateBarColors && stateBarColors.length > 0;
-
+  
+// console.log( 'data: ', data)
   return width < 10 ? null : (
     <svg viewBox={`0 0 ${width} ${height}`}>
       <Group top={margin.top} left={margin.left}>
         <BarGroupHorizontal
-          data={data}
+          data={chartData}
+          // data={data}
           keys={dataKeys}
           width={xMax}
           y0={getType}
@@ -99,7 +162,7 @@ function BarChart({
                 top={barGroup.y0}
               > 
                 {barGroup.bars.map((bar, barIndex) => {
-
+console.log('bar0', barIndex)
                   const barColor = data[barGroup.index][colorKeys[barIndex]];
 
                   //const isState = 1 === barIndex;
@@ -109,31 +172,13 @@ function BarChart({
                   if (Number.parseFloat(bar.value)) {
                     width = bar.value > 0 ? bar.width - center : center - Math.abs(bar.width);
                   }
-                  // debugger;
+                  console.log('bar', bar)
                   const x = bar.value > 0 ? center : (center - width)
                   let offset = bar.value.length * 11.5
                   let textInset =  center;
 
-                  //Optionally move the text to outside the bar
-                  // if (width < 70) {
-                  //   if (bar.value < 0) {
-                  //     textInset = textInset - 52;
-                  //   } else {
-                  //     textInset = textInset + 52;
-                  //   }
-                  // }
-
-                  //let barColor = '#FFFFFF';
-                  // let barColor = usBarColors[barGroup.index];
-                  // if (isState) {
-                  //   barColor = stateBarColors[barGroup.index];
-                  // }
-
                   let labelColor = "#000000";
-                  // if (chroma.contrast(labelColor, barColor) < 4.9) {
-                  //   labelColor = '#FFFFFF';
-                  // }
-// console.log('bar: ', bar)
+
                   let barValue = '';
                   if (Number.parseFloat(bar.value)) {
                     barValue = formatPercentage(bar.value);
@@ -145,9 +190,6 @@ function BarChart({
                   }
 
                   let textVerticalOffset = bar.height/2 + 14;
-                  // if (dataKeys.length > 1) {
-                  //   textVerticalOffset = 15
-                  // }
 
                   return (
                   <Motion defaultStyle={{width: 0, x: center}} style={{width: spring(width), x: spring(x)}}>
@@ -161,35 +203,15 @@ function BarChart({
                             </pattern>
                           </defs>}
                         <Bar
-                          key={`${barGroup.index}-${bar.index}-${bar.key}`}
+                          key={`${barGroups[0].index}-${bar.index}-${bar.key}`}
                           x={interpolated.x}
                           y={bar.y}
                           width={interpolated.width}
                           height={3 }
                           fill={barFill}
-                          //fill={`url(#checkerboard-${barGroup.index}-${bar.index}-${bar.key})`}
-                          // stroke='#ccc'
-                          />
-                          {/* const Hexagon = ({fill}) => {
-  return ( */}
 
-{selectedState && 
-                          <svg 
-                            width={18} 
-                            height={18} 
-                            x={ bar.value > 0 ? textInset + interpolated.width - 1: textInset - interpolated.width - 16} 
-                            // x={ textInset - interpolated.width - 18} 
-                              y={bar.y - 8}
-                            viewBox="0 0 45 51">
-                            <polygon 
-                              fill={barFill} 
-                              points="22 0 44 12.702 44 38.105 22 50.807 0 38.105 0 12.702"
-                            />
-                          </svg>
-                }
-  {/* )
-} */}
-{!selectedState && 
+                          />
+                         
                           <Circle
                             key={`point-${bar.key}`}
                             r={8}
@@ -197,7 +219,7 @@ function BarChart({
                             cy={bar.y + 1}
                             fill={barFill}
                           />
-}
+
                         <text
                           x={bar.value > 0 ? textInset + interpolated.width + 24 : textInset - interpolated.width - 70}
                           y={bar.y + 6}
@@ -208,12 +230,14 @@ function BarChart({
                       </>
                     }
                   </Motion>
-                )})}
+                )
+                })}
               </Group>
-            ))}
+             ))}
             </Group>
         )}
         </BarGroupHorizontal>
+      
         <AxisLeft
           scale={typeScale}
           stroke={blackColor}

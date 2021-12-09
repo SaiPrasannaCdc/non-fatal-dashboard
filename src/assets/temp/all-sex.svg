@@ -1,0 +1,66 @@
+<svg viewBox="0 0 600 220">
+  <g class="visx-group" transform="translate(100, 10)">
+    <g class="visx-group" transform="translate(0, 0)">
+      <g class="visx-group chart-data" transform="translate(0, 25)">
+
+
+            <rect class="visx-bar" x="153" y="0" width="87" height="3" fill="#742867"></rect>
+            <circle class="visx-circle" r="8" cx="145" cy="1" fill="#742867"></circle>
+        <text x="83" y="6" fill="#000000" style="font-size: 13px;">-2.14%</text>
+        
+            <rect class="visx-bar" x="39" y="60" width="201" height="3" fill="#742867"></rect>
+            <circle class="visx-circle" r="8" cx="31" cy="61" fill="#742867"></circle><text x="-31" y="66" fill="#000000" style="font-size: 13px;">-4.95%</text>
+          
+
+
+      </g>
+    </g>
+    <g class="visx-group visx-axis visx-axis-left" transform="translate(0, 0)">
+      <g class="visx-group visx-axis-tick" transform="translate(0, 0)">
+        <line class="visx-line" x1="0" y1="26" x2="-4" y2="26" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1" stroke-linecap="square"></line>
+        <svg x="0" y="0.33em" font-size="13" style="overflow: visible;">
+          <text transform="" x="-8" y="26" fill="#444" font-size="13" text-anchor="end">
+            <tspan x="-8" dy="0em">Male</tspan>
+          </text></svg>
+      </g>
+      <g class="visx-group visx-axis-tick" transform="translate(0, 0)">
+        <line class="visx-line" x1="0" y1="86" x2="-4" y2="86" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1" stroke-linecap="square"></line><svg x="0" y="0.33em" font-size="13" style="overflow: visible;"><text transform="" x="-8" y="86" fill="#444" font-size="13" text-anchor="end">
+            <tspan x="-8" dy="0em">Female</tspan>
+          </text></svg>
+      </g>
+      
+      <line class="visx-line visx-axis-line" x1="0" y1="0.5" x2="0" y2="131" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1"></line>
+    </g>
+    <g class="visx-group visx-axis visx-axis-bottom" transform="translate(0, 130)">
+      <g class="visx-group visx-axis-tick" transform="translate(0, 0)">
+        <line class="visx-line" x1="66" y1="0" x2="66" y2="8" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1" stroke-linecap="square"></line><svg x="0" y="0.33em" font-size="13" style="overflow: visible;"><text transform="" x="66" y="21" fill="#444" font-size="13" text-anchor="middle">
+            <tspan x="66" dy="0em">-4%</tspan>
+          </text></svg>
+      </g>
+      <g class="visx-group visx-axis-tick" transform="translate(0, 0)">
+        <line class="visx-line" x1="153" y1="0" x2="153" y2="8" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1" stroke-linecap="square"></line><svg x="0" y="0.33em" font-size="13" style="overflow: visible;"><text transform="" x="153" y="21" fill="#444" font-size="13" text-anchor="middle">
+            <tspan x="153" dy="0em">-2%</tspan>
+          </text></svg>
+      </g>
+      <g class="visx-group visx-axis-tick" transform="translate(0, 0)">
+        <line class="visx-line" x1="240" y1="0" x2="240" y2="8" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1" stroke-linecap="square"></line><svg x="0" y="0.33em" font-size="13" style="overflow: visible;"><text transform="" x="240" y="21" fill="#444" font-size="13" text-anchor="middle">
+            <tspan x="240" dy="0em">0%</tspan>
+          </text></svg>
+      </g>
+      <g class="visx-group visx-axis-tick" transform="translate(0, 0)">
+        <line class="visx-line" x1="327" y1="0" x2="327" y2="8" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1" stroke-linecap="square"></line><svg x="0" y="0.33em" font-size="13" style="overflow: visible;"><text transform="" x="327" y="21" fill="#444" font-size="13" text-anchor="middle">
+            <tspan x="327" dy="0em">2%</tspan>
+          </text></svg>
+      </g>
+      <g class="visx-group visx-axis-tick" transform="translate(0, 0)">
+        <line class="visx-line" x1="414" y1="0" x2="414" y2="8" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1" stroke-linecap="square"></line><svg x="0" y="0.33em" font-size="13" style="overflow: visible;"><text transform="" x="414" y="21" fill="#444" font-size="13" text-anchor="middle">
+            <tspan x="414" dy="0em">4%</tspan>
+          </text></svg>
+      </g>
+      <line class="visx-line visx-axis-line" x1="0.5" y1="0" x2="480.5" y2="0" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1"></line><svg x="0" y="0" font-size="10" style="overflow: visible;"><text class="visx-axis-label bar-chart-xaxis-label" x="240" y="51" font-family="Arial" font-size="10" fill="#222" text-anchor="middle">
+          <tspan x="240" dy="0em">Percent Change</tspan>
+        </text></svg>
+    </g>
+  </g>
+  <line x1="340" x2="340" y1="140" y2="10" stroke="#444"></line>
+</svg>

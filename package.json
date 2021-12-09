@@ -27,6 +27,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "file-loader": "^6.1.0",
     "html-webpack-plugin": "^4.5.0",
+    "http-server": "^14.0.0",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
     "mini-svg-data-uri": "^1.2.3",
