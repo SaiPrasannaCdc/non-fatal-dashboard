@@ -188,8 +188,9 @@ const UsaMap = () => {
             <path
               tabIndex={-1}
               className='single-geo'
-              stroke={'#FFF'}
-              strokeWidth={5}   
+              stroke={'#333'}
+              // stroke={'#5a5547'}
+              strokeWidth={1}   
               d={path}
             />
             {geoLabel(geo, legendColors[0], projection)}

@@ -24,24 +24,28 @@ function BarChartVertical({
 
   const letterFrequency = [
     {
-        "letter": "A",
-        "frequency": 6
+      "letter": "Dec-Jan",
+      "frequency": 0.6
     },
     {
-        "letter": "B",
-        "frequency": 4
+        "letter": "Jan-Feb",
+        "frequency": 0.4
     },
     {
-        "letter": "C",
-        "frequency": -5
+        "letter": "Feb-Mar",
+        "frequency": -0.5
     },
     {
-        "letter": "D",
-        "frequency": -4
+        "letter": "Mar-Apr",
+        "frequency": -0.4
     },
     {
-        "letter": "E",
-        "frequency": 4
+        "letter": "Apr-May",
+        "frequency": 0.4
+    },
+    {
+      "letter": "May-Jun",
+      "frequency": 0.6
     }
   ];
 
@@ -76,12 +80,18 @@ const getLetterFrequency = (d) => Number(d.frequency) ;
 
   const center = yMax / 2;
 
+  let highest = 0;
 
+  const percentScale = scaleLinear({
+    domain: [0, Math.max(...data.map(getLetterFrequency))],
+  });
+
+  percentScale.rangeRound([0, yMax]);
 
   return width < 10 ? null : (
     <svg width={width} height={height}>
       <rect width={width} height={height} fill="url(#teal)" rx={14} />
-      <Group>
+      <Group left={100} bottom={200}>
         {data.map((d) => {
           const letter = getLetter(d);
           // const barWidth = xScale.bandwidth();
@@ -116,7 +126,40 @@ const getLetterFrequency = (d) => Number(d.frequency) ;
             </>
           );
         })}
-        
+        <AxisLeft
+          // scale={yScale}
+          stroke={'black'}
+          tickStroke={'black'}
+          // labelOffset={20}
+          scale={percentScale}
+          label={'Percent Change'}
+          tickFormat={function tickFormat(d){
+            return d*10 + '%';
+          }}
+          numTicks={5}
+          tickLabelProps={() => ({
+            fill: 'black',
+            fontSize: 13,
+            textAnchor: 'end',
+            dy: '0.33em'
+          })}
+        />
+        <AxisBottom
+          top={yMax-30}
+          // left={-34}
+          scale={xScale}
+          stroke={'black'}
+          tickStroke={'black'}
+          label={'30 day comparison'}
+          labelOffset={10}
+          tickLabelProps={() => ({
+            fill: 'black',
+            fontSize: 13,
+            textAnchor: 'middle',
+            dy: '0.33em'
+          })}
+        />
+        <line y1={center } y2={center} x1={xMax} x2={0} stroke={'black'} />
       </Group>
     </svg>
   );

@@ -81,7 +81,7 @@ const hashObj = (row) => {
 const Hexagon = ({fill}) => {
   return (
     <svg viewBox="0 0 45 51">
-      <polygon fill={fill} points="22 0 44 12.702 44 38.105 22 50.807 0 38.105 0 12.702"/>
+      <polygon fill={fill} strokeWidth={1} stroke="gray" points="22 0 44 12.702 44 38.105 22 50.807 0 38.105 0 12.702"/>
     </svg>
   )
 }
@@ -197,7 +197,7 @@ const drugScreenOptions = {
 
 const months = [
   'January',
-  'Feburary',
+  'February',
   'March',
   'April',
   'May',
@@ -405,7 +405,7 @@ export default function App({ dataUrl }) {
       const significance = stateData[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
       const legendColors = applyLegendToRow(stateData);
       const hexagonHTML = renderToString(<Hexagon fill={legendColors[0]} />);
-      toolTipText += `<div class="state-name-row"><div>${hexagonHTML}</div><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
+      toolTipText += `<div class="state-name-row"><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
       if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw) {
         toolTipText += `<div class="percentage-row"><div>${drugScreenOptions[currentDrug]['titlePlural']}:</div><div>${formatPercentage(selectedPercentageRaw)}</div></div>`;
@@ -433,11 +433,12 @@ export default function App({ dataUrl }) {
   // ];
   //Palette with purple, orange, and grays
   let mapColorPalette = [
-    '#EA6432',
-    '#742867',
-    '#A9A9A9',
-    '#D3D3D3',
-    '#F5F5F5',
+    '#ee7600',
+    
+    '#36648b',
+    '#7a7a7a',
+    '#cccccc',
+    '#ffffff',
     '#3690c0',
     '#02818a',
     '#016c59',
@@ -690,8 +691,14 @@ export default function App({ dataUrl }) {
           </div>
         </div>
         <div className={'bar-chart-container'}>
-          <div className="bar-chart">
-            <BarChartVertical width={600} height={400} />
+        <div className="bar-chart">
+            <span className='chart-title'>US</span>
+            <BarChartVertical width={600} height={230} />
+            {/* <DumbbellChart width={644} height={350} legendOrder={legendOrder} mapColorPalette={mapColorPalette} keyIndex={keyIndex} drugScreenOptions={drugScreenOptions} formatPercentage={formatPercentage} stateData={Object.values(runtimeData[selected])} usData={Object.values(runtimeUSData)}  /> */}
+          </div>
+          <div className="bar-chart" style={{"margin":"60px 0"}}>
+          <span className='chart-title'>State Name</span>
+            <BarChartVertical width={600} height={230} />
             {/* <DumbbellChart width={644} height={350} legendOrder={legendOrder} mapColorPalette={mapColorPalette} keyIndex={keyIndex} drugScreenOptions={drugScreenOptions} formatPercentage={formatPercentage} stateData={Object.values(runtimeData[selected])} usData={Object.values(runtimeUSData)}  /> */}
           </div>
         </div>
@@ -830,8 +837,7 @@ export default function App({ dataUrl }) {
 
     return (
       <>
-      <section class="gender-age-section">
-        {/* <h3></h3> */}
+      <section class="comparison-section">
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
             <h3 style={{ color: drugColor }}>Sex Comparison</h3>
@@ -842,22 +848,22 @@ export default function App({ dataUrl }) {
               <div className="chart-grid">
               
                 <div>
-                  <h4>{ageData[0]['type']}</h4>
+                  <span className='chart-title'>{ageData[0]['type']}</span>
                   <AllSex />
                   {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
                 </div>
                 <div>
-                  <h4>{ageData[1]['type']}</h4>
+                  <span className='chart-title'>{ageData[1]['type']}</span>
                   <OpiodsSex />
                   {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
                 </div>
                 <div>
-                  <h4>{ageData[2]['type']}</h4>
+                  <span className='chart-title'>{ageData[2]['type']}</span>
                   <HeroinSex />
                   {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
                 </div>
                 <div>
-                  <h4>{ageData[3]['type']}</h4>
+                  <span className='chart-title'>{ageData[3]['type']}</span>
                   <StimulantsSex />
                   {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
                 </div>
@@ -870,7 +876,7 @@ export default function App({ dataUrl }) {
           </div> */}
         </div>
       </section>
-      <section class="gender-age-section">
+      <section class="comparison-section">
         <div className={'bar-chart-container'}>
           {/* <div className="bar-chart">
             <h3>Sex Comparison</h3>
@@ -881,22 +887,22 @@ export default function App({ dataUrl }) {
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
             <div className="chart-grid">
               <div>
-                <h4>{ageData[0]['type']}</h4>
+                <span className='chart-title'>{ageData[0]['type']}</span>
                 <AllDrugs />
                 {/* <AgeLollipop width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} /> */}
               </div>
               <div>
-                <h4>{ageData[1]['type']}</h4>
+                <span className='chart-title'>{ageData[1]['type']}</span>
                 <Opiods />
                 {/* <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} selectedState={selected} /> */}
               </div>
               <div>
-                <h4>{ageData[2]['type']}</h4>
+                <span className='chart-title'>{ageData[2]['type']}</span>
                 <Heroin />
                 {/* <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} selectedState={selected} /> */}
               </div>
               <div>
-                <h4>{ageData[3]['type']}</h4>
+                <span className='chart-title'>{ageData[3]['type']}</span>
                 <Stimulants />
                 {/* <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} selectedState={selected} /> */}
               </div>
@@ -986,7 +992,7 @@ export default function App({ dataUrl }) {
         <div style={{ 'borderLeft': '5px solid' + drugColor }}>
           <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
           <div>
-            <h3 style={{ color: drugColor }}>{getStateName(selected)}</h3>
+            <span className='data-bite-title' style={{ color: drugColor }}>{getStateName(selected)}</span>
             <p>Percent change estimates in rates of suspected drug overdoses</p>
           </div>
         </div>
@@ -1004,8 +1010,8 @@ export default function App({ dataUrl }) {
       <div style={{ 'borderLeft': '5px solid' + drugColor }}>
         <span className="callout" style={{ 'color': drugColor }}>{numStatesWithSignificantIncrease}</span>
         <div>
-          <h3>Number of Jursidictions with a Significant Increase</h3>
-          {/* <p>Some other general US statistic</p> */}
+          <span className='data-bite-title' style={{ 'color': drugColor }}>Jursidictions </span>
+          <p>Number with a Significant Increase</p>
         </div>
       </div>
     );
@@ -1108,16 +1114,16 @@ export default function App({ dataUrl }) {
           </select>
         </div>
       </div>
-      <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.5em 1em', marginBottom: '1em'}}>
-        <span style={{ textTransform: 'uppercase', fontSize: '.8em' }}>Trends in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</span>
-        <span style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: '500' }}>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</span>
+      <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.75em 18px', marginBottom: '1em'}}>
+        <span style={{  fontSize: '.8em', fontWeight: 'bold' }}>Trends in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</span>
+        <h2 style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: 'bold', fontFamily: '"Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif'  }}>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</h2>
       </header>
       <div className="callouts">
         {/* <HeaderLineChart width={150} height={100} lineColor={drugColor} /> */}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{usPercent}%</span>
           <div>
-            <h3 style={{ color: drugColor }}>US</h3>
+            <span className='data-bite-title' style={{ color: drugColor }}>US</span>
             <p>Percent change in suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {fromLabel} to {toLabel}</p>
           </div>
         </div>
@@ -1126,7 +1132,7 @@ export default function App({ dataUrl }) {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{'color': drugColor}}>{statesParticipating}</span>
           <div>
-            <h3 style={{ color: drugColor }}>States Participating</h3>
+            <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
             <p>Funded states with reported data</p>
           </div>
         </div>
@@ -1283,30 +1289,33 @@ export default function App({ dataUrl }) {
           </>
         }
       {GenderAgeSection()}
-      <div className="datatable-container">
-        <h3 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-          Monthly Trends by State - {drugScreenOptions[currentDrug]['titleAll']}
-          {showDatatable && <span>{String.fromCharCode(8722)}</span>}
-          {!showDatatable && <span>{String.fromCharCode(43)}</span>}
-        </h3>
-        {showDatatable &&
-          <div className="datatable-body">
-            <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
-            <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
-            <DownloadButton data={rawData} />
-          </div>}
+      <div className='data-tables'>
+        <div className="datatable-container">
+          <h2 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
+            Monthly Trends by State - {drugScreenOptions[currentDrug]['titleAll']}
+            {showDatatable && <span>{String.fromCharCode(8722)}</span>}
+            {!showDatatable && <span>{String.fromCharCode(43)}</span>}
+          </h2>
+          {showDatatable &&
+            <div className="datatable-body">
+              <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
+              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
+              <DownloadButton data={rawData} />
+            </div>}
+        </div>
+        <div className="datatable-container">
+          <h2 style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
+          Important Data Considerations
+            {showConsiderations && <span>{String.fromCharCode(8722)}</span>}
+            {!showConsiderations && <span>{String.fromCharCode(43)}</span>}
+          </h2>
+          {showConsiderations &&
+            <div className="datatable-body">
+              <p className="datatable-description">footnotes will be added</p>
+            </div>}
+        </div>
       </div>
-      <div className="datatable-container">
-        <h3 style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
-        Important Data Considerations
-          {showConsiderations && <span>{String.fromCharCode(8722)}</span>}
-          {!showConsiderations && <span>{String.fromCharCode(43)}</span>}
-        </h3>
-        {showConsiderations &&
-          <div className="datatable-body">
-            <p className="datatable-description">footnotes will be added</p>
-          </div>}
-      </div>
+      
     </Context.Provider>
   );
 }
