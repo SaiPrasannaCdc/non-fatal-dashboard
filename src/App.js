@@ -235,6 +235,7 @@ export default function App({ dataUrl }) {
   const [modal, setModal] = useState(null);
   const [showDatatable, setShowDatatable] = useState(false);
   const [showLegend, setShowLegend] = useState(true);
+  const [timeline, setTimeline] = useState('Monthly');
   const [showConsiderations, setShowConsiderations] = useState(false);
   
 
@@ -434,7 +435,6 @@ export default function App({ dataUrl }) {
   //Palette with purple, orange, and grays
   let mapColorPalette = [
     '#ee7600',
-    
     '#36648b',
     '#7a7a7a',
     '#cccccc',
@@ -515,6 +515,9 @@ export default function App({ dataUrl }) {
     let tempTimeframes = monthTimeframes;
     if ('year' === timeframe) {
       tempTimeframes = monthTimeframes.slice(12);
+      setTimeline('Annual');
+    } else {
+      setTimeline('Monthly');
     }
     setSelectedTimeframe(timeframe);
   };
@@ -840,13 +843,10 @@ export default function App({ dataUrl }) {
       <section class="comparison-section">
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
-            <h3 style={{ color: drugColor }}>Sex Comparison</h3>
-            <div className="sex-chart">
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. </p>
-              
-              
-              <div className="chart-grid">
-              
+          <h3 style={{ color: drugColor }}>{timeline} percent change in rates of suspected all drug, all opioid, heroin, and all stimulant overdoses per 10,000 ED visits†
+from {fromLabel} to {toLabel} by sex.</h3>
+            <div className="sex-chart"> 
+              <div className="chart-grid">        
                 <div>
                   <span className='chart-title'>{ageData[0]['type']}</span>
                   <AllSex />
@@ -883,8 +883,8 @@ export default function App({ dataUrl }) {
             <BarChart width={644} height={350} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} />
           </div> */}
           <div className="bar-chart">
-            <h3 style={{ color: drugColor }}>Age Comparison</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+            <h3 style={{ color: drugColor }}>{timeline} percent change in rates of suspected all drug, all opioid, heroin, and all stimulant overdoses per 10,000 ED visits†
+from</h3>
             <div className="chart-grid">
               <div>
                 <span className='chart-title'>{ageData[0]['type']}</span>
@@ -992,8 +992,8 @@ export default function App({ dataUrl }) {
         <div style={{ 'borderLeft': '5px solid' + drugColor }}>
           <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
           <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>{getStateName(selected)}</span>
-            <p>Percent change estimates in rates of suspected drug overdoses</p>
+            <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change in {getStateName(selected)}</span>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {fromLabel} to {toLabel}</p>
           </div>
         </div>
       )
@@ -1098,7 +1098,7 @@ export default function App({ dataUrl }) {
     toLabel = allTimeframes[sliderPointYear + 12]['label'];
     fromLabel = allTimeframes[sliderPointYear + 11]['label'];
   }
-
+  console.log('drugScreenOptions: ', drugScreenOptions)
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon }}>
       <div class="filters">
@@ -1123,8 +1123,11 @@ export default function App({ dataUrl }) {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{usPercent}%</span>
           <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>US</span>
-            <p>Percent change in suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {fromLabel} to {toLabel}</p>
+            
+            <span className='data-bite-title' style={{ color: drugColor }}>
+              
+              {timeline}  Percent Change in US</span>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {fromLabel} to {toLabel}</p>
           </div>
         </div>
         {selected && constructStateDataBite()}
@@ -1229,6 +1232,7 @@ export default function App({ dataUrl }) {
             <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
             <ul className="legend">
               {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
+              {/* {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)} */}
             </ul>
             <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
           </div>
@@ -1292,13 +1296,13 @@ export default function App({ dataUrl }) {
       <div className='data-tables'>
         <div className="datatable-container">
           <h2 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-            Monthly Trends by State - {drugScreenOptions[currentDrug]['titleAll']}
+            {timeline} Trends by State - {drugScreenOptions[currentDrug]['titleAll']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
             {!showDatatable && <span>{String.fromCharCode(43)}</span>}
           </h2>
           {showDatatable &&
             <div className="datatable-body">
-              <p className="datatable-description">CDC’s Drug Overdose Surveillance and Epidemiology (DOSE) System:* Monthly Trends<sup>†</sup> in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose<sup>§</sup>, {fromLabel} to {toLabel},<sup>¶</sup> by OD2A-funded Jurisdiction</p>
+              <p className='datatable-description'>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose, {fromLabel} to {toLabel}, by OD2A-funded Jurisdiction</p>
               <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
               <DownloadButton data={rawData} />
             </div>}
@@ -1311,9 +1315,21 @@ export default function App({ dataUrl }) {
           </h2>
           {showConsiderations &&
             <div className="datatable-body">
-              <p className="datatable-description">footnotes will be added</p>
+             <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
+              <ol>
+                <li><strong>Some data may be missing.</strong> Data sent from EDs to health departments may be delayed or may stop for a period of time. When EDs begin sharing data again, information about visits during the lapse may never be shared.</li>
+                <li><strong>Reporting facilities and the data they report can change.</strong> Several states continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions or a cessation of syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, numbers and rates reported could change over time as more facilities began sharing data or sharing higher quality data as well as facilities that may stop sharing data for a period of time. Some EDs also had increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitate the identification of overdose-related visits.</li>
+                <li><strong>Data are updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in syndromic surveillance systems within 48 hours for ~70% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be updated over the course of several weeks, and relevant overdose discharge diagnosis codes or revised chief complaint text may be received during this time. Therefore, rates may change over time as the visit records are completed and new drug overdose visits are identified.</li>
+                <li><strong>These are suspected overdoses.</strong> Because these data are not determined by toxicological testing, they are not considered confirmed cases, but “suspected” overdoses.</li>
+                <li><strong>Data likely represent an undercount,</strong> given inaccuracies in coding and missing chief complaint information.</li>
+                <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of suspected opioid-, heroin-, and stimulant-involved overdose visits are included in the numbers of suspected all drug overdose visits; suspected heroin-involved overdose visits are included in the numbers of suspected opioid-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
+              </ol>
             </div>}
         </div>
+      </div>
+      <div className="footnotes">
+        <p>* Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
+        <p>† To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
       </div>
       
     </Context.Provider>
