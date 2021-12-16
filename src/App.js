@@ -711,8 +711,10 @@ export default function App({ dataUrl }) {
 
   const GenderAgeSection = () => {
 
-    const genderKeys = ['malePercent', 'femalePercent'];
-    const genderColorKeys = ['maleColor','femaleColor'];
+    // const genderKeys = ['malePercent', 'femalePercent'];
+    const genderKeys = ['percent'];
+    // const genderColorKeys = ['maleColor','femaleColor'];
+    const genderColorKeys = ['color'];
     console.log('runtimeUSGenderData: ', runtimeUSGenderData);
     let genderData = [];
     
@@ -720,64 +722,68 @@ export default function App({ dataUrl }) {
       const drugScreenOption = drugScreenOptions['all'];
       const drugPercentColumn = drugScreenOption['percentageColumn'];
       const drugSignificanceColumn = drugScreenOption['significanceColumn'];
-      let genderBarGroupObject = {
-        'index': 0,
-        'percent': '',
-        'type': drugScreenOption['titleAll']
-      }
-      runtimeUSGenderData.map((row) => {
-        const gender = row['gender'];
-        const significance = row[drugSignificanceColumn];
-        if ('M' === gender) {
-          genderBarGroupObject['malePercent'] = row[drugPercentColumn];
-          genderBarGroupObject['maleSignificance'] = significance;
-          genderBarGroupObject['maleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } else if ('F' === gender) {
-          genderBarGroupObject['femalePercent'] = row[drugPercentColumn];
-          genderBarGroupObject['femaleSignificance'] = significance;
-          genderBarGroupObject['femaleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } else if ('Missing' === gender) {
-          // barGroupObject['missingPercent'] = row[drugPercentColumn];
-          // barGroupObject['missingSignificance'] = significance;
-          // barGroupObject['missingColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-        }
-      });
-
-      genderData.push(genderBarGroupObject);
-
-
-
-      /// NEW WAY
-
-      // let maleBarGroupObject = {
+      // let genderBarGroupObject = {
       //   'index': 0,
       //   'percent': '',
-      //   'type': 'male'
-      // }
-      // let femaleBarGroupObject = {
-      //   'index': 1,
-      //   'percent': '',
-      //   'type': 'female'
+      //   'type': drugScreenOption['titleAll']
       // }
       // runtimeUSGenderData.map((row) => {
       //   const gender = row['gender'];
       //   const significance = row[drugSignificanceColumn];
       //   if ('M' === gender) {
-      //     maleBarGroupObject['malePercent'] = row[drugPercentColumn];
-      //     maleBarGroupObject['maleSignificance'] = significance;
-      //     maleBarGroupObject['maleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
+      //     genderBarGroupObject['malePercent'] = row[drugPercentColumn];
+      //     genderBarGroupObject['maleSignificance'] = significance;
+      //     genderBarGroupObject['maleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
       //   } else if ('F' === gender) {
-      //     femaleBarGroupObject['femalePercent'] = row[drugPercentColumn];
-      //     femaleBarGroupObject['femaleSignificance'] = significance;
-      //     femaleBarGroupObject['femaleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-      //   } 
+      //     genderBarGroupObject['femalePercent'] = row[drugPercentColumn];
+      //     genderBarGroupObject['femaleSignificance'] = significance;
+      //     genderBarGroupObject['femaleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
+      //   } else if ('Missing' === gender) {
+      //     // barGroupObject['missingPercent'] = row[drugPercentColumn];
+      //     // barGroupObject['missingSignificance'] = significance;
+      //     // barGroupObject['missingColor'] = mapColorPalette[legendOrder.indexOf(significance)];
+      //   }
       // });
 
-      // genderData.push(maleBarGroupObject);
-      // genderData.push(femaleBarGroupObject);
+      // genderData.push(genderBarGroupObject);
 
 
 
+      /// NEW WAY
+
+      let maleBarGroupObject = {
+        'index': 0,
+        'percent': '',
+        'significance': '',
+        'type': 'male',
+        'label': 'Male'
+      }
+      let femaleBarGroupObject = {
+        'index': 1,
+        'percent': '',
+        'significance': '',
+        'type': 'female',
+        'label': 'Female'
+      }
+      runtimeUSGenderData.map((row) => {
+        const gender = row['gender'];
+        const significance = row[drugSignificanceColumn];
+        if ('M' === gender) {
+          maleBarGroupObject['percent'] = row[drugPercentColumn];
+          maleBarGroupObject['significance'] = significance;
+          maleBarGroupObject['color'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } else if ('F' === gender) {
+          femaleBarGroupObject['percent'] = row[drugPercentColumn];
+          femaleBarGroupObject['significance'] = significance;
+          femaleBarGroupObject['color'] = mapColorPalette[legendOrder.indexOf(significance)];
+        } 
+      });
+
+      genderData.push(maleBarGroupObject);
+      genderData.push(femaleBarGroupObject);
+
+
+debugger;
 
 
 
@@ -849,23 +855,23 @@ from {fromLabel} to {toLabel} by sex.</h3>
               <div className="chart-grid">        
                 <div>
                   <span className='chart-title'>{ageData[0]['type']}</span>
-                  <AllSex />
-                  {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
+                  {/* <AllSex /> */}
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
                 <div>
                   <span className='chart-title'>{ageData[1]['type']}</span>
-                  <OpiodsSex />
-                  {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
+                  {/* <OpiodsSex /> */}
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
                 <div>
                   <span className='chart-title'>{ageData[2]['type']}</span>
-                  <HeroinSex />
-                  {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
+                  {/* <HeroinSex /> */}
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
                 <div>
                   <span className='chart-title'>{ageData[3]['type']}</span>
-                  <StimulantsSex />
-                  {/* <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} /> */}
+                  {/* <StimulantsSex /> */}
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
               </div>
             </div>
@@ -1326,10 +1332,10 @@ from</h3>
               </ol>
             </div>}
         </div>
-      </div>
-      <div className="footnotes">
-        <p>* Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
-        <p>† To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+        <div className="footnotes">
+          <p>* Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
+          <p>† To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+        </div>
       </div>
       
     </Context.Provider>
