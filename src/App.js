@@ -837,16 +837,13 @@ export default function App({ dataUrl }) {
 
     return (
       <>
-      <section class="comparison-section">
+      <section className="comparison-section">
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
             <h3 style={{ color: drugColor }}>Sex Comparison</h3>
             <div className="sex-chart">
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. </p>
-              
-              
               <div className="chart-grid">
-              
                 <div>
                   <span className='chart-title'>{ageData[0]['type']}</span>
                   <AllSex />
@@ -876,7 +873,7 @@ export default function App({ dataUrl }) {
           </div> */}
         </div>
       </section>
-      <section class="comparison-section">
+      <section className="comparison-section">
         <div className={'bar-chart-container'}>
           {/* <div className="bar-chart">
             <h3>Sex Comparison</h3>
@@ -1052,7 +1049,7 @@ export default function App({ dataUrl }) {
         href={`data:text/csv;base64,${Base64.encode(csvData)}`}
         aria-label="Download this data in a CSV file format."
         className={`btn btn-download no-border`}
-        style={{'background-color':drugColor}}
+        style={{'backgroundColor':drugColor}}
       >
         Download Data (CSV)
       </a>
@@ -1101,7 +1098,7 @@ export default function App({ dataUrl }) {
 
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon }}>
-      <div class="filters">
+      <div className="filters">
         <div>
           Select a Drug: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setCurrentDrug(e.target.value) }}>
             {Object.keys(drugScreenOptions).map((key) => <option selected={currentDrug===key} value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
@@ -1156,7 +1153,7 @@ export default function App({ dataUrl }) {
       <aside>
           <div>
             <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
-            <div class="time-frame-container">
+            <div className="time-frame-container">
               <div>Compare {toLabel} with the previous: </div>
               <div className="radio">
                 <label>

@@ -19,14 +19,22 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
   };
 
   const getSymbols = (row) => {
-    let returnSymbols = '';
+    let symbols = [];
 
     if ('unfunded' === row[percentageColumn]) {
-      returnSymbols = String.fromCharCode(167) + String.fromCharCode(167);
+      symbols.push('††');
+    }
+
+    if ('missing' === row[percentageColumn]) {
+      symbols.push('¶');
+    }
+
+    if ('suppressed' === row[percentageColumn]) {
+      symbols.push('**');
     }
 
     return (
-      <>&nbsp;{returnSymbols}</>
+      <>{symbols}</>
     )
   };
 
@@ -37,14 +45,17 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
           <th>Jurisdiction</th>
           <th>Percentage Change</th>
           <th>Significance</th>
+          <th>Symbols</th>
         </tr>
         <tr>
           <td>Overall</td>
           <td className={'Significant Increase' === runtimeUSData[significanceColumn] || 'Significant Decrease' === runtimeUSData[significanceColumn] ? 'is-significant' : ''}>{getPercentageColumn(runtimeUSData)}</td>
           <td>{runtimeUSData[significanceColumn]}</td>
+          <td></td>
         </tr>
         <tr className="state-header" style={{backgroundColor: '#f5f5f5'}}>
           <th>State</th>
+          <th></th>
           <th></th>
           <th></th>
         </tr>
@@ -54,7 +65,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
 
           return (
             <tr>
-              <td>{stateName}{getSymbols(row)}</td>
+              <td>{stateName}</td>
               <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>
                 <div className="datatable-hex-container">
                   <div className="datatable-hex">
@@ -64,6 +75,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
                 </div>
               </td>
               <td>{row[significanceColumn]}</td>
+              <td>{getSymbols(row)}</td>
             </tr>
           )
         })}
