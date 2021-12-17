@@ -33,8 +33,14 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
       symbols.push('**');
     }
 
+    if ('US-KY' === row[keyIndex['geo']]) {
+      symbols.push('§§');
+    }
+
+    debugger;
+
     return (
-      <>{symbols}</>
+      <>{symbols.join(' ')}</>
     )
   };
 
@@ -65,14 +71,16 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
 
           return (
             <tr>
-              <td>{stateName}</td>
-              <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>
+              <td>
                 <div className="datatable-hex-container">
                   <div className="datatable-hex">
                     <Hexagon fill={stateColors[0]} />
                   </div>
-                  {getPercentageColumn(row)}
+                  {stateName}
                 </div>
+              </td>
+              <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>
+                {getPercentageColumn(row)}
               </td>
               <td>{row[significanceColumn]}</td>
               <td>{getSymbols(row)}</td>
