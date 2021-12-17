@@ -51,17 +51,14 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
           <th>Jurisdiction</th>
           <th>Percentage Change</th>
           <th>Significance</th>
-          <th>Symbols</th>
         </tr>
         <tr>
           <td>Overall</td>
           <td className={'Significant Increase' === runtimeUSData[significanceColumn] || 'Significant Decrease' === runtimeUSData[significanceColumn] ? 'is-significant' : ''}>{getPercentageColumn(runtimeUSData)}</td>
           <td>{runtimeUSData[significanceColumn]}</td>
-          <td></td>
         </tr>
         <tr className="state-header" style={{backgroundColor: '#f5f5f5'}}>
           <th>State</th>
-          <th></th>
           <th></th>
           <th></th>
         </tr>
@@ -71,19 +68,16 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
 
           return (
             <tr>
-              <td>
+              <td>{stateName} {getSymbols(row)}</td>
+              <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>
                 <div className="datatable-hex-container">
                   <div className="datatable-hex">
                     <Hexagon fill={stateColors[0]} />
                   </div>
-                  {stateName}
+                  {getPercentageColumn(row)}
                 </div>
               </td>
-              <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>
-                {getPercentageColumn(row)}
-              </td>
               <td>{row[significanceColumn]}</td>
-              <td>{getSymbols(row)}</td>
             </tr>
           )
         })}
