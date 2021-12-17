@@ -111,7 +111,7 @@ function BarChart({
                   }
                   // debugger;
                   const x = bar.value > 0 ? center : (center - width)
-                  let offset = bar.value.length * 11.5
+                  // let offset = bar.value.length * 11.5
                   let textInset =  center;
 
                   //Optionally move the text to outside the bar
@@ -198,13 +198,13 @@ function BarChart({
                             fill={barFill}
                           />
 }
-                        <text
+                        {/* <text
                           x={bar.value > 0 ? textInset + interpolated.width + 24 : textInset - interpolated.width - 70}
                           y={bar.y + 6}
                           style={{ fontSize: '13px' }}
                           fill={labelColor}>
                           {barValue}
-                        </text>
+                        </text> */}
                       </>
                     }
                   </Motion>
@@ -224,6 +224,10 @@ function BarChart({
             textAnchor: 'end',
             dy: '0.33em'
           })}
+          tickFormat={function tickFormat(d,e, f){
+            console.log(d, e, f)
+            return data[e].label;
+          }}
         />
         <AxisBottom
           top={yMax-5}
