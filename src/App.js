@@ -527,17 +527,17 @@ export default function App({ dataUrl }) {
     // if (!runtimeTimeframes) {
     //   return {};
     // }
-    debugger;
+
     let startMonth;
     let startYear;
     let endMonth;
     let endYear;
 
     if ('year' === selectedTimeframe) {
-      startMonth = allTimeframes[sliderPointYear]['month'];
-      startYear = allTimeframes[sliderPointYear]['year'];
-      endMonth = allTimeframes[sliderPointYear+12]['month'];
-      endYear = allTimeframes[sliderPointYear+12]['year'];
+      startMonth = allTimeframes[sliderPointYear+12]['month'];
+      startYear = allTimeframes[sliderPointYear+12]['year'];
+      endMonth = allTimeframes[sliderPointYear+13]['month'];
+      endYear = allTimeframes[sliderPointYear+13]['year'];
     } else {
       startMonth = allTimeframes[sliderPointMonth]['month'];
       startYear = allTimeframes[sliderPointMonth]['year'];
@@ -562,10 +562,10 @@ export default function App({ dataUrl }) {
     let endYear;
 
     if ('year' === selectedTimeframe) {
-      startMonth = allTimeframes[sliderPointYear]['month'];
-      startYear = allTimeframes[sliderPointYear]['year'];
-      endMonth = allTimeframes[sliderPointYear + 12]['month'];
-      endYear = allTimeframes[sliderPointYear + 12]['year'];
+      startMonth = allTimeframes[sliderPointYear + 12]['month'];
+      startYear = allTimeframes[sliderPointYear + 12]['year'];
+      endMonth = allTimeframes[sliderPointYear + 13]['month'];
+      endYear = allTimeframes[sliderPointYear + 13]['year'];
     } else {
       startMonth = allTimeframes[sliderPointMonth]['month']; 
       startYear = allTimeframes[sliderPointMonth]['year'];

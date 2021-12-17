@@ -198,13 +198,13 @@ function BarChart({
                             fill={barFill}
                           />
 }
-                        <text
+                        {/* <text
                           x={bar.value > 0 ? textInset + interpolated.width + 24 : textInset - interpolated.width - 70}
                           y={bar.y + 6}
                           style={{ fontSize: '13px' }}
                           fill={labelColor}>
                           {barValue}
-                        </text>
+                        </text> */}
                       </>
                     }
                   </Motion>
