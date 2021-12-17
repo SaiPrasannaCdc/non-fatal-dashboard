@@ -1025,11 +1025,38 @@ from</h3>
     }
   }
 
+  const objectFlip = (obj) => {
+    const ret = {};
+    Object.keys(obj).forEach(key => {
+      ret[obj[key]] = key;
+    });
+    return ret;
+  }
+
   const DownloadButton = ({ data }) => {
     const fileName = `download.csv`;
 
-    const csvData = Papa.unparse(data);
+    //Remove the "key" column from the data since that is used internally and not for end users
+    let processedData = [...data];
+    processedData = processedData.map(row => { 
+      row.shift(); //The first column is the "key"
+      return row; 
+    });
 
+    //Insert the header row
+    const reversedKeyIndex = objectFlip(keyIndex);
+    let headerRow = [];
+    for (let i = 1; i < Object.keys(reversedKeyIndex).length; i++) {
+      headerRow.push(reversedKeyIndex[i]);
+    }
+
+    //Add header row to beginning of dataset
+    processedData.unshift(headerRow);
+
+    //Parse to CSV
+    const csvData = Papa.unparse(processedData);
+
+    //Save and download
     const saveBlob = () => {
       if (typeof window.navigator.msSaveBlob === 'function') {
         const dataBlob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
