@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColumn,keyIndex,supportedStates,drugColor,Hexagon,applyLegendToRow}) {
+function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionColumn,percentageColumn,keyIndex,supportedStates,drugColor,Hexagon,applyLegendToRow}) {
+
+  const [sortBy, setSortBy] = useState('jurisdiction');
+  const [sortAscending, setSortAscending] = useState(false);
 
   const getPercentageColumn = (row) => {
 
@@ -37,20 +40,58 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
       symbols.push('§§');
     }
 
-    debugger;
-
     return (
       <>{symbols.join(' ')}</>
     )
   };
 
+  const sortTable = (column) => {
+    setSortBy(column);
+    if (sortBy === column) {
+      setSortAscending(!sortAscending);
+    } else {
+      setSortAscending(true);
+    }
+  };
+
+  let runtimeSortedData = [...runtimeData];
+
+  if ('percent' === sortBy) {
+    runtimeSortedData = [...runtimeData].sort((a, b) => {
+      if (sortAscending) {
+        return a[percentageColumn] > b[percentageColumn] ? 1 : -1;
+      } else {
+        return a[percentageColumn] > b[percentageColumn] ? -1 : 1;
+      }
+      
+    });
+  } else if ('significance' === sortBy) {
+    runtimeSortedData = [...runtimeData].sort((a,b) => {
+      if (sortAscending) {
+        return a[significanceColumn] > b[significanceColumn] ? 1 : -1;
+      } else {
+        return a[significanceColumn] > b[significanceColumn] ? -1 : 1;
+      }
+    });
+  } else {
+    runtimeSortedData = [...runtimeData].sort((a,b) => {
+      if (sortAscending) {
+        return a[jurisdictionColumn] > b[significanceColumn] ? 1 : -1;
+      } else {
+        return a[jurisdictionColumn] > b[significanceColumn] ? -1 : 1;
+      }
+    });
+  }
+
+  console.log("Rendering datatable");
+
   return (
     <>
       <table id="main-data-table">
         <tr style={{backgroundColor: drugColor}}>
-          <th>Jurisdiction</th>
-          <th>Percentage Change</th>
-          <th>Significance</th>
+          <th onClick={() => sortTable('jurisdiction')}>Jurisdiction</th>
+          <th onClick={() => sortTable('percent')}>Percentage Change</th>
+          <th onClick={() => sortTable('significance')}>Significance</th>
         </tr>
         <tr>
           <td>Overall</td>
@@ -62,7 +103,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,percentageColum
           <th></th>
           <th></th>
         </tr>
-        {runtimeData.map((row) => {
+        {runtimeSortedData.map((row) => {
           let stateName = supportedStates[row[keyIndex['geo']]][0];
           const stateColors = applyLegendToRow(row);
 

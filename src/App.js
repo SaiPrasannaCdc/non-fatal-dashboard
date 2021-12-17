@@ -782,20 +782,6 @@ export default function App({ dataUrl }) {
       genderData.push(maleBarGroupObject);
       genderData.push(femaleBarGroupObject);
 
-
-debugger;
-
-
-
-
-
-
-
-
-
-
-
-
     // });
 
     const ageKeys = ['age0to14Percent', 'age15to24Percent', 'age25to34Percent', 'age35to54Percent',  'age55PlusPercent'];
@@ -1086,6 +1072,7 @@ from</h3>
   const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
   const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
   const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
+  const jurisdictionColumn = keyIndex[drugScreenOptions[currentDrug]['jurisdiction']];
   let runtimeTableData = Object.values(runtimeData);
 
   //If a state is selected, limit the datatable
@@ -1309,7 +1296,7 @@ from</h3>
           {showDatatable &&
             <div className="datatable-body">
               <p className='datatable-description'>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose, {fromLabel} to {toLabel}, by OD2A-funded Jurisdiction</p>
-              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
+              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
               <DownloadButton data={rawData} />
             </div>}
         </div>
