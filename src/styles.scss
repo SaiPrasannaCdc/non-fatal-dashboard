@@ -477,19 +477,6 @@ line { stroke: #ccc; stroke-width: 1; }
         font-weight: bold;
     }
 
-    .data-tables {
-         z-index: 10;
-        position: relative;
-        padding-top: 30px;
-        &:before {
-            content: "";
-            display: block;
-            height: 30px;
-            background: #ffffff;
-            background: linear-gradient(0deg, rgba(#ffffff,1) 10%, rgba(#ffffff,0) 100%);
-        }
-    }
-
     .datatable-container {
         z-index: 10;
         position: relative;
@@ -497,8 +484,7 @@ line { stroke: #ccc; stroke-width: 1; }
         &:before {
             content: "";
             display: block;
-            height: 20px;
-            background: #ffffff;
+            height: $gbl-padding;
         }
 
         h2 {
@@ -520,7 +506,6 @@ line { stroke: #ccc; stroke-width: 1; }
         }
 
         .datatable-body {
-            background-color: #fff;
             padding: $gbl-padding;
 
             p {
@@ -593,15 +578,12 @@ line { stroke: #ccc; stroke-width: 1; }
     }  
 
     .footnotes {
+        padding: $gbl-padding 0;
+
         p {
-            font-size: .9rem;
+            font-size: .85rem;
             margin-bottom: $gbl-padding;
         }
-    }
-
-    .footnotes {
-        background-color: #fff;
-        padding: $gbl-padding;
     }
 
     .comparison-section {

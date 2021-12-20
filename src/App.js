@@ -1057,6 +1057,16 @@ from</h3>
     const itemsToAdd = headerRow.splice(12, 6);
     headerRow = itemsToAdd.concat(headerRow);
 
+    let footnote1 = ["§", "The state/territory does not share data from syndromic surveillance systems with DOSE." ];
+    let footnote2 = ["¶", "The funded jurisdiction did not provide CDC enough months of data to calculate all percent change cells." ];
+    let footnote3 = ["**", "State does not participate in OD2A DOSE ED data sharing." ];
+    let footnote4 = ["† †", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
+
+    processedData.unshift(footnote1);
+    processedData.unshift(footnote2);
+    processedData.unshift(footnote3);
+    processedData.unshift(footnote4);
+
     //Add header row to beginning of dataset
     processedData.unshift(headerRow);
 
@@ -1182,144 +1192,109 @@ from</h3>
           <>Hide Legend</>
         }
       </div>
-      {showLegend &&
-      <aside>
-          <div>
-            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
-            <div className="time-frame-container">
-              <div>Compare {toLabel} with the previous: </div>
-              <div className="radio">
-                <label>
-                  <input
-                    type="radio"
-                    value="month"
-                    name="time-selector"
-                    checked={selectedTimeframe === 'month'}
-                    onChange={(e) => {handleTimeframeChange(e.target.value)}}
-                  />
-                  Month
-                </label>
+      <div className='sticky-container'>
+        {showLegend &&
+          <aside>
+            <div>
+              <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range <span className='help'>?</span></div>
+              {/* <idv className="help-container" */}
+              <div className="time-frame-container">
+                <div>Compare {toLabel} with the previous: </div>
+                <div className="radio">
+                  <label>
+                    <input
+                      type="radio"
+                      value="month"
+                      name="time-selector"
+                      checked={selectedTimeframe === 'month'}
+                      onChange={(e) => {handleTimeframeChange(e.target.value)}}
+                    />
+                    Month
+                  </label>
+                </div>
+                <div className="radio">
+                  <label>
+                    <input
+                      type="radio"
+                      value="year"
+                      name="time-selector"
+                      checked={selectedTimeframe === 'year'}
+                      onChange={(e) => {handleTimeframeChange(e.target.value)}}
+                    />
+                    Year
+                  </label>
+                </div>
               </div>
-              <div className="radio">
-                <label>
-                  <input
-                    type="radio"
-                    value="year"
-                    name="time-selector"
-                    checked={selectedTimeframe === 'year'}
-                    onChange={(e) => {handleTimeframeChange(e.target.value)}}
+              <div className="range-aside-container" style={{ color: drugColor }}>
+                {/* <div className="animation-controls" style={{color: drugColor}}>
+                  <PlayIcon onClick={animateTimeSeries}/>
+                </div> */}
+                {'month' === selectedTimeframe &&
+                  <SliderWithTooltip
+                    tipFormatter={tooltipFormatterMonth}
+                    onChange={(e) => { handleMonthSliderChange(e) }}
+                    min={0}
+                    step={1}
+                    value={sliderPointMonth}
+                    align={{
+                      offset: [0, -5],
+                    }}
+                    max={monthTimeframes.length - 1}
+                    marks={getSliderMarks('month')}
+                    handleStyle={{
+                      borderColor: drugColor,
+                      backgroundColor: drugColor,
+                    }}
                   />
-                  Year
-                </label>
+                }
+                {'year' === selectedTimeframe &&
+                  <SliderWithTooltip
+                    tipFormatter={tooltipFormatterYear}
+                    onChange={(e) => { handleYearSliderChange(e) }}
+                    min={0}
+                    step={1}
+                    value={sliderPointYear}
+                    align={{
+                      offset: [0, -5],
+                    }}
+                    max={yearTimeframes.length - 1}
+                    marks={getSliderMarks('year')}
+                    handleStyle={{
+                      borderColor: drugColor,
+                      backgroundColor: drugColor,
+                    }}
+                  />
+                }
               </div>
             </div>
-            <div className="range-aside-container" style={{ color: drugColor }}>
-              {/* <div className="animation-controls" style={{color: drugColor}}>
-                <PlayIcon onClick={animateTimeSeries}/>
-              </div> */}
-              {'month' === selectedTimeframe &&
-                <SliderWithTooltip
-                  tipFormatter={tooltipFormatterMonth}
-                  onChange={(e) => { handleMonthSliderChange(e) }}
-                  min={0}
-                  step={1}
-                  value={sliderPointMonth}
-                  align={{
-                    offset: [0, -5],
-                  }}
-                  max={monthTimeframes.length - 1}
-                  marks={getSliderMarks('month')}
-                  handleStyle={{
-                    borderColor: drugColor,
-                    backgroundColor: drugColor,
-                  }}
-                />
-              }
-              {'year' === selectedTimeframe &&
-                <SliderWithTooltip
-                  tipFormatter={tooltipFormatterYear}
-                  onChange={(e) => { handleYearSliderChange(e) }}
-                  min={0}
-                  step={1}
-                  value={sliderPointYear}
-                  align={{
-                    offset: [0, -5],
-                  }}
-                  max={yearTimeframes.length - 1}
-                  marks={getSliderMarks('year')}
-                  handleStyle={{
-                    borderColor: drugColor,
-                    backgroundColor: drugColor,
-                  }}
-                />
-              }
+            <div>
+              <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
+              <ul className="legend">
+                {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
+                {/* {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)} */}
+              </ul>
+              <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
             </div>
+          </aside>
+        }
+    
+        <div className="map-container">
+          <div className="map-inner-container">
+            <div className="now-viewing">
+              {!selected && <div><em>* Click on a state to see more.</em></div>}
+              {selected && <div>Now viewing {getStateName(selected)} <span className="btn btn-reset" onClick={resetFilters}>Reset</span></div>}
+            </div>
+            <UsaMap/>
           </div>
-          <div>
-            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
-            <ul className="legend">
-              {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
-              {/* {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)} */}
-            </ul>
-            <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
-          </div>
-      
-          {/* {selected && */}
-          {/* <div>
-            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Shape Legend</div>
-            <ul className="legend">
-            <li>
-                <svg width="18" height="18"  xmlns="http://www.w3.org/2000/svg">
-                  <circle fill="black" stroke="black" stroke-width="8%" cx="9" cy="9" r="8"/>
-                </svg>
-                Participating States
-              </li>
-              <li>
-                <Hexagon fill="black" />
-                Individual State
-              </li>
-            </ul>
-          </div> */}
-{/* } */}
-        </aside>
-}
-
-        
-        
-      <div className="map-container">
-        <div className="map-inner-container">
-          <div className="now-viewing">
-            {!selected && <div><em>* Click on a state to see more.</em></div>}
-            {selected && <div>Now viewing {getStateName(selected)} <span className="btn btn-reset" onClick={resetFilters}>Reset</span></div>}
-          </div>
-          <UsaMap/>
         </div>
         
+        {selected && <StateInfo />}
+        {GenderAgeSection()}
+        <div className="footnotes comparison-section">
+          <p>* Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
+          <p>† To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+        </div>
       </div>
-      
-      {selected && <>
-        <StateInfo />
-        {/* <div>
-            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Dumbell Legend</div>
-            <ul className="legend">
-            <li>
-                <svg width="18" height="18"  xmlns="http://www.w3.org/2000/svg">
-                  <circle fill="white" stroke="black" stroke-width="8%" cx="9" cy="9" r="8"/>
-                </svg>
-                United States
-              </li>
-              <li>
-                <svg width="45" height="45" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
-                <polygon class="visx-polygon" points="42,28 50.66025403784439,43 33.33974596215561,43" fill="black" stroke="black" stroke-width="10" cx="20" cy="9"></polygon>
-                </svg>
-                State Name
-              </li>
-            </ul>
-
-            </div> */}
-          </>
-        }
-      {GenderAgeSection()}
       <div className='data-tables'>
         <div className="datatable-container">
           <h2 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
@@ -1352,10 +1327,6 @@ from</h3>
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of suspected opioid-, heroin-, and stimulant-involved overdose visits are included in the numbers of suspected all drug overdose visits; suspected heroin-involved overdose visits are included in the numbers of suspected opioid-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
               </ol>
             </div>}
-        </div>
-        <div className="footnotes">
-          <p>* Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
-          <p>† To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
         </div>
       </div>
       
