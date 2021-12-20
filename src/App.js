@@ -1034,13 +1034,15 @@ from</h3>
   }
 
   const DownloadButton = ({ data }) => {
-    const fileName = `download.csv`;
+    const fileName = `Non-Fatal-Overdose-Data.csv`;
 
-    //Remove the "key" column from the data since that is used internally and not for end users
-    let processedData = [...data];
-    processedData = processedData.map(row => { 
+    //Remove the first column and move the primary columns to the front
+    let processedData = [...data].map(row => { 
       row.shift(); //The first column is the "key"
-      return row; 
+      let newRow = [...row];
+      const itemsToAdd = newRow.splice(12, 6);
+      newRow = itemsToAdd.concat(newRow);
+      return newRow;
     });
 
     //Insert the header row
@@ -1049,6 +1051,11 @@ from</h3>
     for (let i = 1; i < Object.keys(reversedKeyIndex).length; i++) {
       headerRow.push(reversedKeyIndex[i]);
     }
+
+    //Move the primary columns to the front
+    debugger;
+    const itemsToAdd = headerRow.splice(12, 6);
+    headerRow = itemsToAdd.concat(headerRow);
 
     //Add header row to beginning of dataset
     processedData.unshift(headerRow);
