@@ -46,7 +46,6 @@ function DumbbellChart({
 
     const statePercentage = stateData[keyIndex[drugScreenOption['percentageColumn']]];
     const stateSignificance = stateData[keyIndex[drugScreenOption['significanceColumn']]];
-    debugger;
     types.push(type);
 
     if (Number.parseFloat(statePercentage) && Math.abs(Number.parseFloat(statePercentage)) > highest) {

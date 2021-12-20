@@ -782,20 +782,6 @@ export default function App({ dataUrl }) {
       genderData.push(maleBarGroupObject);
       genderData.push(femaleBarGroupObject);
 
-
-debugger;
-
-
-
-
-
-
-
-
-
-
-
-
     // });
 
     const ageKeys = ['age0to14Percent', 'age15to24Percent', 'age25to34Percent', 'age35to54Percent',  'age55PlusPercent'];
@@ -846,7 +832,7 @@ debugger;
 
     return (
       <>
-      <section class="comparison-section">
+      <section className="comparison-section">
         <div className={'bar-chart-container'}>
           <div className="bar-chart">
           <h3 style={{ color: drugColor }}>{timeline} percent change in rates of suspected all drug, all opioid, heroin, and all stimulant overdoses per 10,000 ED visits†
@@ -882,7 +868,7 @@ from {fromLabel} to {toLabel} by sex.</h3>
           </div> */}
         </div>
       </section>
-      <section class="comparison-section">
+      <section className="comparison-section">
         <div className={'bar-chart-container'}>
           {/* <div className="bar-chart">
             <h3>Sex Comparison</h3>
@@ -1039,11 +1025,45 @@ from</h3>
     }
   }
 
+  const objectFlip = (obj) => {
+    const ret = {};
+    Object.keys(obj).forEach(key => {
+      ret[obj[key]] = key;
+    });
+    return ret;
+  }
+
   const DownloadButton = ({ data }) => {
-    const fileName = `download.csv`;
+    const fileName = `Non-Fatal-Overdose-Data.csv`;
 
-    const csvData = Papa.unparse(data);
+    //Remove the first column and move the primary columns to the front
+    let processedData = [...data].map(row => { 
+      row.shift(); //The first column is the "key"
+      let newRow = [...row];
+      const itemsToAdd = newRow.splice(12, 6);
+      newRow = itemsToAdd.concat(newRow);
+      return newRow;
+    });
 
+    //Insert the header row
+    const reversedKeyIndex = objectFlip(keyIndex);
+    let headerRow = [];
+    for (let i = 1; i < Object.keys(reversedKeyIndex).length; i++) {
+      headerRow.push(reversedKeyIndex[i]);
+    }
+
+    //Move the primary columns to the front
+    debugger;
+    const itemsToAdd = headerRow.splice(12, 6);
+    headerRow = itemsToAdd.concat(headerRow);
+
+    //Add header row to beginning of dataset
+    processedData.unshift(headerRow);
+
+    //Parse to CSV
+    const csvData = Papa.unparse(processedData);
+
+    //Save and download
     const saveBlob = () => {
       if (typeof window.navigator.msSaveBlob === 'function') {
         const dataBlob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
@@ -1058,7 +1078,7 @@ from</h3>
         href={`data:text/csv;base64,${Base64.encode(csvData)}`}
         aria-label="Download this data in a CSV file format."
         className={`btn btn-download no-border`}
-        style={{'background-color':drugColor}}
+        style={{'backgroundColor':drugColor}}
       >
         Download Data (CSV)
       </a>
@@ -1086,6 +1106,7 @@ from</h3>
   const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
   const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
   const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
+  const jurisdictionColumn = keyIndex[drugScreenOptions[currentDrug]['jurisdiction']];
   let runtimeTableData = Object.values(runtimeData);
 
   //If a state is selected, limit the datatable
@@ -1107,7 +1128,7 @@ from</h3>
   console.log('drugScreenOptions: ', drugScreenOptions)
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon }}>
-      <div class="filters">
+      <div className="filters">
         <div>
           Select a Drug: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setCurrentDrug(e.target.value) }}>
             {Object.keys(drugScreenOptions).map((key) => <option selected={currentDrug===key} value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
@@ -1165,7 +1186,7 @@ from</h3>
       <aside>
           <div>
             <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
-            <div class="time-frame-container">
+            <div className="time-frame-container">
               <div>Compare {toLabel} with the previous: </div>
               <div className="radio">
                 <label>
@@ -1309,7 +1330,7 @@ from</h3>
           {showDatatable &&
             <div className="datatable-body">
               <p className='datatable-description'>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose, {fromLabel} to {toLabel}, by OD2A-funded Jurisdiction</p>
-              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
+              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
               <DownloadButton data={rawData} />
             </div>}
         </div>

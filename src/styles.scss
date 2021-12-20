@@ -550,6 +550,7 @@ line { stroke: #ccc; stroke-width: 1; }
                         padding: .3rem;
                         text-align: left;
                         color: white;
+                        cursor: pointer;
                     }
     
                     td {
@@ -565,6 +566,26 @@ line { stroke: #ccc; stroke-width: 1; }
                                 margin-right: 5px;
                             }
                         }
+                    }
+
+                    th:nth-child(1),
+                    td:nth-child(1) {
+                        width: 30%;
+                    }
+
+                    th:nth-child(2),
+                    td:nth-child(2) {
+                        width: 20%;
+                    }
+
+                    th:nth-child(3),
+                    td:nth-child(3) {
+                        width: 40%;
+                    }
+                    
+                    th:nth-child(4),
+                    td:nth-child(4) {
+                        width: 10%;
                     }
                 }
             }
