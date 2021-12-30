@@ -165,7 +165,9 @@ const UsaMap = () => {
           fill: legendColors[0],
           cursor: 'pointer',
           '&:hover': {
-            fill: legendColors[1],
+            // fill: legendColors[1],
+            fontWeight: 600,
+            opacity:.9,
           },
           '&:active': {
             fill: legendColors[2],

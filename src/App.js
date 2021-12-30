@@ -11,6 +11,8 @@ import DumbbellChart from './components/DumbbellChart';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import { Base64 } from 'js-base64';
 import { renderToString } from 'react-dom/server'
+import { Circle } from '@visx/shape';
+
 
 import PlayIcon from './assets/play.svg';
 import StopIcon from './assets/stop.svg';
@@ -711,45 +713,17 @@ export default function App({ dataUrl }) {
 
   const GenderAgeSection = () => {
 
-    // const genderKeys = ['malePercent', 'femalePercent'];
     const genderKeys = ['percent'];
-    // const genderColorKeys = ['maleColor','femaleColor'];
     const genderColorKeys = ['color'];
     console.log('runtimeUSGenderData: ', runtimeUSGenderData);
     let genderData = [];
     
+    const GenderData = ( dataSet = "all" ) => {
+      genderData = [];
     // Object.values(drugScreenOptions).map((drugScreenOption, index) => {
-      const drugScreenOption = drugScreenOptions['all'];
+      const drugScreenOption = drugScreenOptions[dataSet];
       const drugPercentColumn = drugScreenOption['percentageColumn'];
       const drugSignificanceColumn = drugScreenOption['significanceColumn'];
-      // let genderBarGroupObject = {
-      //   'index': 0,
-      //   'percent': '',
-      //   'type': drugScreenOption['titleAll']
-      // }
-      // runtimeUSGenderData.map((row) => {
-      //   const gender = row['gender'];
-      //   const significance = row[drugSignificanceColumn];
-      //   if ('M' === gender) {
-      //     genderBarGroupObject['malePercent'] = row[drugPercentColumn];
-      //     genderBarGroupObject['maleSignificance'] = significance;
-      //     genderBarGroupObject['maleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-      //   } else if ('F' === gender) {
-      //     genderBarGroupObject['femalePercent'] = row[drugPercentColumn];
-      //     genderBarGroupObject['femaleSignificance'] = significance;
-      //     genderBarGroupObject['femaleColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-      //   } else if ('Missing' === gender) {
-      //     // barGroupObject['missingPercent'] = row[drugPercentColumn];
-      //     // barGroupObject['missingSignificance'] = significance;
-      //     // barGroupObject['missingColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-      //   }
-      // });
-
-      // genderData.push(genderBarGroupObject);
-
-
-
-      /// NEW WAY
 
       let maleBarGroupObject = {
         'index': 0,
@@ -781,6 +755,8 @@ export default function App({ dataUrl }) {
 
       genderData.push(maleBarGroupObject);
       genderData.push(femaleBarGroupObject);
+      return genderData;
+    }
 
     // });
 
@@ -828,6 +804,8 @@ export default function App({ dataUrl }) {
 
       ageData.push(ageBarGroupObject);
 
+      console.log("AGE DATA: ", ageData);
+
     });
 
     return (
@@ -841,23 +819,19 @@ from {fromLabel} to {toLabel} by sex.</h3>
               <div className="chart-grid">        
                 <div>
                   <span className='chart-title'>{ageData[0]['type']}</span>
-                  {/* <AllSex /> */}
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('all')} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
                 <div>
                   <span className='chart-title'>{ageData[1]['type']}</span>
-                  {/* <OpiodsSex /> */}
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('opioids')} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
                 <div>
                   <span className='chart-title'>{ageData[2]['type']}</span>
-                  {/* <HeroinSex /> */}
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('heroin')} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
                 <div>
                   <span className='chart-title'>{ageData[3]['type']}</span>
-                  {/* <StimulantsSex /> */}
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} selectedState={selected} />
+                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('stimulants')} colorKeys={genderColorKeys} selectedState={selected} />
                 </div>
               </div>
             </div>
@@ -876,12 +850,12 @@ from {fromLabel} to {toLabel} by sex.</h3>
           </div> */}
           <div className="bar-chart">
             <h3 style={{ color: drugColor }}>{timeline} percent change in rates of suspected all drug, all opioid, heroin, and all stimulant overdoses per 10,000 ED visits†
-from</h3>
+from {fromLabel} to {toLabel} by age.</h3>
             <div className="chart-grid">
               <div>
                 <span className='chart-title'>{ageData[0]['type']}</span>
-                <AllDrugs />
-                {/* <AgeLollipop width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} /> */}
+                {/* <AllDrugs /> */}
+                <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} />
               </div>
               <div>
                 <span className='chart-title'>{ageData[1]['type']}</span>
@@ -1178,9 +1152,9 @@ from</h3>
         </div>
       </div>
       <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{fromLabel}</strong></div>
-      <div className="drug-selection" style={{ borderTopColor: drugColor }}>
+      <div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
-          return <div style={key === currentDrug ? { borderTopColor: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
+          return <div style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
         })}
       </div>
       
@@ -1196,8 +1170,12 @@ from</h3>
         {showLegend &&
           <aside>
             <div>
-              <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range <span className='help'>?</span></div>
-              {/* <idv className="help-container" */}
+              <div className="legend-title" style={{ 'backgroundColor': drugColor }}>
+                Time Range 
+                <span className='legend-help'>?
+                  <span className='legend-help-message'>Help Text</span>
+                </span>
+              </div>
               <div className="time-frame-container">
                 <div>Compare {toLabel} with the previous: </div>
                 <div className="radio">
@@ -1270,7 +1248,14 @@ from</h3>
             <div>
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
               <ul className="legend">
-                {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)}
+                {runtimeLegend.map(({color, value}) => <li>
+                  
+                  <svg viewBox="-5 -5 110 110" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="50" fill={color} stroke='#555' strokeWidth={4} />
+                  </svg>
+                  {/* <Hexagon fill={color} /> */}
+                  {value}
+                  </li>)}
                 {/* {runtimeLegend.map(({color, value}) => <li><Hexagon fill={color} />{value}</li>)} */}
               </ul>
               <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>

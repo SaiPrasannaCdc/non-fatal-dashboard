@@ -97,28 +97,38 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .drug-selection {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: $gbl-padding;
+        align-items: center;
+        text-align: center;
+        padding-bottom: $gbl-padding;
+
+        @include r($md) {
+            grid-template-columns: repeat( 4, 1fr);
+            gap: $gbl-padding;
+        }
 
         > div {
-            flex-grow: 1;
-            text-align: center;
-            border-top: 3px solid transparent;
-            border-right: none;
-            border-left: none;
-            border-bottom: 1px solid black;
-            padding: 15px;
+            // height: 60px;
+            padding: 20px 0;
+            background: none;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px #d3d3d3;
+            vertical-align:middle;
             cursor: pointer;
 
             &.active {
-                border-top: 3px solid white;
-                border-bottom: none;
-                border-right: 1px solid black;
-                border-bottom: none;
-                border-left: 1px solid black;
-                font-weight: bold;
+                color: #fff;
             }
+
+            &:hover:not(.active) {
+                background-color: #dedede;
+            }
+        }
+
+        &.all {
+            // background-color: ;
         }
     }
     
@@ -219,6 +229,19 @@ line { stroke: #ccc; stroke-width: 1; }
         }
         .legend-title {
             margin-bottom: 0;
+            position: relative;
+
+            .legend-help {
+
+                .legend-help-message {
+                    position: absolute;
+                    display: block;
+                    background: red;
+                    width: 100%;
+                    bottom: 0;
+                    left: 0;
+                }
+            }
         }
         li {
             font-size: .8em;

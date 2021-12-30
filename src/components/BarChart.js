@@ -173,23 +173,6 @@ function BarChart({
                           {/* const Hexagon = ({fill}) => {
   return ( */}
 
-{selectedState && 
-                          <svg 
-                            width={18} 
-                            height={18} 
-                            x={ bar.value > 0 ? textInset + interpolated.width - 1: textInset - interpolated.width - 16} 
-                            // x={ textInset - interpolated.width - 18} 
-                              y={bar.y - 8}
-                            viewBox="0 0 45 51">
-                            <polygon 
-                              fill={barFill} 
-                              points="22 0 44 12.702 44 38.105 22 50.807 0 38.105 0 12.702"
-                            />
-                          </svg>
-                }
-  {/* )
-} */}
-{!selectedState && 
                           <Circle
                             key={`point-${bar.key}`}
                             r={8}
@@ -197,7 +180,7 @@ function BarChart({
                             cy={bar.y + 1}
                             fill={barFill}
                           />
-}
+
                         {/* <text
                           x={bar.value > 0 ? textInset + interpolated.width + 24 : textInset - interpolated.width - 70}
                           y={bar.y + 6}
