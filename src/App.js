@@ -3,33 +3,11 @@ import "babel-polyfill";
 import chroma from 'chroma-js';
 import Papa from 'papaparse';
 import UsaMap from './components/UsaMap';
-import BarChart from './components/BarChart';
 import BarChartVertical from './components/BarChartVertical';
 import Datatable from './components/Datatable';
-import DumbbellChart from './components/DumbbellChart';
-//import HeaderLineChart from './components/HeaderLineChart';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import { Base64 } from 'js-base64';
-import { renderToString } from 'react-dom/server'
-import { Circle } from '@visx/shape';
-
-
-import PlayIcon from './assets/play.svg';
-import StopIcon from './assets/stop.svg';
-import PauseIcon from './assets/pause.svg';
-import ReactTooltip from 'react-tooltip';
-
-//temp ////////////////////////////////////////////////////////
-import AllDrugs from './assets/temp/all-drugs.svg';
-import AllSex from './assets/temp/all-sex.svg';
-import Opiods from './assets/temp/opiods.svg';
-import OpiodsSex from './assets/temp/opiods-sex.svg';
-import Heroin from './assets/temp/heroin.svg';
-import HeroinSex from './assets/temp/heroin-sex.svg';
-import Stimulants from './assets/temp/stimulants.svg';
-import StimulantsSex from './assets/temp/stimulants-sex.svg';
-// temp ///////////////////////////////////////////////////////
-
+import { renderToString } from 'react-dom/server';
 
 import Context from './context';
 import 'rc-slider/assets/index.css';
@@ -148,12 +126,6 @@ const getStateName = (geo) => {
   return supportedStates[geo][0];
 }
 
-const unfundedStates = [
-  'US-WY',
-  'US-ND',
-  'US-TX'
-];
-
 const legendOrder = [
   'Significant Increase',
   'Significant Decrease',
@@ -213,13 +185,8 @@ const months = [
 ];
 
 export default function App({ dataUrl }) {
-  const [runtimeLegend, setRuntimeLegend] = useState([])
-  const [runtimeData, setRuntimeData] = useState([])
-  const [runtimeUSGenderData, setRuntimeUSGenderData] = useState([])
-  const [runtimeUSAgeData, setRuntimeUSAgeData] = useState([])
-  const [runtimeUSData, setRuntimeUSData] = useState([])
+  const [runtime, setRuntime] = useState({})
   const [selected, setSelected] = useState(null)
-  const [timeframe, setTimeframe] = useState('March 2020');
   const [keyedRawData, setKeyedRawdata] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [keyedRawUSData, setKeyedRawUSdata] = useState([]); 
@@ -232,20 +199,17 @@ export default function App({ dataUrl }) {
   const [sliderPointMonth, setSliderPointMonth] = useState(0);
   const [sliderPointYear, setSliderPointYear] = useState(0);
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
-  const [monthCount, setMonthCount] = useState(0);
   const [statesParticipating, setStatesParticipating] = useState(0);
-  const [modal, setModal] = useState(null);
   const [showDatatable, setShowDatatable] = useState(false);
   const [showLegend, setShowLegend] = useState(true);
   const [timeline, setTimeline] = useState('Monthly');
   const [showConsiderations, setShowConsiderations] = useState(false);
   
+  const {runtimeLegend, runtimeData, runtimeUSData, runtimePastMonths, runtimePastMonthsState, runtimePastMonthsGender, runtimePastMonthsAge } = runtime;
 
   const fetchData = async () => {
     try {
-      //const response = await fetch('./data/non-fatal.json')
       const response = await fetch(dataUrl)
-        //.then(response => response.json())
         .then(v => v.text())
         .then(v => Papa.parse(v))
         .then(
@@ -254,13 +218,13 @@ export default function App({ dataUrl }) {
           }
         )
         .catch(err => {
-          //console.log(err)
+          console.log(err)
         });
         
       return response;
       
     } catch (error) {
-      //console.log(error);
+      console.log(error);
       return { success: false, data: [] };
     }
   }
@@ -282,14 +246,11 @@ export default function App({ dataUrl }) {
       let tempMonthTimeframes = [];
       let addedMonthTimeframes = [];
 
-      let tempYearTimeframes = [];
-      let addedYearTimeframes = [];
-
       let res = await fetchData();
       if (res && res.success) {
         let tempKeyedRawData = {};
         let tempKeyedRawUSData = {};
-        //console.log('result: ', res);
+
         res.data.data.map((row) => {
           if (first) {
             row.forEach(key => {
@@ -364,8 +325,6 @@ export default function App({ dataUrl }) {
         setMonthTimeframes(tempMonthTimeframes.slice(1)); //Remove the first month/year combo since it doesn't have a previous month
         setAllTimeframes(tempMonthTimeframes); //Remove the first month/year combo since it doesn't have a previous month
         
-        setMonthCount(tempMonthTimeframes.length - 2); //Range slider animation count
-        
         setSliderPointMonth(tempMonthTimeframes.slice(1).length - 1); //Default range points are the first two month
         setSliderPointYear(tempMonthTimeframes.slice(13).length - 1); //Default range points are the first two month
 
@@ -373,8 +332,6 @@ export default function App({ dataUrl }) {
         shifted.shift(); //Get rid of header row
         setRawData(shifted);
 
-        //console.log(shifted);
-        
         setDataLoaded(true);
       }
     })();
@@ -408,8 +365,6 @@ export default function App({ dataUrl }) {
     if (stateData) {
       const selectedPercentageRaw = stateData[keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]];
       const significance = stateData[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
-      const legendColors = applyLegendToRow(stateData);
-      const hexagonHTML = renderToString(<Hexagon fill={legendColors[0]} />);
       toolTipText += `<div class="state-name-row"><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
       if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw) {
@@ -424,18 +379,6 @@ export default function App({ dataUrl }) {
 
   let legendMemo = useRef(new Map())
 
-  //Palette with reds and yellow and grays
-  // let mapColorPalette = [
-  //   '#A62434',
-  //   '#F2594B',
-  //   '#FFD97D',
-  //   '#CCCCCC',
-  //   '#EBEBEB',
-  //   '#3690c0',
-  //   '#02818a',
-  //   '#016c59',
-  //   '#014636'
-  // ];
   //Palette with purple, orange, and grays
   let mapColorPalette = [
     '#ee7600',
@@ -526,11 +469,7 @@ export default function App({ dataUrl }) {
     setSelectedTimeframe(timeframe);
   };
 
-  const generateRuntimeUSData = (data, filters = []) => {
-    
-    // if (!runtimeTimeframes) {
-    //   return {};
-    // }
+  const generateRuntimeUSData = () => {
 
     let startMonth;
     let startYear;
@@ -554,7 +493,7 @@ export default function App({ dataUrl }) {
   };
 
   // Calculates what's going to be displayed on the map and data table at render.
-  const generateRuntimeData = (data, filters = []) => {
+  const generateRuntimeData = () => {
 
     if (!monthTimeframes) {
       return {};
@@ -598,94 +537,107 @@ export default function App({ dataUrl }) {
     return filteredData;
   };
 
-  // Calculates what's going to be displayed on the map and data table at render.
-  const generateRuntimeUSGenderData = (data, gender, filters = []) => {
+  const iteratePastMonths = (callback) => {
+    const selectedMonth = 'year' === selectedTimeframe ? sliderPointYear : sliderPointMonth;
 
-    if (!monthTimeframes) {
-      return {};
+    for(let i = 0; i < 5; i++){
+      let currentMonth = selectedMonth - i;
+  
+      if ('year' === selectedTimeframe) {
+        callback(
+          allTimeframes[currentMonth]['month'],
+          allTimeframes[currentMonth]['year'],
+          allTimeframes[currentMonth + 12]['month'],
+          allTimeframes[currentMonth + 12]['year']
+        );
+      } else {
+        callback(
+          allTimeframes[currentMonth]['month'],
+          allTimeframes[currentMonth]['year'],
+          allTimeframes[currentMonth + 1]['month'],
+          allTimeframes[currentMonth + 1]['year']
+        );
+      }
     }
-
-    let startMonth;
-    let startYear;
-    let endMonth;
-    let endYear;
-
-    if ('year' === selectedTimeframe) {
-      startMonth = allTimeframes[sliderPointYear + 12]['month'];
-      startYear = allTimeframes[sliderPointYear + 12]['year'];
-      endMonth = allTimeframes[sliderPointYear + 13]['month'];
-      endYear = allTimeframes[sliderPointYear + 13]['year'];
-    } else {
-      startMonth = allTimeframes[sliderPointMonth]['month'];
-      startYear = allTimeframes[sliderPointMonth]['year'];
-      endMonth = allTimeframes[sliderPointMonth + 1]['month'];
-      endYear = allTimeframes[sliderPointMonth + 1]['year'];
-    }
-
-    let filteredData = [];
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|M|all:US|' + endYear + '|' + endMonth + '|M|all']);
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|F|all:US|' + endYear + '|' + endMonth + '|F|all']);
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|Missing|all:US|' + endYear + '|' + endMonth + '|Missing|all']);
-
-    return filteredData;
   };
 
-  // Calculates what's going to be displayed on the map and data table at render.
-  const generateRuntimeUSAgeData = (data, age, filters = []) => {
+  const generateRuntimePastMonths = () => {
+    let data = [];
 
-    if (!monthTimeframes) {
-      return {};
-    }
+    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
+      data.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|all:US|' + endYear + '|' + endMonth + '|all|all']);
+    });
 
-    let startMonth;
-    let startYear;
-    let endMonth;
-    let endYear;
+    return data;
+  };
 
-    if ('year' === selectedTimeframe) {
-      startMonth = allTimeframes[sliderPointYear + 12]['month'];
-      startYear = allTimeframes[sliderPointYear + 12]['year'];
-      endMonth = allTimeframes[sliderPointYear + 13]['month'];
-      endYear = allTimeframes[sliderPointYear + 13]['year'];
-    } else {
-      startMonth = allTimeframes[sliderPointMonth]['month'];
-      startYear = allTimeframes[sliderPointMonth]['year'];
-      endMonth = allTimeframes[sliderPointMonth + 1]['month'];
-      endYear = allTimeframes[sliderPointMonth + 1]['year'];
-    }
+  const generateRuntimePastMonthsState = () => {
+    let data = [];
+    let state = selected ? selected.replace(/US-/g, '') : '';
 
-    let filteredData = [];
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|0-14:US|' + endYear + '|' + endMonth + '|all|0-14']);
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|15-24:US|' + endYear + '|' + endMonth + '|all|15-24']);
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|25-34:US|' + endYear + '|' + endMonth + '|all|25-34']);
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|35-54:US|' + endYear + '|' + endMonth + '|all|35-54']);
-    filteredData.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|55+:US|' + endYear + '|' + endMonth + '|all|55+']);
+    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
+      data.push(keyedRawData[state + '|' + startYear + '|' + startMonth + '|all|all:' + state + '|' + endYear + '|' + endMonth + '|all|all']);
+    });
 
-    return filteredData;
+    return data;
+  };
+
+  const generateRuntimePastMonthsGender = () => {
+    let data = {'M': [], 'F': []};
+
+    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
+      data['M'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|M|all:US|' + endYear + '|' + endMonth + '|M|all']);
+      data['F'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|F|all:US|' + endYear + '|' + endMonth + '|F|all']);
+    });
+
+    return data;
+    
+  };
+
+  const generateRuntimePastMonthsAge = () => {
+    let data = {
+      '0-14': [], 
+      '15-24': [],
+      '25-34': [],
+      '35-54': [],
+      '55+': []
+    };
+
+    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
+      data['0-14'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|0-14:US|' + endYear + '|' + endMonth + '|all|0-14']);
+      data['15-24'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|15-24:US|' + endYear + '|' + endMonth + '|all|15-24']);
+      data['25-34'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|25-34:US|' + endYear + '|' + endMonth + '|all|25-34']);
+      data['35-54'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|35-54:US|' + endYear + '|' + endMonth + '|all|35-54']);
+      data['55+'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|55+:US|' + endYear + '|' + endMonth + '|all|55+']);
+    });
+
+    return data;
   };
 
   useEffect(() => {
     if (true === dataLoaded) {
-      const processedData = generateRuntimeData(rawData);
-      const processedUSGenderData = generateRuntimeUSGenderData(rawData);
-      const processedUSAgeData = generateRuntimeUSAgeData(rawData);
-      const processedUSData = generateRuntimeUSData(keyedRawUSData);
+      const processedData = generateRuntimeData();
+      const processedUSData = generateRuntimeUSData();
       const processedLegend = generateRuntimeLegend(processedData);
+      const processedPastMonths = generateRuntimePastMonths();
+      const processedPastMonthsState = generateRuntimePastMonthsState();
+      const processedPastMonthsGender = generateRuntimePastMonthsGender();
+      const processedPastMonthsAge = generateRuntimePastMonthsAge();
 
-      setRuntimeData(processedData);
-      setRuntimeUSData(processedUSData);
-      setRuntimeUSGenderData(processedUSGenderData);
-      setRuntimeUSAgeData(processedUSAgeData);
-      setRuntimeLegend(processedLegend);
+      setRuntime({
+        runtimeData: processedData, 
+        runtimeUSData: processedUSData, 
+        runtimeLegend: processedLegend,
+        runtimePastMonths: processedPastMonths,
+        runtimePastMonthsState: processedPastMonthsState,
+        runtimePastMonthsGender: processedPastMonthsGender,
+        runtimePastMonthsAge: processedPastMonthsAge
+      });
     }
-  }, [dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe])
+  }, [selected, dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe])
   
   const StateInfo = () => {
-    let barChartKeys = ['usPercent', 'statePercent'];
-    const barColors = [];
-    let barChartData = [];
-    const usBarColors = [];
-    
+
     return (
       <section className="sub-drawer dumbbell">
         <div>
@@ -700,14 +652,12 @@ export default function App({ dataUrl }) {
         <div className={'bar-chart-container'}>
         <div className="bar-chart">
             <span className='chart-title'>US</span>
-            <BarChartVertical width={600} height={230} />
-            {/* <DumbbellChart width={644} height={350} legendOrder={legendOrder} mapColorPalette={mapColorPalette} keyIndex={keyIndex} drugScreenOptions={drugScreenOptions} formatPercentage={formatPercentage} stateData={Object.values(runtimeData[selected])} usData={Object.values(runtimeUSData)}  /> */}
+            <BarChartVertical data={runtimePastMonths} width={600} height={230} />
           </div>
           <div className="bar-chart" style={{"margin":"60px 0"}}>
-          <span className='chart-title'>State Name</span>
-            <BarChartVertical width={600} height={230} />
-            {/* <DumbbellChart width={644} height={350} legendOrder={legendOrder} mapColorPalette={mapColorPalette} keyIndex={keyIndex} drugScreenOptions={drugScreenOptions} formatPercentage={formatPercentage} stateData={Object.values(runtimeData[selected])} usData={Object.values(runtimeUSData)}  /> */}
-          </div>
+          <span className='chart-title'>{supportedStates[selected][0]}</span>
+            <BarChartVertical data={runtimePastMonthsState} width={600} height={230} />
+        </div>
         </div>
       </section>
     )
@@ -715,169 +665,9 @@ export default function App({ dataUrl }) {
 
   const GenderAgeSection = () => {
 
-    const genderKeys = ['percent'];
-    const genderColorKeys = ['color'];
-    ////console.log('runtimeUSGenderData: ', runtimeUSGenderData);
-    let genderData = [];
-    
-    const GenderData = ( dataSet = "all" ) => {
-      genderData = [];
-    // Object.values(drugScreenOptions).map((drugScreenOption, index) => {
-      const drugScreenOption = drugScreenOptions[dataSet];
-      const drugPercentColumn = drugScreenOption['percentageColumn'];
-      const drugSignificanceColumn = drugScreenOption['significanceColumn'];
-
-      let maleBarGroupObject = {
-        'index': 0,
-        'percent': '',
-        'significance': '',
-        'type': 'male',
-        'label': 'Male'
-      }
-      let femaleBarGroupObject = {
-        'index': 1,
-        'percent': '',
-        'significance': '',
-        'type': 'female',
-        'label': 'Female'
-      }
-      runtimeUSGenderData.map((row) => {
-        const gender = row['gender'];
-        const significance = row[drugSignificanceColumn];
-        if ('M' === gender) {
-          maleBarGroupObject['percent'] = row[drugPercentColumn];
-          maleBarGroupObject['significance'] = significance;
-          maleBarGroupObject['color'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } else if ('F' === gender) {
-          femaleBarGroupObject['percent'] = row[drugPercentColumn];
-          femaleBarGroupObject['significance'] = significance;
-          femaleBarGroupObject['color'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } 
-      });
-
-      genderData.push(maleBarGroupObject);
-      genderData.push(femaleBarGroupObject);
-      return genderData;
-    }
-
-    // });
-
-    const ageKeys = ['age0to14Percent', 'age15to24Percent', 'age25to34Percent', 'age35to54Percent',  'age55PlusPercent'];
-    const ageColorKeys = ['age0to14Color','age15to24Color','age25to34Color','age35to54Color','age55PlusColor'];
-
-    let ageData = [];
-    Object.values(drugScreenOptions).map((drugScreenOption, index) => {
-      const drugPercentColumn = drugScreenOption['percentageColumn'];
-      const drugSignificanceColumn = drugScreenOption['significanceColumn'];
-      let ageBarGroupObject = {
-        'index': index,
-        'age0to14Percent': '',
-        'age15to24Percent': '',
-        'age25to34Percent': '',
-        'age35to54Percent': '',
-        'age55PlusPercent': '',
-        'type': drugScreenOption['titleAll']
-      }
-      runtimeUSAgeData.map((row) => {
-        const age = row['ageRange'];
-        const significance = row[drugSignificanceColumn];
-        if ('0-14' === age) {
-          ageBarGroupObject['age0to14Percent'] = row[drugPercentColumn];
-          ageBarGroupObject['age0to14Significance'] = significance;
-          ageBarGroupObject['age0to14Color'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } else if ('15-24' === age) {
-          ageBarGroupObject['age15to24Percent'] = row[drugPercentColumn];
-          ageBarGroupObject['age15to24Significance'] = significance;
-          ageBarGroupObject['age15to24Color'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } else if ('25-34' === age) {
-          ageBarGroupObject['age25to34Percent'] = row[drugPercentColumn];
-          ageBarGroupObject['age25to34Significance'] = significance;
-          ageBarGroupObject['age25to34Color'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } else if ('35-54' === age) {
-          ageBarGroupObject['age35to54Percent'] = row[drugPercentColumn];
-          ageBarGroupObject['age35to54Significance'] = significance;
-          ageBarGroupObject['age35to54Color'] = mapColorPalette[legendOrder.indexOf(significance)];
-        } else if ('55+' === age) {
-          ageBarGroupObject['age55PlusPercent'] = row[drugPercentColumn];
-          ageBarGroupObject['age55PlusSignificance'] = significance;
-          ageBarGroupObject['age55PlusColor'] = mapColorPalette[legendOrder.indexOf(significance)];
-        }
-      });
-
-      ageData.push(ageBarGroupObject);
-
-      //console.log("AGE DATA: ", ageData);
-
-    });
-
     return (
       <>
-      <section className="comparison-section">
-        <div className={'bar-chart-container'}>
-          <div className="bar-chart">
-          <h3 style={{ color: drugColor }}>{timeline} percent change in rates of suspected all drug, all opioid, heroin, and all stimulant overdoses per 10,000 ED visits†
-from {fromLabel} to {toLabel} by sex.</h3>
-            <div className="sex-chart"> 
-              <div className="chart-grid">        
-                <div>
-                  <span className='chart-title'>{ageData[0]['type']}</span>
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('all')} colorKeys={genderColorKeys} selectedState={selected} />
-                </div>
-                <div>
-                  <span className='chart-title'>{ageData[1]['type']}</span>
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('opioids')} colorKeys={genderColorKeys} selectedState={selected} />
-                </div>
-                <div>
-                  <span className='chart-title'>{ageData[2]['type']}</span>
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('heroin')} colorKeys={genderColorKeys} selectedState={selected} />
-                </div>
-                <div>
-                  <span className='chart-title'>{ageData[3]['type']}</span>
-                  <BarChart width={600} height={300} dataKeys={genderKeys} formatPercentage={formatPercentage} data={GenderData('stimulants')} colorKeys={genderColorKeys} selectedState={selected} />
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* <div className="bar-chart">
-            <h3>Age Comparison</h3>
-            <BarChart width={644} height={650} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} />
-          </div> */}
-        </div>
-      </section>
-      <section className="comparison-section">
-        <div className={'bar-chart-container'}>
-          {/* <div className="bar-chart">
-            <h3>Sex Comparison</h3>
-            <BarChart width={644} height={350} dataKeys={genderKeys} formatPercentage={formatPercentage} data={genderData} colorKeys={genderColorKeys} />
-          </div> */}
-          <div className="bar-chart">
-            <h3 style={{ color: drugColor }}>{timeline} percent change in rates of suspected all drug, all opioid, heroin, and all stimulant overdoses per 10,000 ED visits†
-from {fromLabel} to {toLabel} by age.</h3>
-            <div className="chart-grid">
-              <div>
-                <span className='chart-title'>{ageData[0]['type']}</span>
-                {/* <AllDrugs /> */}
-                <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} />
-              </div>
-              <div>
-                <span className='chart-title'>{ageData[1]['type']}</span>
-                <Opiods />
-                {/* <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} selectedState={selected} /> */}
-              </div>
-              <div>
-                <span className='chart-title'>{ageData[2]['type']}</span>
-                <Heroin />
-                {/* <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} selectedState={selected} /> */}
-              </div>
-              <div>
-                <span className='chart-title'>{ageData[3]['type']}</span>
-                <Stimulants />
-                {/* <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} selectedState={selected} /> */}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
       </>
     )
   }
@@ -984,16 +774,6 @@ from {fromLabel} to {toLabel} by age.</h3>
       </div>
     );
   }
-
-  // const animateTimeSeries = () => {
-  //   //Range animation
-  //   //TODO: Handle stopping of the animation when user interacts with the map
-  //   for (let i = 0; i < timeframes.length - 1; i++) {
-  //     setTimeout(() => {
-  //       setRangePoints([i,i+1]);
-  //     }, 300 * (i + 1));
-  //   }
-  // }
 
   const getPostiveSign = (number) => {
     if (number > 0) {
@@ -1111,9 +891,9 @@ from {fromLabel} to {toLabel} by age.</h3>
     toLabel = allTimeframes[sliderPointYear + 12]['label'];
     fromLabel = allTimeframes[sliderPointYear + 11]['label'];
   }
-  //console.log('drugScreenOptions: ', drugScreenOptions)
+
   return (
-    <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon }}>
+    <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters">
         <div>
           Select a Drug: <select style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
