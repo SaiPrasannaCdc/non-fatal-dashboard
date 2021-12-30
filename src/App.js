@@ -254,13 +254,13 @@ export default function App({ dataUrl }) {
           }
         )
         .catch(err => {
-          console.log(err)
+          //console.log(err)
         });
         
       return response;
       
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       return { success: false, data: [] };
     }
   }
@@ -289,7 +289,7 @@ export default function App({ dataUrl }) {
       if (res && res.success) {
         let tempKeyedRawData = {};
         let tempKeyedRawUSData = {};
-        console.log('result: ', res);
+        //console.log('result: ', res);
         res.data.data.map((row) => {
           if (first) {
             row.forEach(key => {
@@ -372,6 +372,8 @@ export default function App({ dataUrl }) {
         const shifted = [...res.data.data];
         shifted.shift(); //Get rid of header row
         setRawData(shifted);
+
+        //console.log(shifted);
         
         setDataLoaded(true);
       }
@@ -689,9 +691,9 @@ export default function App({ dataUrl }) {
         <div>
           <h3 style={{ color: drugColor }}>Percent change estimates in rates of suspected overdoses per 10,000 ED visits from {fromLabel} to {toLabel}.</h3>
           <div>
-            Compare United States against: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setStateSelected(e.target.value) }}>
+            Compare United States against: <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
               <option value="">Select State</option>
-              {Object.keys(supportedStates).map((key) => <option selected={selected===key}  value={key}>{supportedStates[key][0]}</option>)}
+              {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
             </select>
           </div>
         </div>
@@ -715,7 +717,7 @@ export default function App({ dataUrl }) {
 
     const genderKeys = ['percent'];
     const genderColorKeys = ['color'];
-    console.log('runtimeUSGenderData: ', runtimeUSGenderData);
+    ////console.log('runtimeUSGenderData: ', runtimeUSGenderData);
     let genderData = [];
     
     const GenderData = ( dataSet = "all" ) => {
@@ -804,7 +806,7 @@ export default function App({ dataUrl }) {
 
       ageData.push(ageBarGroupObject);
 
-      console.log("AGE DATA: ", ageData);
+      //console.log("AGE DATA: ", ageData);
 
     });
 
@@ -1109,19 +1111,19 @@ from {fromLabel} to {toLabel} by age.</h3>
     toLabel = allTimeframes[sliderPointYear + 12]['label'];
     fromLabel = allTimeframes[sliderPointYear + 11]['label'];
   }
-  console.log('drugScreenOptions: ', drugScreenOptions)
+  //console.log('drugScreenOptions: ', drugScreenOptions)
   return (
     <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon }}>
       <div className="filters">
         <div>
-          Select a Drug: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setCurrentDrug(e.target.value) }}>
-            {Object.keys(drugScreenOptions).map((key) => <option selected={currentDrug===key} value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
+          Select a Drug: <select style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
+            {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
           </select>
         </div>
         <div>
-          Select a Jurisdiction: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setStateSelected(e.target.value) }}>
+          Select a Jurisdiction: <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
             <option value="">United States</option>
-            {Object.keys(supportedStates).map((key) => <option selected={selected===key}  value={key}>{supportedStates[key][0]}</option>)}
+            {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
           </select>
         </div>
       </div>
@@ -1154,7 +1156,7 @@ from {fromLabel} to {toLabel} by age.</h3>
       <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{fromLabel}</strong></div>
       <div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
-          return <div style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
+          return <div key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
         })}
       </div>
       
@@ -1248,7 +1250,7 @@ from {fromLabel} to {toLabel} by age.</h3>
             <div>
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
               <ul className="legend">
-                {runtimeLegend.map(({color, value}) => <li>
+                {runtimeLegend.map(({color, value}) => <li key={color}>
                   
                   <svg viewBox="-5 -5 110 110" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="50" fill={color} stroke='#555' strokeWidth={4} />

@@ -133,7 +133,7 @@ function BarChart({
                   // if (chroma.contrast(labelColor, barColor) < 4.9) {
                   //   labelColor = '#FFFFFF';
                   // }
-// console.log('bar: ', bar)
+// //console.log('bar: ', bar)
                   let barValue = '';
                   if (Number.parseFloat(bar.value)) {
                     barValue = formatPercentage(bar.value);
@@ -150,7 +150,7 @@ function BarChart({
                   // }
 
                   return (
-                  <Motion defaultStyle={{width: 0, x: center}} style={{width: spring(width), x: spring(x)}}>
+                  <Motion key={`${barGroup.index}-${bar.index}-${bar.key}`} defaultStyle={{width: 0, x: center}} style={{width: spring(width), x: spring(x)}}>
                     {interpolated => 
                       <>
                           {isState && <defs>
@@ -161,7 +161,6 @@ function BarChart({
                             </pattern>
                           </defs>}
                         <Bar
-                          key={`${barGroup.index}-${bar.index}-${bar.key}`}
                           x={interpolated.x}
                           y={bar.y}
                           width={interpolated.width}
@@ -208,7 +207,7 @@ function BarChart({
             dy: '0.33em'
           })}
           tickFormat={function tickFormat(d,e, f){
-            console.log(d, e, f)
+            //console.log(d, e, f)
             return data[e].label;
           }}
         />
