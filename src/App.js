@@ -204,6 +204,7 @@ export default function App({ dataUrl }) {
   const [showLegend, setShowLegend] = useState(true);
   const [timeline, setTimeline] = useState('Monthly');
   const [showConsiderations, setShowConsiderations] = useState(false);
+  const [demographicsToggle, setDemographicsToggle] = useState('sex');
   
   const {runtimeLegend, runtimeData, runtimeUSData, runtimePastMonths, runtimePastMonthsState, runtimePastMonthsGender, runtimePastMonthsAge } = runtime;
 
@@ -336,6 +337,10 @@ export default function App({ dataUrl }) {
       }
     })();
   }, []);
+
+  const fill = (significance) => {
+    return mapColorPalette[legendOrder.indexOf(significance)];
+  };
 
   const applyLegendToRow = (rowObj) => {
     let hash = hashObj(rowObj)
@@ -543,20 +548,22 @@ export default function App({ dataUrl }) {
     for(let i = 0; i < 5; i++){
       let currentMonth = selectedMonth - i;
   
-      if ('year' === selectedTimeframe) {
-        callback(
-          allTimeframes[currentMonth]['month'],
-          allTimeframes[currentMonth]['year'],
-          allTimeframes[currentMonth + 12]['month'],
-          allTimeframes[currentMonth + 12]['year']
-        );
-      } else {
-        callback(
-          allTimeframes[currentMonth]['month'],
-          allTimeframes[currentMonth]['year'],
-          allTimeframes[currentMonth + 1]['month'],
-          allTimeframes[currentMonth + 1]['year']
-        );
+      if(allTimeframes[currentMonth]){
+        if ('year' === selectedTimeframe) {
+          callback(
+            allTimeframes[currentMonth]['month'],
+            allTimeframes[currentMonth]['year'],
+            allTimeframes[currentMonth + 12]['month'],
+            allTimeframes[currentMonth + 12]['year']
+          );
+        } else {
+          callback(
+            allTimeframes[currentMonth]['month'],
+            allTimeframes[currentMonth]['year'],
+            allTimeframes[currentMonth + 1]['month'],
+            allTimeframes[currentMonth + 1]['year']
+          );
+        }
       }
     }
   };
@@ -652,11 +659,11 @@ export default function App({ dataUrl }) {
         <div className={'bar-chart-container'}>
         <div className="bar-chart">
             <span className='chart-title'>US</span>
-            <BarChartVertical data={runtimePastMonths} width={600} height={230} />
+            <BarChartVertical width={600} height={230} data={runtimePastMonths} />
           </div>
           <div className="bar-chart" style={{"margin":"60px 0"}}>
           <span className='chart-title'>{supportedStates[selected][0]}</span>
-            <BarChartVertical data={runtimePastMonthsState} width={600} height={230} />
+            <BarChartVertical width={600} height={230} data={runtimePastMonthsState} />
         </div>
         </div>
       </section>
@@ -667,7 +674,49 @@ export default function App({ dataUrl }) {
 
     return (
       <>
+        <section className="comparison-section">
+          <h3 style={{ color: drugColor }}>Percent change estimates in rates of suspected overdoses per 10,000 ED visits over last five months - Demographics</h3>
+            
+          <span>Sex Comparison</span><div className="toggle-container" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
 
+          {demographicsToggle === 'sex' && <div className="sex-chart"> 
+            <div className="chart-grid">        
+              <div>
+                <span className='chart-title'>Male</span>
+                <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['M']} />
+              </div>
+              <div>
+                <span className='chart-title'>Female</span>
+                <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['F']} />
+              </div>
+            </div>
+          </div>}
+
+          {demographicsToggle === 'age' && <div className="age-chart"> 
+            <div className="chart-grid">        
+              <div>
+                <span className='chart-title'>0-14</span>
+                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['0-14']} />
+              </div>
+              <div>
+                <span className='chart-title'>15-24</span>
+                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['15-24']} />
+              </div>
+              <div>
+                <span className='chart-title'>25-34</span>
+                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['25-34']} />
+              </div>
+              <div>
+                <span className='chart-title'>35-54</span>
+                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['35-54']} />
+              </div>
+              <div>
+                <span className='chart-title'>55+</span>
+                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['55+']} />
+              </div>
+            </div>
+          </div>}
+        </section>
       </>
     )
   }
@@ -893,7 +942,7 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{ applyLegendToRow, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
+    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters">
         <div>
           Select a Drug: <select style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>

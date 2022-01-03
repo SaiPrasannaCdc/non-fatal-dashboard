@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Bar, Circle } from '@visx/shape';
 import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { scaleBand, scaleLinear } from '@visx/scale';
+
+import Context from '../context';
 
 function BarChartVertical({
   data,
@@ -33,20 +35,26 @@ function BarChartVertical({
     return 0;
   });
 
+  const { fill, drugScreenOptions, currentDrug } = useContext(Context);
+
+  const percentColumn = drugScreenOptions[currentDrug].percentageColumn;
+  const significanceColumn = drugScreenOptions[currentDrug].significanceColumn;
+
   const axisBottomHeight = 30;
+  const marginRight = 30;
 
   const getXValue = (d) => {
     if(!d) return '';
     if(d.startMonth === d.endMonth) {
-      return `${months[d.endMonth]} ${d.startYear}-${d.endYear.substring(1)}`;
+      return `${months[d.endMonth - 1]} ${d.startYear}-${d.endYear.substring(1)}`;
     }
-    return `${months[d.startMonth]}-${months[d.endMonth]}`
+    return `${months[d.startMonth - 1]}-${months[d.endMonth - 1]}`
   };
-  const getYValue = (d) => Number(d ? d.allPercentageChange : 0);
+  const getYValue = (d) => Number(d ? d[percentColumn] : 0);
 
   // bounds
-  const xMax = width;
-  const yMax = height;
+  const xMax = width - marginRight;
+  const yMax = height - axisBottomHeight;
 
   // scales, memoize for performance
   const xScale = scaleBand({
@@ -57,9 +65,9 @@ function BarChartVertical({
   });
 
   const yScale = scaleLinear({
-    range: [20, yMax - axisBottomHeight],
+    range: [20, yMax],
     round: true,
-    domain: [Math.max(...data.map(getYValue)) * 1.1, Math.min(...data.map(getYValue)) * 1.1],
+    domain: [Math.max(...data.map(getYValue), 1) * 1.1, Math.min(...data.map(getYValue), -1) * 1.1],
   });
 
   const center = yScale(0);
@@ -69,32 +77,29 @@ function BarChartVertical({
       <rect width={width} height={height} fill="url(#teal)" rx={14} />
       <Group left={100} bottom={200}>
         {data.map((d) => {
+          if(!d || isNaN(center)) return '';
+
           const xValue = getXValue(d);
           const barY = (yScale(getYValue(d)) ?? 0);
           const barX = xScale(xValue);
 
           return (
-            <>
-            <Bar
-              key={`bar-${xValue}`}
-              x={barX}
-              y={barY < center ? barY : center}
-              width={2}
-              height={Math.abs(barY - center)}
-              // bar.value > 0 ? bar.width - center : center - Math.abs(bar.width)
-              // fill="rgba(23, 233, 217, .5)"
-              // onClick={() => {
-              //   if (events) alert(`clicked: ${JSON.stringify(Object.values(d))}`)
-              // }}
-            />
-            <Circle
-              key={`circle-${xValue}`}
-              r={4}
-              cy={barY}
-              cx={barX + 1}
-              // fill={barFill}
-            />
-            </>
+            <Group key={`bar-${xValue}`}>
+              <Bar
+                x={barX}
+                y={barY < center ? barY : center}
+                width={2}
+                height={Math.abs(barY - center)}
+                fill={fill(d[significanceColumn])}
+              />
+              <Circle
+                key={`circle-${xValue}`}
+                r={4}
+                cy={barY}
+                cx={barX + 1}
+                fill={fill(d[significanceColumn])}
+              />
+            </Group>
           );
         })}
         <AxisLeft
@@ -111,7 +116,7 @@ function BarChartVertical({
           })}
         />
         <AxisBottom
-          top={yMax - axisBottomHeight}
+          top={yMax}
           scale={xScale}
           label={'30 day comparison'}
           numTicks={5}
@@ -124,7 +129,9 @@ function BarChartVertical({
             dy: '0.33em'
           })}
         />
-        <line y1={center } y2={center} x1={xMax} x2={0} stroke={'black'} />
+        {!isNaN(center) && (
+          <line y1={center } y2={center} x1={xMax} x2={0} stroke={'black'} />
+        )}
       </Group>
     </svg>
   );
