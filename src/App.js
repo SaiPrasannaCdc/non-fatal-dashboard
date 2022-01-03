@@ -237,6 +237,7 @@ export default function App({ dataUrl }) {
   const [modal, setModal] = useState(null);
   const [showDatatable, setShowDatatable] = useState(false);
   const [showLegend, setShowLegend] = useState(true);
+  const [showLegendHelp, setShowLegendHelp] = useState(true);
   const [timeline, setTimeline] = useState('Monthly');
   const [showConsiderations, setShowConsiderations] = useState(false);
   
@@ -687,9 +688,10 @@ export default function App({ dataUrl }) {
     return (
       <section className="sub-drawer dumbbell">
         <div>
-          <h3 style={{ color: drugColor }}>Percent change estimates in rates of suspected overdoses per 10,000 ED visits from {fromLabel} to {toLabel}.</h3>
+          <h3 style={{ color: drugColor }}>{timeline} percent change estimates in rates of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses per 10,000 ED visits† from {fromLabel} to {toLabel}.</h3>
           <div>
-            Compare United States against: <select style={{ "marginBottom": "20px" }} onChange={(e) => { setStateSelected(e.target.value) }}>
+            Compare United States against: 
+            <select style={{ "marginBottom": "20px" }} onChange={(e) => { setStateSelected(e.target.value) }}>
               <option value="">Select State</option>
               {Object.keys(supportedStates).map((key) => <option selected={selected===key}  value={key}>{supportedStates[key][0]}</option>)}
             </select>
@@ -854,8 +856,8 @@ from {fromLabel} to {toLabel} by age.</h3>
             <div className="chart-grid">
               <div>
                 <span className='chart-title'>{ageData[0]['type']}</span>
-                {/* <AllDrugs /> */}
-                <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} />
+                <AllDrugs />
+                {/* <BarChart width={600} height={600} dataKeys={ageKeys} formatPercentage={formatPercentage} data={ageData} colorKeys={ageColorKeys} /> */}
               </div>
               <div>
                 <span className='chart-title'>{ageData[1]['type']}</span>
@@ -1081,6 +1083,10 @@ from {fromLabel} to {toLabel} by age.</h3>
     setShowLegend(!showLegend);
   };
 
+  const toggleLegendHelp = () => {
+    setShowLegendHelp(!showLegendHelp);
+  };
+
   const resetFilters = () => {
     setSelected(null);
   };
@@ -1171,10 +1177,11 @@ from {fromLabel} to {toLabel} by age.</h3>
           <aside>
             <div>
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>
-                Time Range 
-                <span className='legend-help'>?
-                  <span className='legend-help-message'>Help Text</span>
-                </span>
+                Time Range   <span className='legend-help' onClick={toggleLegendHelp}>?</span>
+              </div>
+              <div className={`${ showLegendHelp ? 'legend-help-message' : 'legend-help-message show' }`}>
+                <p>This panel allows you to view the percent change in nonfatal drug overdoses between adjacent months and annually for a select time period.</p>
+                <p>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</p>
               </div>
               <div className="time-frame-container">
                 <div>Compare {toLabel} with the previous: </div>

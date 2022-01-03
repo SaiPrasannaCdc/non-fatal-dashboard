@@ -94,6 +94,26 @@ line { stroke: #ccc; stroke-width: 1; }
 
     g.geo-group {
         transition: .3s all;
+        position: relative;
+        z-index: 1;
+
+        &:hover {
+            z-index: 2;
+        }
+
+        path {
+            transition: .3s all;
+            stroke-width: 1; 
+
+            &:hover {
+                stroke: #333;
+                stroke-width: 2;
+                z-index: 2;
+            }
+        }
+        text {
+            pointer-events: none;
+        }
     }
 
     .drug-selection {
@@ -227,22 +247,7 @@ line { stroke: #ccc; stroke-width: 1; }
             max-height: 175px;
             overflow-y: scroll;
         }
-        .legend-title {
-            margin-bottom: 0;
-            position: relative;
-
-            .legend-help {
-
-                .legend-help-message {
-                    position: absolute;
-                    display: block;
-                    background: red;
-                    width: 100%;
-                    bottom: 0;
-                    left: 0;
-                }
-            }
-        }
+        
         li {
             font-size: .8em;
             padding: .6em .5em;
@@ -406,11 +411,57 @@ line { stroke: #ccc; stroke-width: 1; }
             background-color: #606060;
             color: #fff;
             font-size: 1em;
-            margin-bottom: $gbl-padding;
             padding: .3em .5em;
         }
+
+        .legend-help {
+            position: relative;
+            top: -3px;
+            left: 3px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,1);
+            width: 16px;
+            height: 16px;
+            line-height: 13px;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            opacity: .65;
+            transition: opacity .2s;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        .legend-help-message {
+            background: #eee;
+            border: 1px solid #ddd;
+            border-top: none;
+            color: #000;
+            width: 100%;
+            height: 0;
+            padding: 0 10px;
+            bottom: -40px;
+            left: 0;
+            overflow: hidden;
+            transition: all .2s ease-in-out;
+
+            &.show {
+                height: 135px;
+                padding: 10px;
+            }
+
+            p {
+                font-size: 10px;
+                font-style: normal;
+                margin-bottom: 10px;
+            }
+        }
         ul.legend {
-            margin-bottom: $gbl-padding;
+            margin: $gbl-padding 0;
             li {
                 display: flex;
                 align-items: center;

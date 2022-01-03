@@ -167,7 +167,8 @@ const UsaMap = () => {
           '&:hover': {
             // fill: legendColors[1],
             fontWeight: 600,
-            opacity:.9,
+            // opacity:.9,
+            stroke: 'red'
           },
           '&:active': {
             fill: legendColors[2],
