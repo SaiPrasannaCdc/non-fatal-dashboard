@@ -12,61 +12,6 @@ import Context from '../context';
 
 const { features: unitedStatesHex } = feature(hexTopoJSON, hexTopoJSON.objects.states)
 
-const supportedStates = {
-  // States
-  'US-AL': ['Alabama', 'AL'],
-  'US-AK': ['Alaska', 'AK'],
-  'US-AZ': ['Arizona', 'AZ'],
-  'US-AR': ['Arkansas', 'AR'],
-  'US-CA': ['California', 'CA'],
-  'US-CO': ['Colorado', 'CO'],
-  'US-CT': ['Connecticut', 'CT'],
-  'US-DE': ['Delaware', 'DE'],
-  'US-FL': ['Florida', 'FL'],
-  'US-GA': ['Georgia', 'GA'],
-  'US-HI': ['Hawaii', 'HI'],
-  'US-ID': ['Idaho', 'ID'],
-  'US-IL': ['Illinois', 'IL'],
-  'US-IN': ['Indiana', 'IN'],
-  'US-IA': ['Iowa', 'IA'],
-  'US-KS': ['Kansas', 'KS'],
-  'US-KY': ['Kentucky', 'KY'],
-  'US-LA': ['Louisiana', 'LA'],
-  'US-ME': ['Maine', 'ME'],
-  'US-MD': ['Maryland', 'MD'],
-  'US-MA': ['Massachusetts', 'MA'],
-  'US-MI': ['Michigan', 'MI'],
-  'US-MN': ['Minnesota', 'MN'],
-  'US-MS': ['Mississippi', 'MS'],
-  'US-MO': ['Missouri', 'MO'],
-  'US-MT': ['Montana', 'MT'],
-  'US-NE': ['Nebraska', 'NE'],
-  'US-NV': ['Nevada', 'NV'],
-  'US-NH': ['New Hampshire', 'NH'],
-  'US-NJ': ['New Jersey', 'NJ'],
-  'US-NM': ['New Mexico', 'NM'],
-  'US-NY': ['New York', 'NY'],
-  'US-NC': ['North Carolina', 'NC'],
-  'US-ND': ['North Dakota', 'ND'],
-  'US-OH': ['Ohio', 'OH'],
-  'US-OK': ['Oklahoma', 'OK'],
-  'US-OR': ['Oregon', 'OR'],
-  'US-PA': ['Pennsylvania', 'PA'],
-  'US-RI': ['Rhode Island', 'RI'],
-  'US-SC': ['South Carolina', 'SC'],
-  'US-SD': ['South Dakota', 'SD'],
-  'US-TN': ['Tennessee', 'TN'],
-  'US-TX': ['Texas', 'TX'],
-  'US-UT': ['Utah', 'UT'],
-  'US-VT': ['Vermont', 'VT'],
-  'US-VA': ['Virginia', 'VA'],
-  'US-WA': ['Washington', 'WA'],
-  'US-WV': ['West Virginia', 'WV'],
-  'US-WI': ['Wisconsin', 'WI'],
-  'US-WY': ['Wyoming', 'WY'],
-  'US-PR': ['Puerto Rico']
-};
-
 const offsets = {
   'US-VT': [50, -8],
   'US-NH': [34, 2],
@@ -91,7 +36,7 @@ const nudges = {
 }
 
 const UsaMap = () => {
-  const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo } = useContext(Context);
+  const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo, supportedStates } = useContext(Context);
   
   const geoLabel = (geo, bgColor = "#FFFFFF", projection) => {
     let centroid = projection(geoCentroid(geo))
