@@ -28,10 +28,15 @@ function BarChartVertical({
   ];
 
   data.sort((d1, d2) => {
-    if(d1.endYear < d2.endYear) return -1;
-    if(d1.endYear > d2.endYear) return 1;
-    if(d1.endMonth < d2.endMonth) return -1;
-    if(d1.endMonth > d2.endMonth) return 1;
+    const d1EndMonth = parseInt(d1.endMonth);
+    const d1EndYear = parseInt(d1.endYear);
+    const d2EndMonth = parseInt(d2.endMonth);
+    const d2EndYear = parseInt(d2.endYear);
+
+    if(d1EndYear < d2EndYear) return -1;
+    if(d1EndYear > d2EndYear) return 1;
+    if(d1EndMonth < d2EndMonth) return -1;
+    if(d1EndMonth > d2EndMonth) return 1;
     return 0;
   });
 
@@ -46,7 +51,7 @@ function BarChartVertical({
   const getXValue = (d) => {
     if(!d) return '';
     if(d.startMonth === d.endMonth) {
-      return `${months[d.endMonth - 1]} ${d.startYear}-${d.endYear.substring(1)}`;
+      return `${months[d.endMonth - 1]} ${d.startYear}-${d.endYear.substring(2)}`;
     }
     return `${months[d.startMonth - 1]}-${months[d.endMonth - 1]}`
   };
@@ -108,6 +113,10 @@ function BarChartVertical({
           numTicks={5}
           hideAxisLine={true}
           hideTicks={true}
+          labelProps={{
+            fontSize: 13,
+            textAnchor: 'middle'
+          }}
           tickLabelProps={() => ({
             fill: 'black',
             fontSize: 13,
