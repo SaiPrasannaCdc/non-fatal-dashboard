@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Bar, Circle } from '@visx/shape';
 import { Group } from '@visx/group';
-import { AxisLeft, AxisBottom } from '@visx/axis';
+import { AxisLeft, AxisBottom, TickFormatter } from '@visx/axis';
 import { scaleBand, scaleLinear } from '@visx/scale';
 
 import Context from '../context';
@@ -10,6 +10,8 @@ function BarChartVertical({
   data,
   width,
   height,
+  range = null,
+  chartType = null
 }) {
 
   const months = [
@@ -28,27 +30,38 @@ function BarChartVertical({
   ];
 
   data.sort((d1, d2) => {
-    if(d1.endYear < d2.endYear) return -1;
-    if(d1.endYear > d2.endYear) return 1;
-    if(d1.endMonth < d2.endMonth) return -1;
-    if(d1.endMonth > d2.endMonth) return 1;
+    const d1EndMonth = parseInt(d1.endMonth);
+    const d1EndYear = parseInt(d1.endYear);
+    const d2EndMonth = parseInt(d2.endMonth);
+    const d2EndYear = parseInt(d2.endYear);
+
+    if(d1EndYear < d2EndYear) return -1;
+    if(d1EndYear > d2EndYear) return 1;
+    if(d1EndMonth < d2EndMonth) return -1;
+    if(d1EndMonth > d2EndMonth) return 1;
     return 0;
   });
 
   const { fill, drugScreenOptions, currentDrug } = useContext(Context);
-
+console.log(drugScreenOptions[currentDrug]);
+  const drugTitle = drugScreenOptions[currentDrug].titlePlural;
   const percentColumn = drugScreenOptions[currentDrug].percentageColumn;
   const significanceColumn = drugScreenOptions[currentDrug].significanceColumn;
 
   const axisBottomHeight = 30;
   const marginRight = 30;
 
+  let timelineType;
+
   const getXValue = (d) => {
     if(!d) return '';
     if(d.startMonth === d.endMonth) {
-      return `${months[d.endMonth - 1]} ${d.startYear}-${d.endYear.substring(1)}`;
+      timelineType = "Annual";
+      return `${months[d.endMonth - 1]} ${d.startYear}-${d.endYear.substring(2)}`;
     }
-    return `${months[d.startMonth - 1]}-${months[d.endMonth - 1]}`
+    timelineType = "30 day"
+    // return `${months[d.startMonth - 1]}-${months[d.endMonth - 1]}`
+    return `${months[d.startMonth - 1]} ${d.startYear.substring(2)} - ${months[d.endMonth - 1]} ${d.endYear.substring(2)}`
   };
   const getYValue = (d) => Number(d ? d[percentColumn] : 0);
 
@@ -67,21 +80,34 @@ function BarChartVertical({
   const yScale = scaleLinear({
     range: [20, yMax],
     round: true,
-    domain: [Math.max(...data.map(getYValue), 1) * 1.1, Math.min(...data.map(getYValue), -1) * 1.1],
+    domain: [ range[0], range[1] ],
+    // domain: [Math.max(...data.map(getYValue), 1) * 1.1, Math.min(...data.map(getYValue), -1) * 1.1],
   });
 
   const center = yScale(0);
+  const startMonth = data.startMonth;
+  const endMonth = data.endMonth;
+  console.log(data)
 
   return width < 10 ? null : (
-    <svg width={width} height={height}>
+    <svg viewBox={`0 0 ${width} ${height+50}`}>
       <rect width={width} height={height} fill="url(#teal)" rx={14} />
       <Group left={100} bottom={200}>
         {data.map((d) => {
           if(!d || isNaN(center)) return '';
 
+          const chartMeta = d.key.split('|');
+          const yValue = getYValue(d);
           const xValue = getXValue(d);
-          const barY = (yScale(getYValue(d)) ?? 0);
+          const barY = (yScale(yValue) ??  center);
           const barX = xScale(xValue);
+          
+          let drugRow = yValue ? // set drug tooltip row if we have a number
+                        `<div class="percentage-row">
+                          <div>${drugTitle}:</div>
+                          <div>${yValue}%</div>
+                        </div>`
+                        : '';
 
           return (
             <Group key={`bar-${xValue}`}>
@@ -91,13 +117,33 @@ function BarChartVertical({
                 width={2}
                 height={Math.abs(barY - center)}
                 fill={fill(d[significanceColumn])}
+                
               />
+              {/* <svg viewBox="0 0 100 100" height="100px" width="100px" y="100px">
+                  <polygon 
+                    // width={6}
+                    // height={6}
+                    // cy={barY}
+                    // cx={barX + 1} 
+                    points="347.49,227 454.5,165.212 394.508,61.288 287.5,123.077 287.5,0 167.5,0 167.5,123.077 60.492,61.288 
+                    0.499,165.212 107.51,227 0.5,288.788 60.492,392.712 167.5,330.923 167.5,455 287.5,455 287.5,330.923 394.508,392.712 
+                    454.501,288.788 "
+                  />
+                </svg> */}
+              
               <Circle
                 key={`circle-${xValue}`}
-                r={4}
+                r={6}
                 cy={barY}
                 cx={barX + 1}
                 fill={fill(d[significanceColumn])}
+                data-tip={`
+                  <div class="state-name-row">
+                    <div><strong>${chartMeta[0] + ( chartType ? ': ' + chartType : '' )}</strong></div>
+                  </div>
+                  <div class="significance-row">${d[significanceColumn]}</div>
+                  ${drugRow}
+                `}
               />
             </Group>
           );
@@ -108,9 +154,13 @@ function BarChartVertical({
           numTicks={5}
           hideAxisLine={true}
           hideTicks={true}
+          labelProps={{
+            fontSize: 13,
+            textAnchor: 'middle'
+          }}
           tickLabelProps={() => ({
             fill: 'black',
-            fontSize: 13,
+            fontSize: 12,
             textAnchor: 'end',
             dy: '0.33em'
           })}
@@ -118,15 +168,17 @@ function BarChartVertical({
         <AxisBottom
           top={yMax}
           scale={xScale}
-          label={'30 day comparison'}
-          numTicks={5}
+          numTicks={6}
           hideAxisLine={true}
           hideTicks={true}
-          tickLabelProps={() => ({
+          tickLabelProps={(label, index, props) => ({
             fill: 'black',
-            fontSize: 13,
-            textAnchor: 'end',
-            dy: '0.33em'
+            fontSize: 12,
+            textAnchor: 'middle',
+            dy: 5,
+            dx: -65,
+            transform: `rotate(-35, ${props[index].to.x}, ${props[index].to.y})`,
+            dominantBaseline: 'end'       
           })}
         />
         {!isNaN(center) && (

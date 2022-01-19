@@ -89,7 +89,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
     <>
       <table id="main-data-table">
         <tr style={{backgroundColor: drugColor}}>
-          <th onClick={() => sortTable('jurisdiction')}>Jurisdiction</th>
+          <th onClick={() => sortTable('jurisdiction')}>State</th>
           <th onClick={() => sortTable('percent')}>Percentage Change</th>
           <th onClick={() => sortTable('significance')}>Significance</th>
         </tr>
@@ -98,11 +98,11 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
           <td className={'Significant Increase' === runtimeUSData[significanceColumn] || 'Significant Decrease' === runtimeUSData[significanceColumn] ? 'is-significant' : ''}>{getPercentageColumn(runtimeUSData)}</td>
           <td>{runtimeUSData[significanceColumn]}</td>
         </tr>
-        <tr className="state-header" style={{backgroundColor: '#f5f5f5'}}>
+        {/* <tr className="state-header" style={{backgroundColor: '#f5f5f5'}}>
           <th>State</th>
           <th></th>
           <th></th>
-        </tr>
+        </tr> */}
         {runtimeSortedData.map((row) => {
           let stateName = supportedStates[row[keyIndex['geo']]][0];
           const stateColors = applyLegendToRow(row);

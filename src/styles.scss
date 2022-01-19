@@ -14,8 +14,12 @@ line { stroke: #ccc; stroke-width: 1; }
 #checkerboard { fill: #ccc; }
 
 #non-fatal-container {
-    max-width: 1100px;
+    max-width: 1000px;
     margin: auto;
+
+    .merriweather {
+        font-family: Merriweather,serif;
+    }
 
     h3 {
         font-size: 1.25rem;
@@ -37,11 +41,27 @@ line { stroke: #ccc; stroke-width: 1; }
             background-color: #555;
             margin-left: 10%;
             top: -0.25em;
-          }
+        }
           
-          &:last-child:after {
+        &:last-child:after {
             display: none;
-          }
+        }
+
+        &.sub-drawer:before,
+        &.comparison-section:before {
+            content: ' ';
+            display: inline-block;
+            width: 80%;
+            height: 3px;
+            background-color: #555;
+            margin: $gbl-padding*3 10%;
+            top: -0.25em;
+        }
+
+        &.sub-drawer:after {
+            display: none;
+        }
+
     }
 
     .cdc-map-inner-container .single-geo {
@@ -209,7 +229,7 @@ line { stroke: #ccc; stroke-width: 1; }
             border: 1px solid rgba(0,0,0,.125);
             border-left: 5px solid #B890BB;
             border-radius: .25rem;
-            min-height: 100px;
+            min-height: 110px;
             padding: .5em;
             display: flex;
             align-items: center;
@@ -218,7 +238,7 @@ line { stroke: #ccc; stroke-width: 1; }
                 flex-shrink: 0;
             }
             span.callout {
-                font-size: 2.5em;
+                font-size: 2em;
                 font-weight: 500;
                 color: #712177;
                 padding: 0 .5em;
@@ -354,6 +374,16 @@ line { stroke: #ccc; stroke-width: 1; }
 
             > * {
                 margin-right: 10px;
+            }
+
+            .radio {
+                display: inline-block;
+                
+                input {
+                    margin-left: 14px;
+                    position: relative;
+                    top: 2px;
+                }
             }
         }
 
@@ -502,6 +532,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
         .bar-chart {
             min-height: 250px;
+            text-align: center;
 
             .bar-chart-xaxis-label {
                 font-size: 1.5em;
@@ -521,6 +552,8 @@ line { stroke: #ccc; stroke-width: 1; }
         }
 
         .chart-grid {
+            display: grid;
+            gap: 30px;
             text-align: center;
 
             > div {
@@ -528,22 +561,31 @@ line { stroke: #ccc; stroke-width: 1; }
 
                 > svg {
                     position: relative;
+                    margin: auto;
                     left: -6.2vw;
                 }
             }
 
-            @include r($lg){
+            /*@include r($lg){
                 display: grid;
                 grid-template-columns: 1fr 1fr;
 
                 > div > svg {
                     left: -25px;
                 }
-            }
+            }*/
 
             .chart-data {
                 text { display: none ;}
             }
+
+            svg text {
+                font-size: 14px;
+            }
+
+            // polygon {
+            //     transform: scale(.5em) !important
+            // }
         }
     }
 

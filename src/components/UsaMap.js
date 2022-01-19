@@ -101,7 +101,7 @@ const UsaMap = () => {
       if (geoData !== undefined) {
         legendColors = applyLegendToRow(geoData);
       }
-
+console.log("colors: ", legendColors)
       const tooltip = applyTooltipsToGeo(geo.properties.iso, legendColors[0]);
 
       // If a legend applies, return it with appropriate information.

@@ -6,6 +6,7 @@ import UsaMap from './components/UsaMap';
 import BarChartVertical from './components/BarChartVertical';
 import Datatable from './components/Datatable';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
+import ReactTooltip from 'react-tooltip';
 import { Base64 } from 'js-base64';
 import { renderToString } from 'react-dom/server';
 
@@ -131,7 +132,7 @@ const legendOrder = [
   'Significant Decrease',
   'No Significant Change',
   'Data Not Available/Not Reported',
-  'Unfunded Jurisdiction'
+  'Unfunded State'
 ];
 
 const drugScreenOptions = {
@@ -206,7 +207,7 @@ export default function App({ dataUrl }) {
   const [timeline, setTimeline] = useState('Monthly');
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [demographicsToggle, setDemographicsToggle] = useState('sex');
-
+  
   const {runtimeLegend, runtimeData, runtimeUSData, runtimePastMonths, runtimePastMonthsState, runtimePastMonthsGender, runtimePastMonthsAge } = runtime;
 
   const fetchData = async () => {
@@ -323,12 +324,12 @@ export default function App({ dataUrl }) {
           }
         });
 
-        setYearTimeframes(tempMonthTimeframes.slice(13));
+        setYearTimeframes(tempMonthTimeframes.slice(12));
         setMonthTimeframes(tempMonthTimeframes.slice(1)); //Remove the first month/year combo since it doesn't have a previous month
         setAllTimeframes(tempMonthTimeframes); //Remove the first month/year combo since it doesn't have a previous month
-
+        
         setSliderPointMonth(tempMonthTimeframes.slice(1).length - 1); //Default range points are the first two month
-        setSliderPointYear(tempMonthTimeframes.slice(13).length - 1); //Default range points are the first two month
+        setSliderPointYear(tempMonthTimeframes.slice(12).length - 1); //Default range points are the first two month
 
         const shifted = [...res.data.data];
         shifted.shift(); //Get rid of header row
@@ -344,13 +345,17 @@ export default function App({ dataUrl }) {
   };
 
   const applyLegendToRow = (rowObj) => {
+    let colorArr
     let hash = hashObj(rowObj)
 
     let idx = legendMemo.current.get(hash)
 
     if(runtimeLegend[idx]?.disabled) return false
 
-    return generateColorsArray(runtimeLegend[idx]?.color)
+    // unfunded states are coming up undefined so making sure we can set the color
+    colorArr = idx >= 0 ? generateColorsArray(runtimeLegend[idx]?.color) : ['#ffffff', '#ffffff', '#ffffff']
+
+    return colorArr
   }
 
   const formatPercentage = (percentage) => {
@@ -483,10 +488,10 @@ export default function App({ dataUrl }) {
     let endYear;
 
     if ('year' === selectedTimeframe) {
-      startMonth = allTimeframes[sliderPointYear+12]['month'];
-      startYear = allTimeframes[sliderPointYear+12]['year'];
-      endMonth = allTimeframes[sliderPointYear+13]['month'];
-      endYear = allTimeframes[sliderPointYear+13]['year'];
+      startMonth = allTimeframes[sliderPointYear]['month'];
+      startYear = allTimeframes[sliderPointYear]['year'];
+      endMonth = allTimeframes[sliderPointYear+12]['month'];
+      endYear = allTimeframes[sliderPointYear+12]['year'];
     } else {
       startMonth = allTimeframes[sliderPointMonth]['month'];
       startYear = allTimeframes[sliderPointMonth]['year'];
@@ -495,7 +500,9 @@ export default function App({ dataUrl }) {
     }
 
     const rowKey = 'US|' + startYear + '|' + startMonth + '|all|all:US|' + endYear + '|' + endMonth + '|all|all';
+
     return keyedRawUSData[rowKey];
+    
   };
 
   // Calculates what's going to be displayed on the map and data table at render.
@@ -511,10 +518,11 @@ export default function App({ dataUrl }) {
     let endYear;
 
     if ('year' === selectedTimeframe) {
-      startMonth = allTimeframes[sliderPointYear + 12]['month'];
-      startYear = allTimeframes[sliderPointYear + 12]['year'];
-      endMonth = allTimeframes[sliderPointYear + 13]['month'];
-      endYear = allTimeframes[sliderPointYear + 13]['year'];
+
+      startMonth = allTimeframes[sliderPointYear]['month'];
+      startYear = allTimeframes[sliderPointYear]['year'];
+      endMonth = allTimeframes[sliderPointYear + 12]['month'];
+      endYear = allTimeframes[sliderPointYear + 12]['year'];
     } else {
       startMonth = allTimeframes[sliderPointMonth]['month']; 
       startYear = allTimeframes[sliderPointMonth]['year'];
@@ -546,9 +554,9 @@ export default function App({ dataUrl }) {
   const iteratePastMonths = (callback) => {
     const selectedMonth = 'year' === selectedTimeframe ? sliderPointYear : sliderPointMonth;
 
-    for(let i = 0; i < 5; i++){
+    for(let i = 0; i < 6; i++){
       let currentMonth = selectedMonth - i;
-
+  
       if(allTimeframes[currentMonth]){
         if ('year' === selectedTimeframe) {
           callback(
@@ -599,12 +607,12 @@ export default function App({ dataUrl }) {
     });
 
     return data;
-
+    
   };
 
   const generateRuntimePastMonthsAge = () => {
     let data = {
-      '0-14': [],
+      '0-14': [], 
       '15-24': [],
       '25-34': [],
       '35-54': [],
@@ -633,8 +641,8 @@ export default function App({ dataUrl }) {
       const processedPastMonthsAge = generateRuntimePastMonthsAge();
 
       setRuntime({
-        runtimeData: processedData,
-        runtimeUSData: processedUSData,
+        runtimeData: processedData, 
+        runtimeUSData: processedUSData, 
         runtimeLegend: processedLegend,
         runtimePastMonths: processedPastMonths,
         runtimePastMonthsState: processedPastMonthsState,
@@ -643,13 +651,17 @@ export default function App({ dataUrl }) {
       });
     }
   }, [selected, dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe])
+
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  });
   
   const StateInfo = () => {
 
     return (
       <section className="sub-drawer dumbbell">
         <div>
-          <h3 style={{ color: drugColor }}>{timeline} percent change estimates in rates of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses per 10,000 ED visits† from {fromLabel} to {toLabel}.</h3>
+          <h3 style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
           <div>
             Compare United States against:
             <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
@@ -661,63 +673,113 @@ export default function App({ dataUrl }) {
         <div className={'bar-chart-container'}>
         <div className="bar-chart">
             <span className='chart-title'>US</span>
-            <BarChartVertical width={600} height={230} data={runtimePastMonths} />
+            <BarChartVertical width={600} height={230} data={runtimePastMonths} range={rangeAge} />
           </div>
           <div className="bar-chart" style={{"margin":"60px 0"}}>
           <span className='chart-title'>{supportedStates[selected][0]}</span>
-            <BarChartVertical width={600} height={230} data={runtimePastMonthsState} />
+            <BarChartVertical width={600} height={230} data={runtimePastMonthsState} range={rangeAge} />
         </div>
         </div>
       </section>
     )
   }
+  // console.log('AGE DATA: ', runtimePastMonthsAge);
+  // console.log('AGE DATA: ', runtimePastMonthsGender);
+  const rangeSex = timeline === "Monthly" ? [ 50, -15 ] : [ 80, -30 ];
+  const rangeAge = timeline === "Monthly" ? [ 115, -30 ] : [ 180, -60 ];
+
+
+  // let range
+  const getRange = (d) => {
+    let range, maxRange = 0, minRange = 0, largest = 0;
+
+    
+    for (const [key, value] of Object.entries(d)) {
+      console.log(`${key}: ${value}`);
+      
+      for (const [k, v] of Object.entries(value)) {  
+        let drugSelect = currentDrug + "PercentChange";
+
+        largest = largest > v["drugSelect"] ? largest : v["drugSelect"];
+        // let largest = Math.max.apply(Math, v.map(function(o) { return o.allPercentageChange; }));
+        // debugger;
+        // let smallest = Math.min.apply(Math, el.map(function(o) { return o.allPercentageChange; }))
+
+        // maxRange = ( largest > maxRange ) ? largest : maxRange;
+        // minRange = ( smallest < minRange ) ? smallest : minRange;
+        // return [maxRange, minRange]
+      };
+
+      
+    }
+    // debugger;
+  // for (const el in d) {  
+  //     let largest = Math.max.apply(Math, el.map(function(o) { return o.allPercentageChange; }));
+  //     let smallest = Math.min.apply(Math, el.map(function(o) { return o.allPercentageChange; }))
+
+  //     maxRange = ( largest > maxRange ) ? largest : maxRange;
+  //     minRange = ( smallest < minRange ) ? smallest : minRange;
+  //     return [maxRange, minRange]
+  //   };
+
+    
+    // debugger;
+    // range = [
+    //   Math.max.apply(Math, d.map(function(o) { return o.allPercentageChange; })),
+    //   Math.min.apply(Math, d.map(function(o) { return o.allPercentageChange; }))
+    // ]
+    return rangeSex;
+  }
+
 
   const GenderAgeSection = () => {
 
     return (
       <>
         <section className="comparison-section">
-          <h3 style={{ color: drugColor }}>{timeline} percent change estimates in rates of suspected overdoses per 10,000 ED visits over last five months - Demographics</h3>
+          <div className="bar-chart-container">
+            <h3 style={{ color: drugColor }}>{timeline} percent change in US ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
 
-          <span>Sex Comparison</span><div className="toggle-container" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
+            <span>Sex Comparison</span><div className="toggle-container" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
 
-          {demographicsToggle === 'sex' && <div className="sex-chart">
-            <div className="chart-grid">
-              <div>
-                <span className='chart-title'>Male</span>
-                <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['M']} />
+            {demographicsToggle === 'sex' && <div className="sex-chart">
+              <div className="chart-grid">
+                <div>
+                  <span className='chart-title'>Male</span>
+                  <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['M']} range={getRange(runtimePastMonthsGender)} chartType={'Male'} />
+                </div>
+                <div>
+                  <span className='chart-title'>Female</span>
+                  <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['F']} range={getRange(runtimePastMonthsGender)} chartType={'Female'} />
+                </div>
               </div>
-              <div>
-                <span className='chart-title'>Female</span>
-                <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['F']} />
-              </div>
-            </div>
-          </div>}
+            </div>}
 
-          {demographicsToggle === 'age' && <div className="age-chart">
-            <div className="chart-grid">
-              <div>
-                <span className='chart-title'>0-14</span>
-                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['0-14']} />
+            {demographicsToggle === 'age' && <div className="age-chart">
+              <div className="chart-grid">
+                <div>
+                  <span className='chart-title'>Ages 0 - 14</span>
+                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['0-14']} range={rangeAge} chartType={'Age 0-14'} />
+                </div>
+                <div>
+                  <span className='chart-title'>Ages 15 - 24</span>
+                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['15-24']} range={rangeAge} chartType={'Age 15-24'}/>
+                </div>
+                <div>
+                  <span className='chart-title'>Ages 25 - 34</span>
+                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['25-34']} range={rangeAge} chartType={'Age 25-34'} />
+                </div>
+                <div>
+                  <span className='chart-title'>Ages 35 - 54</span>
+                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['35-54']} range={rangeAge} chartType={'Age 35-54'} />
+                </div>
+                <div>
+                  <span className='chart-title'>Ages 55+</span>
+                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['55+']} range={rangeAge} chartType={'Age 55+'} />
+                </div>
               </div>
-              <div>
-                <span className='chart-title'>15-24</span>
-                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['15-24']} />
-              </div>
-              <div>
-                <span className='chart-title'>25-34</span>
-                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['25-34']} />
-              </div>
-              <div>
-                <span className='chart-title'>35-54</span>
-                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['35-54']} />
-              </div>
-              <div>
-                <span className='chart-title'>55+</span>
-                <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['55+']} />
-              </div>
-            </div>
-          </div>}
+            </div>}
+          </div>
         </section>
       </>
     )
@@ -791,7 +853,7 @@ export default function App({ dataUrl }) {
           <span className="callout" style={{ 'color': drugColor }}>N/A</span>
           <div>
             <h3 style={{ color: drugColor }}>{getStateName(selected)}</h3>
-            <p>Data not available/reported for this jurisdiction and time range.</p>
+            <p>Data not available/reported for this state and time range.</p>
           </div>
         </div>
       )
@@ -801,8 +863,8 @@ export default function App({ dataUrl }) {
         <div style={{ 'borderLeft': '5px solid' + drugColor }}>
           <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
           <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change in {getStateName(selected)}</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {fromLabel} to {toLabel}</p>
+            <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change†  in {getStateName(selected)}</span>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
           </div>
         </div>
       )
@@ -819,7 +881,7 @@ export default function App({ dataUrl }) {
       <div style={{ 'borderLeft': '5px solid' + drugColor }}>
         <span className="callout" style={{ 'color': drugColor }}>{numStatesWithSignificantIncrease}</span>
         <div>
-          <span className='data-bite-title' style={{ 'color': drugColor }}>Jursidictions </span>
+          <span className='data-bite-title' style={{ 'color': drugColor }}>States </span>
           <p>Number with a Significant Increase</p>
         </div>
       </div>
@@ -860,12 +922,11 @@ export default function App({ dataUrl }) {
     }
 
     //Move the primary columns to the front
-    debugger;
     const itemsToAdd = headerRow.splice(12, 6);
     headerRow = itemsToAdd.concat(headerRow);
 
     let footnote1 = ["§", "The state/territory does not share data from syndromic surveillance systems with DOSE." ];
-    let footnote2 = ["¶", "The funded jurisdiction did not provide CDC enough months of data to calculate all percent change cells." ];
+    let footnote2 = ["¶", "The funded state did not provide CDC enough months of data to calculate all percent change cells." ];
     let footnote3 = ["**", "State does not participate in OD2A DOSE ED data sharing." ];
     let footnote4 = ["† †", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
 
@@ -937,14 +998,14 @@ export default function App({ dataUrl }) {
   //   });
   // }
 
-  let fromLabel;
-  let toLabel;
+  let fromLabel, toLabel, mapFromLabel;
   if ('month' === selectedTimeframe) {
+    mapFromLabel = allTimeframes[sliderPointMonth]['label'];
     toLabel = allTimeframes[sliderPointMonth+1]['label'];
-    fromLabel = allTimeframes[sliderPointMonth]['label'];
+    fromLabel = sliderPointMonth-6 >= 0 ? allTimeframes[sliderPointMonth-6]['label'] : allTimeframes[0]['label'];
   } else {
     toLabel = allTimeframes[sliderPointYear + 12]['label'];
-    fromLabel = allTimeframes[sliderPointYear + 11]['label'];
+    fromLabel = allTimeframes[sliderPointYear]['label'];
   }
 
   return (
@@ -956,14 +1017,14 @@ export default function App({ dataUrl }) {
           </select>
         </div>
         <div>
-          Select a Jurisdiction: <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+          Select a State: <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
             <option value="">United States</option>
             {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
           </select>
         </div>
       </div>
       <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.75em 18px', marginBottom: '1em'}}>
-        <span style={{  fontSize: '.8em', fontWeight: 'bold' }}>Trends in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</span>
+        <span style={{  fontSize: '.8em', fontWeight: 'bold' }}>Trends in Emergency Department Visits</span>
         <h2 style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: 'bold', fontFamily: '"Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif'  }}>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</h2>
       </header>
       <div className="callouts">
@@ -974,8 +1035,8 @@ export default function App({ dataUrl }) {
             
             <span className='data-bite-title' style={{ color: drugColor }}>
               
-              {timeline}  Percent Change in US</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} overdose rates per 10,000 ED visits from {fromLabel} to {toLabel}</p>
+              {timeline}  Percent Change<sup>†</sup> in US</span>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
           </div>
         </div>
         {selected && constructStateDataBite()}
@@ -988,7 +1049,7 @@ export default function App({ dataUrl }) {
           </div>
         </div>
       </div>
-      <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{fromLabel}</strong></div>
+      <div style={{ 'marginBottom': '25px' }}><strong>{mapFromLabel}</strong> compared to <strong>{toLabel}</strong></div>
       <div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
           return <div key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
@@ -1015,7 +1076,7 @@ export default function App({ dataUrl }) {
                 <p>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</p>
               </div>
               <div className="time-frame-container">
-                <div>Compare {toLabel} with the previous: </div>
+                <div>Compare {toLabel} with the previous: 
                 <div className="radio">
                   <label>
                     <input
@@ -1039,6 +1100,7 @@ export default function App({ dataUrl }) {
                     />
                     Year
                   </label>
+                </div>
                 </div>
               </div>
               <div className="range-aside-container" style={{ color: drugColor }}>
@@ -1104,7 +1166,7 @@ export default function App({ dataUrl }) {
         <div className="map-container">
           <div className="map-inner-container">
             <div className="now-viewing">
-              {!selected && <div><em>* Click on a state to see more.</em></div>}
+              {!selected && <div><em>Click on a state to see more.</em></div>}
               {selected && <div>Now viewing {getStateName(selected)} <span className="btn btn-reset" onClick={resetFilters}>Reset</span></div>}
             </div>
             <UsaMap/>
@@ -1114,8 +1176,8 @@ export default function App({ dataUrl }) {
         {selected && <StateInfo />}
         {GenderAgeSection()}
         <div className="footnotes comparison-section">
-          <p>* Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
-          <p>† To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+          <p>* In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
+          <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
         </div>
       </div>
       <div className='data-tables'>
@@ -1127,7 +1189,7 @@ export default function App({ dataUrl }) {
           </h2>
           {showDatatable &&
             <div className="datatable-body">
-              <p className='datatable-description'>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose, {fromLabel} to {toLabel}, by OD2A-funded Jurisdiction</p>
+              <p className='datatable-description'>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose, {fromLabel} to {toLabel}, by OD2A-funded State</p>
               <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
               <DownloadButton data={rawData} />
             </div>}
@@ -1144,7 +1206,7 @@ export default function App({ dataUrl }) {
               <ol>
                 <li><strong>Some data may be missing.</strong> Data sent from EDs to health departments may be delayed or may stop for a period of time. When EDs begin sharing data again, information about visits during the lapse may never be shared.</li>
                 <li><strong>Reporting facilities and the data they report can change.</strong> Several states continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions or a cessation of syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, numbers and rates reported could change over time as more facilities began sharing data or sharing higher quality data as well as facilities that may stop sharing data for a period of time. Some EDs also had increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitate the identification of overdose-related visits.</li>
-                <li><strong>Data are updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in syndromic surveillance systems within 48 hours for ~70% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be updated over the course of several weeks, and relevant overdose discharge diagnosis codes or revised chief complaint text may be received during this time. Therefore, rates may change over time as the visit records are completed and new drug overdose visits are identified.</li>
+                <li><strong>Data are updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in syndromic surveillance systems within 48 hours for ~70% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be updated over the course of several weeks, and relevant overdose discharge diagnosis codes or revised chief complaint text may be received during this time. However, DOSE data are reported with a one-month time lag and not typically updated each month.</li>
                 <li><strong>These are suspected overdoses.</strong> Because these data are not determined by toxicological testing, they are not considered confirmed cases, but “suspected” overdoses.</li>
                 <li><strong>Data likely represent an undercount,</strong> given inaccuracies in coding and missing chief complaint information.</li>
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of suspected opioid-, heroin-, and stimulant-involved overdose visits are included in the numbers of suspected all drug overdose visits; suspected heroin-involved overdose visits are included in the numbers of suspected opioid-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
@@ -1152,7 +1214,7 @@ export default function App({ dataUrl }) {
             </div>}
         </div>
       </div>
-      
+      <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
     </Context.Provider>
   );
 }
