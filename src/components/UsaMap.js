@@ -122,7 +122,7 @@ console.log("colors: ", legendColors)
 
         if(selected && selected !== geoKey) styles.opacity = 0.4 
         if(selected && selected === geoKey) styles.fill = legendColors[0]
-
+debugger;
         return (
           <g
             key={key}

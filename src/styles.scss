@@ -2,20 +2,26 @@
 @import 'scss/variables';
 @import 'scss/mixins';
 
-body {
-    padding: .75em;
-
-    @include r($md) {
-        padding: 2em;
-    }
-}
+//body {
+//    padding: .75em;
+//
+//    @include r($md) {
+//        padding: 2em;
+//    }
+//}
 
 line { stroke: #ccc; stroke-width: 1; }
 #checkerboard { fill: #ccc; }
 
 #non-fatal-container {
-    max-width: 1000px;
-    margin: auto;
+    max-width: 100%;
+    padding: $gbl-padding;
+    margin: 0;
+
+    @include r($lg) {
+        max-width: 1000px;
+        margin: auto;
+    }
 
     .merriweather {
         font-family: Merriweather,serif;
@@ -42,7 +48,7 @@ line { stroke: #ccc; stroke-width: 1; }
             margin-left: 10%;
             top: -0.25em;
         }
-          
+
         &:last-child:after {
             display: none;
         }
@@ -72,7 +78,6 @@ line { stroke: #ccc; stroke-width: 1; }
             text {
                 font-weight: 600;
             }
-            
 
             path {
                 stroke-width: 3px;
@@ -81,7 +86,7 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .btn {
-        background: #005eaa;
+        background: $blue;
         color: #fff;
         border: 0;
         padding: .4em .8em;
@@ -107,7 +112,7 @@ line { stroke: #ccc; stroke-width: 1; }
             transition: .3s all;
         }
     }
-    
+
     .now-viewing > div {
         padding-top: 10px;
     }
@@ -123,7 +128,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
         path {
             transition: .3s all;
-            stroke-width: 1; 
+            stroke-width: 1;
 
             &:hover {
                 stroke: #333;
@@ -171,7 +176,7 @@ line { stroke: #ccc; stroke-width: 1; }
             // background-color: ;
         }
     }
-    
+
     .filters {
         display: flex;
 
@@ -267,7 +272,7 @@ line { stroke: #ccc; stroke-width: 1; }
             max-height: 175px;
             overflow-y: scroll;
         }
-        
+
         li {
             font-size: .8em;
             padding: .6em .5em;
@@ -277,12 +282,12 @@ line { stroke: #ccc; stroke-width: 1; }
                 margin-top: .2em;
             }
             &.active {
-                background-color: #F7F2F7;
-                color: #712177;
+                background-color: $off-white;
+                color: $purple;
             }
             &:not(.year) {
                 &:hover {
-                    color: #712177;
+                    color: $purple;
                 }
             }
             font-weight: 500;
@@ -295,68 +300,125 @@ line { stroke: #ccc; stroke-width: 1; }
         cursor: pointer;
     }
 
-    #toggleLegend {
+    .toggle-area {
         position: fixed;
-        bottom: 140px;
+        display: grid;
+        width: 97%;
+        grid-template-columns: 1fr 1fr 80px;
+        bottom: 5px;
+        gap: 5px;
+        left: 1.5%;
         z-index: 12;
-        width: 120px;
-        transform: rotate(-90deg);
-        // left: calc(50% - 60px);
-        right: -31px;
-        background-color: #712177;
-        color: #fff;
-        text-align: center;
-        padding: .75em;
-        border: 1px solid rgba(255,255,255,0.75);
-        border-radius: 5px 5px 0 0 ;
-        box-shadow: 0 0 25px rgba(255,255,255,0.95);
-        font-size: .8em;
-        cursor: pointer;
-        opacity: 1;
-        transition: opacity .2s ease-in-out;
 
-        &:hover,
-        &:focus,
-        &:active {
-            opacity: .8;
+
+        @include r($lg) {
+            display: none;
         }
 
-        @include r($xs) {
-            display: none;
+        svg {
+            position: relative;
+            left: 7px;
+            top: 3px;
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            transition: all .2s ease-in-out;
+        }
+
+        .open svg {
+            transform: rotate(-180deg);
+        }
+
+        #toggleLegend,
+        #toggleTimeline,
+        #toggleShare {
+            background-color: $dark-blue;
+            color: $white;
+            text-align: center;
+            padding: .75em;
+            border: 1px solid rgba($white,0.75);
+            border-radius: 5px;
+            font-size: .8em;
+            cursor: pointer;
+            opacity: 1;
+            transition: opacity .2s ease-in-out;
+        }
+
+        #toggleLegend,
+        #toggleTimeline,
+        #toggleShare {
+            width: 100%;
+            margin: auto;
+
+            &:hover,
+            &:focus,
+            &:active {
+                opacity: .8;
+            }
         }
     }
     
     aside {
         position: fixed;
         width: 97%;
-        bottom: 0;
+        bottom: -1000px;
         left: 1.5%;
-        padding: 2.5% 2.5% 50px;
-        background-color: rgba(255, 255, 255, .6);
-        border: 1px solid rgba(0, 0, 0, 0.125);
-        border-radius: .25em;
         display: grid;
         gap: 1em;
-        box-shadow: 0 0 15px rgba(0,0,0,0.15);
+        //align-content: center;
+        //text-align: center;
+        box-shadow: 0 0 15px rgba($black,0.15);
         backdrop-filter: blur(7px);
+        background-color: rgba($white, .75);
         z-index: 11;
-
-        @include r($xs) {
-            grid-template-columns: 1fr 245px;
-            width: inherit;
-            position: relative;
-            width: inherit;
-            bottom: inherit;
-            left: inherit;
-            padding: unset;
-            background-color: unset;
-            border: unset;
-            box-shadow: unset;
-            backdrop-filter: unset;
-            z-index: unset;
-        }
+        transition: bottom .4s ease-in-out;
 
         @include r($lg) {
+            //padding: 2.5% 2.5% 50px;
+            background: inherit;
+            //border: 1px solid rgba(0, 0, 0, 0.125);
+            border-radius: .25em;
+            box-shadow: unset;
+            backdrop-filter: unset;
+        }
+
+        .legend,
+        .timeline,
+        .share {
+            display: none;
+            padding-bottom: 60px;
+
+            @include r($lg) {
+                display: block;
+                margin: inherit;
+                padding-bottom: $gbl-padding;
+            }
+
+            > * {
+                margin: 0 $gbl-padding;
+
+                @include r($lg) {
+                    margin: inherit;
+                }
+            }
+
+            .legend-title {
+                margin: inherit;
+            }
+        }
+
+        &.show-legend,
+        &.show-timeline,
+        &.show-share {
+            bottom: 0;
+        }
+
+        &.show-legend .legend {  display: block; }
+        &.show-timeline .timeline {  display: block; }
+        &.show-share .share {  display: block; }
+
+        @include r($lg) {
+            display: block;
             position: -webkit-sticky;
             position: sticky;
             top: 10px;
@@ -364,11 +426,10 @@ line { stroke: #ccc; stroke-width: 1; }
             float: right;
             grid-template-columns: unset;
         }
-        
 
         .time-frame-container {
             display: flex;
-            justify-content: center;
+            //justify-content: center;
             margin-top: $gbl-padding;
             font-size: .8em;
 
@@ -378,7 +439,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
             .radio {
                 display: inline-block;
-                
+
                 input {
                     margin-left: 14px;
                     position: relative;
@@ -400,7 +461,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
                 > svg {
                     color: currentColor;
-    
+
                     path {
                         fill: currentColor;
                     }
@@ -408,14 +469,14 @@ line { stroke: #ccc; stroke-width: 1; }
             }
 
             .rc-slider {
-                
+
                 .rc-slider-tooltip-inner {
                     padding: 6px 7px;
                     white-space: nowrap;
                 }
 
                 .rc-slider-track {
-                    background-color: rgba(215, 215, 215, 1);   
+                    background-color: rgba(215, 215, 215, 1);
                 }
 
                 .rc-slider-rail {
@@ -423,7 +484,7 @@ line { stroke: #ccc; stroke-width: 1; }
                 }
 
                 .rc-slider-mark {
-                    
+
                     .rc-slider-mark-text {
                         max-width: 50px;
                     }
@@ -439,7 +500,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
         .legend-title {
             background-color: #606060;
-            color: #fff;
+            color: $white;
             font-size: 1em;
             padding: .3em .5em;
         }
@@ -467,10 +528,10 @@ line { stroke: #ccc; stroke-width: 1; }
         }
 
         .legend-help-message {
-            background: #eee;
-            border: 1px solid #ddd;
+            background: $gray-lightest;
+            border: 1px solid $gray-light;
             border-top: none;
-            color: #000;
+            color: $black;
             width: 100%;
             height: 0;
             padding: 0 10px;
@@ -521,11 +582,11 @@ line { stroke: #ccc; stroke-width: 1; }
         @include r($lg) {
             width: calc( 100% - 350px );
         }
-    
+
         .bar-chart {
             margin-top: 40px;
         }
-        
+
     }
 
     .bar-chart-container {
@@ -557,7 +618,7 @@ line { stroke: #ccc; stroke-width: 1; }
             text-align: center;
 
             > div {
-                margin-top: 40px;              
+                margin-top: 40px;
 
                 > svg {
                     position: relative;
@@ -635,17 +696,17 @@ line { stroke: #ccc; stroke-width: 1; }
                     margin-bottom: $gbl-padding;
                 }
             }
-    
+
             #main-data-table {
                 border-collapse: collapse;
-    
+
                 tr {
                     &.state-header {
                         th {
                             color: #000 !important;
                         }
                     }
-    
+
                     th {
                         border: 1px solid #dee2e6;
                         padding: .3rem;
@@ -653,15 +714,15 @@ line { stroke: #ccc; stroke-width: 1; }
                         color: white;
                         cursor: pointer;
                     }
-    
+
                     td {
                         border: 1px solid #dee2e6;
                         padding: .3rem;
-    
+
                         .datatable-hex-container {
                             display: flex;
                             justify-items: flex-start;
-    
+
                             .datatable-hex {
                                 width: 18px;
                                 margin-right: 5px;
@@ -683,7 +744,7 @@ line { stroke: #ccc; stroke-width: 1; }
                     td:nth-child(3) {
                         width: 40%;
                     }
-                    
+
                     th:nth-child(4),
                     td:nth-child(4) {
                         width: 10%;
@@ -691,7 +752,7 @@ line { stroke: #ccc; stroke-width: 1; }
                 }
             }
         }
-    }  
+    }
 
     .footnotes {
         padding: $gbl-padding 0;
@@ -703,7 +764,7 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .comparison-section {
-       
+
         @include r($lg) {
             margin: 25px 300px 0 0;
         }
@@ -724,7 +785,7 @@ line { stroke: #ccc; stroke-width: 1; }
                 }
             }
 
-            
+
         }
     }
 

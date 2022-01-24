@@ -1,6 +1,7 @@
 # MacOS
 .DS_Store
 ._*
+.idea/
 
 # Build files
 bundle.js

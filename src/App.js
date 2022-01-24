@@ -8,8 +8,10 @@ import Datatable from './components/Datatable';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
 import { Base64 } from 'js-base64';
+
 import { renderToString } from 'react-dom/server';
 
+import Caret from './assets/caret-down.svg';
 import Context from './context';
 import 'rc-slider/assets/index.css';
 import './styles.scss';
@@ -202,7 +204,9 @@ export default function App({ dataUrl }) {
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
   const [statesParticipating, setStatesParticipating] = useState(0);
   const [showDatatable, setShowDatatable] = useState(false);
-  const [showLegend, setShowLegend] = useState(true);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [showLegend, setShowLegend] = useState(false);
   const [showLegendHelp, setShowLegendHelp] = useState(true);
   const [timeline, setTimeline] = useState('Monthly');
   const [showConsiderations, setShowConsiderations] = useState(false);
@@ -233,6 +237,7 @@ export default function App({ dataUrl }) {
   }
 
   const setStateSelected = (geo) => {
+    debugger;
     if (selected === geo) {
       setSelected(null);
     } else {
@@ -378,7 +383,7 @@ export default function App({ dataUrl }) {
       const significance = stateData[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
       toolTipText += `<div class="state-name-row"><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
-      if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw) {
+      if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw && 'unfunded' !== selectedPercentageRaw ) {
         toolTipText += `<div class="percentage-row"><div>${drugScreenOptions[currentDrug]['titlePlural']}:</div><div>${formatPercentage(selectedPercentageRaw)}</div></div>`;
       }
     }
@@ -738,7 +743,7 @@ export default function App({ dataUrl }) {
       <>
         <section className="comparison-section">
           <div className="bar-chart-container">
-            <h3 style={{ color: drugColor }}>{timeline} percent change in US ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
+            <h3 style={{ color: drugColor }}>{timeline} percent change in US Emergency Department visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
 
             <span>Sex Comparison</span><div className="toggle-container" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
 
@@ -972,7 +977,17 @@ export default function App({ dataUrl }) {
   };
 
   const toggleLegend = () => {
+    setShowTimeline(false);
     setShowLegend(!showLegend);
+  };
+
+  const toggleTimeline = () => {
+    setShowLegend(false);
+    setShowTimeline(!showTimeline);
+  };
+
+  const toggleShare = () => {
+    setShowShare(!showShare);
   };
 
   const toggleLegendHelp = () => {
@@ -1013,7 +1028,7 @@ export default function App({ dataUrl }) {
       <div className="filters">
         <div>
           Select a Drug: <select style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
-            {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titlePlural']}</option>)}
+            {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
           </select>
         </div>
         <div>
@@ -1032,9 +1047,9 @@ export default function App({ dataUrl }) {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{usPercent}%</span>
           <div>
-            
+
             <span className='data-bite-title' style={{ color: drugColor }}>
-              
+
               {timeline}  Percent Change<sup>†</sup> in US</span>
             <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
           </div>
@@ -1049,25 +1064,33 @@ export default function App({ dataUrl }) {
           </div>
         </div>
       </div>
-      <div style={{ 'marginBottom': '25px' }}><strong>{mapFromLabel}</strong> compared to <strong>{toLabel}</strong></div>
+      <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{mapFromLabel}</strong></div>
       <div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
           return <div key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
         })}
       </div>
-      
-      <div id="toggleLegend" onClick={toggleLegend}>
-        {!showLegend &&
-          <>Show Legend</>
-        }
-        {showLegend &&
-          <>Hide Legend</>
-        }
+
+      <div className="toggle-area">
+        <div id="toggleLegend" className={`${ showLegend ? 'open' : '' }` } onClick={toggleLegend}>
+          Show Legend <Caret />
+        </div>
+        <div id="toggleTimeline" className={`${ showTimeline ? 'open' : '' }`} onClick={toggleTimeline}>
+          Edit Time Range <Caret />
+        </div>
+        <div id="toggleShare" onClick={toggleShare}>
+          Share <Caret />
+        </div>
       </div>
+
+
       <div className='sticky-container'>
-        {showLegend &&
-          <aside>
-            <div>
+        {/*{showLegend &&*/}
+          <aside className={
+            `${ showLegend ? 'show-legend' : '' }` +
+            `${ showTimeline ? 'show-timeline' : '' }`
+          }>
+            <div className="timeline">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>
                 Time Range   <span className='legend-help' onClick={toggleLegendHelp}>?</span>
               </div>
@@ -1076,7 +1099,7 @@ export default function App({ dataUrl }) {
                 <p>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</p>
               </div>
               <div className="time-frame-container">
-                <div>Compare {toLabel} with the previous: 
+                <div>Compare {toLabel} with the previous:
                 <div className="radio">
                   <label>
                     <input
@@ -1145,11 +1168,11 @@ export default function App({ dataUrl }) {
                 }
               </div>
             </div>
-            <div>
+            <div className="legend">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
               <ul className="legend">
                 {runtimeLegend.map(({color, value}) => <li key={color}>
-                  
+
                   <svg viewBox="-5 -5 110 110" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="50" fill={color} stroke='#555' strokeWidth={4} />
                   </svg>
@@ -1161,8 +1184,8 @@ export default function App({ dataUrl }) {
               <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
             </div>
           </aside>
-        }
-    
+        {/*}*/}
+
         <div className="map-container">
           <div className="map-inner-container">
             <div className="now-viewing">
@@ -1172,12 +1195,12 @@ export default function App({ dataUrl }) {
             <UsaMap/>
           </div>
         </div>
-        
+
         {selected && <StateInfo />}
         {GenderAgeSection()}
         <div className="footnotes comparison-section">
           <p>* In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
-          <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+          <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of Emergency Department visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
         </div>
       </div>
       <div className='data-tables'>
