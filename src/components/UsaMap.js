@@ -12,29 +12,6 @@ import Context from '../context';
 
 const { features: unitedStatesHex } = feature(hexTopoJSON, hexTopoJSON.objects.states)
 
-const offsets = {
-  'US-VT': [50, -8],
-  'US-NH': [34, 2],
-  'US-MA': [30, -1],
-  'US-RI': [28, 2],
-  'US-CT': [35, 10],
-  'US-NJ': [42, 1],
-  'US-DE': [33, 0],
-  'US-MD': [47, 10]
-};
-
-const nudges = {
-  'US-FL': [15, 3],
-  'US-AK': [0, -8],
-  'US-CA': [-10, 0],
-  'US-NY': [5, 0],
-  'US-MI': [13, 20],
-  'US-LA': [-10, -3],
-  'US-HI': [-10, 10],
-  'US-ID': [0, 10],
-  'US-WV': [-2, 2]
-}
-
 const UsaMap = () => {
   const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo, supportedStates } = useContext(Context);
   
@@ -84,13 +61,6 @@ const UsaMap = () => {
         return false;
       }
 
-      // Manually add Washington D.C. in for Hex maps
-      // if(geoKey === 'US-DC') {
-      //   geoKey = 'District of Columbia'
-      // } else {
-      //   geoKey = supportedStates[geoKey] ? supportedStates[geoKey][0] : null;
-      // }
-
       if(!geoKey) return
 
       const geoData = data[geoKey];
@@ -101,7 +71,7 @@ const UsaMap = () => {
       if (geoData !== undefined) {
         legendColors = applyLegendToRow(geoData);
       }
-console.log("colors: ", legendColors)
+
       const tooltip = applyTooltipsToGeo(geo.properties.iso, legendColors[0]);
 
       // If a legend applies, return it with appropriate information.
@@ -110,9 +80,7 @@ console.log("colors: ", legendColors)
           fill: legendColors[0],
           cursor: 'pointer',
           '&:hover': {
-            // fill: legendColors[1],
             fontWeight: 600,
-            // opacity:.9,
             stroke: 'red'
           },
           '&:active': {
@@ -122,7 +90,7 @@ console.log("colors: ", legendColors)
 
         if(selected && selected !== geoKey) styles.opacity = 0.4 
         if(selected && selected === geoKey) styles.fill = legendColors[0]
-debugger;
+
         return (
           <g
             key={key}
@@ -130,14 +98,11 @@ debugger;
             css={styles}
             onClick={() => setStateSelected(geoKey)}
             data-tip={tooltip}
-            //data-html={true}
-            
           >
             <path
               tabIndex={-1}
               className='single-geo'
               stroke={'#333'}
-              // stroke={'#5a5547'}
               strokeWidth={(selected && selected === geoKey) ? 2 : 1}   
               d={path}
             />
