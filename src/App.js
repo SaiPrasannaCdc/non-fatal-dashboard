@@ -622,11 +622,20 @@ export default function App({ dataUrl }) {
     ];
     
     options.forEach(option => {
+      if(option.state === '') return;
+
       output[option.key] = output[option.key] || {max: Number.MIN_VALUE, min: Number.MAX_VALUE};
       timeframes.forEach(timeframe => {
-        const datum = keyedRawUSData[`${option.state}|${('year' === selectedTimeframe ? timeframe.year - 1 : timeframe.year)}|${('year' === selectedTimeframe ? timeframe.month : timeframe.month - 1)}|${option.gender}|${option.age}:${option.state}|${timeframe.key}|${option.gender}|${option.age}`];
+        let year = 'year' === selectedTimeframe ? timeframe.year - 1 : timeframe.year;
+        let month = 'year' === selectedTimeframe ? timeframe.month : timeframe.month - 1;
+        if(month === 0) {
+          month = 12;
+          year--;
+        }
+        const datum = (option.state === 'US' ? keyedRawUSData : keyedRawData)[`${option.state}|${year}|${month}|${option.gender}|${option.age}:${option.state}|${timeframe.key}|${option.gender}|${option.age}`];
         
         if(datum) {
+          //console.log('FOUND', option, timeframe);
           const val = parseFloat(datum[drugScreenOptions[currentDrug]['percentageColumn']]);
 
           if(val < output[option.key].min) {
@@ -634,6 +643,10 @@ export default function App({ dataUrl }) {
           }
           if(val > output[option.key].max) {
             output[option.key].max = val;
+          }
+        } else {
+          if(option.gender === 'all' && option.age === 'all'){
+            console.log('NOT', option, timeframe);
           }
         }
       });
