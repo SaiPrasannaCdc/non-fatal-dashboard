@@ -560,21 +560,39 @@ export default function App({ dataUrl }) {
       let currentMonth = selectedMonth - i;
   
       if(allTimeframes[currentMonth]){
-        if ('year' === selectedTimeframe) {
-          callback(
-            allTimeframes[currentMonth]['month'],
-            allTimeframes[currentMonth]['year'],
-            allTimeframes[currentMonth + 12]['month'],
-            allTimeframes[currentMonth + 12]['year']
-          );
-        } else {
-          callback(
-            allTimeframes[currentMonth]['month'],
-            allTimeframes[currentMonth]['year'],
-            allTimeframes[currentMonth + 1]['month'],
-            allTimeframes[currentMonth + 1]['year']
-          );
+        callback(
+          true,
+          allTimeframes[currentMonth]['month'],
+          allTimeframes[currentMonth]['year'],
+          allTimeframes[currentMonth + ('year' === selectedTimeframe ? 12 : 1)]['month'],
+          allTimeframes[currentMonth + ('year' === selectedTimeframe ? 12 : 1)]['year']
+        );
+      } else if(currentMonth < 0) {
+        let startYear = allTimeframes[0].year;
+        let startMonth = allTimeframes[0].month + currentMonth;
+        if(startMonth < 1) {
+          startMonth = 12 + startMonth;
+          startYear = startYear - 1;
         }
+        let endYear = startYear;
+        let endMonth = startMonth;
+        if('year' === selectedTimeframe){
+          endYear++;
+        } else {
+          endMonth++;
+          if(endMonth > 12){
+            endMonth -= 12;
+            endYear++;
+          }
+        }
+
+        callback(
+          false,
+          `${startMonth}`,
+          `${startYear}`,
+          `${endMonth}`,
+          `${endYear}`
+        )
       }
     }
   };
@@ -620,8 +638,15 @@ export default function App({ dataUrl }) {
   const generateRuntimePastMonths = () => {
     let data = [];
 
-    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
-      data.push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|all:US|' + endYear + '|' + endMonth + '|all|all']);
+    iteratePastMonths((valid, startMonth, startYear, endMonth, endYear) => {
+      if(valid) {
+        data.push(keyedRawUSData[`US|${startYear}|${startMonth}|all|all:US|${endYear}|${endMonth}|all|all`]);
+      } else {
+        let output = {key: `US|${endYear}|${endMonth}`, startMonth, startYear, endMonth, endYear};
+        output[drugScreenOptions[currentDrug]['percentageColumn']] = 'suppressed';
+        output[drugScreenOptions[currentDrug]['significanceColumn']] = 'Data Not Available/Not Reported';
+        data.push(output);
+      }
     });
 
     return data;
@@ -631,8 +656,15 @@ export default function App({ dataUrl }) {
     let data = [];
     let state = selected ? selected.replace(/US-/g, '') : '';
 
-    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
-      data.push(keyedRawData[state + '|' + startYear + '|' + startMonth + '|all|all:' + state + '|' + endYear + '|' + endMonth + '|all|all']);
+    iteratePastMonths((valid, startMonth, startYear, endMonth, endYear) => {
+      if(valid){
+        data.push(keyedRawData[`${state}|${startYear}|${startMonth}|all|all:${state}|${endYear}|${endMonth}|all|all`]);
+      } else {
+        let output = {key: `${state}|${endYear}|${endMonth}`, startMonth, startYear, endMonth, endYear};
+        output[drugScreenOptions[currentDrug]['percentageColumn']] = 'suppressed';
+        output[drugScreenOptions[currentDrug]['significanceColumn']] = 'Data Not Available/Not Reported';
+        data.push(output);
+      }
     });
 
     return data;
@@ -641,9 +673,19 @@ export default function App({ dataUrl }) {
   const generateRuntimePastMonthsGender = () => {
     let data = {'M': [], 'F': []};
 
-    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
-      data['M'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|M|all:US|' + endYear + '|' + endMonth + '|M|all']);
-      data['F'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|F|all:US|' + endYear + '|' + endMonth + '|F|all']);
+    iteratePastMonths((valid, startMonth, startYear, endMonth, endYear) => {
+      if(valid){
+        Object.keys(data).forEach(key => {
+          data[key].push(keyedRawUSData[`US|${startYear}|${startMonth}|${key}|all:US|${endYear}|${endMonth}|${key}|all`]);
+        });
+      } else {
+        Object.keys(data).forEach(key => {
+          let output = {key: `US|${endYear}|${endMonth}`, startMonth, startYear, endMonth, endYear};
+          output[drugScreenOptions[currentDrug]['percentageColumn']] = 'suppressed';
+          output[drugScreenOptions[currentDrug]['significanceColumn']] = 'Data Not Available/Not Reported';
+          data[key].push(output);
+        });
+      }
     });
 
     return data;
@@ -659,12 +701,19 @@ export default function App({ dataUrl }) {
       '55+': []
     };
 
-    iteratePastMonths((startMonth, startYear, endMonth, endYear) => {
-      data['0-14'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|0-14:US|' + endYear + '|' + endMonth + '|all|0-14']);
-      data['15-24'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|15-24:US|' + endYear + '|' + endMonth + '|all|15-24']);
-      data['25-34'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|25-34:US|' + endYear + '|' + endMonth + '|all|25-34']);
-      data['35-54'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|35-54:US|' + endYear + '|' + endMonth + '|all|35-54']);
-      data['55+'].push(keyedRawUSData['US|' + startYear + '|' + startMonth + '|all|55+:US|' + endYear + '|' + endMonth + '|all|55+']);
+    iteratePastMonths((valid, startMonth, startYear, endMonth, endYear) => {
+      if(valid){
+        Object.keys(data).forEach(key => {
+          data[key].push(keyedRawUSData[`US|${startYear}|${startMonth}|all|${key}:US|${endYear}|${endMonth}|all|${key}`]);
+        });
+      } else {
+        Object.keys(data).forEach(key => {
+          let output = {key: `US|${endYear}|${endMonth}`, startMonth, startYear, endMonth, endYear};
+          output[drugScreenOptions[currentDrug]['percentageColumn']] = 'suppressed';
+          output[drugScreenOptions[currentDrug]['significanceColumn']] = 'Data Not Available/Not Reported';
+          data[key].push(output);
+        });
+      }
     });
 
     return data;
