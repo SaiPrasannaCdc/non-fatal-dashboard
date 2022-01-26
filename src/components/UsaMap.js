@@ -122,13 +122,19 @@ console.log("colors: ", legendColors)
 
         if(selected && selected !== geoKey) styles.opacity = 0.4 
         if(selected && selected === geoKey) styles.fill = legendColors[0]
-debugger;
+
+        const setClickAction = () => {
+          if ( geoData[1] !== 'unfunded' ) {
+            setStateSelected(geoKey)
+          }
+        }
+
         return (
           <g
             key={key}
             className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
             css={styles}
-            onClick={() => setStateSelected(geoKey)}
+            onClick={() => setClickAction(geoKey) }
             data-tip={tooltip}
             //data-html={true}
             
