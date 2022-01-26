@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Bar, Circle } from '@visx/shape';
 import { Group } from '@visx/group';
-import { AxisLeft, AxisBottom, TickFormatter } from '@visx/axis';
+import { AxisLeft, AxisBottom } from '@visx/axis';
 import { scaleBand, scaleLinear } from '@visx/scale';
 
 import Context from '../context';
@@ -43,7 +43,7 @@ function BarChartVertical({
   });
 
   const { fill, drugScreenOptions, currentDrug } = useContext(Context);
-console.log(drugScreenOptions[currentDrug]);
+
   const drugTitle = drugScreenOptions[currentDrug].titlePlural;
   const percentColumn = drugScreenOptions[currentDrug].percentageColumn;
   const significanceColumn = drugScreenOptions[currentDrug].significanceColumn;
@@ -60,10 +60,25 @@ console.log(drugScreenOptions[currentDrug]);
       return `${months[d.endMonth - 1]} ${d.startYear}-${d.endYear.substring(2)}`;
     }
     timelineType = "30 day"
-    // return `${months[d.startMonth - 1]}-${months[d.endMonth - 1]}`
     return `${months[d.startMonth - 1]} ${d.startYear.substring(2)} - ${months[d.endMonth - 1]} ${d.endYear.substring(2)}`
   };
   const getYValue = (d) => Number(d ? d[percentColumn] : 0);
+
+  const ticksFromRange = () => {
+    const intervalWidth = Math.round((range[0] - range[1]) / 50) * 10;
+
+    let ticks = [];
+    let value = Math.ceil(range[0] / 10) * 10;
+    ticks.push(value);
+    while(value > range[1]){
+      value -= intervalWidth;
+      ticks.push(value);
+    }
+
+    return ticks;
+  };
+
+  const ticks = ticksFromRange();
 
   // bounds
   const xMax = width - marginRight;
@@ -78,16 +93,11 @@ console.log(drugScreenOptions[currentDrug]);
   });
 
   const yScale = scaleLinear({
-    range: [20, yMax],
-    round: true,
-    domain: [ range[0], range[1] ],
-    // domain: [Math.max(...data.map(getYValue), 1) * 1.1, Math.min(...data.map(getYValue), -1) * 1.1],
+    range: [20, yMax - 40],
+    domain: [ Math.max(...ticks), Math.min(...ticks) ]
   });
 
   const center = yScale(0);
-  const startMonth = data.startMonth;
-  const endMonth = data.endMonth;
-  console.log(data)
 
   return width < 10 ? null : (
     <svg viewBox={`0 0 ${width} ${height+50}`}>
@@ -103,11 +113,11 @@ console.log(drugScreenOptions[currentDrug]);
           const barX = xScale(xValue);
           
           let drugRow = yValue ? // set drug tooltip row if we have a number
-                        `<div class="percentage-row">
-                          <div>${drugTitle}:</div>
-                          <div>${yValue}%</div>
-                        </div>`
-                        : '';
+            `<div class="percentage-row">
+              <div>${drugTitle}:</div>
+              <div>${yValue}%</div>
+            </div>`
+            : '';
 
           return (
             <Group key={`bar-${xValue}`}>
@@ -119,18 +129,7 @@ console.log(drugScreenOptions[currentDrug]);
                 fill={fill(d[significanceColumn])}
                 
               />
-              {/* <svg viewBox="0 0 100 100" height="100px" width="100px" y="100px">
-                  <polygon 
-                    // width={6}
-                    // height={6}
-                    // cy={barY}
-                    // cx={barX + 1} 
-                    points="347.49,227 454.5,165.212 394.508,61.288 287.5,123.077 287.5,0 167.5,0 167.5,123.077 60.492,61.288 
-                    0.499,165.212 107.51,227 0.5,288.788 60.492,392.712 167.5,330.923 167.5,455 287.5,455 287.5,330.923 394.508,392.712 
-                    454.501,288.788 "
-                  />
-                </svg> */}
-              
+
               <Circle
                 key={`circle-${xValue}`}
                 r={6}
@@ -151,7 +150,7 @@ console.log(drugScreenOptions[currentDrug]);
         <AxisLeft
           scale={yScale}
           label={'Percent Change'}
-          numTicks={5}
+          tickValues={ticksFromRange()}
           hideAxisLine={true}
           hideTicks={true}
           labelProps={{
