@@ -372,7 +372,7 @@ export default function App({ dataUrl }) {
       const significance = stateData[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
       toolTipText += `<div class="state-name-row"><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
-      if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw) {
+      if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw && 'unfunded' !== selectedPercentageRaw) {
         toolTipText += `<div class="percentage-row"><div>${drugScreenOptions[currentDrug]['titlePlural']}:</div><div>${formatPercentage(selectedPercentageRaw)}</div></div>`;
       }
     }
