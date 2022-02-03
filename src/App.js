@@ -845,8 +845,8 @@ export default function App({ dataUrl }) {
 
     //Remove the first column and move the primary columns to the front
     let processedData = [...data].map(row => { 
-      row.shift(); //The first column is the "key"
       let newRow = [...row];
+      newRow.shift();
       const itemsToAdd = newRow.splice(12, 6);
       newRow = itemsToAdd.concat(newRow);
       return newRow;
@@ -860,7 +860,6 @@ export default function App({ dataUrl }) {
     }
 
     //Move the primary columns to the front
-    debugger;
     const itemsToAdd = headerRow.splice(12, 6);
     headerRow = itemsToAdd.concat(headerRow);
 
