@@ -24,7 +24,7 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .merriweather {
-        font-family: Merriweather,serif;
+        // font-family: Merriweather,serif;
     }
 
     h3 {
@@ -115,6 +115,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
     .now-viewing > div {
         padding-top: 10px;
+        min-height: 50px;
     }
 
     g.geo-group {
@@ -234,7 +235,7 @@ line { stroke: #ccc; stroke-width: 1; }
             border: 1px solid rgba(0,0,0,.125);
             border-left: 5px solid #B890BB;
             border-radius: .25rem;
-            min-height: 110px;
+            min-height: 126px;
             padding: .5em;
             display: flex;
             align-items: center;
@@ -442,6 +443,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
                 input {
                     margin-left: 14px;
+                    margin-right: 5px;
                     position: relative;
                     top: 2px;
                 }
@@ -580,7 +582,7 @@ line { stroke: #ccc; stroke-width: 1; }
         position: relative;
 
         @include r($lg) {
-            width: calc( 100% - 350px );
+            width: calc( 100% - 300px );
         }
 
         .bar-chart {
@@ -599,8 +601,11 @@ line { stroke: #ccc; stroke-width: 1; }
                 font-size: 1.5em;
             }
 
-            svg {
+            > svg {
                 width: 100% !important;
+                position: relative;
+                margin: auto;
+                left: -3vw;
             }
         }
 
@@ -623,7 +628,7 @@ line { stroke: #ccc; stroke-width: 1; }
                 > svg {
                     position: relative;
                     margin: auto;
-                    left: -6.2vw;
+                    left: -3vw;
                 }
             }
 

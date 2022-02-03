@@ -111,7 +111,7 @@ function BarChartVertical({
           const xValue = getXValue(d);
           const barY = (yScale(yValue) ??  center);
           const barX = xScale(xValue);
-          
+          const suppress = (!yScale(yValue) );
           let drugRow = yValue ? // set drug tooltip row if we have a number
             `<div class="percentage-row">
               <div>${drugTitle}:</div>
@@ -130,20 +130,46 @@ function BarChartVertical({
                 
               />
 
-              <Circle
-                key={`circle-${xValue}`}
-                r={6}
-                cy={barY}
-                cx={barX + 1}
-                fill={fill(d[significanceColumn])}
-                data-tip={`
-                  <div class="state-name-row">
-                    <div><strong>${chartMeta[0] + ( chartType ? ': ' + chartType : '' )}</strong></div>
-                  </div>
-                  <div class="significance-row">${d[significanceColumn]}</div>
-                  ${drugRow}
-                `}
-              />
+              { suppress &&
+                <svg
+                  y={-15}
+                  x={barX - 10}
+                  aria-hidden="true"
+                  data-prefix="fas"
+                  data-icon="asterisk"
+                  className="svg-inline--fa fa-asterisk fa-w-16"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 30 30"
+                  width="30"
+                  // fill={fill(d[significanceColumn])}
+                  stroke="#999"
+                  data-tip={`
+                    <div class="state-name-row">
+                      <div><strong>${chartMeta[0] + ( chartType ? ': ' + chartType : '' )}</strong></div>
+                    </div>
+                    <div class="significance-row">${d[significanceColumn]}</div>
+                    ${drugRow}
+                  `}
+                >
+                  <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
+                </svg>
+              }
+              {!suppress &&
+                  <Circle
+                      key={`circle-${xValue}`}
+                      r={6}
+                      cy={barY}
+                      cx={barX + 1}
+                      fill={fill(d[significanceColumn])}
+                      data-tip={`
+                        <div class="state-name-row">
+                          <div><strong>${chartMeta[0] + ( chartType ? ': ' + chartType : '' )}</strong></div>
+                        </div>
+                        <div class="significance-row">${d[significanceColumn]}</div>
+                        ${drugRow}
+                      `}
+                  />
+              }
             </Group>
           );
         })}

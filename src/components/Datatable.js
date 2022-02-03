@@ -58,10 +58,17 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
 
   if ('percent' === sortBy) {
     runtimeSortedData = [...runtimeData].sort((a, b) => {
-      if (sortAscending) {
-        return a[percentageColumn] > b[percentageColumn] ? 1 : -1;
+      let numA = parseInt(a[percentageColumn]);
+      let numB = parseInt(b[percentageColumn]);
+
+      if(isFinite(numA-numB)) {
+        if (sortAscending) {
+          return numA-numB; 
+        } else {
+          return numB-numA;
+        }
       } else {
-        return a[percentageColumn] > b[percentageColumn] ? -1 : 1;
+        return isFinite(numA) ? -1 : 1;
       }
       
     });

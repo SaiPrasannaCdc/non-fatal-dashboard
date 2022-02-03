@@ -123,6 +123,62 @@ const supportedStates = {
   'US-WY': ['Wyoming', 'WY']
 };
 
+const fundedStates = {
+  // States
+  'US-AL': ['Alabama', 'AL'],
+  'US-AK': ['Alaska', 'AK'],
+  'US-AZ': ['Arizona', 'AZ'],
+  'US-AR': ['Arkansas', 'AR'],
+  'US-CA': ['California', 'CA'],
+  'US-CO': ['Colorado', 'CO'],
+  'US-CT': ['Connecticut', 'CT'],
+  'US-DE': ['Delaware', 'DE'],
+  'US-DC': ['District of Columbia', 'DC'],
+  'US-FL': ['Florida', 'FL'],
+  'US-GA': ['Georgia', 'GA'],
+  'US-HI': ['Hawaii', 'HI'],
+  'US-ID': ['Idaho', 'ID'],
+  'US-IL': ['Illinois', 'IL'],
+  'US-IN': ['Indiana', 'IN'],
+  'US-IA': ['Iowa', 'IA'],
+  'US-KS': ['Kansas', 'KS'],
+  'US-KY': ['Kentucky', 'KY'],
+  'US-LA': ['Louisiana', 'LA'],
+  'US-ME': ['Maine', 'ME'],
+  'US-MD': ['Maryland', 'MD'],
+  'US-MA': ['Massachusetts', 'MA'],
+  'US-MI': ['Michigan', 'MI'],
+  'US-MN': ['Minnesota', 'MN'],
+  'US-MS': ['Mississippi', 'MS'],
+  'US-MO': ['Missouri', 'MO'],
+  'US-MT': ['Montana', 'MT'],
+  'US-NE': ['Nebraska', 'NE'],
+  'US-NV': ['Nevada', 'NV'],
+  'US-NH': ['New Hampshire', 'NH'],
+  'US-NJ': ['New Jersey', 'NJ'],
+  'US-NM': ['New Mexico', 'NM'],
+  'US-NY': ['New York', 'NY'],
+  'US-NC': ['North Carolina', 'NC'],
+  // 'US-ND': ['North Dakota', 'ND'],
+  'US-OH': ['Ohio', 'OH'],
+  'US-OK': ['Oklahoma', 'OK'],
+  'US-OR': ['Oregon', 'OR'],
+  'US-PA': ['Pennsylvania', 'PA'],
+  //'US-PR': ['Puerto Rico', 'PR'],
+  'US-RI': ['Rhode Island', 'RI'],
+  'US-SC': ['South Carolina', 'SC'],
+  'US-SD': ['South Dakota', 'SD'],
+  'US-TN': ['Tennessee', 'TN'],
+  // 'US-TX': ['Texas', 'TX'],
+  'US-UT': ['Utah', 'UT'],
+  'US-VT': ['Vermont', 'VT'],
+  'US-VA': ['Virginia', 'VA'],
+  'US-WA': ['Washington', 'WA'],
+  'US-WV': ['West Virginia', 'WV'],
+  'US-WI': ['Wisconsin', 'WI'],
+  // 'US-WY': ['Wyoming', 'WY']
+};
+
 const getStateName = (geo) => {
   return supportedStates[geo][0];
 }
@@ -341,6 +397,8 @@ export default function App({ dataUrl }) {
       }
     })();
   }, []);
+
+  const csvData = rawData;
 
   const fill = (significance) => {
     return mapColorPalette[legendOrder.indexOf(significance)];
@@ -754,7 +812,7 @@ export default function App({ dataUrl }) {
   useEffect(() => {
     ReactTooltip.rebuild();
   });
-  
+
   const StateInfo = () => {
 
     return (
@@ -762,21 +820,21 @@ export default function App({ dataUrl }) {
         <div>
           <h3 style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
           <div>
-            Compare United States against:
-            <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+            Compare United States against: 
+            <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
               <option value="">Select State</option>
-              {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
+              {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
             </select>
           </div>
         </div>
         <div className={'bar-chart-container'}>
         <div className="bar-chart">
             <span className='chart-title'>US</span>
-            <BarChartVertical width={600} height={230} data={runtimePastMonths} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
+            <BarChartVertical width={600} height={350} data={runtimePastMonths} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
           </div>
           <div className="bar-chart" style={{"margin":"60px 0"}}>
           <span className='chart-title'>{supportedStates[selected][0]}</span>
-            <BarChartVertical width={600} height={230} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
+            <BarChartVertical width={600} height={350} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
         </div>
         </div>
       </section>
@@ -906,7 +964,7 @@ export default function App({ dataUrl }) {
         <div style={{ 'borderLeft': '5px solid' + drugColor }}>
           <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
           <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change†  in {getStateName(selected)}</span>
+            <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change<sup>†</sup>  in {getStateName(selected)}</span>
             <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
           </div>
         </div>
@@ -947,9 +1005,10 @@ export default function App({ dataUrl }) {
 
   const DownloadButton = ({ data }) => {
     const fileName = `Non-Fatal-Overdose-Data.csv`;
+    let processedData;
 
     //Remove the first column and move the primary columns to the front
-    let processedData = [...data].map(row => { 
+    processedData = [...data].map(row => { 
       row.shift(); //The first column is the "key"
       let newRow = [...row];
       const itemsToAdd = newRow.splice(12, 6);
@@ -973,21 +1032,25 @@ export default function App({ dataUrl }) {
     let footnote3 = ["**", "State does not participate in OD2A DOSE ED data sharing." ];
     let footnote4 = ["† †", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
 
+    //Add header row to beginning of dataset
+    processedData.unshift(headerRow);
+
     processedData.unshift(footnote1);
     processedData.unshift(footnote2);
     processedData.unshift(footnote3);
     processedData.unshift(footnote4);
 
-    //Add header row to beginning of dataset
-    processedData.unshift(headerRow);
+    
 
     //Parse to CSV
     const csvData = Papa.unparse(processedData);
+    const dataBlob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
 
     //Save and download
     const saveBlob = () => {
+      debugger;
       if (typeof window.navigator.msSaveBlob === 'function') {
-        const dataBlob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+        
         window.navigator.msSaveBlob(dataBlob, fileName);
       }
     }
@@ -1053,7 +1116,6 @@ export default function App({ dataUrl }) {
     toLabel = allTimeframes[sliderPointYear + 12]['label'];
     fromLabel = allTimeframes[sliderPointYear]['label'];
   }
-
   return (
     <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters">
@@ -1065,7 +1127,7 @@ export default function App({ dataUrl }) {
         <div>
           Select a State: <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
             <option value="">United States</option>
-            {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
+            {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
           </select>
         </div>
       </div>
@@ -1094,7 +1156,7 @@ export default function App({ dataUrl }) {
           </div>
         </div>
       </div>
-      <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{mapFromLabel}</strong></div>
+      <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{ mapFromLabel ? mapFromLabel : fromLabel }</strong></div>
       <div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
           return <div key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
@@ -1229,7 +1291,7 @@ export default function App({ dataUrl }) {
       <div className='data-tables'>
         <div className="datatable-container">
           <h2 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-            {timeline} Trends by State - {drugScreenOptions[currentDrug]['titleAll']}
+            Trends by State, {timeline} - {drugScreenOptions[currentDrug]['titleAll']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
             {!showDatatable && <span>{String.fromCharCode(43)}</span>}
           </h2>
@@ -1237,7 +1299,12 @@ export default function App({ dataUrl }) {
             <div className="datatable-body">
               <p className='datatable-description'>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose, {fromLabel} to {toLabel}, by OD2A-funded State</p>
               <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
-              <DownloadButton data={rawData} />
+              <small>
+                § The state/territory does not share data from syndromic surveillance systems with DOSE.<br/>
+                ¶ The funded jurisdiction did not provide CDC enough months of data to calculate all percent change cells.<br/>
+                ** State does not participate in OD2A DOSE ED data sharing.<br/>
+              </small>
+              <DownloadButton data={csvData} />
             </div>}
         </div>
         <div className="datatable-container">
