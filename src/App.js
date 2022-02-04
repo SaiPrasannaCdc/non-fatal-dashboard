@@ -560,9 +560,7 @@ export default function App({ dataUrl }) {
     }
 
     const rowKey = 'US|' + startYear + '|' + startMonth + '|all|all:US|' + endYear + '|' + endMonth + '|all|all';
-
     return keyedRawUSData[rowKey];
-    
   };
 
   // Calculates what's going to be displayed on the map and data table at render.
@@ -678,7 +676,7 @@ export default function App({ dataUrl }) {
       {state: 'US', gender: 'all', age: '35-54', key: 'age'},
       {state: 'US', gender: 'all', age: '55+', key: 'age'},
     ];
-    
+
     options.forEach(option => {
       if(option.state === '') return;
 
@@ -691,7 +689,7 @@ export default function App({ dataUrl }) {
           year--;
         }
         const datum = (option.state === 'US' ? keyedRawUSData : keyedRawData)[`${option.state}|${year}|${month}|${option.gender}|${option.age}:${option.state}|${timeframe.key}|${option.gender}|${option.age}`];
-        
+
         if(datum) {
           //console.log('FOUND', option, timeframe);
           const val = parseFloat(datum[drugScreenOptions[currentDrug]['percentageColumn']]);
@@ -820,7 +818,7 @@ export default function App({ dataUrl }) {
         <div>
           <h3 style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
           <div>
-            Compare United States against: 
+            Compare United States against:
             <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
               <option value="">Select State</option>
               {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
@@ -1005,12 +1003,11 @@ export default function App({ dataUrl }) {
 
   const DownloadButton = ({ data }) => {
     const fileName = `Non-Fatal-Overdose-Data.csv`;
-    let processedData;
 
     //Remove the first column and move the primary columns to the front
-    processedData = [...data].map(row => { 
-      row.shift(); //The first column is the "key"
+    let processedData = [...data].map(row => {
       let newRow = [...row];
+      newRow.shift();
       const itemsToAdd = newRow.splice(12, 6);
       newRow = itemsToAdd.concat(newRow);
       return newRow;
@@ -1040,7 +1037,7 @@ export default function App({ dataUrl }) {
     processedData.unshift(footnote3);
     processedData.unshift(footnote4);
 
-    
+
 
     //Parse to CSV
     const csvData = Papa.unparse(processedData);
@@ -1050,7 +1047,7 @@ export default function App({ dataUrl }) {
     const saveBlob = () => {
       debugger;
       if (typeof window.navigator.msSaveBlob === 'function') {
-        
+
         window.navigator.msSaveBlob(dataBlob, fileName);
       }
     }
@@ -1079,15 +1076,21 @@ export default function App({ dataUrl }) {
 
   const toggleLegend = () => {
     setShowTimeline(false);
+    setShowShare(false);
     setShowLegend(!showLegend);
   };
 
   const toggleTimeline = () => {
     setShowLegend(false);
+    setShowShare(false);
     setShowTimeline(!showTimeline);
   };
 
   const toggleShare = () => {
+    setShowLegend(false);
+    setShowTimeline(false);
+    console.log(showShare);
+    showShare ? document.body.classList.remove('show-sharing') : document.body.classList.add('show-sharing');
     setShowShare(!showShare);
   };
 
@@ -1116,6 +1119,7 @@ export default function App({ dataUrl }) {
     toLabel = allTimeframes[sliderPointYear + 12]['label'];
     fromLabel = allTimeframes[sliderPointYear]['label'];
   }
+
   return (
     <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters">
@@ -1170,16 +1174,18 @@ export default function App({ dataUrl }) {
         <div id="toggleTimeline" className={`${ showTimeline ? 'open' : '' }`} onClick={toggleTimeline}>
           Edit Time Range <Caret />
         </div>
-        <div id="toggleShare" onClick={toggleShare}>
+        <div id="toggleShare" className={`${ showShare ? 'open' : '' }`} onClick={toggleShare}>
           Share <Caret />
         </div>
       </div>
-
-
+      <div id="closeShare" onClick={toggleShare}>
+        X
+      </div>
       <div className='sticky-container'>
         <aside className={
           `${ showLegend ? 'show-legend' : '' }` +
-          `${ showTimeline ? 'show-timeline' : '' }`
+          `${ showTimeline ? 'show-timeline' : '' }` +
+          `${ showShare ? 'show-share' : '' }`
         }>
           <div className="timeline">
             <div className="legend-title" style={{ 'backgroundColor': drugColor }}>

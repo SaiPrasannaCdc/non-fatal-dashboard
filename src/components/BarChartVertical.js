@@ -127,7 +127,6 @@ function BarChartVertical({
                 width={2}
                 height={Math.abs(barY - center)}
                 fill={fill(d[significanceColumn])}
-                
               />
 
               { suppress &&
@@ -203,7 +202,7 @@ function BarChartVertical({
             dy: 5,
             dx: -65,
             transform: `rotate(-35, ${props[index].to.x}, ${props[index].to.y})`,
-            dominantBaseline: 'end'       
+            dominantBaseline: 'end'
           })}
         />
         {!isNaN(center) && (
