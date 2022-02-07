@@ -10,6 +10,8 @@ function BarChartVertical({
   data,
   width,
   height,
+  range = null,
+  chartType = null
 }) {
 
   const months = [
@@ -42,20 +44,41 @@ function BarChartVertical({
 
   const { fill, drugScreenOptions, currentDrug } = useContext(Context);
 
+  const drugTitle = drugScreenOptions[currentDrug].titlePlural;
   const percentColumn = drugScreenOptions[currentDrug].percentageColumn;
   const significanceColumn = drugScreenOptions[currentDrug].significanceColumn;
 
   const axisBottomHeight = 30;
   const marginRight = 30;
 
+  let timelineType;
+
   const getXValue = (d) => {
     if(!d) return '';
     if(d.startMonth === d.endMonth) {
+      timelineType = "Annual";
       return `${months[d.endMonth - 1]} ${d.startYear}-${d.endYear.substring(2)}`;
     }
-    return `${months[d.startMonth - 1]}-${months[d.endMonth - 1]}`
+    timelineType = "30 day"
+    return `${months[d.startMonth - 1]} ${d.startYear.substring(2)} - ${months[d.endMonth - 1]} ${d.endYear.substring(2)}`
   };
   const getYValue = (d) => Number(d ? d[percentColumn] : 0);
+
+  const ticksFromRange = () => {
+    const intervalWidth = Math.round((range[0] - range[1]) / 50) * 10;
+
+    let ticks = [];
+    let value = Math.ceil(range[0] / 10) * 10;
+    ticks.push(value);
+    while(value > range[1]){
+      value -= intervalWidth;
+      ticks.push(value);
+    }
+
+    return ticks;
+  };
+
+  const ticks = ticksFromRange();
 
   // bounds
   const xMax = width - marginRight;
@@ -70,23 +93,31 @@ function BarChartVertical({
   });
 
   const yScale = scaleLinear({
-    range: [20, yMax],
-    round: true,
-    domain: [Math.max(...data.map(getYValue), 1) * 1.1, Math.min(...data.map(getYValue), -1) * 1.1],
+    range: [20, yMax - 40],
+    domain: [ Math.max(...ticks), Math.min(...ticks) ]
   });
 
   const center = yScale(0);
 
   return width < 10 ? null : (
-    <svg width={width} height={height}>
+    <svg viewBox={`0 0 ${width} ${height+50}`}>
       <rect width={width} height={height} fill="url(#teal)" rx={14} />
       <Group left={100} bottom={200}>
         {data.map((d) => {
           if(!d || isNaN(center)) return '';
 
+          const chartMeta = d.key.split('|');
+          const yValue = getYValue(d);
           const xValue = getXValue(d);
-          const barY = (yScale(getYValue(d)) ?? 0);
+          const barY = (yScale(yValue) ??  center);
           const barX = xScale(xValue);
+          const suppress = (!yScale(yValue) );
+          let drugRow = yValue ? // set drug tooltip row if we have a number
+            `<div class="percentage-row">
+              <div>${drugTitle}:</div>
+              <div>${yValue}%</div>
+            </div>`
+            : '';
 
           return (
             <Group key={`bar-${xValue}`}>
@@ -97,20 +128,54 @@ function BarChartVertical({
                 height={Math.abs(barY - center)}
                 fill={fill(d[significanceColumn])}
               />
-              <Circle
-                key={`circle-${xValue}`}
-                r={4}
-                cy={barY}
-                cx={barX + 1}
-                fill={fill(d[significanceColumn])}
-              />
+
+              { suppress &&
+                <svg
+                  y={-15}
+                  x={barX - 10}
+                  aria-hidden="true"
+                  data-prefix="fas"
+                  data-icon="asterisk"
+                  className="svg-inline--fa fa-asterisk fa-w-16"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 30 30"
+                  width="30"
+                  // fill={fill(d[significanceColumn])}
+                  stroke="#999"
+                  data-tip={`
+                    <div class="state-name-row">
+                      <div><strong>${chartMeta[0] + ( chartType ? ': ' + chartType : '' )}</strong></div>
+                    </div>
+                    <div class="significance-row">${d[significanceColumn]}</div>
+                    ${drugRow}
+                  `}
+                >
+                  <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
+                </svg>
+              }
+              {!suppress &&
+                  <Circle
+                      key={`circle-${xValue}`}
+                      r={6}
+                      cy={barY}
+                      cx={barX + 1}
+                      fill={fill(d[significanceColumn])}
+                      data-tip={`
+                        <div class="state-name-row">
+                          <div><strong>${chartMeta[0] + ( chartType ? ': ' + chartType : '' )}</strong></div>
+                        </div>
+                        <div class="significance-row">${d[significanceColumn]}</div>
+                        ${drugRow}
+                      `}
+                  />
+              }
             </Group>
           );
         })}
         <AxisLeft
           scale={yScale}
           label={'Percent Change'}
-          numTicks={5}
+          tickValues={ticksFromRange()}
           hideAxisLine={true}
           hideTicks={true}
           labelProps={{
@@ -119,7 +184,7 @@ function BarChartVertical({
           }}
           tickLabelProps={() => ({
             fill: 'black',
-            fontSize: 13,
+            fontSize: 12,
             textAnchor: 'end',
             dy: '0.33em'
           })}
@@ -127,15 +192,17 @@ function BarChartVertical({
         <AxisBottom
           top={yMax}
           scale={xScale}
-          label={'30 day comparison'}
-          numTicks={5}
+          numTicks={6}
           hideAxisLine={true}
           hideTicks={true}
-          tickLabelProps={() => ({
+          tickLabelProps={(label, index, props) => ({
             fill: 'black',
-            fontSize: 13,
-            textAnchor: 'end',
-            dy: '0.33em'
+            fontSize: 12,
+            textAnchor: 'middle',
+            dy: 5,
+            dx: -65,
+            transform: `rotate(-35, ${props[index].to.x}, ${props[index].to.y})`,
+            dominantBaseline: 'end'
           })}
         />
         {!isNaN(center) && (
