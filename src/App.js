@@ -1161,7 +1161,7 @@ export default function App({ dataUrl }) {
       <div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{ mapFromLabel ? mapFromLabel : fromLabel }</strong></div>
       <div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>
         {Object.keys(drugScreenOptions).map((key) => {
-          return <div key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</div>
+          return <button key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</button>
         })}
       </div>
 
@@ -1238,6 +1238,7 @@ export default function App({ dataUrl }) {
                     borderColor: drugColor,
                     backgroundColor: drugColor,
                   }}
+                  ariaLabelForHandle="Select a month to compare in the map"
                 />
               }
               {'year' === selectedTimeframe &&
@@ -1256,6 +1257,7 @@ export default function App({ dataUrl }) {
                     borderColor: drugColor,
                     backgroundColor: drugColor,
                   }}
+                  ariaLabelForHandle="Select a year to compare in the map"
                 />
               }
             </div>
@@ -1301,7 +1303,6 @@ export default function App({ dataUrl }) {
           </h2>
           {showDatatable &&
             <div className="datatable-body">
-              <p className='datatable-description'>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose, {fromLabel} to {toLabel}, by OD2A-funded State</p>
               <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
               <small>
                 § The state/territory does not share data from syndromic surveillance systems with DOSE.<br/>

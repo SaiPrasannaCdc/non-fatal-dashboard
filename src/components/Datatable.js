@@ -95,21 +95,17 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
   return (
     <>
       <table id="main-data-table">
+        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected All Drug Overdose, April 2021 to November 2021, by OD2A-funded State</caption>
         <tr style={{backgroundColor: drugColor}}>
-          <th onClick={() => sortTable('jurisdiction')}>State</th>
-          <th onClick={() => sortTable('percent')}>Percentage Change</th>
-          <th onClick={() => sortTable('significance')}>Significance</th>
+          <th scope="col" onClick={() => sortTable('jurisdiction')}>State</th>
+          <th scope="col" onClick={() => sortTable('percent')}>Percentage Change</th>
+          <th scope="col" onClick={() => sortTable('significance')}>Significance</th>
         </tr>
         <tr>
           <td>Overall</td>
           <td className={'Significant Increase' === runtimeUSData[significanceColumn] || 'Significant Decrease' === runtimeUSData[significanceColumn] ? 'is-significant' : ''}>{getPercentageColumn(runtimeUSData)}</td>
           <td>{runtimeUSData[significanceColumn]}</td>
         </tr>
-        {/* <tr className="state-header" style={{backgroundColor: '#f5f5f5'}}>
-          <th>State</th>
-          <th></th>
-          <th></th>
-        </tr> */}
         {runtimeSortedData.map((row) => {
           let stateName = supportedStates[row[keyIndex['geo']]][0];
           const stateColors = applyLegendToRow(row);

@@ -100,6 +100,7 @@ const UsaMap = () => {
 
         return (
           <g
+            tabIndex={-1}
             key={key}
             className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
             css={styles}
@@ -107,7 +108,6 @@ const UsaMap = () => {
             data-tip={tooltip}
           >
             <path
-              tabIndex={-1}
               className='single-geo'
               stroke={'#333'}
               strokeWidth={(selected && selected === geoKey) ? 2 : 1}   
@@ -146,7 +146,7 @@ const UsaMap = () => {
             html={true}
             className="tooltip"
           />
-      <svg viewBox="0 0 880 500">
+      <svg viewBox="0 0 880 500" aria-describedby="main-data-table">
         <Mercator data={unitedStatesHex} scale={650} translate={[1600, 775]}>
           {({ features, projection }) => constructGeoJsx(features, projection)}
         </Mercator>

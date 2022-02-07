@@ -156,7 +156,7 @@ line { stroke: #ccc; stroke-width: 1; }
             gap: $gbl-padding;
         }
 
-        > div {
+        > button {
             // height: 60px;
             padding: 20px 0;
             background: none;
@@ -724,6 +724,12 @@ line { stroke: #ccc; stroke-width: 1; }
 
             #main-data-table {
                 border-collapse: collapse;
+
+                caption {
+                    color: black;
+                    text-align: left;
+                    margin-bottom: 1em;
+                }
 
                 tr {
                     &.state-header {
