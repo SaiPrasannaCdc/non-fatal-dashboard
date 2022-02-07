@@ -68,13 +68,27 @@ function BarChartVertical({
     const intervalWidth = Math.round((range[0] - range[1]) / 50) * 10;
 
     let ticks = [];
-    let value = Math.ceil(range[0] / 10) * 10;
+
+    //Ensure 0 is a tick
+    let value = 0;
     ticks.push(value);
-    while(value > range[1]){
-      value -= intervalWidth;
+
+    //Count up by interval width ensuring greatest value is represented
+    while(value < range[0]){
+      value += intervalWidth;
       ticks.push(value);
     }
 
+    //Count down by interval width ensuring lowest value is represented
+    value = -1 * intervalWidth;
+    ticks.unshift(value);
+    while(value > range[1]){
+      value -= intervalWidth;
+      ticks.unshift(value);
+    }
+    ticks.unshift(value);
+
+    console.log(ticks, range);
     return ticks;
   };
 
@@ -175,7 +189,7 @@ function BarChartVertical({
         <AxisLeft
           scale={yScale}
           label={'Percent Change'}
-          tickValues={ticksFromRange()}
+          tickValues={ticks}
           hideAxisLine={true}
           hideTicks={true}
           labelProps={{
