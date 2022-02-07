@@ -256,7 +256,7 @@ export default function App({ dataUrl }) {
   const [sliderPointMonth, setSliderPointMonth] = useState(0);
   const [sliderPointYear, setSliderPointYear] = useState(0);
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
-  const [statesParticipating, setStatesParticipating] = useState(0);
+  const [statesParticipating, setStatesParticipating] = useState([]);
   const [showDatatable, setShowDatatable] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -590,7 +590,7 @@ export default function App({ dataUrl }) {
 
     let filteredData = {};
 
-    let tempStatesParticipating = 0;
+    let tempStatesParticipating = [];
     for (const [key, value] of Object.entries(supportedStates)) {
       const rowKey = value[1] + '|' + startYear + '|' + startMonth + '|all|all:' + value[1] + '|' + endYear + '|' + endMonth + '|all|all';
       const foundRow = keyedRawData[rowKey];
@@ -599,7 +599,7 @@ export default function App({ dataUrl }) {
 
         //Count the states that have data
         if (![legendOrder[3], legendOrder[4]].includes(foundRow[drugScreenOptions[currentDrug]['significanceColumn']])) {
-          tempStatesParticipating++;
+          tempStatesParticipating.push(key);
         }
       }
     }
@@ -1129,7 +1129,7 @@ export default function App({ dataUrl }) {
         <div>
           <label for="jurisdiction-select">Select a Jurisdiction:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
           <option value="">United States</option>
-          {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
+          {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
           </select>
         </div>
       </div>
@@ -1151,7 +1151,7 @@ export default function App({ dataUrl }) {
         {selected && constructStateDataBite()}
         {!selected && constructUSSignificantIncreaseDataBite(significanceColumn)}
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{'color': drugColor}}>{statesParticipating}</span>
+          <span className="callout" style={{'color': drugColor}}>{statesParticipating.length}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
             <p>Funded states with reported data</p>
