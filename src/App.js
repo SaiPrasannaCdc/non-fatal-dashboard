@@ -1115,12 +1115,12 @@ export default function App({ dataUrl }) {
     <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters">
         <div>
-          <label for="drug-select">Select a Drug:</label> <select id="drug-select" style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
+          <label htmlFor="drug-select">Select a Drug:</label> <select id="drug-select" style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
           {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
           </select>
         </div>
         <div>
-          <label for="jurisdiction-select">Select a Jurisdiction:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+          <label htmlFor="jurisdiction-select">Select a Jurisdiction:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
           <option value="">United States</option>
           {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
           </select>
