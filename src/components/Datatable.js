@@ -90,8 +90,6 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
     });
   }
 
-  console.log("Rendering datatable");
-
   return (
     <>
       <table id="main-data-table">

@@ -691,7 +691,6 @@ export default function App({ dataUrl }) {
         const datum = (option.state === 'US' ? keyedRawUSData : keyedRawData)[`${option.state}|${year}|${month}|${option.gender}|${option.age}:${option.state}|${timeframe.key}|${option.gender}|${option.age}`];
 
         if(datum) {
-          //console.log('FOUND', option, timeframe);
           const val = parseFloat(datum[drugScreenOptions[currentDrug]['percentageColumn']]);
 
           if(val < output[option.key].min) {
@@ -699,10 +698,6 @@ export default function App({ dataUrl }) {
           }
           if(val > output[option.key].max) {
             output[option.key].max = val;
-          }
-        } else {
-          if(option.gender === 'all' && option.age === 'all'){
-            console.log('NOT', option, timeframe);
           }
         }
       });
@@ -1043,7 +1038,6 @@ export default function App({ dataUrl }) {
 
     //Save and download
     const saveBlob = () => {
-      debugger;
       if (typeof window.navigator.msSaveBlob === 'function') {
 
         window.navigator.msSaveBlob(dataBlob, fileName);
@@ -1087,7 +1081,6 @@ export default function App({ dataUrl }) {
   const toggleShare = () => {
     setShowLegend(false);
     setShowTimeline(false);
-    console.log(showShare);
     showShare ? document.body.classList.remove('show-sharing') : document.body.classList.add('show-sharing');
     setShowShare(!showShare);
   };
