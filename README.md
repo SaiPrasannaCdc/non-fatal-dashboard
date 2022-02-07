@@ -10,7 +10,8 @@ Modern front-end development has become very complex. The most important guiding
    - Make sure you select the appropriate organization. If this is for an internal project that will not be shared as open source, please select **`cdcent`** not `cdcgov`.
 2. Clone the newly created repository
 3. Run `npm install` to install the needed packages
-4. Run `npm start` to start up the development server. It should open your system's default browser with the URL and refresh to reflect code changes you make upon save.
+4. Run `http-server --cors='*'`
+5. In a second terminal, run `npm start` to start up the development server. It should open your system's default browser with the URL and refresh to reflect code changes you make upon save.
 
 ### Building
 

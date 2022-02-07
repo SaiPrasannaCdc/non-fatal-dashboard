@@ -12,86 +12,8 @@ import Context from '../context';
 
 const { features: unitedStatesHex } = feature(hexTopoJSON, hexTopoJSON.objects.states)
 
-const supportedStates = {
-  // States
-  'US-AL': ['Alabama', 'AL'],
-  'US-AK': ['Alaska', 'AK'],
-  'US-AZ': ['Arizona', 'AZ'],
-  'US-AR': ['Arkansas', 'AR'],
-  'US-CA': ['California', 'CA'],
-  'US-CO': ['Colorado', 'CO'],
-  'US-CT': ['Connecticut', 'CT'],
-  'US-DE': ['Delaware', 'DE'],
-  'US-FL': ['Florida', 'FL'],
-  'US-GA': ['Georgia', 'GA'],
-  'US-HI': ['Hawaii', 'HI'],
-  'US-ID': ['Idaho', 'ID'],
-  'US-IL': ['Illinois', 'IL'],
-  'US-IN': ['Indiana', 'IN'],
-  'US-IA': ['Iowa', 'IA'],
-  'US-KS': ['Kansas', 'KS'],
-  'US-KY': ['Kentucky', 'KY'],
-  'US-LA': ['Louisiana', 'LA'],
-  'US-ME': ['Maine', 'ME'],
-  'US-MD': ['Maryland', 'MD'],
-  'US-MA': ['Massachusetts', 'MA'],
-  'US-MI': ['Michigan', 'MI'],
-  'US-MN': ['Minnesota', 'MN'],
-  'US-MS': ['Mississippi', 'MS'],
-  'US-MO': ['Missouri', 'MO'],
-  'US-MT': ['Montana', 'MT'],
-  'US-NE': ['Nebraska', 'NE'],
-  'US-NV': ['Nevada', 'NV'],
-  'US-NH': ['New Hampshire', 'NH'],
-  'US-NJ': ['New Jersey', 'NJ'],
-  'US-NM': ['New Mexico', 'NM'],
-  'US-NY': ['New York', 'NY'],
-  'US-NC': ['North Carolina', 'NC'],
-  'US-ND': ['North Dakota', 'ND'],
-  'US-OH': ['Ohio', 'OH'],
-  'US-OK': ['Oklahoma', 'OK'],
-  'US-OR': ['Oregon', 'OR'],
-  'US-PA': ['Pennsylvania', 'PA'],
-  'US-RI': ['Rhode Island', 'RI'],
-  'US-SC': ['South Carolina', 'SC'],
-  'US-SD': ['South Dakota', 'SD'],
-  'US-TN': ['Tennessee', 'TN'],
-  'US-TX': ['Texas', 'TX'],
-  'US-UT': ['Utah', 'UT'],
-  'US-VT': ['Vermont', 'VT'],
-  'US-VA': ['Virginia', 'VA'],
-  'US-WA': ['Washington', 'WA'],
-  'US-WV': ['West Virginia', 'WV'],
-  'US-WI': ['Wisconsin', 'WI'],
-  'US-WY': ['Wyoming', 'WY'],
-  'US-PR': ['Puerto Rico']
-};
-
-const offsets = {
-  'US-VT': [50, -8],
-  'US-NH': [34, 2],
-  'US-MA': [30, -1],
-  'US-RI': [28, 2],
-  'US-CT': [35, 10],
-  'US-NJ': [42, 1],
-  'US-DE': [33, 0],
-  'US-MD': [47, 10]
-};
-
-const nudges = {
-  'US-FL': [15, 3],
-  'US-AK': [0, -8],
-  'US-CA': [-10, 0],
-  'US-NY': [5, 0],
-  'US-MI': [13, 20],
-  'US-LA': [-10, -3],
-  'US-HI': [-10, 10],
-  'US-ID': [0, 10],
-  'US-WV': [-2, 2]
-}
-
 const UsaMap = () => {
-  const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo } = useContext(Context);
+  const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo, supportedStates } = useContext(Context);
   
   const geoLabel = (geo, bgColor = "#FFFFFF", projection) => {
     let centroid = projection(geoCentroid(geo))
@@ -139,13 +61,6 @@ const UsaMap = () => {
         return false;
       }
 
-      // Manually add Washington D.C. in for Hex maps
-      // if(geoKey === 'US-DC') {
-      //   geoKey = 'District of Columbia'
-      // } else {
-      //   geoKey = supportedStates[geoKey] ? supportedStates[geoKey][0] : null;
-      // }
-
       if(!geoKey) return
 
       const geoData = data[geoKey];
@@ -165,7 +80,8 @@ const UsaMap = () => {
           fill: legendColors[0],
           cursor: 'pointer',
           '&:hover': {
-            fill: legendColors[1],
+            fontWeight: 600,
+            stroke: 'red'
           },
           '&:active': {
             fill: legendColors[2],
@@ -173,23 +89,28 @@ const UsaMap = () => {
         };
 
         if(selected && selected !== geoKey) styles.opacity = 0.4 
-        if(selected && selected === geoKey) styles.fill = legendColors[1]
+        if(selected && selected === geoKey) styles.fill = legendColors[0]
+
+
+        const setClickAction = () => {
+          if ( geoData[1] !== 'unfunded' ) {
+            setStateSelected(geoKey)
+          }
+        }
 
         return (
           <g
             key={key}
             className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
             css={styles}
-            onClick={() => setStateSelected(geoKey)}
+            onClick={() => setClickAction(geoKey) }
             data-tip={tooltip}
-            //data-html={true}
-            
           >
             <path
               tabIndex={-1}
               className='single-geo'
-              stroke={'#FFF'}
-              strokeWidth={5}   
+              stroke={'#333'}
+              strokeWidth={(selected && selected === geoKey) ? 2 : 1}   
               d={path}
             />
             {geoLabel(geo, legendColors[0], projection)}

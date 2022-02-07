@@ -6,10 +6,49 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+    <link rel="stylesheet" href="https://www.cdc.gov/TemplatePackage/4.0/assets/css/app.min.css?_=34271">
+    <style>
+      h1, h2, h3, h4, h5, h6, .data-bite-title {
+        font-family: 'Open Sans', sans-serif !important;
+      }
+
+      .p-fix-bottom {
+        background-color: #005eaa !important;
+        color: #fff !important;
+        position: fixed;
+        bottom: 0;
+        width: 100% !important;
+        height: 60px;
+      }
+
+      .p-fix-bottom ul {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        align-items: center;
+      }
+
+      .p-fix-bottom ul li {
+        padding: 10px;
+      }
+
+    </style>
     <title></title>
   </head>
-  <body style="padding:40px;">
-    <div id="non-fatal-container" data-url="http://localhost:8080/mainAggData.csv?a=bces"></div>
+  <body>
+    <div id="non-fatal-container" data-url="http://localhost:8080/mainAggData.csv?a=bces37"></div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <nav role="navigation" aria-label="Social Media" class="d-lg-none w-100 op-100 z-max bg-primary p-fix-bottom">
+      <ul class="social-media social-media-footer d-flex flex-nowrap mt-0 mb-0 pt-2 pb-2 fj-around">
+        <li>
+          <a class="page-share-facebook metrics-share-facebook" href="https://api.addthis.com/oexchange/0.8/forward/facebook/offer?url=https://wcms-wp-test.cdc.gov/newtest/dop-non-fatal/feb04/non-fatal-dashboard.html&amp;title=Non%20Fatal%20Dashboard&amp;description=&amp;media=" target="_blank" rel="noreferrer noopener"><span class="sr-only">Facebook</span><span class="fi cdc-icon-fb x24"></span></a>
+        </li>
+        <li>
+          <a class="page-share-twitter metrics-share-twitter" href="https://api.addthis.com/oexchange/0.8/forward/twitter/offer?url=https://wcms-wp-test.cdc.gov/newtest/dop-non-fatal/feb04/non-fatal-dashboard.html&amp;title=Non%20Fatal%20Dashboard&amp;description=&amp;via=CDCgov&amp;media=" target="_blank" rel="noreferrer noopener"><span class="sr-only">Twitter</span><span class="fi cdc-icon-twitter-white x24"></span></a>
+        </li>
+        <li>
+          <a class="page-share-linkedin metrics-share-linkedin" href="https://api.addthis.com/oexchange/0.8/forward/linkedin/offer?url=https://www.cdc.gov&amp;title=Non%20Fatal%20Dashboard&amp;description=&amp;ct=0&amp;media=" target="_blank" rel="noreferrer noopener"><span class="sr-only">LinkedIn</span><span class="fi cdc-icon-linkedin x24"></span></a>
+        </li>
+      </ul>
+    </nav>
   </body>
 </html> 
