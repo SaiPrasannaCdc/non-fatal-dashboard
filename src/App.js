@@ -1122,14 +1122,14 @@ export default function App({ dataUrl }) {
     <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters">
         <div>
-          Select a Drug: <select style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
-            {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
+          <label for="drug-select">Select a Drug:</label> <select id="drug-select" style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
+          {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
           </select>
         </div>
         <div>
-          Select a State: <select style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
-            <option value="">United States</option>
-            {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
+          <label for="jurisdiction-select">Select a Jurisdiction:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+          <option value="">United States</option>
+          {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
           </select>
         </div>
       </div>
