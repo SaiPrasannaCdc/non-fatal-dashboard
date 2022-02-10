@@ -43,8 +43,7 @@ function BarChartVertical({
   });
 
   const { fill, drugScreenOptions, currentDrug } = useContext(Context);
-
-  const drugTitle = drugScreenOptions[currentDrug].titlePlural;
+  const drugTitle = drugScreenOptions[currentDrug].titleAll;
   const percentColumn = drugScreenOptions[currentDrug].percentageColumn;
   const significanceColumn = drugScreenOptions[currentDrug].significanceColumn;
 

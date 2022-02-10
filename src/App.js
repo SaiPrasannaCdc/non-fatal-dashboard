@@ -123,62 +123,6 @@ const supportedStates = {
   'US-WY': ['Wyoming', 'WY']
 };
 
-const fundedStates = {
-  // States
-  'US-AL': ['Alabama', 'AL'],
-  'US-AK': ['Alaska', 'AK'],
-  'US-AZ': ['Arizona', 'AZ'],
-  'US-AR': ['Arkansas', 'AR'],
-  'US-CA': ['California', 'CA'],
-  'US-CO': ['Colorado', 'CO'],
-  'US-CT': ['Connecticut', 'CT'],
-  'US-DE': ['Delaware', 'DE'],
-  'US-DC': ['District of Columbia', 'DC'],
-  'US-FL': ['Florida', 'FL'],
-  'US-GA': ['Georgia', 'GA'],
-  'US-HI': ['Hawaii', 'HI'],
-  'US-ID': ['Idaho', 'ID'],
-  'US-IL': ['Illinois', 'IL'],
-  'US-IN': ['Indiana', 'IN'],
-  'US-IA': ['Iowa', 'IA'],
-  'US-KS': ['Kansas', 'KS'],
-  'US-KY': ['Kentucky', 'KY'],
-  'US-LA': ['Louisiana', 'LA'],
-  'US-ME': ['Maine', 'ME'],
-  'US-MD': ['Maryland', 'MD'],
-  'US-MA': ['Massachusetts', 'MA'],
-  'US-MI': ['Michigan', 'MI'],
-  'US-MN': ['Minnesota', 'MN'],
-  'US-MS': ['Mississippi', 'MS'],
-  'US-MO': ['Missouri', 'MO'],
-  'US-MT': ['Montana', 'MT'],
-  'US-NE': ['Nebraska', 'NE'],
-  'US-NV': ['Nevada', 'NV'],
-  'US-NH': ['New Hampshire', 'NH'],
-  'US-NJ': ['New Jersey', 'NJ'],
-  'US-NM': ['New Mexico', 'NM'],
-  'US-NY': ['New York', 'NY'],
-  'US-NC': ['North Carolina', 'NC'],
-  // 'US-ND': ['North Dakota', 'ND'],
-  'US-OH': ['Ohio', 'OH'],
-  'US-OK': ['Oklahoma', 'OK'],
-  'US-OR': ['Oregon', 'OR'],
-  'US-PA': ['Pennsylvania', 'PA'],
-  //'US-PR': ['Puerto Rico', 'PR'],
-  'US-RI': ['Rhode Island', 'RI'],
-  'US-SC': ['South Carolina', 'SC'],
-  'US-SD': ['South Dakota', 'SD'],
-  'US-TN': ['Tennessee', 'TN'],
-  // 'US-TX': ['Texas', 'TX'],
-  'US-UT': ['Utah', 'UT'],
-  'US-VT': ['Vermont', 'VT'],
-  'US-VA': ['Virginia', 'VA'],
-  'US-WA': ['Washington', 'WA'],
-  'US-WV': ['West Virginia', 'WV'],
-  'US-WI': ['Wisconsin', 'WI'],
-  // 'US-WY': ['Wyoming', 'WY']
-};
-
 const getStateName = (geo) => {
   return supportedStates[geo][0];
 }
@@ -439,7 +383,7 @@ export default function App({ dataUrl }) {
       toolTipText += `<div class="state-name-row"><div><strong>${getStateName(geoName)}</strong></div></div><div class="significance-row">${significance}</div>`;
 
       if ('missing' !== selectedPercentageRaw && 'suppressed' !== selectedPercentageRaw && 'unfunded' !== selectedPercentageRaw ) {
-        toolTipText += `<div class="percentage-row"><div>${drugScreenOptions[currentDrug]['titlePlural']}:</div><div>${formatPercentage(selectedPercentageRaw)}</div></div>`;
+        toolTipText += `<div class="percentage-row"><div>${drugScreenOptions[currentDrug]['titleAll']}:</div><div>${formatPercentage(selectedPercentageRaw)}</div></div>`;
       }
     }
     toolTipText += '</div>';
@@ -800,7 +744,7 @@ export default function App({ dataUrl }) {
         runtimeRanges: processedRanges
       });
     }
-  }, [selected, dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe])
+  }, [selected, dataLoaded, sliderPointMonth, sliderPointYear, currentDrug, selectedTimeframe, setSelected])
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -816,7 +760,7 @@ export default function App({ dataUrl }) {
             Compare United States against:
             <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
               <option value="">Select State</option>
-              {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
+              {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
             </select>
           </div>
         </div>
@@ -842,7 +786,9 @@ export default function App({ dataUrl }) {
           <div className="bar-chart-container">
             <h3 style={{ color: drugColor }}>{timeline} percent change in US Emergency Department visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
 
-            <span>Sex Comparison</span><div className="toggle-container" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
+            <span className="toggle-wrap" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}>
+              <span>Sex Comparison</span><div className="toggle-container"><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
+            </span>
 
             {demographicsToggle === 'sex' && <div className="sex-chart">
               <div className="chart-grid">
@@ -1120,7 +1066,7 @@ export default function App({ dataUrl }) {
           </select>
         </div>
         <div>
-          <label htmlFor="jurisdiction-select">Select a Jurisdiction:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+          <label htmlFor="jurisdiction-select">Select a State:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
           <option value="">United States</option>
           {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
           </select>

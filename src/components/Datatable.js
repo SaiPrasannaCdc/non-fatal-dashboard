@@ -90,10 +90,20 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
     });
   }
 
+  // set months and years for comparison wording
+  const fromYear = runtimeUSData[15];
+  const toYear   = runtimeUSData[17];
+
+  const fromDate  = new Date( fromYear, runtimeUSData[16] - 1, 1);
+  const fromMonth = fromDate.toLocaleString('default', { month: 'long' });
+
+  const toDate  = new Date( toYear, runtimeUSData[18] - 1, 1);
+  const toMonth = toDate.toLocaleString('default', { month: 'long' });
+
   return (
     <>
       <table id="main-data-table">
-        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected All Drug Overdose, April 2021 to November 2021, by OD2A-funded State</caption>
+        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected All Drug Overdose, {toMonth} {toYear} compared to {fromMonth} {fromYear}, by OD2A-funded State</caption>
         <tr style={{backgroundColor: drugColor}}>
           <th scope="col" onClick={() => sortTable('jurisdiction')}>State</th>
           <th scope="col" onClick={() => sortTable('percent')}>Percentage Change</th>

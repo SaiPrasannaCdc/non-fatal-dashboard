@@ -70,18 +70,31 @@ line { stroke: #ccc; stroke-width: 1; }
 
     }
 
-    .cdc-map-inner-container .single-geo {
-        stroke: #fff !important;
-        stroke-width: 3px;
+    .map-container {
+        width: 75%;
+    }
 
-        .selected {
-            text {
-                font-weight: 600;
-            }
-            
+    .cdc-map-inner-container {
 
-            path {
-                stroke-width: 3px;
+        > svg {
+            position: absolute;
+            top: 0;
+        }
+
+        .single-geo {
+            stroke: #fff !important;
+            stroke-width: 3px;
+            position: relative;
+
+            .selected {
+                text {
+                    font-weight: 600;
+                }
+
+
+                path {
+                    stroke-width: 3px;
+                }
             }
         }
     }
@@ -378,11 +391,16 @@ line { stroke: #ccc; stroke-width: 1; }
             }
         }
     }
+
+    //.sticky-container {
+    //    display: grid;
+    //    grid-template-columns: 1fr 300px;
+    //}
     
     aside {
         position: fixed;
         width: 97%;
-        bottom: -1000px;
+        //bottom: -1000px;
         left: 1.5%;
         display: grid;
         gap: 1em;
@@ -509,6 +527,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
                     .rc-slider-mark-text {
                         max-width: 50px;
+                        color: $black;
                     }
                 }
 
@@ -517,6 +536,7 @@ line { stroke: #ccc; stroke-width: 1; }
                     height: 17px;
                     margin-top: -6px;
                 }
+
             }
         }
 
@@ -585,6 +605,7 @@ line { stroke: #ccc; stroke-width: 1; }
                     margin-top: .5em;
                 }
                 svg {
+                    width: 100%;
                     max-width: 1.4em;
                     margin-right: .5em;
                 }
@@ -631,6 +652,9 @@ line { stroke: #ccc; stroke-width: 1; }
 
         .chart-title {
             font-weight: bold;
+            display: block;
+            background: #ccc;
+            padding: 10px;
         }
 
         .text-section {
@@ -649,17 +673,12 @@ line { stroke: #ccc; stroke-width: 1; }
                     position: relative;
                     margin: auto;
                     left: -3vw;
+
+                    > rect {
+                        fill-opacity: 0;
+                    }
                 }
             }
-
-            /*@include r($lg){
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-
-                > div > svg {
-                    left: -25px;
-                }
-            }*/
 
             .chart-data {
                 text { display: none ;}
@@ -668,10 +687,6 @@ line { stroke: #ccc; stroke-width: 1; }
             svg text {
                 font-size: 14px;
             }
-
-            // polygon {
-            //     transform: scale(.5em) !important
-            // }
         }
     }
 
@@ -820,12 +835,17 @@ line { stroke: #ccc; stroke-width: 1; }
         }
     }
 
+    .toggle-wrap {
+        cursor: pointer;
+    }
+
     .toggle-container {
         position: relative;
         display: inline-block;
         width: 2em;
         height: 1em;
         margin: 2em .5em;
+        top: 2px;
 
         .toggle-background {
             display: inline-block;
