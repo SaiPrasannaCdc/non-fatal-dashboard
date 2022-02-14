@@ -48,7 +48,7 @@ const UsaMap = () => {
       if ('US-ND' === geo.properties.iso) {
         //debugger;
       }
-      
+
       let styles = {
         fill: '#E6E6E6',
         cursor: 'default'
@@ -81,14 +81,13 @@ const UsaMap = () => {
           cursor: 'pointer',
           '&:hover': {
             fontWeight: 600,
-            stroke: 'red'
           },
           '&:active': {
             fill: legendColors[2],
           },
         };
 
-        if(selected && selected !== geoKey) styles.opacity = 0.4 
+        if(selected && selected !== geoKey) styles.opacity = 0.9
         if(selected && selected === geoKey) styles.fill = legendColors[0]
 
 
@@ -100,6 +99,7 @@ const UsaMap = () => {
 
         return (
           <g
+            id={selected === geoKey ? 'selected_state' : key }
             tabIndex={-1}
             key={key}
             className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
@@ -110,7 +110,7 @@ const UsaMap = () => {
             <path
               className='single-geo'
               stroke={'#333'}
-              strokeWidth={(selected && selected === geoKey) ? 2 : 1}   
+              strokeWidth={(selected && selected === geoKey) ? 4 : 1}
               d={path}
             />
             {geoLabel(geo, legendColors[0], projection)}
@@ -150,6 +150,7 @@ const UsaMap = () => {
         <Mercator data={unitedStatesHex} scale={650} translate={[1600, 775]}>
           {({ features, projection }) => constructGeoJsx(features, projection)}
         </Mercator>
+        <use id="selected_state_clone" xlinkHref="#selected_state" />
       </svg>
     </>
   )

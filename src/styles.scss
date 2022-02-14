@@ -70,9 +70,12 @@ line { stroke: #ccc; stroke-width: 1; }
 
     }
 
+    @include r ($lg){
     .map-container {
         width: 75%;
     }
+    }
+
 
     .cdc-map-inner-container {
 
@@ -132,7 +135,12 @@ line { stroke: #ccc; stroke-width: 1; }
         min-height: 50px;
     }
 
-    g.geo-group {
+    #selected_state_clone {
+        pointer-events: none;
+        //filter: drop-shadow(1px 1px 20px rgba(255, 255, 255, 0.8));
+    }
+
+    g.geo-group:not(#selected_state) {
         transition: .3s all;
         position: relative;
         z-index: 1;
@@ -143,7 +151,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
         path {
             transition: .3s all;
-            stroke-width: 1;
+            //stroke-width: 1;
 
             &:hover {
                 stroke: #333;
