@@ -758,7 +758,7 @@ export default function App({ dataUrl }) {
           <h3 style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
           <div>
             Compare United States against:
-            <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+            <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
               <option value="">Select State</option>
               {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
             </select>
@@ -1061,12 +1061,12 @@ export default function App({ dataUrl }) {
     <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters">
         <div>
-          <label htmlFor="drug-select">Select a Drug:</label> <select id="drug-select" style={{ "marginBottom": "20px" }} defaultValue={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
+          <label htmlFor="drug-select">Select a Drug:</label> <select id="drug-select" style={{ "marginBottom": "20px" }} value={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
           {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
           </select>
         </div>
         <div>
-          <label htmlFor="jurisdiction-select">Select a State:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} defaultValue={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+          <label htmlFor="jurisdiction-select">Select a State:</label> <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
           <option value="">United States</option>
           {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
           </select>
