@@ -15,7 +15,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
 #non-fatal-container {
     max-width: 100%;
-    padding: $gbl-padding;
+    padding: $gbl-padding $gbl-padding 65px;
     margin: 0;
 
     @include r($lg) {
@@ -329,6 +329,7 @@ line { stroke: #ccc; stroke-width: 1; }
         width: 50px;
         height: 100px;
         position: fixed;
+        z-index: 15;
         right: 1.5%;
         bottom: -150px;
         text-align: center;
@@ -342,69 +343,69 @@ line { stroke: #ccc; stroke-width: 1; }
         transition: bottom .4s ease-in-out;
     }
 
-    .toggle-area {
+    .toggle-area-wrap {
         position: fixed;
-        display: grid;
-        width: 97%;
-        grid-template-columns: 1fr 1fr 80px;
-        bottom: 5px;
-        gap: 5px;
-        left: 1.5%;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: 5px 18px;
         z-index: 12;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(7px);
 
+        .toggle-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr 80px;
+            gap: 5px;
 
-        @include r($lg) {
-            display: none;
-        }
+            @include r($lg) {
+                display: none;
+            }
 
-        svg {
-            position: relative;
-            left: 7px;
-            top: 3px;
-            width: 16px;
-            height: 16px;
-            display: inline-block;
-            transition: all .2s ease-in-out;
-        }
+            svg {
+                position: relative;
+                left: 7px;
+                top: 3px;
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                transition: all .2s ease-in-out;
+            }
 
-        .open svg {
-            transform: rotate(-180deg);
-        }
+            .open svg {
+                transform: rotate(-180deg);
+            }
 
-        #toggleLegend,
-        #toggleTimeline,
-        #toggleShare {
-            background-color: $dark-blue;
-            color: $white;
-            text-align: center;
-            padding: .75em;
-            border: 1px solid rgba($white,0.75);
-            border-radius: 5px;
-            font-size: .8em;
-            cursor: pointer;
-            opacity: 1;
-            transition: opacity .2s ease-in-out;
-        }
+            #toggleLegend,
+            #toggleTimeline,
+            #toggleShare {
+                background-color: $dark-blue;
+                color: $white;
+                text-align: center;
+                padding: .75em;
+                border: 1px solid rgba($white,0.75);
+                border-radius: 5px;
+                font-size: .8em;
+                cursor: pointer;
+                opacity: 1;
+                transition: opacity .2s ease-in-out;
+            }
 
-        #toggleLegend,
-        #toggleTimeline,
-        #toggleShare {
-            width: 100%;
-            margin: auto;
+            #toggleLegend,
+            #toggleTimeline,
+            #toggleShare {
+                width: 100%;
+                margin: auto;
 
-            &:hover,
-            &:focus,
-            &:active {
-                opacity: .8;
+                &:hover,
+                &:focus,
+                &:active {
+                    opacity: .8;
+                }
             }
         }
     }
 
-    //.sticky-container {
-    //    display: grid;
-    //    grid-template-columns: 1fr 300px;
-    //}
-    
     aside {
         position: fixed;
         width: 97%;
@@ -703,7 +704,7 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .datatable-container {
-        z-index: 10;
+        //z-index: 10;
         position: relative;
 
         &:before {
