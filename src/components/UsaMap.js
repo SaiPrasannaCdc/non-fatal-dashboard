@@ -89,6 +89,7 @@ const UsaMap = () => {
 
         if(selected && selected !== geoKey) styles.opacity = 0.9
         if(selected && selected === geoKey) styles.fill = legendColors[0]
+        if(selected && selected === geoKey) styles.stroke = '#fff'
 
 
         const setClickAction = () => {
@@ -110,7 +111,7 @@ const UsaMap = () => {
             <path
               className='single-geo'
               stroke={'#333'}
-              strokeWidth={(selected && selected === geoKey) ? 4 : 1}
+              strokeWidth={(selected && selected === geoKey) ? 6 : 1}
               d={path}
             />
             {geoLabel(geo, legendColors[0], projection)}

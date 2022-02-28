@@ -13,7 +13,7 @@ function BarChartVertical({
   range = null,
   chartType = null
 }) {
-
+  debugger;
   const months = [
     'Jan',
     'Feb',
@@ -74,6 +74,7 @@ function BarChartVertical({
 
     //Count up by interval width ensuring greatest value is represented
     while(value < range[0]){
+      debugger
       value += intervalWidth;
       ticks.push(value);
     }
