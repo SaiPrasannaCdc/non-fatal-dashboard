@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import "babel-polyfill";
 import chroma from 'chroma-js';
 import Papa from 'papaparse';
@@ -123,6 +123,62 @@ const supportedStates = {
   'US-WY': ['Wyoming', 'WY']
 };
 
+const fundedStates = {
+  // States
+  'US-AL': ['Alabama', 'AL'],
+  'US-AK': ['Alaska', 'AK'],
+  'US-AZ': ['Arizona', 'AZ'],
+  'US-AR': ['Arkansas', 'AR'],
+  'US-CA': ['California', 'CA'],
+  'US-CO': ['Colorado', 'CO'],
+  'US-CT': ['Connecticut', 'CT'],
+  'US-DE': ['Delaware', 'DE'],
+  'US-DC': ['District of Columbia', 'DC'],
+  'US-FL': ['Florida', 'FL'],
+  'US-GA': ['Georgia', 'GA'],
+  'US-HI': ['Hawaii', 'HI'],
+  'US-ID': ['Idaho', 'ID'],
+  'US-IL': ['Illinois', 'IL'],
+  'US-IN': ['Indiana', 'IN'],
+  'US-IA': ['Iowa', 'IA'],
+  'US-KS': ['Kansas', 'KS'],
+  'US-KY': ['Kentucky', 'KY'],
+  'US-LA': ['Louisiana', 'LA'],
+  'US-ME': ['Maine', 'ME'],
+  'US-MD': ['Maryland', 'MD'],
+  'US-MA': ['Massachusetts', 'MA'],
+  'US-MI': ['Michigan', 'MI'],
+  'US-MN': ['Minnesota', 'MN'],
+  'US-MS': ['Mississippi', 'MS'],
+  'US-MO': ['Missouri', 'MO'],
+  'US-MT': ['Montana', 'MT'],
+  'US-NE': ['Nebraska', 'NE'],
+  'US-NV': ['Nevada', 'NV'],
+  'US-NH': ['New Hampshire', 'NH'],
+  'US-NJ': ['New Jersey', 'NJ'],
+  'US-NM': ['New Mexico', 'NM'],
+  'US-NY': ['New York', 'NY'],
+  'US-NC': ['North Carolina', 'NC'],
+  // 'US-ND': ['North Dakota', 'ND'],
+  'US-OH': ['Ohio', 'OH'],
+  'US-OK': ['Oklahoma', 'OK'],
+  'US-OR': ['Oregon', 'OR'],
+  'US-PA': ['Pennsylvania', 'PA'],
+  //'US-PR': ['Puerto Rico', 'PR'],
+  'US-RI': ['Rhode Island', 'RI'],
+  'US-SC': ['South Carolina', 'SC'],
+  'US-SD': ['South Dakota', 'SD'],
+  'US-TN': ['Tennessee', 'TN'],
+  // 'US-TX': ['Texas', 'TX'],
+  'US-UT': ['Utah', 'UT'],
+  'US-VT': ['Vermont', 'VT'],
+  'US-VA': ['Virginia', 'VA'],
+  'US-WA': ['Washington', 'WA'],
+  'US-WV': ['West Virginia', 'WV'],
+  'US-WI': ['Wisconsin', 'WI'],
+  // 'US-WY': ['Wyoming', 'WY']
+};
+
 const getStateName = (geo) => {
   return supportedStates[geo][0];
 }
@@ -213,7 +269,6 @@ export default function App({ dataUrl }) {
   const {runtimeLegend, runtimeData, runtimeUSData, runtimePastMonths, runtimePastMonthsState, runtimePastMonthsGender, runtimePastMonthsAge, runtimeRanges } = runtime;
 
   const fetchData = async () => {
-    debugger;
     try {
       const response = await fetch(dataUrl)
         .then(v => v.text())
@@ -276,7 +331,7 @@ export default function App({ dataUrl }) {
               obj[key] = row[keyIndex[key]];
             })
             
-            if ('US' === row[keyIndex['jurisdiction']]) {
+            if ('US' === row[keyIndex['state']]) {
               tempKeyedRawUSData[row[keyIndex['key']]] = obj;
             } else {
               tempKeyedRawData[row[keyIndex['key']]] = obj;
@@ -682,7 +737,7 @@ export default function App({ dataUrl }) {
 
   const generateRuntimePastMonthsGender = () => {
     let data = {'M': [], 'F': []};
-debugger;
+
     iteratePastMonths((valid, startMonth, startYear, endMonth, endYear) => {
       if(valid){
         Object.keys(data).forEach(key => {
@@ -761,19 +816,20 @@ debugger;
             Compare United States against:
             <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
               <option value="">Select State</option>
-              {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
+              {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
+
             </select>
           </div>
         </div>
         <div className={'bar-chart-container'}>
-        <div className="bar-chart">
+          <div className="bar-chart">
+            <span className='chart-title'>{supportedStates[selected][0]}</span>
+            <BarChartVertical width={600} height={350} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
+          </div>
+          <div className="bar-chart">
             <span className='chart-title'>US</span>
             <BarChartVertical width={600} height={350} data={runtimePastMonths} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
           </div>
-          <div className="bar-chart" style={{"margin":"60px 0"}}>
-          <span className='chart-title'>{supportedStates[selected][0]}</span>
-            <BarChartVertical width={600} height={350} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
-        </div>
         </div>
       </section>
     )
@@ -835,11 +891,31 @@ debugger;
   }
 
   const tooltipFormatterMonth = (data) => {
-    return monthTimeframes[data]['label'];
+    let tip  = monthTimeframes[data]['label'].substring(0,3) + '. ' + monthTimeframes[data]['year'];
+        tip += " compared to ";
+        // tip += " - ";
+
+    if ( ( data - 1 ) >= 0 ) { // make sure we have a previous month to compare
+      tip += monthTimeframes[data - 1]['label'].substring(0,3) + '. ' + monthTimeframes[data]['year'];
+    } else {
+      const selectedMonth = monthTimeframes[data]['month'];
+
+      // select previous month in the months array and December if we are on January
+      const prevMonth = selectedMonth - 2 >= 0 ? selectedMonth - 2 : 11;
+
+      // select previous year and subtract a year if we are on January
+      const prevYear  = selectedMonth - 2 >= 0 ? monthTimeframes[data]['year'] : monthTimeframes[data]['year'] - 1;
+      tip += months[prevMonth].substring(0,3) + '. ' + prevYear;
+    }
+    return tip;
   }
 
   const tooltipFormatterYear = (data) => {
-    return yearTimeframes[data]['label'];
+    let year = yearTimeframes[data]['label'].split(' ');
+    let tip  = yearTimeframes[data]['label'].substring(0,3) + '. ' + year[1];
+        tip += " compared to ";
+        tip += yearTimeframes[data]['label'].substring(0,3) + '. ' + ( year[1] - 1 );
+    return tip;
   }
 
   if (!runtimeData || Object.keys(runtimeData).length === 0 || !monthTimeframes) {
@@ -1037,7 +1113,7 @@ debugger;
   };
 
   const resetFilters = () => {
-    setSelected(null);
+    setSelected("");
   };
 
   const drugColor = drugScreenOptions[currentDrug].color;
@@ -1045,7 +1121,7 @@ debugger;
   const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
   const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
   const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
-  const jurisdictionColumn = keyIndex[drugScreenOptions[currentDrug]['jurisdiction']];
+  const jurisdictionColumn = keyIndex[drugScreenOptions[currentDrug]['state']];
   let runtimeTableData = Object.values(runtimeData);
 
   let fromLabel, toLabel, mapFromLabel;
@@ -1061,132 +1137,89 @@ debugger;
   return (
     <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
       <div className="filters-container">
-      <div className="filters">
-        <div className="dropdowns">
-          <div>
-            <label htmlFor="drug-select">Select a Drug:</label><br />
-            <select id="drug-select" style={{ "marginBottom": "20px" }} value={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
-            {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
-          </select>
-          </div>
-          <div>
-            <label htmlFor="jurisdiction-select">Select a State:</label><br />
-            <select id="jurisdiction-select" style={{ "marginBottom": "20px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
-            <option value="">United States</option>
-            {statesParticipating.map((key) => <option key={key} value={key}>{supportedStates[key][0]}</option>)}
-          </select>
-          </div>
-          <div>
-            <label htmlFor="month-year">Select a Time:</label><br />
-            <select id="month-year"  value={selected} onChange={(e) => {handleTimeframeChange(e.target.value)}}>
-              <option value="month" name="time-selector">Month</option>
-              <option value="year" name="time-selector">Year</option>
-            </select>
-            {/*<span className="radio">*/}
-            {/*  <label>*/}
-            {/*    <input*/}
-            {/*        type="radio"*/}
-            {/*        value="month"*/}
-            {/*        name="time-selector"*/}
-            {/*        checked={selectedTimeframe === 'month'}*/}
-            {/*        onChange={(e) => {handleTimeframeChange(e.target.value)}}*/}
-            {/*    />*/}
-            {/*    Month*/}
-            {/*  </label>*/}
-            {/*</span>*/}
-            {/*<span className="radio">*/}
-            {/*  <label>*/}
-            {/*    <input*/}
-            {/*        type="radio"*/}
-            {/*        value="year"*/}
-            {/*        name="time-selector"*/}
-            {/*        checked={selectedTimeframe === 'year'}*/}
-            {/*        onChange={(e) => {handleTimeframeChange(e.target.value)}}*/}
-            {/*    />*/}
-            {/*    Year*/}
-            {/*  </label>*/}
-            {/*</span>*/}
+
+        <div className={ `filter-wrapper ${ showTimeline ? 'show-timeline' : '' }`}>
+          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
+          <div className="filters">
+            <div className="dropdowns">
+              <div>
+                <label htmlFor="drug-select">Select a Drug: </label>
+                <select id="drug-select" value={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
+                  {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="jurisdiction-select">Select a State: </label>
+                <select id="jurisdiction-select" value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+                  <option value="">United States</option>
+                  {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
+                </select>
+              </div>
+              <div className="compare">
+                <label htmlFor="month-year">Compare {toLabel} with the previous: </label>
+                <span className='legend-help' data-tip='<div className=" tooltip-body">
+                  <small>This panel allows you to view the percent change in nonfatal drug overdoses between adjacent months and annually for a select time period.</small></div>
+                  <small>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</div>
+                  </div>'>?</span>
+                <select id="month-year"  value={selectedTimeframe} onChange={(e) => {handleTimeframeChange(e.target.value)}}>
+                  <option value="month" name="time-selector">Month</option>
+                  <option value="year" name="time-selector">Year</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="timeline">
+              <div className="range-aside-container" style={{ color: drugColor }}>
+                {'month' === selectedTimeframe &&
+                    <SliderWithTooltip
+                        tipFormatter={tooltipFormatterMonth}
+                        html={true}
+                        onChange={(e) => { handleMonthSliderChange(e) }}
+                        min={0}
+                        step={1}
+                        value={sliderPointMonth}
+                        align={{
+                          offset: [0, -5],
+                        }}
+                        max={monthTimeframes.length - 1}
+                        marks={getSliderMarks('month')}
+                        handleStyle={{
+                          borderColor: drugColor,
+                          backgroundColor: drugColor,
+                        }}
+                        tipProps={{visible:true}}
+                        ariaLabelForHandle="Select a month to compare in the map"
+                        role="slider"
+                        // tab-index={0}
+                        // ariaValueMin={0}
+                        // ariaValueMax={monthTimeframes.length - 1}
+                    />
+                }
+                {'year' === selectedTimeframe &&
+                    <SliderWithTooltip
+                        tipFormatter={tooltipFormatterYear}
+                        onChange={(e) => { handleYearSliderChange(e) }}
+                        min={0}
+                        step={1}
+                        value={sliderPointYear}
+                        align={{
+                          offset: [0, -5],
+                        }}
+                        max={yearTimeframes.length - 1}
+                        marks={getSliderMarks('year')}
+                        handleStyle={{
+                          borderColor: drugColor,
+                          backgroundColor: drugColor,
+                        }}
+                        tipProps={{visible:true}}
+                        ariaLabelForHandle="Select a year to compare in the map"
+                    />
+                }
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="timeline">
-          <div className="legend-title">
-            <strong>Select a Time Range:</strong> <em>{toLabel}</em> compared to <em>{ mapFromLabel ? mapFromLabel : fromLabel }</em>   <span className='legend-help' onClick={toggleLegendHelp}>?</span>
-          </div>
-          {/*<div className={`${ showLegendHelp ? 'legend-help-message' : 'legend-help-message show' }`}>*/}
-          {/*  <p>This panel allows you to view the percent change in nonfatal drug overdoses between adjacent months and annually for a select time period.</p>*/}
-          {/*  <p>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</p>*/}
-          {/*</div>*/}
-          <div className="time-frame-container">
-            {/*<div>Compare {toLabel} with the previous:*/}
-            {/*  <div className="radio">*/}
-            {/*    <label>*/}
-            {/*      <input*/}
-            {/*          type="radio"*/}
-            {/*          value="month"*/}
-            {/*          name="time-selector"*/}
-            {/*          checked={selectedTimeframe === 'month'}*/}
-            {/*          onChange={(e) => {handleTimeframeChange(e.target.value)}}*/}
-            {/*      />*/}
-            {/*      Month*/}
-            {/*    </label>*/}
-            {/*  </div>*/}
-            {/*  <div className="radio">*/}
-            {/*    <label>*/}
-            {/*      <input*/}
-            {/*          type="radio"*/}
-            {/*          value="year"*/}
-            {/*          name="time-selector"*/}
-            {/*          checked={selectedTimeframe === 'year'}*/}
-            {/*          onChange={(e) => {handleTimeframeChange(e.target.value)}}*/}
-            {/*      />*/}
-            {/*      Year*/}
-            {/*    </label>*/}
-            {/*  </div>*/}
-            {/*</div>*/}
-          </div>
-          <div className="range-aside-container" style={{ color: drugColor }}>
-            {'month' === selectedTimeframe &&
-                <SliderWithTooltip
-                    tipFormatter={tooltipFormatterMonth}
-                    onChange={(e) => { handleMonthSliderChange(e) }}
-                    min={0}
-                    step={1}
-                    value={sliderPointMonth}
-                    align={{
-                      offset: [0, -5],
-                    }}
-                    max={monthTimeframes.length - 1}
-                    marks={getSliderMarks('month')}
-                    handleStyle={{
-                      borderColor: drugColor,
-                      backgroundColor: drugColor,
-                    }}
-                    ariaLabelForHandle="Select a month to compare in the map"
-                />
-            }
-            {'year' === selectedTimeframe &&
-                <SliderWithTooltip
-                    tipFormatter={tooltipFormatterYear}
-                    onChange={(e) => { handleYearSliderChange(e) }}
-                    min={0}
-                    step={1}
-                    value={sliderPointYear}
-                    align={{
-                      offset: [0, -5],
-                    }}
-                    max={yearTimeframes.length - 1}
-                    marks={getSliderMarks('year')}
-                    handleStyle={{
-                      borderColor: drugColor,
-                      backgroundColor: drugColor,
-                    }}
-                    ariaLabelForHandle="Select a year to compare in the map"
-                />
-            }
-          </div>
-        </div>
-      </div>
       <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.75em 18px', marginBottom: '1em'}}>
         <span style={{  fontSize: '.8em', fontWeight: 'bold' }}>Trends in Emergency Department Visits</span>
         <h2 style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: 'bold', fontFamily: '"Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif'  }}>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</h2>
@@ -1213,11 +1246,11 @@ debugger;
         </div>
       </div>
       {/*<div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{ mapFromLabel ? mapFromLabel : fromLabel }</strong></div>*/}
-      <div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>
-        {Object.keys(drugScreenOptions).map((key) => {
-          return <button key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</button>
-        })}
-      </div>
+      {/*<div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>*/}
+      {/*  {Object.keys(drugScreenOptions).map((key) => {*/}
+      {/*    return <button key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</button>*/}
+      {/*  })}*/}
+      {/*</div>*/}
 
       <div className="toggle-area-wrap">
         <div className="toggle-area">
@@ -1328,8 +1361,31 @@ debugger;
                 </svg>
                 {value}
                 </li>)}
+
+              <li>
+                <svg
+                    // y={-15}
+                    // x={barX - 10}
+                    aria-hidden="true"
+                    data-prefix="fas"
+                    data-icon="asterisk"
+                    className="svg-inline--fa fa-asterisk fa-w-16"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 18 18"
+                    // width="30"
+                    // fill={fill(d[significanceColumn])}
+                    stroke="#999"
+
+                    style={{ 'margin-left': '2px'}}
+                >
+                  <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
+                </svg>
+                <a href="#suppressed">Suppressed Data</a>
+              </li>
             </ul>
+
             <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
+            <p><a href="#dataDownload">Data Considerations and Data Download</a></p>
           </div>
         </aside>
 
@@ -1343,21 +1399,28 @@ debugger;
           </div>
         </div>
 
-        {selected && <StateInfo />}
+        {selected &&
+            <div>
+              <a id="stateInfo">state info</a>
+              <StateInfo />
+            </div>
+        }
         {GenderAgeSection()}
+
         <div className="footnotes comparison-section">
-          <p>* In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
+          <a id="suppressed">suppressed data note</a>
+          <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
           <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of Emergency Department visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
         </div>
       </div>
       </div>
       <div className='data-tables'>
         <div className="datatable-container">
-          <h2 style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
+          <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
             Trends by State, {timeline} - {drugScreenOptions[currentDrug]['titleAll']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
             {!showDatatable && <span>{String.fromCharCode(43)}</span>}
-          </h2>
+          </button>
           {showDatatable &&
             <div className="datatable-body">
               <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
@@ -1366,15 +1429,14 @@ debugger;
                 ¶ The funded jurisdiction did not provide CDC enough months of data to calculate all percent change cells.<br/>
                 ** State does not participate in OD2A DOSE ED data sharing.<br/>
               </small>
-              <DownloadButton data={csvData} />
             </div>}
         </div>
         <div className="datatable-container">
-          <h2 style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
+          <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
           Important Data Considerations
             {showConsiderations && <span>{String.fromCharCode(8722)}</span>}
             {!showConsiderations && <span>{String.fromCharCode(43)}</span>}
-          </h2>
+          </button>
           {showConsiderations &&
             <div className="datatable-body">
              <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
@@ -1389,6 +1451,10 @@ debugger;
             </div>}
         </div>
       </div>
+      <a id="dataDownload" data={csvData}>data download</a>
+      <p>
+        <DownloadButton data={csvData} />
+      </p>
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
     </Context.Provider>
   );

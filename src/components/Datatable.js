@@ -105,9 +105,21 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
       <table id="main-data-table">
         <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected All Drug Overdose, {toMonth} {toYear} compared to {fromMonth} {fromYear}, by OD2A-funded State</caption>
         <tr style={{backgroundColor: drugColor}}>
-          <th scope="col" onClick={() => sortTable('jurisdiction')}>State</th>
-          <th scope="col" onClick={() => sortTable('percent')}><span className="hide-on-desktop">%</span> <span className="hide-on-mobile">Percentage</span> Change</th>
-          <th scope="col" onClick={() => sortTable('significance')}>Significance</th>
+          <th scope="col" onClick={() => sortTable('jurisdiction')}>
+            <button>
+              State
+            </button>
+          </th>
+          <th scope="col" onClick={() => sortTable('percent')}>
+            <button>
+              <span className="hide-on-desktop">%</span> <span className="hide-on-mobile">Percentage</span> Change
+            </button>
+          </th>
+          <th scope="col" onClick={() => sortTable('significance')}>
+            <button>
+              Significance
+            </button>
+          </th>
         </tr>
         <tr>
           <td>Overall</td>

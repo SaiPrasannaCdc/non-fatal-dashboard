@@ -13,7 +13,7 @@ function BarChartVertical({
   range = null,
   chartType = null
 }) {
-  debugger;
+
   const months = [
     'Jan',
     'Feb',
@@ -64,7 +64,7 @@ function BarChartVertical({
   const getYValue = (d) => Number(d ? d[percentColumn] : 0);
 
   const ticksFromRange = () => {
-    const intervalWidth = Math.round((range[0] - range[1]) / 50) * 10;
+    const intervalWidth = Math.max(1, Math.ceil((range[0] - range[1]) / 50) * 10);
 
     let ticks = [];
 
@@ -74,7 +74,6 @@ function BarChartVertical({
 
     //Count up by interval width ensuring greatest value is represented
     while(value < range[0]){
-      debugger
       value += intervalWidth;
       ticks.push(value);
     }
