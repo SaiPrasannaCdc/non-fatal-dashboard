@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import "babel-polyfill";
 import chroma from 'chroma-js';
 import Papa from 'papaparse';
@@ -811,7 +811,7 @@ export default function App({ dataUrl }) {
     return (
       <section className="sub-drawer dumbbell">
         <div>
-          <h3 style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h3>
+          <h2 className='h3' style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
           <div>
             Compare United States against:
             <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
@@ -1019,6 +1019,11 @@ export default function App({ dataUrl }) {
     return ret;
   }
 
+  let footnote1 = ["§", "The state/territory does not share data from syndromic surveillance systems with DOSE." ];
+  // let footnote2 = ["¶", "The funded state did not provide CDC enough months of data to calculate all percent change cells." ];
+  let footnote3 = ["¶", "State does not participate in OD2A DOSE ED data sharing." ];
+  let footnote4 = ["**", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
+
   const DownloadButton = ({ data }) => {
     const fileName = `Non-Fatal-Overdose-Data.csv`;
 
@@ -1042,16 +1047,11 @@ export default function App({ dataUrl }) {
     const itemsToAdd = headerRow.splice(12, 6);
     headerRow = itemsToAdd.concat(headerRow);
 
-    let footnote1 = ["§", "The state/territory does not share data from syndromic surveillance systems with DOSE." ];
-    let footnote2 = ["¶", "The funded state did not provide CDC enough months of data to calculate all percent change cells." ];
-    let footnote3 = ["**", "State does not participate in OD2A DOSE ED data sharing." ];
-    let footnote4 = ["† †", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
-
     //Add header row to beginning of dataset
     processedData.unshift(headerRow);
 
     processedData.unshift(footnote1);
-    processedData.unshift(footnote2);
+    // processedData.unshift(footnote2);
     processedData.unshift(footnote3);
     processedData.unshift(footnote4);
 
@@ -1132,6 +1132,15 @@ export default function App({ dataUrl }) {
   } else {
     toLabel = allTimeframes[sliderPointYear + 12]['label'];
     fromLabel = allTimeframes[sliderPointYear]['label'];
+  }
+
+  const MapFootnotes = () => {
+    return (
+        <>
+          <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
+          <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of Emergency Department visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+        </>
+    );
   }
 
   return (
@@ -1274,83 +1283,6 @@ export default function App({ dataUrl }) {
           `${ showTimeline ? 'show-timeline' : '' }` +
           `${ showShare ? 'show-share' : '' }`
         }>
-          {/*<div className="timeline">*/}
-          {/*  <div className="legend-title" style={{ 'backgroundColor': drugColor }}>*/}
-          {/*    Time Range   <span className='legend-help' onClick={toggleLegendHelp}>?</span>*/}
-          {/*  </div>*/}
-          {/*  <div className={`${ showLegendHelp ? 'legend-help-message' : 'legend-help-message show' }`}>*/}
-          {/*    <p>This panel allows you to view the percent change in nonfatal drug overdoses between adjacent months and annually for a select time period.</p>*/}
-          {/*    <p>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</p>*/}
-          {/*  </div>*/}
-          {/*  <div className="time-frame-container">*/}
-          {/*    <div>Compare {toLabel} with the previous:*/}
-          {/*    <div className="radio">*/}
-          {/*      <label>*/}
-          {/*        <input*/}
-          {/*          type="radio"*/}
-          {/*          value="month"*/}
-          {/*          name="time-selector"*/}
-          {/*          checked={selectedTimeframe === 'month'}*/}
-          {/*          onChange={(e) => {handleTimeframeChange(e.target.value)}}*/}
-          {/*        />*/}
-          {/*        Month*/}
-          {/*      </label>*/}
-          {/*    </div>*/}
-          {/*    <div className="radio">*/}
-          {/*      <label>*/}
-          {/*        <input*/}
-          {/*          type="radio"*/}
-          {/*          value="year"*/}
-          {/*          name="time-selector"*/}
-          {/*          checked={selectedTimeframe === 'year'}*/}
-          {/*          onChange={(e) => {handleTimeframeChange(e.target.value)}}*/}
-          {/*        />*/}
-          {/*        Year*/}
-          {/*      </label>*/}
-          {/*    </div>*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*  <div className="range-aside-container" style={{ color: drugColor }}>*/}
-          {/*    {'month' === selectedTimeframe &&*/}
-          {/*      <SliderWithTooltip*/}
-          {/*        tipFormatter={tooltipFormatterMonth}*/}
-          {/*        onChange={(e) => { handleMonthSliderChange(e) }}*/}
-          {/*        min={0}*/}
-          {/*        step={1}*/}
-          {/*        value={sliderPointMonth}*/}
-          {/*        align={{*/}
-          {/*          offset: [0, -5],*/}
-          {/*        }}*/}
-          {/*        max={monthTimeframes.length - 1}*/}
-          {/*        marks={getSliderMarks('month')}*/}
-          {/*        handleStyle={{*/}
-          {/*          borderColor: drugColor,*/}
-          {/*          backgroundColor: drugColor,*/}
-          {/*        }}*/}
-          {/*        ariaLabelForHandle="Select a month to compare in the map"*/}
-          {/*      />*/}
-          {/*    }*/}
-          {/*    {'year' === selectedTimeframe &&*/}
-          {/*      <SliderWithTooltip*/}
-          {/*        tipFormatter={tooltipFormatterYear}*/}
-          {/*        onChange={(e) => { handleYearSliderChange(e) }}*/}
-          {/*        min={0}*/}
-          {/*        step={1}*/}
-          {/*        value={sliderPointYear}*/}
-          {/*        align={{*/}
-          {/*          offset: [0, -5],*/}
-          {/*        }}*/}
-          {/*        max={yearTimeframes.length - 1}*/}
-          {/*        marks={getSliderMarks('year')}*/}
-          {/*        handleStyle={{*/}
-          {/*          borderColor: drugColor,*/}
-          {/*          backgroundColor: drugColor,*/}
-          {/*        }}*/}
-          {/*        ariaLabelForHandle="Select a year to compare in the map"*/}
-          {/*      />*/}
-          {/*    }*/}
-          {/*  </div>*/}
-          {/*</div>*/}
           <div className="legend">
             <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
             <ul className="legend">
@@ -1393,7 +1325,7 @@ export default function App({ dataUrl }) {
           <div className="map-inner-container">
             <div className="now-viewing">
               {!selected && <div><em>Click on a state to see more.</em></div>}
-              {selected && <div>Now viewing {getStateName(selected)} <span className="btn btn-reset" onClick={resetFilters}>Reset</span></div>}
+              {selected && <div>Now viewing {getStateName(selected)} <button className="btn btn-reset" onClick={resetFilters}>Reset</button></div>}
             </div>
             <UsaMap/>
           </div>
@@ -1409,8 +1341,7 @@ export default function App({ dataUrl }) {
 
         <div className="footnotes comparison-section">
           <a id="suppressed">suppressed data note</a>
-          <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
-          <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of Emergency Department visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+          <MapFootnotes />
         </div>
       </div>
       </div>
@@ -1425,9 +1356,13 @@ export default function App({ dataUrl }) {
             <div className="datatable-body">
               <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
               <small>
-                § The state/territory does not share data from syndromic surveillance systems with DOSE.<br/>
-                ¶ The funded jurisdiction did not provide CDC enough months of data to calculate all percent change cells.<br/>
-                ** State does not participate in OD2A DOSE ED data sharing.<br/>
+                <MapFootnotes />
+                <p>{ footnote1[0] } { footnote1[1] }</p>
+                <p>{ footnote3[0] } { footnote3[1] }</p>
+                <p>{ footnote4[0] } { footnote4[1] }</p>
+                {/*§ The state/territory does not share data from syndromic surveillance systems with DOSE.<br/>*/}
+                {/*¶ The funded jurisdiction did not provide CDC enough months of data to calculate all percent change cells.<br/>*/}
+                {/*** State does not participate in OD2A DOSE ED data sharing.<br/>*/}
               </small>
             </div>}
         </div>

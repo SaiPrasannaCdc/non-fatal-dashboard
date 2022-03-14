@@ -99,7 +99,7 @@ const UsaMap = () => {
         }
 
         return (
-            <a href={ ( geoData[1] === 'unfunded' ) ? '#!' : '#stateInfo' }>
+            <a xlinkHref={ ( geoData[1] === 'unfunded' ) ? '#!' : '#stateInfo' } role='button' aria-pressed="false">
               <g
                 id={selected === geoKey ? 'selected_state' : key }
                 tabIndex={-1}

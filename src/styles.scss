@@ -41,7 +41,8 @@ line { stroke: #ccc; stroke-width: 1; }
         // font-family: Merriweather,serif;
     }
 
-    h3 {
+    h3,
+    .h3 {
         font-size: 1.25rem;
     }
 
@@ -91,6 +92,7 @@ line { stroke: #ccc; stroke-width: 1; }
     .map-container {
         a {
             text-decoration: none;
+            pointer-events: auto;
         }
     }
 
@@ -343,6 +345,9 @@ line { stroke: #ccc; stroke-width: 1; }
                 width: 17px;
                 height: 17px;
                 margin-top: -6px;
+                &:focus {
+                    outline: auto 3px rgba(255,102,1,.9);
+                }
             }
 
             .rc-slider-dot {
@@ -987,6 +992,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
             #main-data-table {
                 border-collapse: collapse;
+                margin-bottom: $gbl-padding;
 
                 caption {
                     color: black;

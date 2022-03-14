@@ -24,20 +24,24 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
   const getSymbols = (row) => {
     let symbols = [];
 
-    if ('unfunded' === row[percentageColumn]) {
-      symbols.push('††');
-    }
+    // if ('unfunded' === row[percentageColumn]) {
+    //   symbols.push('††');
+    // }
 
     if ('missing' === row[percentageColumn]) {
-      symbols.push('¶');
+      symbols.push('§');
     }
 
     if ('suppressed' === row[percentageColumn]) {
+      symbols.push('*');
+    }
+
+    if ('US-KY' === row[keyIndex['geo']] || 'US-OR' === row[keyIndex['geo']]) {
       symbols.push('**');
     }
 
-    if ('US-KY' === row[keyIndex['geo']]) {
-      symbols.push('§§');
+    if ('US-ND' === row[keyIndex['geo']] || 'US-TX' === row[keyIndex['geo']] || 'US-WY' === row[keyIndex['geo']]) {
+      symbols.push('¶');
     }
 
     return (
