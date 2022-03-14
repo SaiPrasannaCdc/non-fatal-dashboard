@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionColumn,percentageColumn,keyIndex,supportedStates,drugColor,Hexagon,applyLegendToRow}) {
 
-  const [sortBy, setSortBy] = useState('jurisdiction');
+  const [sortBy, setSortBy] = useState('state');
   const [sortAscending, setSortAscending] = useState(false);
 
   const getPercentageColumn = (row) => {
@@ -24,20 +24,24 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
   const getSymbols = (row) => {
     let symbols = [];
 
-    if ('unfunded' === row[percentageColumn]) {
-      symbols.push('††');
-    }
+    // if ('unfunded' === row[percentageColumn]) {
+    //   symbols.push('††');
+    // }
 
     if ('missing' === row[percentageColumn]) {
-      symbols.push('¶');
+      symbols.push('§');
     }
 
     if ('suppressed' === row[percentageColumn]) {
+      symbols.push('*');
+    }
+
+    if ('US-KY' === row[keyIndex['geo']] || 'US-OR' === row[keyIndex['geo']]) {
       symbols.push('**');
     }
 
-    if ('US-KY' === row[keyIndex['geo']]) {
-      symbols.push('§§');
+    if ('US-ND' === row[keyIndex['geo']] || 'US-TX' === row[keyIndex['geo']] || 'US-WY' === row[keyIndex['geo']]) {
+      symbols.push('¶');
     }
 
     return (
@@ -105,9 +109,21 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
       <table id="main-data-table">
         <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected All Drug Overdose, {toMonth} {toYear} compared to {fromMonth} {fromYear}, by OD2A-funded State</caption>
         <tr style={{backgroundColor: drugColor}}>
-          <th scope="col" onClick={() => sortTable('jurisdiction')}>State</th>
-          <th scope="col" onClick={() => sortTable('percent')}>Percentage Change</th>
-          <th scope="col" onClick={() => sortTable('significance')}>Significance</th>
+          <th scope="col" onClick={() => sortTable('jurisdiction')}>
+            <button>
+              State
+            </button>
+          </th>
+          <th scope="col" onClick={() => sortTable('percent')}>
+            <button>
+              <span className="hide-on-desktop">%</span> <span className="hide-on-mobile">Percentage</span> Change
+            </button>
+          </th>
+          <th scope="col" onClick={() => sortTable('significance')}>
+            <button>
+              Significance
+            </button>
+          </th>
         </tr>
         <tr>
           <td>Overall</td>

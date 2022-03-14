@@ -48,7 +48,7 @@ const UsaMap = () => {
       if ('US-ND' === geo.properties.iso) {
         //debugger;
       }
-      
+
       let styles = {
         fill: '#E6E6E6',
         cursor: 'default'
@@ -81,15 +81,15 @@ const UsaMap = () => {
           cursor: 'pointer',
           '&:hover': {
             fontWeight: 600,
-            stroke: 'red'
           },
           '&:active': {
             fill: legendColors[2],
           },
         };
 
-        if(selected && selected !== geoKey) styles.opacity = 0.4 
+        if(selected && selected !== geoKey) styles.opacity = 0.9
         if(selected && selected === geoKey) styles.fill = legendColors[0]
+        if(selected && selected === geoKey) styles.stroke = '#fff'
 
 
         const setClickAction = () => {
@@ -99,22 +99,25 @@ const UsaMap = () => {
         }
 
         return (
-          <g
-            tabIndex={-1}
-            key={key}
-            className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
-            css={styles}
-            onClick={() => setClickAction(geoKey) }
-            data-tip={tooltip}
-          >
-            <path
-              className='single-geo'
-              stroke={'#333'}
-              strokeWidth={(selected && selected === geoKey) ? 2 : 1}   
-              d={path}
-            />
-            {geoLabel(geo, legendColors[0], projection)}
-          </g>
+            <a xlinkHref={ ( geoData[1] === 'unfunded' ) ? '#!' : '#stateInfo' } role='button' aria-pressed="false">
+              <g
+                id={selected === geoKey ? 'selected_state' : key }
+                tabIndex={-1}
+                key={key}
+                className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
+                css={styles}
+                onClick={() => setClickAction(geoKey) }
+                data-tip={tooltip}
+              >
+                <path
+                  className='single-geo'
+                  stroke={'#333'}
+                  strokeWidth={(selected && selected === geoKey) ? 6 : 1}
+                  d={path}
+                />
+                {geoLabel(geo, legendColors[0], projection)}
+              </g>
+            </a>
         )
       }
 
@@ -147,9 +150,10 @@ const UsaMap = () => {
             className="tooltip"
           />
       <svg viewBox="0 0 880 500" aria-describedby="main-data-table">
-        <Mercator data={unitedStatesHex} scale={650} translate={[1600, 775]}>
+        <Mercator data={unitedStatesHex} scale={705} translate={[1705, 825]}>
           {({ features, projection }) => constructGeoJsx(features, projection)}
         </Mercator>
+        <use id="selected_state_clone" xlinkHref="#selected_state" />
       </svg>
     </>
   )

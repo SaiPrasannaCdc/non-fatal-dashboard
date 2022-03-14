@@ -64,7 +64,7 @@ function BarChartVertical({
   const getYValue = (d) => Number(d ? d[percentColumn] : 0);
 
   const ticksFromRange = () => {
-    const intervalWidth = Math.round((range[0] - range[1]) / 50) * 10;
+    const intervalWidth = Math.max(1, Math.ceil((range[0] - range[1]) / 50) * 10);
 
     let ticks = [];
 
