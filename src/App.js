@@ -1159,7 +1159,7 @@ export default function App({ dataUrl }) {
               </div>
               <div>
                 <label htmlFor="jurisdiction-select">Select a State: </label>
-                <select id="jurisdiction-select" value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+                <select id="jurisdiction-select" value={selected || ''} onChange={(e) => { setStateSelected(e.target.value) }}>
                   <option value="">United States</option>
                   {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
                 </select>
@@ -1308,7 +1308,7 @@ export default function App({ dataUrl }) {
                     // fill={fill(d[significanceColumn])}
                     stroke="#999"
 
-                    style={{ 'margin-left': '2px'}}
+                    style={{ 'marginLeft': '2px'}}
                 >
                   <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
                 </svg>

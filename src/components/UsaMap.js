@@ -99,11 +99,10 @@ const UsaMap = () => {
         }
 
         return (
-            <a xlinkHref={ ( geoData[1] === 'unfunded' ) ? '#!' : '#stateInfo' } role='button' aria-pressed="false">
+            <a key={key} xlinkHref={ ( geoData[1] === 'unfunded' ) ? '#!' : '#stateInfo' } role='button' aria-pressed="false">
               <g
                 id={selected === geoKey ? 'selected_state' : key }
                 tabIndex={-1}
-                key={key}
                 className={selected === geoKey ? 'selected geo-group' : 'geo-group'}
                 css={styles}
                 onClick={() => setClickAction(geoKey) }
