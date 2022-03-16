@@ -1223,7 +1223,7 @@ export default function App({ dataUrl }) {
       </header>
       <div className="callouts">
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{usPercent}%</span>
+          <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{isNaN(usPercent) ? 'N/A' : `${usPercent}%`}</span>
           <div>
 
             <span className='data-bite-title' style={{ color: drugColor }}>
