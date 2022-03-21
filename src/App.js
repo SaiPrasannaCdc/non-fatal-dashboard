@@ -809,29 +809,12 @@ export default function App({ dataUrl }) {
   const StateInfo = () => {
 
     return (
-      <section className="sub-drawer dumbbell">
-        <div>
-          <h2 className='h3' style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
-          <div>
-            Compare United States against:
-            <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
-              <option value="">Select State</option>
-              {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
-
-            </select>
-          </div>
+      <div className="bar-chart-container">
+        <div className="bar-chart">
+          <span className='chart-title'>{supportedStates[selected][0]}</span>
+          <BarChartVertical width={600} height={350} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
         </div>
-        <div className={'bar-chart-container'}>
-          <div className="bar-chart">
-            <span className='chart-title'>{supportedStates[selected][0]}</span>
-            <BarChartVertical width={600} height={350} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
-          </div>
-          <div className="bar-chart">
-            <span className='chart-title'>US</span>
-            <BarChartVertical width={600} height={350} data={runtimePastMonths} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
-          </div>
-        </div>
-      </section>
+      </div>
     )
   }
 
@@ -896,7 +879,7 @@ export default function App({ dataUrl }) {
         // tip += " - ";
 
     if ( ( data - 1 ) >= 0 ) { // make sure we have a previous month to compare
-      tip += monthTimeframes[data - 1]['label'].substring(0,3) + '. ' + monthTimeframes[data]['year'];
+      tip += monthTimeframes[data - 1]['label'].substring(0,3) + '. ' + monthTimeframes[data - 1]['year'];
     } else {
       const selectedMonth = monthTimeframes[data]['month'];
 
@@ -976,9 +959,14 @@ export default function App({ dataUrl }) {
       )
     } else {
       selectedPercentage = Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]);
+      if(isNaN(selectedPercentage)){
+        selectedPercentage = 'N/A';
+      } else {
+        selectedPercentage += '%';
+      }
       return (
         <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-          <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}%</span>
+          <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change<sup>†</sup>  in {getStateName(selected)}</span>
             <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
@@ -1019,7 +1007,7 @@ export default function App({ dataUrl }) {
     return ret;
   }
 
-  let footnote1 = ["§", "The state/territory does not share data from syndromic surveillance systems with DOSE." ];
+  let footnote1 = ["§", "The state does not share data from syndromic surveillance systems with DOSE." ];
   // let footnote2 = ["¶", "The funded state did not provide CDC enough months of data to calculate all percent change cells." ];
   let footnote3 = ["¶", "State does not participate in OD2A DOSE ED data sharing." ];
   let footnote4 = ["**", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
@@ -1159,7 +1147,7 @@ export default function App({ dataUrl }) {
               </div>
               <div>
                 <label htmlFor="jurisdiction-select">Select a State: </label>
-                <select id="jurisdiction-select" value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+                <select id="jurisdiction-select" value={selected || ''} onChange={(e) => { setStateSelected(e.target.value) }}>
                   <option value="">United States</option>
                   {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
                 </select>
@@ -1235,7 +1223,7 @@ export default function App({ dataUrl }) {
       </header>
       <div className="callouts">
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{usPercent}%</span>
+          <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{isNaN(usPercent) ? 'N/A' : `${usPercent}%`}</span>
           <div>
 
             <span className='data-bite-title' style={{ color: drugColor }}>
@@ -1308,7 +1296,7 @@ export default function App({ dataUrl }) {
                     // fill={fill(d[significanceColumn])}
                     stroke="#999"
 
-                    style={{ 'margin-left': '2px'}}
+                    style={{ 'marginLeft': '2px'}}
                 >
                   <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
                 </svg>
@@ -1331,12 +1319,30 @@ export default function App({ dataUrl }) {
           </div>
         </div>
 
-        {selected &&
-            <div>
-              <a id="stateInfo">state info</a>
+        <section className="sub-drawer dumbbell">
+          <a id="stateInfo">state info</a>
+          <h2 className='h3' style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
+          {selected && (
+            <>
+              <div>
+                Compare United States against:
+                <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
+                  <option value="">Select State</option>
+                  {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
+
+                </select>
+              </div>
               <StateInfo />
+            </>
+          )}
+          <div className="bar-chart-container">
+            <div className="bar-chart">
+              <span className='chart-title'>US</span>
+              <BarChartVertical width={600} height={350} data={runtimePastMonths} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
             </div>
-        }
+          </div>
+        </section>
+
         {GenderAgeSection()}
 
         <div className="footnotes comparison-section">

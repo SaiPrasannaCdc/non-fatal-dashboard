@@ -87,7 +87,6 @@ function BarChartVertical({
     }
     ticks.unshift(value);
 
-    console.log(ticks, range);
     return ticks;
   };
 
