@@ -343,28 +343,33 @@ export default function App({ dataUrl }) {
             const endYear = row[keyIndex['endYear']];
 
             const yearMonthIndex1 = startYear + '|' + startMonth;
-            if (!addedMonthTimeframes.includes(yearMonthIndex1)) {
-              tempMonthTimeframes.push(
-                {
-                  'key': yearMonthIndex1,
-                  'label': months[startMonth - 1] + ' ' + startYear,
-                  'year': Number.parseInt(startYear),
-                  'month': Number.parseInt(startMonth)
-                }
-              );
+            if(startYear && startMonth){
+              if (!addedMonthTimeframes.includes(yearMonthIndex1)) {
+                tempMonthTimeframes.push(
+                  {
+                    'key': yearMonthIndex1,
+                    'label': months[startMonth - 1] + ' ' + startYear,
+                    'year': Number.parseInt(startYear),
+                    'month': Number.parseInt(startMonth)
+                  }
+                );
+              }
+              addedMonthTimeframes.push(yearMonthIndex1);
             }
-            addedMonthTimeframes.push(yearMonthIndex1);
+
             const yearMonthIndex2 = endYear + '|' + endMonth;
-            if (!addedMonthTimeframes.includes(yearMonthIndex2)) {
-              tempMonthTimeframes.push(
-                {
-                  'key': yearMonthIndex2,
-                  'label': months[endMonth - 1] + ' ' + endYear,
-                  'year': Number.parseInt(endYear),
-                  'month': Number.parseInt(endMonth)
-                }
-              );
-              addedMonthTimeframes.push(yearMonthIndex2);
+            if(endYear && endMonth){
+              if (!addedMonthTimeframes.includes(yearMonthIndex2)) {
+                tempMonthTimeframes.push(
+                  {
+                    'key': yearMonthIndex2,
+                    'label': months[endMonth - 1] + ' ' + endYear,
+                    'year': Number.parseInt(endYear),
+                    'month': Number.parseInt(endMonth)
+                  }
+                );
+                addedMonthTimeframes.push(yearMonthIndex2);
+              }
             }
           }
         });
@@ -576,7 +581,6 @@ export default function App({ dataUrl }) {
     let endYear;
 
     if ('year' === selectedTimeframe) {
-
       startMonth = allTimeframes[sliderPointYear]['month'];
       startYear = allTimeframes[sliderPointYear]['year'];
       endMonth = allTimeframes[sliderPointYear + 12]['month'];

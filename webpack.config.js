@@ -34,7 +34,7 @@ module.exports = (env, { mode }) => ({
   stats: 'minimal',
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: 'bundle.js'
+    filename: 'bundle-2.js'
   },
   devServer: {
     open: true,
