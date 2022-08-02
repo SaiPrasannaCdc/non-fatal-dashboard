@@ -1360,7 +1360,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} />
+              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} drugName={drugScreenOptions[currentDrug]['titleAll']} />
               <small>
                 <MapFootnotes />
                 <p>{ footnote1[0] } { footnote1[1] }</p>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionColumn,percentageColumn,keyIndex,supportedStates,drugColor,Hexagon,applyLegendToRow}) {
+function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionColumn,percentageColumn,keyIndex,supportedStates,drugColor,Hexagon,applyLegendToRow,drugName}) {
 
   const [sortBy, setSortBy] = useState('state');
   const [sortAscending, setSortAscending] = useState(false);
@@ -107,7 +107,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
   return (
     <>
       <table id="main-data-table">
-        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected All Drug Overdose, {toMonth} {toYear} compared to {fromMonth} {fromYear}, by OD2A-funded State</caption>
+        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in Emergency Department Visits for Suspected {drugName} Overdose, {toMonth} {toYear} compared to {fromMonth} {fromYear}, by OD2A-funded State</caption>
         <tr style={{backgroundColor: drugColor}}>
           <th scope="col" onClick={() => sortTable('jurisdiction')}>
             <button>
