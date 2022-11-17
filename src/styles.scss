@@ -13,6 +13,118 @@ line { stroke: #ccc; stroke-width: 1; }
 #checkerboard { fill: #ccc; }
 
 #non-fatal-container {
+    /*******************
+     Reset
+     *******************/
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    ul,
+    ol,
+    li,
+    p,
+    pre,
+    blockquote,
+    figure,
+    hr {
+        margin: 0;
+        padding: 0;
+    }
+
+    /*******************
+     Lists
+     *******************/
+    ul {
+        list-style: none;
+    }
+
+    /*******************
+     Forms and buttons
+     *******************/
+    input,
+    textarea,
+    select,
+    button {
+        color: inherit;
+        font: inherit;
+        letter-spacing: inherit;
+    }
+
+    /* I usually expand input and textarea to full-width */
+    input[type="text"],
+    textarea {
+        width: 100%;
+    }
+
+    /* More friendly border */
+    input,
+    textarea,
+    button {
+        border: 1px solid gray;
+    }
+
+    /* Some defaults for one-liner buttons */
+    button {
+        padding: 0.75em 1em;
+        border-radius: 0;
+        line-height: 1;
+        background-color: transparent;
+    }
+
+    button * {
+        pointer-events: none;
+    }
+
+    /***********************************
+     Easy responsive for media elements
+     ***********************************/
+    img,
+    svg,
+    iframe,
+    video,
+    object,
+    embed {
+        display: block;
+        max-width: 100%;
+    }
+
+    /*******************
+     Useful table styles
+     *******************/
+    table {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    /*******************
+     The hidden attribute
+     *******************/
+    [hidden] {
+        display: none !important;
+    }
+
+    /*******************
+     Noscript
+     *******************/
+    noscript {
+        display: block;
+        margin-bottom: 1em;
+        margin-top: 1em;
+    }
+
+    /*******************
+     Tabindex
+     *******************/
+    [tabindex="-1"] {
+        outline: none !important;
+    }
+
+    line { stroke: #ccc; stroke-width: 1; }
+    #checkerboard { fill: #ccc; }
+
     max-width: 100%;
     padding: $gbl-padding $gbl-padding 65px;
     margin: 0;
@@ -31,6 +143,10 @@ line { stroke: #ccc; stroke-width: 1; }
         position: relative;
         top: -28px;
         visibility: hidden;
+    }
+
+    #stateInfo {
+        top: -180px;
     }
 
     #suppressed {
@@ -93,6 +209,12 @@ line { stroke: #ccc; stroke-width: 1; }
         a {
             text-decoration: none;
             pointer-events: auto;
+        }
+
+        @include r($lg) {
+            .map-inner-container {
+                margin-right: 200px;
+            }
         }
     }
 
@@ -221,6 +343,10 @@ line { stroke: #ccc; stroke-width: 1; }
         }
     }
 
+    header h2 {
+        color: rgb(255,255,255);
+    }
+
     .filter-wrapper {
         position: fixed;
         bottom: -1000px;
@@ -298,10 +424,10 @@ line { stroke: #ccc; stroke-width: 1; }
 
         .timeline {
             height: 80px;
-            padding-top: 30px;
+            padding-top: 40px;
 
             .rc-slider {
-                width: 70%;
+                width: 75%;
                 margin: 0 auto;
 
                 @include r($lg) {
@@ -319,6 +445,10 @@ line { stroke: #ccc; stroke-width: 1; }
         }
 
         .rc-slider {
+
+            .rc-slider-tooltip-placement-top {
+                top: -58px !important;
+            }
 
             .rc-slider-tooltip-inner {
                 padding: 6px 7px;
@@ -338,6 +468,13 @@ line { stroke: #ccc; stroke-width: 1; }
                 .rc-slider-mark-text {
                     max-width: 50px;
                     color: $black;
+
+                    top: -35px;
+
+                    &:first-child,
+                    &:last-child {
+                        top: 0;
+                    }
                 }
             }
 
@@ -855,9 +992,13 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .sub-drawer {
-        margin: 2.5em $sidebarMargin 0 0;
+        margin: 2.5em 0 0 0;
         border-radius: .25rem;
         position: relative;
+
+        @include r($lg) {
+            margin: 2.5em $sidebarMargin 0 0;
+        }
 
         .bar-chart {
             margin-top: 40px;
@@ -880,6 +1021,10 @@ line { stroke: #ccc; stroke-width: 1; }
                 position: relative;
                 margin: auto;
                 left: -3vw;
+
+                > rect {
+                    fill-opacity: 0;
+                }
             }
 
             .visx-axis-left > g:first-child {
@@ -948,7 +1093,10 @@ line { stroke: #ccc; stroke-width: 1; }
 
         h2,
         .h2 {
-            display: block;
+            display: grid;
+            align-items: center;
+            grid-template-columns: 1fr 20px;
+            gap: 10px;
             width: 100%;
             margin: 0;
             color: rgb(255, 255, 255);
@@ -993,6 +1141,11 @@ line { stroke: #ccc; stroke-width: 1; }
             #main-data-table {
                 border-collapse: collapse;
                 margin-bottom: $gbl-padding;
+                font-size: .75em;
+
+                @include r($sm) {
+                    font-size: .85em;
+                }
 
                 caption {
                     color: black;
