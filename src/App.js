@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import "babel-polyfill";
 import chroma from 'chroma-js';
 import Papa from 'papaparse';
-import UsaMap from './components/UsaMap';
-import BarChartVertical from './components/BarChartVertical';
-import Datatable from './components/Datatable';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
 import { Base64 } from 'js-base64';
+
+import BarbellChart from './components/BarbellChart';
+import LineChart from './components/LineChart';
+import SexAgeCharts from './components/SexAgeCharts';
+import UsaMap from './components/UsaMap';
+import Datatable from './components/Datatable';
 
 import Caret from './assets/caret-down.svg';
 import Context from './context';
@@ -814,10 +817,6 @@ export default function App({ dataUrl }) {
 
     return (
       <div className="bar-chart-container">
-        <div className="bar-chart">
-          <span className='chart-title'>{supportedStates[selected][0]}</span>
-          <BarChartVertical width={600} height={350} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
-        </div>
       </div>
     )
   }
@@ -834,43 +833,7 @@ export default function App({ dataUrl }) {
               <span>Sex Comparison</span><div className="toggle-container"><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
             </span>
 
-            {demographicsToggle === 'sex' && <div className="sex-chart">
-              <div className="chart-grid">
-                <div>
-                  <span className='chart-title'>Male</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['M']} range={[runtimeRanges.gender.max, runtimeRanges.gender.min]} chartType={'Male'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Female</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['F']} range={[runtimeRanges.gender.max, runtimeRanges.gender.min]} chartType={'Female'} />
-                </div>
-              </div>
-            </div>}
-
-            {demographicsToggle === 'age' && <div className="age-chart">
-              <div className="chart-grid">
-                <div>
-                  <span className='chart-title'>Ages 0 - 14</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['0-14']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 0-14'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 15 - 24</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['15-24']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 15-24'}/>
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 25 - 34</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['25-34']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 25-34'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 35 - 54</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['35-54']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 35-54'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 55+</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['55+']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 55+'} />
-                </div>
-              </div>
-            </div>}
+            
           </div>
         </section>
       </>
@@ -1136,9 +1099,8 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
+    <Context.Provider value={{  }}>
       <div className="filters-container">
-
         <div className={ `filter-wrapper ${ showTimeline ? 'show-timeline' : '' }`}>
           <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
           <div className="filters">
@@ -1246,12 +1208,6 @@ export default function App({ dataUrl }) {
           </div>
         </div>
       </div>
-      {/*<div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{ mapFromLabel ? mapFromLabel : fromLabel }</strong></div>*/}
-      {/*<div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>*/}
-      {/*  {Object.keys(drugScreenOptions).map((key) => {*/}
-      {/*    return <button key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</button>*/}
-      {/*  })}*/}
-      {/*</div>*/}
 
       <div className="toggle-area-wrap">
         <div className="toggle-area">
@@ -1270,90 +1226,11 @@ export default function App({ dataUrl }) {
         <svg width="14px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style={{'margin':'auto'}}><path fill="#fff" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
       </div>
       <div className='sticky-container'>
-        <aside className={
-          `${ showLegend ? 'show-legend' : '' }` +
-          `${ showTimeline ? 'show-timeline' : '' }` +
-          `${ showShare ? 'show-share' : '' }`
-        }>
-          <div className="legend">
-            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
-            <ul className="legend">
-              {runtimeLegend.map(({color, value}) => <li key={color}>
-
-                <svg viewBox="-5 -5 110 110" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="50" cy="50" r="50" fill={color} stroke='#555' strokeWidth={4} />
-                </svg>
-                {value}
-                </li>)}
-
-              <li>
-                <svg
-                    // y={-15}
-                    // x={barX - 10}
-                    aria-hidden="true"
-                    data-prefix="fas"
-                    data-icon="asterisk"
-                    className="svg-inline--fa fa-asterisk fa-w-16"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 18 18"
-                    // width="30"
-                    // fill={fill(d[significanceColumn])}
-                    stroke="#999"
-
-                    style={{ 'marginLeft': '2px'}}
-                >
-                  <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
-                </svg>
-                <a href="#suppressed">Suppressed Data</a>
-              </li>
-            </ul>
-
-            <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
-            <p><a href="#dataDownload">Data Considerations and Data Download</a></p>
-          </div>
-        </aside>
-
-        <div className="map-container">
-          <div className="map-inner-container">
-            <div className="now-viewing">
-              <h2 className='h3'>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
-              {!selected && <div><em>Click on a state to see more.</em></div>}
-              {selected && <div>Now viewing {getStateName(selected)} <button className="btn btn-reset" onClick={resetFilters}>Reset</button></div>}
-            </div>
-            <UsaMap/>
-          </div>
-        </div>
-
-        <section className="sub-drawer dumbbell">
-          <a id="stateInfo">state info</a>
-          <h2 className='h3' style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
-          {selected && (
-            <>
-              <div>
-                Compare United States against:
-                <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
-                  <option value="">Select State</option>
-                  {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
-
-                </select>
-              </div>
-              <StateInfo />
-            </>
-          )}
-          <div className="bar-chart-container">
-            <div className="bar-chart">
-              <span className='chart-title'>US</span>
-              <BarChartVertical width={600} height={350} data={runtimePastMonths} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
-            </div>
-          </div>
-        </section>
-
-        {GenderAgeSection()}
-
-        <div className="footnotes comparison-section">
-          <a id="suppressed">suppressed data note</a>
-          <MapFootnotes />
-        </div>
+        <BarbellChart />
+        <LineChart />
+        <SexAgeCharts />
+        <UsaMap />
+        <UsaMap />
       </div>
       </div>
       <div className='data-tables'>

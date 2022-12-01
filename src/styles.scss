@@ -348,21 +348,6 @@ line { stroke: #ccc; stroke-width: 1; }
     }
 
     .filter-wrapper {
-        position: fixed;
-        bottom: -1000px;
-        z-index: 12;
-        left: 1.5%;
-        width: 97%;
-        transition: bottom .4s ease-in-out;
-
-        @include r($lg) {
-            position: sticky;
-            top: 0;
-            left: inherit;
-            bottom: inherit;
-            z-index: 20;
-            width: 100%;
-        }
 
         .legend-title {
             @include r($lg) {
