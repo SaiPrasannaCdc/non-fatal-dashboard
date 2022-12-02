@@ -63,10 +63,28 @@ const drugScreenOptions = {
 const supportedMonths = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'all'];
 const supportedStates = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
 
-const createNewDrugObject = () => {
+const createNewDrugObject = (rate = true) => {
   let obj = {};
-  Object.keys(drugScreenOptions).forEach(drug => obj[drugScreenOptions[drug].rateColumn] = {});
+  Object.keys(drugScreenOptions).forEach(drug => obj[rate ? drugScreenOptions[drug].rateColumn : drug] = {});
   return obj;
+};
+
+const getColumnsInfo = (sheet) => {
+  let columnHeaders = {};
+  let columns = 0;
+  for (let key in sheet) {
+    if(key.charAt(0) !== '!'){
+      let colKey = key.replace(/[0-9]*/g, '');
+      let rowNum = parseInt(key.replace(/[^0-9]*/g, ''));
+      
+      if(rowNum > columns) columns = rowNum;
+
+      if (rowNum === 1) {
+        columnHeaders[sheet[key].v] = colKey;
+      }
+    }
+  }
+  return {columnHeaders, columns};
 };
 
 export default function App({ dataUrl }) {
@@ -76,7 +94,7 @@ export default function App({ dataUrl }) {
   const [ currentDrug, setCurrentDrug ] = useState('alldrug');
   const [ currentState, setCurrentState ] = useState('US');
   const [ currentMonth, setCurrentMonth ] = useState('all');
-  const [ currentYear, setCurrentYear ] = useState('all');
+  const [ currentYear, setCurrentYear ] = useState('2018');
 
   const drugColor = drugScreenOptions[currentDrug].color;
 
@@ -85,22 +103,10 @@ export default function App({ dataUrl }) {
     const wb = XLSX.read(binaryData);
 
     const stateSheet = wb.Sheets.state_rate_all;
+    let {columnHeaders, columns} = getColumnsInfo(stateSheet);
+
     let stateData = {};
     let yearData = {};
-    let columnHeaders = {};
-    let columns = 0;
-    for (let key in stateSheet) {
-      if(key.charAt(0) !== '!'){
-        let colKey = key.replace(/[0-9]*/g, '');
-        let rowNum = parseInt(key.replace(/[^0-9]*/g, ''));
-        
-        if(rowNum > columns) columns = rowNum;
-
-        if (rowNum === 1) {
-          columnHeaders[stateSheet[key].v] = colKey;
-        }
-      }
-    }
     for(let i = 2; i < columns; i++) {
       //Populate state data
       if(!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
@@ -141,7 +147,34 @@ export default function App({ dataUrl }) {
       datasetNode.push(yearDatum)
     }
 
-    setData({state: stateData, year: yearData});
+    const sexSheet = wb.Sheets.us_count_all;
+    let columnInfo = getColumnsInfo(wb.Sheets.us_count_all);
+    columnHeaders = columnInfo.columnHeaders;
+    columns = columnInfo.columns;
+
+    let sexData = {};
+    for(let i = 2; i < columns; i++) {
+      //Populate state data
+      if(!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
+        sexData[sexSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject(false);
+      } 
+      Object.keys(drugScreenOptions).forEach(drug => {
+        let datasetNode = sexData[sexSheet[columnHeaders['dataset'] + i].v];
+        if(!datasetNode[drug][sexSheet[columnHeaders['year'] + i].v]){
+          datasetNode[drug][sexSheet[columnHeaders['year'] + i].v] = {};
+        }
+        datasetNode = datasetNode[drug][sexSheet[columnHeaders['year'] + i].v];
+        if(!datasetNode[sexSheet[columnHeaders['month'] + i].v]){
+          datasetNode[sexSheet[columnHeaders['month'] + i].v] = [];
+        }
+        datasetNode = datasetNode[sexSheet[columnHeaders['month'] + i].v];
+        if(sexSheet[columnHeaders['sex'] + i].v !== 'Missing' && sexSheet[columnHeaders['age'] + i].v !== 'Missing'){
+          datasetNode.push({sex: sexSheet[columnHeaders['sex'] + i].v, age: sexSheet[columnHeaders['age'] + i].v, value: parseInt(sexSheet[columnHeaders[drug] + i].v)})
+        }
+      });
+    }
+
+    setData({state: stateData, year: yearData, sex: sexData});
   }, []);
 
   const countyMaps = useMemo(() => 
@@ -160,7 +193,7 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{data, supportedStates, drugScreenOptions, currentDataSource, currentDrug, currentState, currentMonth}}>
+    <Context.Provider value={{data, supportedStates, drugScreenOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear}}>
       <div className="filters-container">
         <div>
         {/*<div className={`filter-wrapper ${showTimeline ? 'show-timeline' : ''}`}>*/}

@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useContext }  from 'react';
 import { Bar } from '@visx/shape';
 import { Text } from '@visx/text';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom } from '@visx/axis';
 
+import Context from '../context';
+
 function SexAgeCharts() {
+
+  const { data, drugScreenOptions, currentDataSource, currentDrug, currentYear, currentMonth } = useContext(Context);
+
+  const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
 
   const height = 300;
   const width = 500;
@@ -21,26 +27,25 @@ function SexAgeCharts() {
 
   const xKey = 'value';
   const yKey = 'age';
-  const data1 = [{ age: '< 15', value: 2 }, { age: '15-24', value: 12 }, { age: '25-34', value: 3 }, { age: '35-44', value: 22 }, { age: '45-54', value: 22 }, { age: '55-64', value: 22 }, { age: '65+', value: 22 }];
-  const data2 = [{ age: '< 15', value: 2 }, { age: '15-24', value: 12 }, { age: '25-34', value: 3 }, { age: '35-44', value: 22 }, { age: '45-54', value: 22 }, { age: '55-64', value: 22 }, { age: '65+', value: 22 }];
   const x1Scale = scaleLinear({
     range: [xMaxHalf, 0],
-    domain: [0, Math.max(...data1.map(d => d[xKey]))]
+    domain: [0, Math.max(...filteredData.map(d => d[xKey]))]
   });
 
 
   const x2Scale = scaleLinear({
     range: [xMaxHalf, xMax],
-    domain: [0, Math.max(...data2.map(d => d[xKey]))]
+    domain: [0, Math.max(...filteredData.map(d => d[xKey]))]
   });
 
   const yScale = scaleBand({
     range: [0, yMax],
-    domain: data1.map(d => d[yKey]),
+    domain: filteredData.map(d => d[yKey]),
     padding: .2,
   });
 
-  const getBar = (d, isSecondSeries) => {
+  const getBar = (d) => {
+    const isSecondSeries = d.sex === 'F';
     const alignEnd = (isSecondSeries && x2Scale(d[xKey]) - xMaxHalf > 100) || (!isSecondSeries && x1Scale(d[xKey]) > (xMaxHalf - 100));
     return (
       <g key={d[yKey]}>
@@ -56,8 +61,7 @@ function SexAgeCharts() {
       <svg viewBox={`0 0 ${width} ${height}`}>
         <Group top={margin.top} left={margin.left}>
           <Group>
-            {data1.map((d) => getBar(d, false))}
-            {data2.map((d) => getBar(d, true))}
+            {filteredData.map((d) => getBar(d, false))}
           </Group>
           <Text x={-20} y={yMax / 2} style={{transform: 'rotate(-90deg)', 'transform-origin': `-20px ${yMax / 2}px`}} fontSize={11} textAnchor="middle">Age Group</Text>
           <AxisBottom
