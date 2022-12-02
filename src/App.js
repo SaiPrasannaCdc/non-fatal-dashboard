@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import "babel-polyfill";
 import chroma from 'chroma-js';
 import Papa from 'papaparse';
@@ -76,6 +76,7 @@ export default function App({ dataUrl }) {
   const [ currentDrug, setCurrentDrug ] = useState('alldrug');
   const [ currentState, setCurrentState ] = useState('US');
   const [ currentMonth, setCurrentMonth ] = useState('all');
+  const [ currentYear, setCurrentYear ] = useState('all');
 
   const drugColor = drugScreenOptions[currentDrug].color;
 
@@ -142,6 +143,13 @@ export default function App({ dataUrl }) {
 
     setData({state: stateData, year: yearData});
   }, []);
+
+  const countyMaps = useMemo(() => 
+    <>
+      <UsaMap />
+      <UsaMap />
+    </>
+  , [currentYear])
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -294,8 +302,7 @@ export default function App({ dataUrl }) {
         <BarbellChart />
         <LineChart />
         <SexAgeCharts />
-        <UsaMap />
-        <UsaMap />
+        {countyMaps}
       </div>
       {/*<div className='data-tables'>
         <div className="datatable-container">
