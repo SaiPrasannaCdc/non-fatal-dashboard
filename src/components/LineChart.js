@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Circle, Line } from '@visx/shape';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { LinePath } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
+import Context from '../context';
+
 function LineChart() {
+
+  const { data, drugScreenOptions, currentDataSource, currentState, currentMonth } = useContext(Context);
+
+  const filteredData = data.year[currentDataSource][currentState][currentMonth];
+
+  const years = filteredData.map(d => parseInt(d.year));
 
   const height = 300;
   const width = 500;
@@ -18,18 +26,16 @@ function LineChart() {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
-  const series = ['cocaine', 'heroin'];
-  const seriesColors = {'cocaine': 'blue', 'heroin': 'red'};
+  const series = Object.keys(drugScreenOptions);
   const xKey = 'year';
-  const data = [{ year: 1990, cocaine: 2, heroin: 6 }, { year: 1991, cocaine: 12, heroin: 3 }, { year: 1992, cocaine: 3, heroin: 18 }, { year: 1993, cocaine: 22, heroin: 62 }];
 
   const xScale = scaleLinear({
-    domain: [Math.min(...data.map(d => d[xKey])), Math.max(...data.map(d => d[xKey]))],
+    domain: [Math.min(...years), Math.max(...years)],
     range: [0, xMax]
   });
 
   const yScale = scaleLinear({
-    domain: [0, Math.max(...data.map(d => Math.max(...series.map(drug => d[drug]))))],
+    domain: [0, Math.max(...filteredData.map(d => Math.max(...Object.keys(drugScreenOptions).map(drug => parseFloat(d[drug])))))],
     range: [yMax, 0],
   });
 
@@ -40,13 +46,13 @@ function LineChart() {
           {series.map(drug => 
             <Group key={`line-series-${drug}`}>
               <LinePath
-                data={data}
+                data={filteredData}
                 x={(d) => xScale(d[xKey]) ?? 0}
                 y={(d) => yScale(d[drug]) ?? 0}
-                stroke={seriesColors[drug] || '#333'}
+                stroke={drugScreenOptions[drug].color || '#333'}
                 strokeWidth={1}
               />
-              <text x={xMax + 5} y={yScale(data[data.length - 1][drug])} alignmentBaseline="middle" fontSize={11} fill={seriesColors[drug] || '#333'}>{drug}</text>
+              <text x={xMax + 5} y={yScale(filteredData[filteredData.length - 1][drug])} alignmentBaseline="middle" fontSize={11} fill={drugScreenOptions[drug].color || '#333'}>{drugScreenOptions[drug].titleAll}</text>
             </Group>
           )}
         </Group>
@@ -64,7 +70,7 @@ function LineChart() {
         <AxisBottom
           top={yMax}
           scale={xScale}
-          tickValues={data.map(d => d[xKey])}
+          tickValues={filteredData.map(d => d[xKey])}
           tickFormat={value => value.toFixed(0)}
           label={'Year'}
         />
