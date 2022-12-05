@@ -101,6 +101,11 @@ export default function App({ dataUrl }) {
   const [ currentState, setCurrentState ] = useState('US');
   const [ currentMonth, setCurrentMonth ] = useState('all');
   const [ currentYear, setCurrentYear ] = useState('2018');
+  const [ showDatatable, setDatatable ] = useState(false);
+  const [ showConsiderations, setConsiderations ] = useState(false);
+
+  const toggleDatatable = () => setDatatable(!showDatatable);
+  const toggleConsiderations = () => setConsiderations(!showConsiderations);
 
   const drugColor = drugScreenOptions[currentDrug].color;
 
@@ -197,7 +202,12 @@ export default function App({ dataUrl }) {
         }
         datasetNode = datasetNode[sexSheet[columnHeaders['month'] + i].v];
         if(sexSheet[columnHeaders['sex'] + i].v !== 'Missing' && sexSheet[columnHeaders['age'] + i].v !== 'Missing'){
-          datasetNode.push({sex: sexSheet[columnHeaders['sex'] + i].v, age: sexSheet[columnHeaders['age'] + i].v, value: parseInt(sexSheet[columnHeaders[drug] + i].v)})
+          let datasetDatum = datasetNode.find(datum => datum.age === sexSheet[columnHeaders['age'] + i].v);
+          if(!datasetDatum){
+            datasetDatum = {age: sexSheet[columnHeaders['age'] + i].v}
+            datasetNode.push(datasetDatum);
+          }
+          datasetDatum[sexSheet[columnHeaders['sex'] + i].v] = parseInt(sexSheet[columnHeaders[drug] + i].v);
         }
       });
     }
@@ -221,16 +231,22 @@ export default function App({ dataUrl }) {
       };
     }
 
-    console.log({state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates})
     setData({state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates});
   }, []);
 
-  const countyMaps = useMemo(() => 
+  const countyMap = useMemo(() => 
     <>
       <UsaMap />
-      <UsaMap />
-    </>
-  , [currentYear])
+    </>,
+  [currentYear])
+
+  const charts = useMemo(() => 
+    <>
+      <BarbellChart />
+      <LineChart />
+      <SexAgeCharts />
+    </>,
+  [currentDataSource, currentDrug, currentState, currentMonth, currentYear])
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -370,43 +386,26 @@ export default function App({ dataUrl }) {
             </div>
           </div>
         </div>
-
-        {/*<div className="toggle-area-wrap">
-          <div className="toggle-area">
-            <div id="toggleLegend" className={`${showLegend ? 'open' : ''}`} onClick={toggleLegend}>
-              Show Legend <Caret />
-            </div>
-            <div id="toggleTimeline" className={`${showTimeline ? 'open' : ''}`} onClick={toggleTimeline}>
-              <span className="hide-on-mobile">Edit</span> Time Range <Caret />
-            </div>
-            <div id="toggleShare" className={`${showShare ? 'open' : ''}`} onClick={toggleShare}>
-              Share <Caret />
-            </div>
-          </div>
-        </div>
-        <div id="closeShare" onClick={toggleShare}>
-          <svg width="14px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style={{ 'margin': 'auto' }}><path fill="#fff" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z" /></svg>
-        </div>*/}
-        <BarbellChart />
-        <LineChart />
-        <SexAgeCharts />
-        {countyMaps}
+        {charts}
+        {countyMap}
       </div>
-      {/*<div className='data-tables'>
+      <div className='data-tables'>
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-            Trends by State, {timeline} - {drugScreenOptions[currentDrug]['titleAll']}
+            Trends by State, {drugScreenOptions[currentDrug]['titleAll']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
             {!showDatatable && <span>{String.fromCharCode(43)}</span>}
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} drugName={drugScreenOptions[currentDrug]['titleAll']} />
+              <Datatable />
               <small>
-                <MapFootnotes />
-                <p>{footnote1[0]} {footnote1[1]}</p>
-                <p>{footnote3[0]} {footnote3[1]}</p>
-                <p>{footnote4[0]} {footnote4[1]}</p>
+                <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
+                <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
+                <p>§ The state does not share data from syndromic surveillance systems with DOSE.</p>
+                <p>¶ The funded state did not provide CDC enough months of data to calculate all percent change cells.</p>
+                <p>¶ State does not participate in OD2A DOSE ED data sharing.</p>
+                <p>** Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes.</p>
               </small>
             </div>}
         </div>
@@ -430,10 +429,14 @@ export default function App({ dataUrl }) {
             </div>}
         </div>
       </div>
-      <a id="dataDownload" data={csvData}>data download</a>
-      <p>
-        <DownloadButton data={csvData} />
-      </p>*/}
+      <a
+        href={dataUrl}
+        aria-label="Download this data in a Excel file format."
+        className={`btn btn-download no-border`}
+        style={{'backgroundColor': drugColor}}
+      >
+        Download Data (XLSX)
+      </a>
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
     </Context.Provider>
   );

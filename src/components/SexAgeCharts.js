@@ -13,8 +13,6 @@ function SexAgeCharts() {
 
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
 
-  console.log(data.sex[currentDataSource][currentDrug][currentYear], currentMonth, filteredData);
-
   const height = 300;
   const width = 500;
   const legendWidth = 100;
@@ -27,17 +25,18 @@ function SexAgeCharts() {
   const xMaxHalf = xMax / 2;
   const yMax = height - margin.top - margin.bottom;
 
-  const xKey = 'value';
+  const x1Key = 'M';
+  const x2Key = 'F';
   const yKey = 'age';
   const x1Scale = scaleLinear({
     range: [xMaxHalf, 0],
-    domain: [0, Math.max(...filteredData.map(d => d[xKey]).filter(val => !isNaN(val)))]
+    domain: [0, Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)))]
   });
 
 
   const x2Scale = scaleLinear({
     range: [xMaxHalf, xMax],
-    domain: [0, Math.max(...filteredData.map(d => d[xKey]).filter(val => !isNaN(val)))]
+    domain: [0, Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)))]
   });
 
   const yScale = scaleBand({
@@ -47,12 +46,15 @@ function SexAgeCharts() {
   });
 
   const getBar = (d) => {
-    const isSecondSeries = d.sex === 'F';
-    const alignEnd = (isSecondSeries && x2Scale(d[xKey]) - xMaxHalf > 100) || (!isSecondSeries && x1Scale(d[xKey]) > (xMaxHalf - 100));
+    const alignEndFirst = x1Scale(d[x1Key]) > (xMaxHalf - 100);
+    const alignEndSecond = x2Scale(d[x2Key]) - xMaxHalf > 100;
     return (
       <g key={d[yKey]}>
-        <Bar x={isSecondSeries ? xMaxHalf : x1Scale(d[xKey])} y={yScale(d[yKey])} width={isSecondSeries ? x2Scale(d[xKey]) - xMaxHalf : xMaxHalf - x1Scale(d[xKey])} height={yScale.bandwidth()} fill={isSecondSeries ? 'blue' : 'lightblue'} />
-        <Text x={(isSecondSeries ? x2Scale(d[xKey]) : x1Scale(d[xKey])) + (alignEnd ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEnd ? 'end' : 'start'} fill={isSecondSeries && x2Scale(d[xKey]) - xMaxHalf > 100 ? 'white' : 'black'} fontSize={11}>{d[yKey]}</Text>
+        <Bar x={x1Scale(d[x1Key])} y={yScale(d[yKey])} width={xMaxHalf - x1Scale(d[x1Key])} height={yScale.bandwidth()} fill={'lightblue'} />
+        <Text x={(x1Scale(d[x1Key])) + (alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={11}>{d[yKey]}</Text>
+
+        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Scale(d[x2Key]) - xMaxHalf} height={yScale.bandwidth()} fill={'blue'} />
+        <Text x={(x2Scale(d[x2Key])) + (alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndSecond ? 'end' : 'start'} fill={x2Scale(d[x2Key]) - xMaxHalf > 100 ? 'white' : 'black'} fontSize={11}>{d[yKey]}</Text>
       </g>
     )
   }
