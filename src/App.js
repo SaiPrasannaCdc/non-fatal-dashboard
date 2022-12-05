@@ -61,6 +61,7 @@ const drugScreenOptions = {
 };
 
 const supportedMonths = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'all'];
+const supportedYears = ['2018', '2019', '2020', '2021'];
 const supportedStates = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
 
 const createNewDrugObject = (rate = true) => {
@@ -148,13 +149,13 @@ export default function App({ dataUrl }) {
     }
 
     const sexSheet = wb.Sheets.us_count_all;
-    let columnInfo = getColumnsInfo(wb.Sheets.us_count_all);
+    let columnInfo = getColumnsInfo(sexSheet);
     columnHeaders = columnInfo.columnHeaders;
     columns = columnInfo.columns;
 
+    //Populate sex data
     let sexData = {};
     for(let i = 2; i < columns; i++) {
-      //Populate state data
       if(!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
         sexData[sexSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject(false);
       } 
@@ -174,7 +175,28 @@ export default function App({ dataUrl }) {
       });
     }
 
-    setData({state: stateData, year: yearData, sex: sexData});
+    const countySheet = wb.Sheets.cnty_rates_all;
+    columnInfo = getColumnsInfo(countySheet);
+    columnHeaders = columnInfo.columnHeaders;
+    columns = columnInfo.columns;
+
+    //Populate sex data
+    let countyData = {};
+    for(let i = 2; i < columns; i++) {
+      if(!countyData[countySheet[columnHeaders['year'] + i].v]) {
+        countyData[countySheet[columnHeaders['year'] + i].v] = {};
+      } 
+      countyData[countySheet[columnHeaders['year'] + i].v][countySheet[columnHeaders['fips'] + i].v] = {
+        fips: countySheet[columnHeaders['fips'] + i].v,
+        county: countySheet[columnHeaders['county'] + i].v,
+        state: countySheet[columnHeaders['state'] + i].v,
+        rate: parseFloat(countySheet[columnHeaders['rate_alldrug'] + i].v)
+      };
+    }
+
+    console.log(countyData);
+
+    setData({state: stateData, year: yearData, sex: sexData, county: countyData});
   }, []);
 
   const countyMaps = useMemo(() => 
@@ -222,7 +244,13 @@ export default function App({ dataUrl }) {
               <div>
                 <label htmlFor="month-select">Select a Month: </label>
                 <select id="month-select" value={currentMonth} onChange={(e) => { setCurrentMonth(e.target.value) }}>
-                  {Object.keys(supportedMonths).map((key) => <option key={key} value={key}>{supportedMonths[key]}</option>)}
+                  {supportedMonths.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="year-select">Select a Year: </label>
+                <select id="year-select" value={currentYear} onChange={(e) => { setCurrentYear(e.target.value) }}>
+                  {supportedYears.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </div>
               {/*<div className="compare">
