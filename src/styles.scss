@@ -204,6 +204,27 @@ line { stroke: #ccc; stroke-width: 1; }
 
     }
 
+    .data-bite-header {
+        color: #fff;
+        font-family: sans-serif;
+        padding: .75em 18px;
+        margin-bottom: 1em;
+
+        span {
+            font-size: .8em;
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: '1.4em';
+            margin: 0;
+            padding: '0';
+            display: 'block';
+            font-weight: 'bold';
+            font-family: "Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif;
+        }
+    }
+
 
     .map-container {
         a {

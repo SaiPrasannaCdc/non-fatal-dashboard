@@ -9,9 +9,11 @@ import Context from '../context';
 
 function SexAgeCharts() {
 
-  const { data, drugScreenOptions, currentDataSource, currentDrug, currentYear, currentMonth } = useContext(Context);
+  const { data, currentDataSource, currentDrug, currentYear, currentMonth } = useContext(Context);
 
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
+
+  console.log(data.sex[currentDataSource][currentDrug][currentYear], currentMonth, filteredData);
 
   const height = 300;
   const width = 500;
@@ -29,13 +31,13 @@ function SexAgeCharts() {
   const yKey = 'age';
   const x1Scale = scaleLinear({
     range: [xMaxHalf, 0],
-    domain: [0, Math.max(...filteredData.map(d => d[xKey]))]
+    domain: [0, Math.max(...filteredData.map(d => d[xKey]).filter(val => !isNaN(val)))]
   });
 
 
   const x2Scale = scaleLinear({
     range: [xMaxHalf, xMax],
-    domain: [0, Math.max(...filteredData.map(d => d[xKey]))]
+    domain: [0, Math.max(...filteredData.map(d => d[xKey]).filter(val => !isNaN(val)))]
   });
 
   const yScale = scaleBand({

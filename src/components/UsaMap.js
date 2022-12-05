@@ -27,7 +27,6 @@ const UsaMap = () => {
   const values = Object.keys(filteredData).map(key => filteredData[key].rate);
   const max = Math.max(...values.filter(val => !isNaN(val)));
   const min = Math.min(...values.filter(val => !isNaN(val)));
-  console.log(max, min);
   const numLabelIntervals = 2;
   const numColorIntervals = 20;
   const legendWidth = 200;

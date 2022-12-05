@@ -8,7 +8,7 @@ import Context from '../context';
 
 function BarbellChart() {
 
-  const { data, supportedStates, drugScreenOptions, currentDataSource, currentDrug, currentMonth } = useContext(Context);
+  const { data, drugScreenOptions, currentDataSource, currentDrug, currentMonth } = useContext(Context);
 
   const filteredData = data['state'][currentDataSource][drugScreenOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
 
@@ -35,7 +35,7 @@ function BarbellChart() {
     return 0;
   };
   const getX2Value = (d) => {
-    if(d[x2Key]) return parseInt(d[x2Key]);
+    if(d[x2Key]) return d[x2Key];
     return 0;
   };
   const yKey = 'state';
@@ -71,7 +71,7 @@ function BarbellChart() {
           label={'State'}
           hideAxisLine={true}
           tickValues={states}
-          tickFormat={tick => supportedStates[tick] || tick}
+          tickFormat={tick => data.supportedStates[tick] || tick}
           labelProps={{
             fontSize: 11,
             textAnchor: 'middle',

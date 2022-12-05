@@ -62,11 +62,16 @@ const drugScreenOptions = {
 
 const supportedMonths = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'all'];
 const supportedYears = ['2018', '2019', '2020', '2021'];
-const supportedStates = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
+const stateMapping = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
 
-const createNewDrugObject = (rate = true) => {
+const createNewDrugObject = (rates = true) => {
   let obj = {};
-  Object.keys(drugScreenOptions).forEach(drug => obj[rate ? drugScreenOptions[drug].rateColumn : drug] = {});
+  Object.keys(drugScreenOptions).forEach(drug => {
+    if(rates){
+      obj[drugScreenOptions[drug].rateColumn] = {};
+    }
+    obj[drug] = {};
+  });
   return obj;
 };
 
@@ -103,18 +108,22 @@ export default function App({ dataUrl }) {
     const binaryData = await (await fetch(dataUrl)).arrayBuffer();
     const wb = XLSX.read(binaryData);
 
+    let supportedStates = {};
+
     const stateSheet = wb.Sheets.state_rate_all;
     let {columnHeaders, columns} = getColumnsInfo(stateSheet);
 
     let stateData = {};
     let yearData = {};
+    let datasetNode;
     for(let i = 2; i < columns; i++) {
       //Populate state data
       if(!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
         stateData[stateSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject();
       }
-      let datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v]; 
       Object.keys(drugScreenOptions).forEach(drug => {
+        datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v]; 
+        //Drug rate
         if(!datasetNode[drugScreenOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]){
           datasetNode[drugScreenOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v] = [];
         }
@@ -122,10 +131,28 @@ export default function App({ dataUrl }) {
         let monthDatum;
         monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
         if(!monthDatum){
-          monthDatum = {state: stateSheet[columnHeaders['state'] + i].v};
+          let state = stateSheet[columnHeaders['state'] + i].v;
+          monthDatum = {state};
+          monthNode.push(monthDatum);
+
+          if(!supportedStates[state]) supportedStates[state] = stateMapping[state];
+        }
+        monthDatum[stateSheet[columnHeaders['year'] + i].v] = parseFloat(stateSheet[columnHeaders[drugScreenOptions[drug].rateColumn] + i].v);
+
+        //Drug deaths
+        datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
+        if(!datasetNode[drug][stateSheet[columnHeaders['month'] + i].v]){
+          datasetNode[drug][stateSheet[columnHeaders['month'] + i].v] = [];
+        }
+        monthNode = datasetNode[drug][stateSheet[columnHeaders['month'] + i].v];
+        monthDatum = undefined;
+        monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
+        if(!monthDatum){
+          let state = stateSheet[columnHeaders['state'] + i].v;
+          monthDatum = {state};
           monthNode.push(monthDatum);
         }
-        monthDatum[stateSheet[columnHeaders['year'] + i].v] = stateSheet[columnHeaders[drugScreenOptions[drug].rateColumn] + i].v;
+        monthDatum[stateSheet[columnHeaders['year'] + i].v] = parseInt(stateSheet[columnHeaders[drug] + i].v);
       });
 
       //Populate year data
@@ -194,9 +221,8 @@ export default function App({ dataUrl }) {
       };
     }
 
-    console.log(countyData);
-
-    setData({state: stateData, year: yearData, sex: sexData, county: countyData});
+    console.log({state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates})
+    setData({state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates});
   }, []);
 
   const countyMaps = useMemo(() => 
@@ -215,7 +241,7 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{data, supportedStates, drugScreenOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear}}>
+    <Context.Provider value={{data, drugScreenOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear}}>
       <div className="filters-container">
         <div>
         {/*<div className={`filter-wrapper ${showTimeline ? 'show-timeline' : ''}`}>*/}
@@ -237,8 +263,7 @@ export default function App({ dataUrl }) {
               <div>
                 <label htmlFor="jurisdiction-select">Select a State: </label>
                 <select id="jurisdiction-select" value={currentState} onChange={(e) => { setCurrentState(e.target.value) }}>
-                  <option value="">US</option>
-                  {Object.keys(supportedStates).map((key) => <option key={key} value={key}>{supportedStates[key]}</option>)}
+                  {Object.keys(data.supportedStates).map((key) => <option key={key} value={key}>{data.supportedStates[key]}</option>)}
                 </select>
               </div>
               <div>
@@ -318,25 +343,27 @@ export default function App({ dataUrl }) {
           </div>
         </div>
 
-        {/*<header style={{ backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.75em 18px', marginBottom: '1em' }}>
-          <span style={{ fontSize: '.8em', fontWeight: 'bold' }}>Trends in Emergency Department (ED) Visits</span>
-          <h2 style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: 'bold', fontFamily: '"Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif' }}>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</h2>
+        <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
+          <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
+          <h2>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</h2>
         </header>
         <div className="callouts">
           <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-            <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{isNaN(usPercent) ? 'N/A' : `${usPercent}%`}</span>
+            <span className="callout" style={{ 'color': drugColor }}>{data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear].toLocaleString()}</span>
             <div>
-
-              <span className='data-bite-title' style={{ color: drugColor }}>
-
-                {timeline}  Percent Change<sup>†</sup> in US</span>
+              <span className='data-bite-title' style={{ color: drugColor }}>Annual Number of Overdoses</span>
               <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
             </div>
           </div>
-          {selected && constructStateDataBite()}
-          {!selected && constructUSSignificantIncreaseDataBite(significanceColumn)}
           <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-            <span className="callout" style={{ 'color': drugColor }}>{statesParticipating.length}</span>
+            <span className="callout" style={{ 'color': drugColor }}>{Math.round(data.state[currentDataSource][drugScreenOptions[currentDrug].rateColumn]['all'].find(item => item.state === currentState)[currentYear] * 10) / 10}</span>
+            <div>
+              <span className='data-bite-title' style={{ color: drugColor }}>Annual Rate of Overdoses</span>
+              <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
+            </div>
+          </div>
+          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+            <span className="callout" style={{ 'color': drugColor }}>{Object.keys(data.supportedStates).length - 1}</span>
             <div>
               <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
               <p>Funded states with reported data</p>
@@ -344,7 +371,7 @@ export default function App({ dataUrl }) {
           </div>
         </div>
 
-        <div className="toggle-area-wrap">
+        {/*<div className="toggle-area-wrap">
           <div className="toggle-area">
             <div id="toggleLegend" className={`${showLegend ? 'open' : ''}`} onClick={toggleLegend}>
               Show Legend <Caret />
