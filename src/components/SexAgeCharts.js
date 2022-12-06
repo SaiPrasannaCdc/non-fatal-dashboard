@@ -13,7 +13,7 @@ function SexAgeCharts() {
 
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
 
-  const height = 300;
+  const height = 225;
   const width = 500;
   const legendWidth = 100;
   const legendHeight = 50;
@@ -53,7 +53,7 @@ function SexAgeCharts() {
         <Bar x={x1Scale(d[x1Key])} y={yScale(d[yKey])} width={xMaxHalf - x1Scale(d[x1Key])} height={yScale.bandwidth()} fill={'lightblue'} />
         <Text x={(x1Scale(d[x1Key])) + (alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={11}>{d[yKey]}</Text>
 
-        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Scale(d[x2Key]) - xMaxHalf} height={yScale.bandwidth()} fill={'blue'} />
+        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Scale(d[x2Key]) - xMaxHalf} height={yScale.bandwidth()} fill={'rgb(43, 45, 115)'} />
         <Text x={(x2Scale(d[x2Key])) + (alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndSecond ? 'end' : 'start'} fill={x2Scale(d[x2Key]) - xMaxHalf > 100 ? 'white' : 'black'} fontSize={11}>{d[yKey]}</Text>
       </g>
     )
@@ -71,10 +71,30 @@ function SexAgeCharts() {
           <AxisBottom
             top={yMax}
             scale={x1Scale}
+            tickLabelProps={(value) => {
+              return {
+                style: {
+                  transform: 'rotate(-60deg)',
+                  transformOrigin: `${x1Scale(value)}px ${18}px`,
+                  textAnchor: 'end',
+                  fontSize: 9
+                }
+              }
+            }}
           />
           <AxisBottom
             top={yMax}
             scale={x2Scale}
+            tickLabelProps={(value) => {
+              return {
+                style: {
+                  transform: 'rotate(-60deg)',
+                  transformOrigin: `${x2Scale(value)}px ${18}px`,
+                  textAnchor: 'end',
+                  fontSize: 9
+                }
+              }
+            }}
           />
         </Group>
       </svg>

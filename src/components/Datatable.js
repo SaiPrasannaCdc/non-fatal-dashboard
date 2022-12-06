@@ -24,9 +24,9 @@ function Datatable() {
       <table className="main-data-table">
         <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
         <tr style={{ backgroundColor: drugColor }}>
-          <th>State</th>
-          <th>{stateYearMin} Rate</th>
-          <th>{stateYearMax} Rate</th>
+          <th><button>State</button></th>
+          <th><button>{stateYearMin} Rate</button></th>
+          <th><button>{stateYearMax} Rate</button></th>
         </tr>
         {filteredStateData.map((row) => {
           return (
@@ -42,14 +42,14 @@ function Datatable() {
       <table className="main-data-table">
         <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
         <tr style={{ backgroundColor: drugColor }}>
-          <th>Year</th>
-          {Object.keys(drugScreenOptions).map(drug => <th>{drugScreenOptions[drug].titleAll}</th>)}
+          <th><button>Year</button></th>
+          {Object.keys(drugScreenOptions).map(drug => <th><button>{drugScreenOptions[drug].titleAll}</button></th>)}
         </tr>
         {filteredYearData.map((row) => {
           return (
             <tr>
               <td>{row.year}</td>
-              {Object.keys(drugScreenOptions).map(drug => <th>{row[drug]}</th>)}
+              {Object.keys(drugScreenOptions).map(drug => <td>{row[drug]}</td>)}
             </tr>
           )
         })}
@@ -58,9 +58,9 @@ function Datatable() {
       <table className="main-data-table">
         <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
         <tr style={{ backgroundColor: drugColor }}>
-          <th>Age</th>
-          <th>Male Overdoses</th>
-          <th>Female Overdoses</th>
+          <th><button>Age</button></th>
+          <th><button>Male Overdoses</button></th>
+          <th><button>Female Overdoses</button></th>
         </tr>
         {filteredSexData.map((row) => {
           return (
@@ -76,8 +76,8 @@ function Datatable() {
       <table className="main-data-table">
         <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
         <tr style={{ backgroundColor: drugColor }}>
-          <th>County</th>
-          <th>Rate</th>
+          <th><button>County</button></th>
+          <th><button>Rate</button></th>
         </tr>
         {Object.keys(filteredCountyData).map((fips) => {
           return (

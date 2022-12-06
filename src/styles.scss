@@ -1144,7 +1144,7 @@ line { stroke: #ccc; stroke-width: 1; }
                 }
             }
 
-            #main-data-table {
+            .main-data-table {
                 border-collapse: collapse;
                 margin-bottom: $gbl-padding;
                 font-size: .75em;
@@ -1194,7 +1194,7 @@ line { stroke: #ccc; stroke-width: 1; }
                         }
                     }
 
-                    th:nth-child(1),
+                    /*th:nth-child(1),
                     td:nth-child(1) {
                         width: 30%;
                     }
@@ -1212,7 +1212,7 @@ line { stroke: #ccc; stroke-width: 1; }
                     th:nth-child(4),
                     td:nth-child(4) {
                         width: 10%;
-                    }
+                    }*/
                 }
             }
         }

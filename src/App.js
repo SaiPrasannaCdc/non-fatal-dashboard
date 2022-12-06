@@ -61,6 +61,7 @@ const drugScreenOptions = {
 };
 
 const supportedMonths = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'all'];
+const monthNames = {'1': 'January','2': 'February','3': 'March','4': 'April','5': 'May','6': 'June','7': 'July','8': 'August','9': 'September','10': 'October','11': 'November','12': 'December','all': 'All Months'};
 const supportedYears = ['2018', '2019', '2020', '2021'];
 const stateMapping = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
 
@@ -91,6 +92,15 @@ const getColumnsInfo = (sheet) => {
     }
   }
   return {columnHeaders, columns};
+};
+
+const formatNumber = (val, isFloat = true) => {
+  let numericVal = isFloat ? parseFloat(val) : parseInt(val);
+  if(isNaN(numericVal)){
+    return 'Data suppressed';
+  } else {
+    return numericVal;
+  }
 };
 
 export default function App({ dataUrl }) {
@@ -142,7 +152,7 @@ export default function App({ dataUrl }) {
 
           if(!supportedStates[state]) supportedStates[state] = stateMapping[state];
         }
-        monthDatum[stateSheet[columnHeaders['year'] + i].v] = parseFloat(stateSheet[columnHeaders[drugScreenOptions[drug].rateColumn] + i].v);
+        monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drugScreenOptions[drug].rateColumn] + i].v);
 
         //Drug deaths
         datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
@@ -157,7 +167,7 @@ export default function App({ dataUrl }) {
           monthDatum = {state};
           monthNode.push(monthDatum);
         }
-        monthDatum[stateSheet[columnHeaders['year'] + i].v] = parseInt(stateSheet[columnHeaders[drug] + i].v);
+        monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drug] + i].v, false);
       });
 
       //Populate year data
@@ -207,7 +217,7 @@ export default function App({ dataUrl }) {
             datasetDatum = {age: sexSheet[columnHeaders['age'] + i].v}
             datasetNode.push(datasetDatum);
           }
-          datasetDatum[sexSheet[columnHeaders['sex'] + i].v] = parseInt(sexSheet[columnHeaders[drug] + i].v);
+          datasetDatum[sexSheet[columnHeaders['sex'] + i].v] = formatNumber(sexSheet[columnHeaders[drug] + i].v, false);
         }
       });
     }
@@ -227,7 +237,7 @@ export default function App({ dataUrl }) {
         fips: countySheet[columnHeaders['fips'] + i].v,
         county: countySheet[columnHeaders['county'] + i].v,
         state: countySheet[columnHeaders['state'] + i].v,
-        rate: parseFloat(countySheet[columnHeaders['rate_alldrug'] + i].v)
+        rate: formatNumber(countySheet[columnHeaders['rate_alldrug'] + i].v)
       };
     }
 
@@ -261,7 +271,7 @@ export default function App({ dataUrl }) {
       <div className="filters-container">
         <div>
         {/*<div className={`filter-wrapper ${showTimeline ? 'show-timeline' : ''}`}>*/}
-          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
+          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
           <div className="filters">
             <div className="dropdowns">
               <div>
@@ -285,7 +295,7 @@ export default function App({ dataUrl }) {
               <div>
                 <label htmlFor="month-select">Select a Month: </label>
                 <select id="month-select" value={currentMonth} onChange={(e) => { setCurrentMonth(e.target.value) }}>
-                  {supportedMonths.map((key) => <option key={key} value={key}>{key}</option>)}
+                  {supportedMonths.map((key) => <option key={key} value={key}>{monthNames[key]}</option>)}
                 </select>
               </div>
               <div>
