@@ -99,7 +99,7 @@ const formatNumber = (val, isFloat = true) => {
   if(isNaN(numericVal)){
     return 'Data suppressed';
   } else {
-    return numericVal;
+    return isFloat ? numericVal.toFixed(1) : numericVal;
   }
 };
 
@@ -185,7 +185,7 @@ export default function App({ dataUrl }) {
       datasetNode = datasetNode[stateSheet[columnHeaders['month'] + i].v];
       let yearDatum = {year: stateSheet[columnHeaders['year'] + i].v};
       Object.keys(drugScreenOptions).forEach(drug => {
-       yearDatum[drug] = stateSheet[columnHeaders['rate_' + drug] + i].v;
+       yearDatum[drug] = formatNumber(stateSheet[columnHeaders['rate_' + drug] + i].v);
       });
       datasetNode.push(yearDatum)
     }

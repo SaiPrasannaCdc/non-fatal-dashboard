@@ -50,10 +50,10 @@ function SexAgeCharts() {
     const alignEndSecond = x2Scale(d[x2Key]) - xMaxHalf > 100;
     return (
       <g key={d[yKey]}>
-        <Bar x={x1Scale(d[x1Key])} y={yScale(d[yKey])} width={xMaxHalf - x1Scale(d[x1Key])} height={yScale.bandwidth()} fill={'lightblue'} />
+        <Bar x={x1Scale(d[x1Key])} y={yScale(d[yKey])} width={xMaxHalf - x1Scale(d[x1Key])} height={yScale.bandwidth()} fill={'lightblue'} data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${d[x1Key].toLocaleString()}</p>`} />
         <Text x={(x1Scale(d[x1Key])) + (alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={11}>{d[yKey]}</Text>
 
-        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Scale(d[x2Key]) - xMaxHalf} height={yScale.bandwidth()} fill={'rgb(43, 45, 115)'} />
+        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Scale(d[x2Key]) - xMaxHalf} height={yScale.bandwidth()} fill={'rgb(43, 45, 115)'} data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${d[x2Key].toLocaleString()}</p>`} />
         <Text x={(x2Scale(d[x2Key])) + (alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndSecond ? 'end' : 'start'} fill={x2Scale(d[x2Key]) - xMaxHalf > 100 ? 'white' : 'black'} fontSize={11}>{d[yKey]}</Text>
       </g>
     )

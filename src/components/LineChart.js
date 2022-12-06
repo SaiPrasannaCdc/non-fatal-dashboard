@@ -26,6 +26,9 @@ function LineChart() {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
+  const sectionWidth = xMax / years.length;
+  const sectionWidthHalf = sectionWidth / 2;
+
   const series = Object.keys(drugScreenOptions);
   const xKey = 'year';
 
@@ -54,6 +57,15 @@ function LineChart() {
               />
               <text x={xMax + 5} y={yScale(filteredData[filteredData.length - 1][drug])} alignmentBaseline="middle" fontSize={11} fill={drugScreenOptions[drug].color || '#333'}>{drugScreenOptions[drug].titleAll}</text>
             </Group>
+          )}
+          {filteredData.map(d => 
+            <rect 
+              x={Math.max(0, xScale(d[xKey]) - sectionWidthHalf)} 
+              y={0} 
+              width={sectionWidth} 
+              height={yMax} 
+              fill='transparent'
+              data-tip={`<h3><strong>${d[xKey]}</strong></h3>` + series.map(drug => `<p><strong>${drugScreenOptions[drug].titleAll}</strong>: ${d[drug]}</p>`).join('')}></rect>
           )}
         </Group>
         <AxisLeft

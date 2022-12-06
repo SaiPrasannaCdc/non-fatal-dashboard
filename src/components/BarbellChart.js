@@ -59,7 +59,7 @@ function BarbellChart() {
         <rect x={0} y={0} width={xMax} height={yMax} stroke="#ccc" fill="transparent" />
         <Group>
           {filteredData.map((d) => (
-            <Group key={`bar-${d[yKey]}`}>
+            <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
               <Line x1={xScale(getX1Value(d))} x2={xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])}/>
               <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue" fill="transparent"/>
               <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue"/>
@@ -83,7 +83,7 @@ function BarbellChart() {
         <AxisBottom
           top={yMax}
           scale={xScale}
-          label={'Deaths Per 100,000 Population'}
+          label={'Overdoses Per 100,000 Population'}
           hideAxisLine={true}
         />
         <Group top={yMax - legendHeight} left={xMax - legendWidth}>

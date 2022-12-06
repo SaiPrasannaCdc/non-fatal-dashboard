@@ -70,7 +70,8 @@ const UsaMap = () => {
             strokeWidth={state ? 1 : .5}
             fill={filteredData[geo.id] ? colorScale(filteredData[geo.id].rate) : 'transparent'}
             d={path}
-            data-tip={`${geo.id}`}
+            style={{pointerEvents: geo.id.length <= 2 ? 'none' : 'default'}}
+            data-tip={geo.id.length > 2 && filteredData[geo.id] ? `<h3><strong>${filteredData[geo.id].county}</strong></h3><p><strong>Rate:</strong> ${filteredData[geo.id].rate}</p>` : undefined}
           />
         </g>
       )
