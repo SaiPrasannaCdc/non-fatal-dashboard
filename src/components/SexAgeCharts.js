@@ -74,7 +74,7 @@ function SexAgeCharts() {
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
-          <Text x={-20} y={yMax / 2} style={{transform: 'rotate(-90deg)', 'transform-origin': `-20px ${yMax / 2}px`}} fontSize={fontSize} textAnchor="middle">Age Group</Text>
+          <Text x={-20} y={yMax / 2} style={{transform: 'rotate(-90deg)', transformOrigin: `-20px ${yMax / 2}px`}} fontSize={fontSize} textAnchor="middle">Age Group</Text>
           <AxisBottom
             top={yMax}
             scale={x1Scale}

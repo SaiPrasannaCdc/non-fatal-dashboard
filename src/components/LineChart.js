@@ -63,6 +63,7 @@ function LineChart() {
             )}
             {filteredData.map(d => 
               <rect 
+                key={`tooltip-section-${d[xKey]}`}
                 x={Math.max(0, xScale(d[xKey]) - sectionWidthHalf)} 
                 y={0} 
                 width={sectionWidth} 

@@ -1,11 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import App from './App';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App dataUrl={document.querySelector('#non-fatal-container').attributes['data-url']?.value}/>
-  </React.StrictMode>,
-  document.querySelector('#non-fatal-container')
-);
+const container = document.querySelector('#non-fatal-container');
+const root = createRoot(container);
+
+root.render(<App dataUrl={container.attributes['data-url']?.value}/>);

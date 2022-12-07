@@ -101,8 +101,8 @@ const UsaMap = () => {
         </svg>
       <svg style={{height, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block'}}>
         <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={15}>Rate per 100,000 population</text>
-        {colorIntervals.map(value => <rect x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-        {labelIntervals.map((value, i) => <text x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
+        {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+        {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
       </svg>
     </>
   )

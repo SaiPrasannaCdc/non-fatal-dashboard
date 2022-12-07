@@ -134,129 +134,133 @@ export default function App({ dataUrl }) {
     } // eslint-disable-next-line
   },[]);
 
-  useEffect(async () => {
-    const binaryData = await (await fetch(dataUrl)).arrayBuffer();
-    const wb = XLSX.read(binaryData);
+  useEffect(() => {
+    const fetchData = async () => {
+      const binaryData = await (await fetch(dataUrl)).arrayBuffer();
+      const wb = XLSX.read(binaryData);
 
-    let supportedStates = {};
+      let supportedStates = {};
 
-    const stateSheet = wb.Sheets.state_rate_all;
-    let {columnHeaders, columns} = getColumnsInfo(stateSheet);
+      const stateSheet = wb.Sheets.state_rate_all;
+      let {columnHeaders, columns} = getColumnsInfo(stateSheet);
 
-    let stateData = {};
-    let yearData = {};
-    let datasetNode;
-    for(let i = 2; i < columns; i++) {
-      //Populate state data
-      if(!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
-        stateData[stateSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject();
-      }
-      Object.keys(drugOptions).forEach(drug => {
-        datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v]; 
-        //Drug rate
-        if(!datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]){
-          datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v] = [];
+      let stateData = {};
+      let yearData = {};
+      let datasetNode;
+      for(let i = 2; i < columns; i++) {
+        //Populate state data
+        if(!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
+          stateData[stateSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject();
         }
-        let monthNode = datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v];
-        let monthDatum;
-        monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
-        if(!monthDatum){
-          let state = stateSheet[columnHeaders['state'] + i].v;
-          monthDatum = {state};
-          monthNode.push(monthDatum);
-
-          if(!supportedStates[state]) supportedStates[state] = stateNames[state];
-        }
-        monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drugOptions[drug].rateColumn] + i].v);
-
-        //Drug deaths
-        datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
-        if(!datasetNode[drug][stateSheet[columnHeaders['month'] + i].v]){
-          datasetNode[drug][stateSheet[columnHeaders['month'] + i].v] = [];
-        }
-        monthNode = datasetNode[drug][stateSheet[columnHeaders['month'] + i].v];
-        monthDatum = undefined;
-        monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
-        if(!monthDatum){
-          let state = stateSheet[columnHeaders['state'] + i].v;
-          monthDatum = {state};
-          monthNode.push(monthDatum);
-        }
-        monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drug] + i].v, false);
-      });
-
-      //Populate year data
-      if(!yearData[stateSheet[columnHeaders['dataset'] + i].v]) {
-        yearData[stateSheet[columnHeaders['dataset'] + i].v] = {};
-      }
-      datasetNode = yearData[stateSheet[columnHeaders['dataset'] + i].v];
-      if(!datasetNode[stateSheet[columnHeaders['state'] + i].v]){
-        datasetNode[stateSheet[columnHeaders['state'] + i].v] = {};
-      }
-      datasetNode = datasetNode[stateSheet[columnHeaders['state'] + i].v];
-      if(!datasetNode[stateSheet[columnHeaders['month'] + i].v]){
-        datasetNode[stateSheet[columnHeaders['month'] + i].v] = [];
-      }
-      datasetNode = datasetNode[stateSheet[columnHeaders['month'] + i].v];
-      let yearDatum = {year: stateSheet[columnHeaders['year'] + i].v};
-      Object.keys(drugOptions).forEach(drug => {
-       yearDatum[drug] = formatNumber(stateSheet[columnHeaders['rate_' + drug] + i].v);
-      });
-      datasetNode.push(yearDatum)
-    }
-
-    const sexSheet = wb.Sheets.us_count_all;
-    let columnInfo = getColumnsInfo(sexSheet);
-    columnHeaders = columnInfo.columnHeaders;
-    columns = columnInfo.columns;
-
-    //Populate sex data
-    let sexData = {};
-    for(let i = 2; i < columns; i++) {
-      if(!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
-        sexData[sexSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject(false);
-      } 
-      Object.keys(drugOptions).forEach(drug => {
-        let datasetNode = sexData[sexSheet[columnHeaders['dataset'] + i].v];
-        if(!datasetNode[drug][sexSheet[columnHeaders['year'] + i].v]){
-          datasetNode[drug][sexSheet[columnHeaders['year'] + i].v] = {};
-        }
-        datasetNode = datasetNode[drug][sexSheet[columnHeaders['year'] + i].v];
-        if(!datasetNode[sexSheet[columnHeaders['month'] + i].v]){
-          datasetNode[sexSheet[columnHeaders['month'] + i].v] = [];
-        }
-        datasetNode = datasetNode[sexSheet[columnHeaders['month'] + i].v];
-        if(sexSheet[columnHeaders['sex'] + i].v !== 'Missing' && sexSheet[columnHeaders['age'] + i].v !== 'Missing'){
-          let datasetDatum = datasetNode.find(datum => datum.age === sexSheet[columnHeaders['age'] + i].v);
-          if(!datasetDatum){
-            datasetDatum = {age: sexSheet[columnHeaders['age'] + i].v}
-            datasetNode.push(datasetDatum);
+        Object.keys(drugOptions).forEach(drug => {
+          datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v]; 
+          //Drug rate
+          if(!datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]){
+            datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v] = [];
           }
-          datasetDatum[sexSheet[columnHeaders['sex'] + i].v] = formatNumber(sexSheet[columnHeaders[drug] + i].v, false);
+          let monthNode = datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v];
+          let monthDatum;
+          monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
+          if(!monthDatum){
+            let state = stateSheet[columnHeaders['state'] + i].v;
+            monthDatum = {state};
+            monthNode.push(monthDatum);
+
+            if(!supportedStates[state]) supportedStates[state] = stateNames[state];
+          }
+          monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drugOptions[drug].rateColumn] + i].v);
+
+          //Drug deaths
+          datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
+          if(!datasetNode[drug][stateSheet[columnHeaders['month'] + i].v]){
+            datasetNode[drug][stateSheet[columnHeaders['month'] + i].v] = [];
+          }
+          monthNode = datasetNode[drug][stateSheet[columnHeaders['month'] + i].v];
+          monthDatum = undefined;
+          monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
+          if(!monthDatum){
+            let state = stateSheet[columnHeaders['state'] + i].v;
+            monthDatum = {state};
+            monthNode.push(monthDatum);
+          }
+          monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drug] + i].v, false);
+        });
+
+        //Populate year data
+        if(!yearData[stateSheet[columnHeaders['dataset'] + i].v]) {
+          yearData[stateSheet[columnHeaders['dataset'] + i].v] = {};
         }
-      });
+        datasetNode = yearData[stateSheet[columnHeaders['dataset'] + i].v];
+        if(!datasetNode[stateSheet[columnHeaders['state'] + i].v]){
+          datasetNode[stateSheet[columnHeaders['state'] + i].v] = {};
+        }
+        datasetNode = datasetNode[stateSheet[columnHeaders['state'] + i].v];
+        if(!datasetNode[stateSheet[columnHeaders['month'] + i].v]){
+          datasetNode[stateSheet[columnHeaders['month'] + i].v] = [];
+        }
+        datasetNode = datasetNode[stateSheet[columnHeaders['month'] + i].v];
+        let yearDatum = {year: stateSheet[columnHeaders['year'] + i].v};
+        Object.keys(drugOptions).forEach(drug => {
+        yearDatum[drug] = formatNumber(stateSheet[columnHeaders['rate_' + drug] + i].v);
+        });
+        datasetNode.push(yearDatum);
+      }
+
+      const sexSheet = wb.Sheets.us_count_all;
+      let columnInfo = getColumnsInfo(sexSheet);
+      columnHeaders = columnInfo.columnHeaders;
+      columns = columnInfo.columns;
+
+      //Populate sex data
+      let sexData = {};
+      for(let i = 2; i < columns; i++) {
+        if(!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
+          sexData[sexSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject(false);
+        } 
+        Object.keys(drugOptions).forEach(drug => {
+          let datasetNode = sexData[sexSheet[columnHeaders['dataset'] + i].v];
+          if(!datasetNode[drug][sexSheet[columnHeaders['year'] + i].v]){
+            datasetNode[drug][sexSheet[columnHeaders['year'] + i].v] = {};
+          }
+          datasetNode = datasetNode[drug][sexSheet[columnHeaders['year'] + i].v];
+          if(!datasetNode[sexSheet[columnHeaders['month'] + i].v]){
+            datasetNode[sexSheet[columnHeaders['month'] + i].v] = [];
+          }
+          datasetNode = datasetNode[sexSheet[columnHeaders['month'] + i].v];
+          if(sexSheet[columnHeaders['sex'] + i].v !== 'Missing' && sexSheet[columnHeaders['age'] + i].v !== 'Missing'){
+            let datasetDatum = datasetNode.find(datum => datum.age === sexSheet[columnHeaders['age'] + i].v);
+            if(!datasetDatum){
+              datasetDatum = {age: sexSheet[columnHeaders['age'] + i].v}
+              datasetNode.push(datasetDatum);
+            }
+            datasetDatum[sexSheet[columnHeaders['sex'] + i].v] = formatNumber(sexSheet[columnHeaders[drug] + i].v, false);
+          }
+        });
+      }
+
+      const countySheet = wb.Sheets.cnty_rates_all;
+      columnInfo = getColumnsInfo(countySheet);
+      columnHeaders = columnInfo.columnHeaders;
+      columns = columnInfo.columns;
+
+      //Populate sex data
+      let countyData = {};
+      for(let i = 2; i < columns; i++) {
+        if(!countyData[countySheet[columnHeaders['year'] + i].v]) {
+          countyData[countySheet[columnHeaders['year'] + i].v] = {};
+        } 
+        countyData[countySheet[columnHeaders['year'] + i].v][countySheet[columnHeaders['fips'] + i].v] = {
+          fips: countySheet[columnHeaders['fips'] + i].v,
+          county: countySheet[columnHeaders['county'] + i].v,
+          state: countySheet[columnHeaders['state'] + i].v,
+          rate: formatNumber(countySheet[columnHeaders['rate_alldrug'] + i].v)
+        };
+      }
+
+      setData({state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates});
     }
 
-    const countySheet = wb.Sheets.cnty_rates_all;
-    columnInfo = getColumnsInfo(countySheet);
-    columnHeaders = columnInfo.columnHeaders;
-    columns = columnInfo.columns;
-
-    //Populate sex data
-    let countyData = {};
-    for(let i = 2; i < columns; i++) {
-      if(!countyData[countySheet[columnHeaders['year'] + i].v]) {
-        countyData[countySheet[columnHeaders['year'] + i].v] = {};
-      } 
-      countyData[countySheet[columnHeaders['year'] + i].v][countySheet[columnHeaders['fips'] + i].v] = {
-        fips: countySheet[columnHeaders['fips'] + i].v,
-        county: countySheet[columnHeaders['county'] + i].v,
-        state: countySheet[columnHeaders['state'] + i].v,
-        rate: formatNumber(countySheet[columnHeaders['rate_alldrug'] + i].v)
-      };
-    }
-
-    setData({state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates});
+    fetchData();
   }, []);
 
   const countyMap = useMemo(() => 
