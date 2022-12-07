@@ -28,15 +28,19 @@ function SexAgeCharts() {
   const x1Key = 'M';
   const x2Key = 'F';
   const yKey = 'age';
+
+  const x1Max = Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)));
+  const x2Max = Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)));
+  const overallMax = Math.max(x1Max, x2Max);
+
   const x1Scale = scaleLinear({
     range: [xMaxHalf, 0],
-    domain: [0, Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)))]
+    domain: [0, overallMax]
   });
-
 
   const x2Scale = scaleLinear({
     range: [xMaxHalf, xMax],
-    domain: [0, Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)))]
+    domain: [0, overallMax]
   });
 
   const yScale = scaleBand({
@@ -46,15 +50,19 @@ function SexAgeCharts() {
   });
 
   const getBar = (d) => {
-    const alignEndFirst = x1Scale(d[x1Key]) > (xMaxHalf - 100);
-    const alignEndSecond = x2Scale(d[x2Key]) - xMaxHalf > 100;
+    const x1Pos = x1Scale(isNaN(d[x1Key]) ? overallMax * .1 : d[x1Key]);
+    const x2Pos = x2Scale(isNaN(d[x2Key]) ? overallMax * .1 : d[x2Key]);
+
+    const alignEndFirst = x1Pos > (xMaxHalf - 100);
+    const alignEndSecond = x2Pos - xMaxHalf > 100;
+
     return (
       <g key={d[yKey]}>
-        <Bar x={x1Scale(d[x1Key])} y={yScale(d[yKey])} width={xMaxHalf - x1Scale(d[x1Key])} height={yScale.bandwidth()} fill={'lightblue'} data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${d[x1Key].toLocaleString()}</p>`} />
-        <Text x={(x1Scale(d[x1Key])) + (alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={11}>{d[yKey]}</Text>
+        <Bar x={x1Pos} y={yScale(d[yKey])} width={xMaxHalf - x1Pos} height={yScale.bandwidth()} fill={isNaN(d[x1Key]) ? 'transparent' : 'lightblue'} stroke="lightblue" data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${d[x1Key].toLocaleString()}</p>`} />
+        <Text x={(x1Pos) + (alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={11}>{d[yKey]}</Text>
 
-        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Scale(d[x2Key]) - xMaxHalf} height={yScale.bandwidth()} fill={'rgb(43, 45, 115)'} data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${d[x2Key].toLocaleString()}</p>`} />
-        <Text x={(x2Scale(d[x2Key])) + (alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndSecond ? 'end' : 'start'} fill={x2Scale(d[x2Key]) - xMaxHalf > 100 ? 'white' : 'black'} fontSize={11}>{d[yKey]}</Text>
+        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Pos - xMaxHalf} height={yScale.bandwidth()} fill={isNaN(d[x2Key]) ? 'transparent' : 'rgb(43, 45, 115)'} stroke="rgb(43, 45, 115)" data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${d[x2Key].toLocaleString()}</p>`} />
+        <Text x={(x2Pos) + (alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + yScale.bandwidth() - 10} textAnchor={alignEndSecond ? 'end' : 'start'} fill={x2Scale(d[x2Key]) - xMaxHalf > 100 ? 'white' : 'black'} fontSize={11}>{d[yKey]}</Text>
       </g>
     )
   }

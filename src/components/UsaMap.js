@@ -29,15 +29,17 @@ const UsaMap = () => {
   const min = Math.min(...values.filter(val => !isNaN(val)));
   const numLabelIntervals = 2;
   const numColorIntervals = 20;
+  const labelIntervalWidth = (max - min) / numLabelIntervals;
+  const colorIntervalWidth = (max - min) / numColorIntervals;
   const legendWidth = 200;
 
   let labelIntervals = [];
-  for(let i = max; i >= min; i -= (max - min) / numLabelIntervals){
+  for(let i = max; i >= min - 0.01; i -= labelIntervalWidth){
     labelIntervals.push(i)
   }
   
   let colorIntervals = [];
-  for(let i = max; i >= min; i -= (max - min) / numColorIntervals){
+  for(let i = max; i >= min; i -= colorIntervalWidth){
     colorIntervals.push(i)
   }
 
@@ -68,7 +70,7 @@ const UsaMap = () => {
             className='single-geo'
             stroke={state ? '#000' : '#777'}
             strokeWidth={state ? 1 : .5}
-            fill={filteredData[geo.id] ? colorScale(filteredData[geo.id].rate) : 'transparent'}
+            fill={filteredData[geo.id] ? (isNaN(filteredData[geo.id].rate) ? '#666' : colorScale(filteredData[geo.id].rate)) : 'transparent'}
             d={path}
             style={{pointerEvents: geo.id.length <= 2 ? 'none' : 'default'}}
             data-tip={geo.id.length > 2 && filteredData[geo.id] ? `<h3><strong>${filteredData[geo.id].county}</strong></h3><p><strong>Rate:</strong> ${filteredData[geo.id].rate}</p>` : undefined}
@@ -95,7 +97,7 @@ const UsaMap = () => {
         </CustomProjection>
         <text x={width - legendWidth} y={100} fill="black" fontSize={12}>Rate per 100,000 population</text>
         {colorIntervals.map(value => <rect x={width - legendWidth} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-        {labelIntervals.map((value, i) => <text x={width - legendWidth + 60} y={colorLegendScale(value)} fill="black" alignmentBaseline={i === 0 ? 'hanging' : undefined}>{Math.round(value)}</text>)}
+        {labelIntervals.map((value, i) => <text x={width - legendWidth + 60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
       </svg>
     </>
   )

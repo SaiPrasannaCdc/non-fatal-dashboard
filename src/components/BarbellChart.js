@@ -31,7 +31,7 @@ function BarbellChart() {
   const x1Key = years[0];
   const x2Key = years[years.length - 1];
   const getX1Value = (d) => {
-    if(d[x1Key]) return parseInt(d[x1Key]);
+    if(d[x1Key]) return d[x1Key];
     return 0;
   };
   const getX2Value = (d) => {
@@ -42,7 +42,7 @@ function BarbellChart() {
 
   const xScale = scaleLinear({
     range: [doubleCircleRadius, xMax - doubleCircleRadius],
-    domain: [0, Math.max(...filteredData.map(d => Math.max(getX1Value(d), getX2Value(d))))]
+    domain: [0, Math.max(...filteredData.map(d => Math.max(isNaN(getX1Value(d)) ? 0 : getX1Value(d), isNaN(getX2Value(d)) ? 0 : getX2Value(d))))]
   });
 
   filteredData.sort((a, b) => getX2Value(a) < getX2Value(b) ? 1 : -1);
@@ -61,8 +61,8 @@ function BarbellChart() {
           {filteredData.map((d) => (
             <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
               <Line x1={xScale(getX1Value(d))} x2={xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])}/>
-              <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue" fill="transparent"/>
-              <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue"/>
+              {isNaN(getX1Value(d)) ? <text x={xScale(getX1Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={11} stroke="#666">X</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue" fill="transparent"/>}
+              {isNaN(getX2Value(d)) ? <text x={xScale(getX2Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={11} stroke="#666">X</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue"/>}
             </Group>
           ))}
         </Group>

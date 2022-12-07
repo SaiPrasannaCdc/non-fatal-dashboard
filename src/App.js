@@ -99,6 +99,7 @@ const formatNumber = (val, isFloat = true) => {
   if(isNaN(numericVal)){
     return 'Data suppressed';
   } else {
+    if(isNaN(isFloat ? numericVal.toFixed(1) : numericVal)) console.log(val, typeof val, isFloat)
     return isFloat ? numericVal.toFixed(1) : numericVal;
   }
 };

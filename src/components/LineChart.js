@@ -38,9 +38,13 @@ function LineChart() {
   });
 
   const yScale = scaleLinear({
-    domain: [0, Math.max(...filteredData.map(d => Math.max(...Object.keys(drugScreenOptions).map(drug => parseFloat(d[drug])))))],
+    domain: [0, Math.max(...filteredData.map(d => Math.max(...Object.keys(drugScreenOptions).filter(drug => !isNaN(d[drug])).map(drug => d[drug]))))],
     range: [yMax, 0],
   });
+
+  let filteredDataNoSuppressed = [];
+  filteredData.forEach(d => filteredDataNoSuppressed.push({...d}));
+  filteredDataNoSuppressed.forEach(d => Object.keys(drugScreenOptions).forEach(drug => {if(isNaN(d[drug])) d[drug] = 0}));
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`}>
@@ -49,7 +53,7 @@ function LineChart() {
           {series.map(drug => 
             <Group key={`line-series-${drug}`}>
               <LinePath
-                data={filteredData}
+                data={filteredDataNoSuppressed}
                 x={(d) => xScale(d[xKey]) ?? 0}
                 y={(d) => yScale(d[drug]) ?? 0}
                 stroke={drugScreenOptions[drug].color || '#333'}
