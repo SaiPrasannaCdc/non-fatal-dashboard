@@ -18,11 +18,7 @@ function SexAgeCharts() {
   const isSmallViewport = width < 500;
   const fontSize = 20;
   const height = 450;
-  const legendWidth = 100;
-  const legendHeight = 50;
   const margin = {top: 50, bottom: 100, left: 50, right: 15};
-  const circleRadius = 3;
-  const doubleCircleRadius = circleRadius * 2;
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
@@ -56,8 +52,7 @@ function SexAgeCharts() {
     const x1Pos = x1Scale(isNaN(d[x1Key]) ? overallMax * .1 : d[x1Key]);
     const x2Pos = x2Scale(isNaN(d[x2Key]) ? overallMax * .1 : d[x2Key]);
 
-    const alignEndFirst = x1Pos > (xMaxHalf - 50 );
-    console.log(x2Pos, xMaxHalf);
+    const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
 
     return (

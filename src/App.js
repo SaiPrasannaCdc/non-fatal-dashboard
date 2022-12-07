@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import "babel-polyfill";
 import debounce from 'lodash.debounce';
-import chroma from 'chroma-js';
-import Papa from 'papaparse';
-import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
-import { Base64 } from 'js-base64';
 import * as XLSX from 'xlsx';
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -15,12 +11,8 @@ import SexAgeCharts from './components/SexAgeCharts';
 import UsaMap from './components/UsaMap';
 import Datatable from './components/Datatable';
 
-import Caret from './assets/caret-down.svg';
 import Context from './context';
-import 'rc-slider/assets/index.css';
 import './styles.scss';
-
-const SliderWithTooltip = createSliderWithTooltip(Slider);
 
 const dataSourceOptions = {
   'ED': {
@@ -31,7 +23,7 @@ const dataSourceOptions = {
   }
 }
 
-const drugScreenOptions = {
+const drugOptions = {
   'alldrug': {
     'titleSingular': 'Drug',
     'titlePlural': 'All Drugs',
@@ -65,13 +57,13 @@ const drugScreenOptions = {
 const supportedMonths = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'all'];
 const monthNames = {'1': 'January','2': 'February','3': 'March','4': 'April','5': 'May','6': 'June','7': 'July','8': 'August','9': 'September','10': 'October','11': 'November','12': 'December','all': 'All Months'};
 const supportedYears = ['2018', '2019', '2020', '2021'];
-const stateMapping = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
+const stateNames = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
 
 const createNewDrugObject = (rates = true) => {
   let obj = {};
-  Object.keys(drugScreenOptions).forEach(drug => {
+  Object.keys(drugOptions).forEach(drug => {
     if(rates){
-      obj[drugScreenOptions[drug].rateColumn] = {};
+      obj[drugOptions[drug].rateColumn] = {};
     }
     obj[drug] = {};
   });
@@ -101,7 +93,6 @@ const formatNumber = (val, isFloat = true) => {
   if(isNaN(numericVal)){
     return 'Data suppressed';
   } else {
-    if(isNaN(isFloat ? numericVal.toFixed(1) : numericVal)) console.log(val, typeof val, isFloat)
     return isFloat ? numericVal.toFixed(1) : numericVal;
   }
 };
@@ -118,12 +109,12 @@ export default function App({ dataUrl }) {
   const [ showConsiderations, setConsiderations ] = useState(false);
   const [ width, setWidth ] = useState(0);
 
-  const isSmallViewport = width < 500;
-
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
 
-  const drugColor = drugScreenOptions[currentDrug].color;
+  const isSmallViewport = width < 500;
+
+  const drugColor = drugOptions[currentDrug].color;
 
   const debouncedSetWidth = useMemo(
     () => debounce(setWidth, 300)
@@ -160,13 +151,13 @@ export default function App({ dataUrl }) {
       if(!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
         stateData[stateSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject();
       }
-      Object.keys(drugScreenOptions).forEach(drug => {
+      Object.keys(drugOptions).forEach(drug => {
         datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v]; 
         //Drug rate
-        if(!datasetNode[drugScreenOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]){
-          datasetNode[drugScreenOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v] = [];
+        if(!datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]){
+          datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v] = [];
         }
-        let monthNode = datasetNode[drugScreenOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v];
+        let monthNode = datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v];
         let monthDatum;
         monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
         if(!monthDatum){
@@ -174,9 +165,9 @@ export default function App({ dataUrl }) {
           monthDatum = {state};
           monthNode.push(monthDatum);
 
-          if(!supportedStates[state]) supportedStates[state] = stateMapping[state];
+          if(!supportedStates[state]) supportedStates[state] = stateNames[state];
         }
-        monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drugScreenOptions[drug].rateColumn] + i].v);
+        monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drugOptions[drug].rateColumn] + i].v);
 
         //Drug deaths
         datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
@@ -208,7 +199,7 @@ export default function App({ dataUrl }) {
       }
       datasetNode = datasetNode[stateSheet[columnHeaders['month'] + i].v];
       let yearDatum = {year: stateSheet[columnHeaders['year'] + i].v};
-      Object.keys(drugScreenOptions).forEach(drug => {
+      Object.keys(drugOptions).forEach(drug => {
        yearDatum[drug] = formatNumber(stateSheet[columnHeaders['rate_' + drug] + i].v);
       });
       datasetNode.push(yearDatum)
@@ -225,7 +216,7 @@ export default function App({ dataUrl }) {
       if(!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
         sexData[sexSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject(false);
       } 
-      Object.keys(drugScreenOptions).forEach(drug => {
+      Object.keys(drugOptions).forEach(drug => {
         let datasetNode = sexData[sexSheet[columnHeaders['dataset'] + i].v];
         if(!datasetNode[drug][sexSheet[columnHeaders['year'] + i].v]){
           datasetNode[drug][sexSheet[columnHeaders['year'] + i].v] = {};
@@ -291,10 +282,9 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{data, drugScreenOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear, width}}>
+    <Context.Provider value={{data, drugOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear, width}}>
       <div className="filters-container" ref={outerContainerRef}>
         <div>
-        {/*<div className={`filter-wrapper ${showTimeline ? 'show-timeline' : ''}`}>*/}
           <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
           <div className="filters">
             <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
@@ -307,7 +297,7 @@ export default function App({ dataUrl }) {
               <div>
                 <label htmlFor="drug-select">Select a Drug: </label>
                 <select id="drug-select" value={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
-                  {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
+                  {Object.keys(drugOptions).map((key) => <option key={key} value={key}>{drugOptions[key]['titleAll']}</option>)}
                 </select>
               </div>
               <div>
@@ -328,88 +318,27 @@ export default function App({ dataUrl }) {
                   {supportedYears.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </div>
-              {/*<div className="compare">
-                <label htmlFor="month-year">Compare {toLabel} with the previous: </label>
-                <span className='legend-help' data-tip='<div className=" tooltip-body">
-                  <small>This panel allows you to view the percent change in nonfatal drug overdoses between adjacent months and annually for a select time period.</small></div>
-                  <small>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</div>
-                  </div>'>?</span>
-                <select id="month-year" value={selectedTimeframe} onChange={(e) => { handleTimeframeChange(e.target.value) }}>
-                  <option value="month" name="time-selector">Month</option>
-                  <option value="year" name="time-selector">Year</option>
-                </select>
-              </div>*/}
             </div>
-
-            {/*<div className="timeline">
-              <div className="range-aside-container" style={{ color: drugColor }}>
-                {'month' === selectedTimeframe &&
-                  <SliderWithTooltip
-                    tipFormatter={tooltipFormatterMonth}
-                    html={true}
-                    onChange={(e) => { handleMonthSliderChange(e) }}
-                    min={0}
-                    step={1}
-                    value={sliderPointMonth}
-                    align={{
-                      offset: [0, -5],
-                    }}
-                    max={monthTimeframes.length - 1}
-                    marks={getSliderMarks('month')}
-                    handleStyle={{
-                      borderColor: drugColor,
-                      backgroundColor: drugColor,
-                    }}
-                    tipProps={{ visible: true }}
-                    ariaLabelForHandle="Select a month to compare in the map"
-                    role="slider"
-                  // tab-index={0}
-                  // ariaValueMin={0}
-                  // ariaValueMax={monthTimeframes.length - 1}
-                  />
-                }
-                {'year' === selectedTimeframe &&
-                  <SliderWithTooltip
-                    tipFormatter={tooltipFormatterYear}
-                    onChange={(e) => { handleYearSliderChange(e) }}
-                    min={0}
-                    step={1}
-                    value={sliderPointYear}
-                    align={{
-                      offset: [0, -5],
-                    }}
-                    max={yearTimeframes.length - 1}
-                    marks={getSliderMarks('year')}
-                    handleStyle={{
-                      borderColor: drugColor,
-                      backgroundColor: drugColor,
-                    }}
-                    tipProps={{ visible: true }}
-                    ariaLabelForHandle="Select a year to compare in the map"
-                  />
-                }
-              </div>
-            </div>*/}
           </div>
         </div>
 
         <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
           <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
-          <h2>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</h2>
+          <h2>Suspected {drugOptions[currentDrug]['titleAll']} Overdoses</h2>
         </header>
         <div className="callouts">
           <div style={{ 'borderLeft': '5px solid' + drugColor }}>
             <span className="callout" style={{ 'color': drugColor }}>{data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear].toLocaleString()}</span>
             <div>
               <span className='data-bite-title' style={{ color: drugColor }}>Annual Number of Overdoses</span>
-              <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
+              <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
             </div>
           </div>
           <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-            <span className="callout" style={{ 'color': drugColor }}>{Math.round(data.state[currentDataSource][drugScreenOptions[currentDrug].rateColumn]['all'].find(item => item.state === currentState)[currentYear] * 10) / 10}</span>
+            <span className="callout" style={{ 'color': drugColor }}>{Math.round(data.state[currentDataSource][drugOptions[currentDrug].rateColumn]['all'].find(item => item.state === currentState)[currentYear] * 10) / 10}</span>
             <div>
               <span className='data-bite-title' style={{ color: drugColor }}>Annual Rate of Overdoses</span>
-              <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
+              <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
             </div>
           </div>
           <div style={{ 'borderLeft': '5px solid' + drugColor }}>
@@ -426,7 +355,7 @@ export default function App({ dataUrl }) {
       <div className='data-tables'>
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-            Trends by State, {drugScreenOptions[currentDrug]['titleAll']}
+            Trends by State, {drugOptions[currentDrug]['titleAll']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
             {!showDatatable && <span>{String.fromCharCode(43)}</span>}
           </button>

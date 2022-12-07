@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { Circle, Line } from '@visx/shape';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { LinePath } from '@visx/shape';
@@ -9,7 +8,7 @@ import Context from '../context';
 
 function LineChart() {
 
-  const { data, drugScreenOptions, currentDataSource, currentState, currentMonth, width } = useContext(Context);
+  const { data, drugOptions, currentDataSource, currentState, currentMonth, width } = useContext(Context);
 
   if(width === 0) return <></>;
 
@@ -20,11 +19,7 @@ function LineChart() {
   const isSmallViewport = width < 500;
   const fontSize = 20;
   const height = 400;
-  const legendWidth = 100;
-  const legendHeight = 50;
   const margin = {top: 15, bottom: 75, left: 75, right: isSmallViewport ? 10 : 150};
-  const circleRadius = 3;
-  const doubleCircleRadius = circleRadius * 2;
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
@@ -32,7 +27,7 @@ function LineChart() {
   const sectionWidth = xMax / years.length;
   const sectionWidthHalf = sectionWidth / 2;
 
-  const series = Object.keys(drugScreenOptions);
+  const series = Object.keys(drugOptions);
   const xKey = 'year';
 
   const xScale = scaleLinear({
@@ -41,13 +36,13 @@ function LineChart() {
   });
 
   const yScale = scaleLinear({
-    domain: [0, Math.max(...filteredData.map(d => Math.max(...Object.keys(drugScreenOptions).filter(drug => !isNaN(d[drug])).map(drug => d[drug]))))],
+    domain: [0, Math.max(...filteredData.map(d => Math.max(...Object.keys(drugOptions).filter(drug => !isNaN(d[drug])).map(drug => d[drug]))))],
     range: [yMax, 0],
   });
 
   let filteredDataNoSuppressed = [];
   filteredData.forEach(d => filteredDataNoSuppressed.push({...d}));
-  filteredDataNoSuppressed.forEach(d => Object.keys(drugScreenOptions).forEach(drug => {if(isNaN(d[drug])) d[drug] = 0}));
+  filteredDataNoSuppressed.forEach(d => Object.keys(drugOptions).forEach(drug => {if(isNaN(d[drug])) d[drug] = 0}));
 
   return (
     <>
@@ -60,10 +55,10 @@ function LineChart() {
                   data={filteredDataNoSuppressed}
                   x={(d) => xScale(d[xKey]) ?? 0}
                   y={(d) => yScale(d[drug]) ?? 0}
-                  stroke={drugScreenOptions[drug].color || '#333'}
+                  stroke={drugOptions[drug].color || '#333'}
                   strokeWidth={3}
                 />
-                {!isSmallViewport && <text x={xMax + 5} y={yScale(filteredData[filteredData.length - 1][drug])} alignmentBaseline="middle" fontSize={fontSize} fill={drugScreenOptions[drug].color || '#333'}>{drugScreenOptions[drug].titleAll}</text>}
+                {!isSmallViewport && <text x={xMax + 5} y={yScale(filteredData[filteredData.length - 1][drug])} alignmentBaseline="middle" fontSize={fontSize} fill={drugOptions[drug].color || '#333'}>{drugOptions[drug].titleAll}</text>}
               </Group>
             )}
             {filteredData.map(d => 
@@ -73,7 +68,7 @@ function LineChart() {
                 width={sectionWidth} 
                 height={yMax} 
                 fill='transparent'
-                data-tip={`<h3><strong>${d[xKey]}</strong></h3>` + series.map(drug => `<p><strong>${drugScreenOptions[drug].titleAll}</strong>: ${d[drug]}</p>`).join('')}></rect>
+                data-tip={`<h3><strong>${d[xKey]}</strong></h3>` + series.map(drug => `<p><strong>${drugOptions[drug].titleAll}</strong>: ${d[drug]}</p>`).join('')}></rect>
             )}
           </Group>
           <AxisLeft
@@ -114,8 +109,8 @@ function LineChart() {
         <svg style={{height: 110}}>
           {series.map((drug, i) => 
               <Group key={`line-series-${drug}`}>
-                <rect x={0} y={i * fontSize + fontSize} width={10} height={3} fill={drugScreenOptions[drug].color || '#333'} />
-                <text x={15} y={i * fontSize + fontSize} alignmentBaseline="middle" fontSize={fontSize} fill={drugScreenOptions[drug].color || '#333'}>{drugScreenOptions[drug].titleAll}</text>
+                <rect x={0} y={i * fontSize + fontSize} width={10} height={3} fill={drugOptions[drug].color || '#333'} />
+                <text x={15} y={i * fontSize + fontSize} alignmentBaseline="middle" fontSize={fontSize} fill={drugOptions[drug].color || '#333'}>{drugOptions[drug].titleAll}</text>
               </Group>
             )}
         </svg>

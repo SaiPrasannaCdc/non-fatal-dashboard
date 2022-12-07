@@ -1,14 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
 import Context from '../context';
 
 function Datatable() {
 
-  const { data, drugScreenOptions, currentDataSource, currentDrug, currentYear, currentMonth, currentState } = useContext(Context);
+  const { data, drugOptions, currentDataSource, currentDrug, currentYear, currentMonth, currentState } = useContext(Context);
 
-  const drugColor = drugScreenOptions[currentDrug].color;
+  const drugColor = drugOptions[currentDrug].color;
 
-  const filteredStateData = data.state[currentDataSource][drugScreenOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
+  const filteredStateData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
   const stateYears = Object.keys(filteredStateData[0]).filter(item => item !== 'state');
   const stateYearMin = Math.min(...stateYears);
   const stateYearMax = Math.max(...stateYears);
@@ -43,13 +43,13 @@ function Datatable() {
         <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
         <tr style={{ backgroundColor: drugColor }}>
           <th><button>Year</button></th>
-          {Object.keys(drugScreenOptions).map(drug => <th><button>{drugScreenOptions[drug].titleAll}</button></th>)}
+          {Object.keys(drugOptions).map(drug => <th><button>{drugOptions[drug].titleAll}</button></th>)}
         </tr>
         {filteredYearData.map((row) => {
           return (
             <tr>
               <td>{row.year}</td>
-              {Object.keys(drugScreenOptions).map(drug => <td>{row[drug]}</td>)}
+              {Object.keys(drugOptions).map(drug => <td>{row[drug]}</td>)}
             </tr>
           )
         })}

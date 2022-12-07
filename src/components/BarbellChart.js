@@ -8,11 +8,11 @@ import Context from '../context';
 
 function BarbellChart() {
 
-  const { data, drugScreenOptions, currentDataSource, currentDrug, currentMonth, width } = useContext(Context);
+  const { data, drugOptions, currentDataSource, currentDrug, currentMonth, width } = useContext(Context);
 
   if(width === 0) return <></>;
 
-  const filteredData = data.state[currentDataSource][drugScreenOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
+  const filteredData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
 
   const years = Object.keys(filteredData[0]).filter(item => item !== 'state');
   const states = filteredData.map(d => d.state);

@@ -1,10 +1,6 @@
 import React, { useContext } from 'react';
-/** @jsx jsx */
-import { jsx } from '@emotion/react'
-import { geoCentroid } from 'd3-geo';
 import { feature } from 'topojson-client';
 import topoJSON from '../data/county-map.json';
-import chroma from 'chroma-js';
 import { CustomProjection } from '@visx/geo';
 import { scaleLinear } from '@visx/scale';
 import ReactTooltip from 'react-tooltip';
