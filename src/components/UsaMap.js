@@ -17,12 +17,20 @@ const { features: stateTopo } = feature(topoJSON, topoJSON.objects.states)
 
 const UsaMap = () => {
 
-  const { data, currentYear } = useContext(Context);
+  const { data, currentYear, width } = useContext(Context);
+
+  if(width === 0) return <></>;
 
   const filteredData = data.county[currentYear];
 
-  const width = 880;
-  const height = 500;
+  const isSmallViewport = width < 500;
+  const legendWidth = 200;
+  const height = Math.max(width / 2, 250);
+  const halfHeight = height / 2;
+  const colorScaleHeight = 150;
+  const colorScaleHalfHeight = colorScaleHeight / 2;
+  const mapWidth = width - legendWidth;
+  const scaleFactor = (isSmallViewport ? width : mapWidth) * 1.2;
 
   const values = Object.keys(filteredData).map(key => filteredData[key].rate);
   const max = Math.max(...values.filter(val => !isNaN(val)));
@@ -31,7 +39,6 @@ const UsaMap = () => {
   const numColorIntervals = 20;
   const labelIntervalWidth = (max - min) / numLabelIntervals;
   const colorIntervalWidth = (max - min) / numColorIntervals;
-  const legendWidth = 200;
 
   let labelIntervals = [];
   for(let i = max; i >= min - 0.01; i -= labelIntervalWidth){
@@ -50,7 +57,7 @@ const UsaMap = () => {
 
   const colorLegendScale = scaleLinear({
     domain: [min, max],
-    range: [300, 150]
+    range: [halfHeight + colorScaleHalfHeight, halfHeight - colorScaleHalfHeight]
   })
 
   const constructGeoJsx = (geographies, projection, state = false) => {
@@ -69,7 +76,7 @@ const UsaMap = () => {
             tabIndex={-1}
             className='single-geo'
             stroke={state ? '#000' : '#777'}
-            strokeWidth={state ? 1 : .5}
+            strokeWidth={state ? 1 : isSmallViewport ? 0.1 : .5}
             fill={filteredData[geo.id] ? (isNaN(filteredData[geo.id].rate) ? '#666' : colorScale(filteredData[geo.id].rate)) : 'transparent'}
             d={path}
             style={{pointerEvents: geo.id.length <= 2 ? 'none' : 'default'}}
@@ -88,16 +95,18 @@ const UsaMap = () => {
         html={true}
         className="tooltip"
       />
-      <svg viewBox={`0 0 ${width} ${height}`} fill="none" aria-describedby="main-data-table">
-        <CustomProjection data={countyTopo} scale={(1 - (legendWidth / width)) * 1000} translate={[(width / 2) - (legendWidth / 2), height / 2]} projection={geoAlbersUsaTerritories}>
+      <svg style={{height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block'}} fill="none" aria-describedby="main-data-table">
+        <CustomProjection data={countyTopo} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2, halfHeight]} projection={geoAlbersUsaTerritories}>
           {({ features, projection }) => constructGeoJsx(features, projection)}
         </CustomProjection>
-        <CustomProjection data={stateTopo} scale={(1 - (legendWidth / width)) * 1000} translate={[(width / 2) - (legendWidth / 2), height / 2]} projection={geoAlbersUsaTerritories}>
+        <CustomProjection data={stateTopo} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2, halfHeight]} projection={geoAlbersUsaTerritories}>
           {({ features, projection }) => constructGeoJsx(features, projection, true)}
         </CustomProjection>
-        <text x={width - legendWidth} y={100} fill="black" fontSize={12}>Rate per 100,000 population</text>
-        {colorIntervals.map(value => <rect x={width - legendWidth} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-        {labelIntervals.map((value, i) => <text x={width - legendWidth + 60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
+        </svg>
+      <svg style={{height, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block'}}>
+        <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={15}>Rate per 100,000 population</text>
+        {colorIntervals.map(value => <rect x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+        {labelIntervals.map((value, i) => <text x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
       </svg>
     </>
   )

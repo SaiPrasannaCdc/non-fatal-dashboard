@@ -91,6 +91,10 @@ line { stroke: #ccc; stroke-width: 1; }
         max-width: 100%;
     }
 
+    svg {
+        width: 100%;
+    }
+
     /*******************
      Useful table styles
      *******************/
@@ -265,6 +269,12 @@ line { stroke: #ccc; stroke-width: 1; }
         }
     }
 
+    .x-axis-label {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 20px;
+    }
+
     .btn {
         background: $blue;
         color: #fff;
@@ -411,6 +421,10 @@ line { stroke: #ccc; stroke-width: 1; }
             grid-template-columns: 1fr 1fr;
             gap: $gbl-padding;
             margin-bottom: $gbl-padding;
+
+            &.no-grid {
+                display: block;
+            }
 
             .compare {
                 grid-column-start: 1;

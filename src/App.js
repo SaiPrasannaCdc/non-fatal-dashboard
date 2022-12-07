@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import "babel-polyfill";
+import debounce from 'lodash.debounce';
 import chroma from 'chroma-js';
 import Papa from 'papaparse';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
 import { Base64 } from 'js-base64';
 import * as XLSX from 'xlsx';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import BarbellChart from './components/BarbellChart';
 import LineChart from './components/LineChart';
@@ -114,11 +116,32 @@ export default function App({ dataUrl }) {
   const [ currentYear, setCurrentYear ] = useState('2018');
   const [ showDatatable, setDatatable ] = useState(false);
   const [ showConsiderations, setConsiderations ] = useState(false);
+  const [ width, setWidth ] = useState(0);
+
+  const isSmallViewport = width < 500;
 
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
 
   const drugColor = drugScreenOptions[currentDrug].color;
+
+  const debouncedSetWidth = useMemo(
+    () => debounce(setWidth, 300)
+  , []);
+
+  const resizeObserver = new ResizeObserver(entries => {
+    const { width: newWidth } = entries[0].contentRect;
+
+    if(newWidth !== width) {
+      debouncedSetWidth(newWidth);
+    }
+  });
+
+  const outerContainerRef = useCallback(node => {
+    if (node !== null) {
+        resizeObserver.observe(node);
+    } // eslint-disable-next-line
+  },[]);
 
   useEffect(async () => {
     const binaryData = await (await fetch(dataUrl)).arrayBuffer();
@@ -268,13 +291,13 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{data, drugScreenOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear}}>
-      <div className="filters-container">
+    <Context.Provider value={{data, drugScreenOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear, width}}>
+      <div className="filters-container" ref={outerContainerRef}>
         <div>
         {/*<div className={`filter-wrapper ${showTimeline ? 'show-timeline' : ''}`}>*/}
           <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
           <div className="filters">
-            <div className="dropdowns">
+            <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
               <div>
                 <label htmlFor="data-source-select">Select data source: </label>
                 <select id="data-source-select" value={currentDataSource} onChange={(e) => { setCurrentDataSource(e.target.value) }}>
