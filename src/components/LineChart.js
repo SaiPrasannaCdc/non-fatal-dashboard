@@ -1,14 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { LinePath } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
-import Context from '../context';
+function LineChart({params}) {
 
-function LineChart() {
-
-  const { data, drugOptions, currentDataSource, currentState, currentMonth, width } = useContext(Context);
+  const { data, drugOptions, currentDataSource, currentState, currentMonth, width } = params;
 
   if(width === 0) return <></>;
 

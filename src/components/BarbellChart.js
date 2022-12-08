@@ -1,14 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Circle, Line } from '@visx/shape';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
-import Context from '../context';
+function BarbellChart({params}) {
 
-function BarbellChart() {
-
-  const { data, drugOptions, currentDataSource, currentDrug, currentMonth, width } = useContext(Context);
+  const { data, drugOptions, currentDataSource, currentDrug, currentMonth, width } = params;
 
   if(width === 0) return <></>;
 

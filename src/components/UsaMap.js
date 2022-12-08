@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { feature } from 'topojson-client';
 import topoJSON from '../data/county-map.json';
 import { CustomProjection } from '@visx/geo';
@@ -6,14 +6,12 @@ import { scaleLinear } from '@visx/scale';
 import ReactTooltip from 'react-tooltip';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
 
-import Context from '../context';
-
 const { features: countyTopo } = feature(topoJSON, topoJSON.objects.counties)
 const { features: stateTopo } = feature(topoJSON, topoJSON.objects.states)
 
-const UsaMap = () => {
+const UsaMap = ({params}) => {
 
-  const { data, currentYear, width } = useContext(Context);
+  const { data, currentYear, width } = params;
 
   if(width === 0) return <></>;
 

@@ -1,10 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
-import Context from '../context';
+function Datatable({params}) {
 
-function Datatable() {
-
-  const { data, drugOptions, currentDataSource, currentDrug, currentYear, currentMonth, currentState } = useContext(Context);
+  const { data, drugOptions, currentDataSource, currentDrug, currentYear, currentMonth, currentState } = params;
 
   const drugColor = drugOptions[currentDrug].color;
 

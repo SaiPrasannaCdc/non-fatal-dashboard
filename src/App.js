@@ -11,7 +11,6 @@ import SexAgeCharts from './components/SexAgeCharts';
 import UsaMap from './components/UsaMap';
 import Datatable from './components/Datatable';
 
-import Context from './context';
 import './styles.scss';
 
 const dataSourceOptions = {
@@ -265,17 +264,17 @@ export default function App({ dataUrl }) {
 
   const countyMap = useMemo(() => 
     <>
-      <UsaMap />
+      <UsaMap params={{data, currentYear, width}}/>
     </>,
-  [currentYear])
+  [data, currentYear, width])
 
   const charts = useMemo(() => 
     <>
-      <BarbellChart />
-      <LineChart />
-      <SexAgeCharts />
+      <BarbellChart params={{ data, drugOptions, currentDataSource, currentDrug, currentMonth, width }} />
+      <LineChart params={{data, drugOptions, currentDataSource, currentState, currentMonth, width}} />
+      <SexAgeCharts params={{data, currentDataSource, currentDrug, currentYear, currentMonth, width}} />
     </>,
-  [currentDataSource, currentDrug, currentState, currentMonth, currentYear])
+  [data, drugOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear, width])
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -286,7 +285,7 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{data, drugOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear, width}}>
+    <>
       <div className="filters-container" ref={outerContainerRef}>
         <div>
           <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
@@ -365,7 +364,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable />
+              <Datatable params={{data, drugOptions, currentDataSource, currentDrug, currentYear, currentMonth, currentState}}/>
               <small>
                 <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
                 <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
@@ -405,6 +404,6 @@ export default function App({ dataUrl }) {
         Download Data (XLSX)
       </a>
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
-    </Context.Provider>
+    </>
   );
 }

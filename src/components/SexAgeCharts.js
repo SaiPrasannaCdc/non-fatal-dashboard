@@ -1,15 +1,13 @@
-import React, { useContext }  from 'react';
+import React from 'react';
 import { Bar } from '@visx/shape';
 import { Text } from '@visx/text';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom } from '@visx/axis';
 
-import Context from '../context';
+function SexAgeCharts({params}) {
 
-function SexAgeCharts() {
-
-  const { data, currentDataSource, currentDrug, currentYear, currentMonth, width } = useContext(Context);
+  const { data, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
 
   if(width === 0) return <></>;
 
