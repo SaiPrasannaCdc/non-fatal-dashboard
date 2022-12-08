@@ -9,8 +9,6 @@ function SexAgeCharts({params}) {
 
   const { data, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
 
-  if(width === 0) return <></>;
-
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
 
   const isSmallViewport = width < 500;
@@ -66,7 +64,6 @@ function SexAgeCharts({params}) {
 
   return (
     <>
-      <h2>Sex Age Chart</h2>
       <svg style={{height}}>
         <Group top={margin.top} left={margin.left}>
           <Group>

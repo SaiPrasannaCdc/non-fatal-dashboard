@@ -9,6 +9,7 @@ import BarbellChart from './components/BarbellChart';
 import LineChart from './components/LineChart';
 import SexAgeCharts from './components/SexAgeCharts';
 import UsaMap from './components/UsaMap';
+import Select from './components/Select';
 import Datatable from './components/Datatable';
 
 import './styles.scss';
@@ -53,9 +54,8 @@ const drugOptions = {
   },
 };
 
-const supportedMonths = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'all'];
+const supportedYears = [2018, 2019, 2020, 2021];
 const monthNames = {'1': 'January','2': 'February','3': 'March','4': 'April','5': 'May','6': 'June','7': 'July','8': 'August','9': 'September','10': 'October','11': 'November','12': 'December','all': 'All Months'};
-const supportedYears = ['2018', '2019', '2020', '2021'];
 const stateNames = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
 
 const createNewDrugObject = (rates = true) => {
@@ -102,8 +102,12 @@ export default function App({ dataUrl }) {
   const [ currentDataSource, setCurrentDataSource ] = useState('ED');
   const [ currentDrug, setCurrentDrug ] = useState('alldrug');
   const [ currentState, setCurrentState ] = useState('US');
-  const [ currentMonth, setCurrentMonth ] = useState('all');
+  const [ currentTimeframe, setCurrentTimeframe ] = useState('Yearly');
+  const [ currentMonthState, setCurrentMonthState ] = useState('1');
   const [ currentYear, setCurrentYear ] = useState('2018');
+  const [ currentYearCounty, setCurrentYearCounty ] = useState('2018');
+  const [ currentMonthSexAge, setCurrentMonthSexAge ] = useState('1');
+  const [ currentYearSexAge, setCurrentYearSexAge ] = useState('2018');
   const [ showDatatable, setDatatable ] = useState(false);
   const [ showConsiderations, setConsiderations ] = useState(false);
   const [ width, setWidth ] = useState(0);
@@ -262,19 +266,77 @@ export default function App({ dataUrl }) {
     fetchData();
   }, []);
 
-  const countyMap = useMemo(() => 
+  const barbellChartMemo = useMemo(() => 
     <>
-      <UsaMap params={{data, currentYear, width}}/>
+      <h2>Barbell Chart: {dataSourceOptions[currentDataSource]['title']}, {drugOptions[currentDrug]['titleAll']}{currentTimeframe === 'Monthly' && `, ${monthNames[currentMonthState]}`}</h2>
+      {currentTimeframe === 'Monthly' && <Select params={{
+        key: 'month',
+        label: 'a Month',
+        value: currentMonthState,
+        onChange: setCurrentMonthState,
+        options: Object.keys(monthNames).filter(key => key !== 'all'),
+        optionLabel: (key) => monthNames[key]
+      }}/>}
+      <BarbellChart params={{ data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonth: currentMonthState, width }} />
     </>,
-  [data, currentYear, width])
+  [data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonthState, width]);
 
-  const charts = useMemo(() => 
+  const lineChartMemo = useMemo(() => 
     <>
-      <BarbellChart params={{ data, drugOptions, currentDataSource, currentDrug, currentMonth, width }} />
-      <LineChart params={{data, drugOptions, currentDataSource, currentState, currentMonth, width}} />
-      <SexAgeCharts params={{data, currentDataSource, currentDrug, currentYear, currentMonth, width}} />
+      <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}</h2>
+      <LineChart params={{data, drugOptions, currentDataSource, currentState, width}} />
+      {currentTimeframe === 'Monthly' && <>
+        <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}, {currentYear}</h2>
+        <Select params={{
+          key: 'year',
+          label: 'a Year',
+          value: currentYear,
+          onChange: setCurrentYear,
+          options: supportedYears,
+          optionLabel: (key) => key
+        }}/>
+        <LineChart params={{monthly: true, data, monthNames,  drugOptions, currentDataSource, currentState, currentYear, width}} />
+      </>}
     </>,
-  [data, drugOptions, currentDataSource, currentDrug, currentState, currentMonth, currentYear, width])
+  [data, monthNames, drugOptions, currentDataSource, currentState, currentTimeframe, currentYear, width]);
+
+  const sexAgeChartsMemo = useMemo(() => 
+    <>
+      <h2>Bar Chart: {dataSourceOptions[currentDataSource]['title']}, {drugOptions[currentDrug]['titleAll']}, {currentYearSexAge}, {monthNames[currentMonthSexAge]}</h2>
+      <Select params={{
+        key: 'year',
+        label: 'a Year',
+        value: currentYearSexAge,
+        onChange: setCurrentYearSexAge,
+        options: supportedYears,
+        optionLabel: (key) => key
+      }}/>
+      <Select params={{
+        key: 'month',
+        label: 'a Month',
+        value: currentMonthSexAge,
+        onChange: setCurrentMonthSexAge,
+        options: Object.keys(monthNames).filter(key => key !== 'all'),
+        optionLabel: (key) => monthNames[key]
+      }}/>
+      <SexAgeCharts params={{data, currentDataSource, currentDrug, currentYear: currentYearSexAge, currentMonth: currentMonthSexAge, width}} />
+    </>,
+  [data, currentDataSource, currentDrug, currentYearSexAge, currentMonthSexAge, width]);
+
+  const usaMapMemo = useMemo(() => 
+    <>
+      <h2>Map: {currentYearCounty}</h2>
+      <Select params={{
+        key: 'year',
+        label: 'a Year',
+        value: currentYearCounty,
+        onChange: setCurrentYearCounty,
+        options: supportedYears,
+        optionLabel: (key) => key
+      }}/>
+      <UsaMap params={{data, currentYear: currentYearCounty, width}}/>
+    </>,
+  [data, currentYearCounty, width]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -287,73 +349,85 @@ export default function App({ dataUrl }) {
   return (
     <>
       <div className="filters-container" ref={outerContainerRef}>
-        <div>
-          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
-          <div className="filters">
-            <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
-              <div>
-                <label htmlFor="data-source-select">Select data source: </label>
-                <select id="data-source-select" value={currentDataSource} onChange={(e) => { setCurrentDataSource(e.target.value) }}>
-                  {Object.keys(dataSourceOptions).map((key) => <option key={key} value={key}>{dataSourceOptions[key]['title']}</option>)}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="drug-select">Select a Drug: </label>
-                <select id="drug-select" value={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
-                  {Object.keys(drugOptions).map((key) => <option key={key} value={key}>{drugOptions[key]['titleAll']}</option>)}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="jurisdiction-select">Select a State: </label>
-                <select id="jurisdiction-select" value={currentState} onChange={(e) => { setCurrentState(e.target.value) }}>
-                  {Object.keys(data.supportedStates).map((key) => <option key={key} value={key}>{data.supportedStates[key]}</option>)}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="month-select">Select a Month: </label>
-                <select id="month-select" value={currentMonth} onChange={(e) => { setCurrentMonth(e.target.value) }}>
-                  {supportedMonths.map((key) => <option key={key} value={key}>{monthNames[key]}</option>)}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="year-select">Select a Year: </label>
-                <select id="year-select" value={currentYear} onChange={(e) => { setCurrentYear(e.target.value) }}>
-                  {supportedYears.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
+        {width > 0 && (
+          <>
+            <div>
+              <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
+              <div className="filters">
+                <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
+                  <Select params={{
+                    key: 'data-source', 
+                    label: 'Data Source', 
+                    value: currentDataSource, 
+                    onChange: setCurrentDataSource, 
+                    options: Object.keys(dataSourceOptions), 
+                    optionLabel: (key) => dataSourceOptions[key]['title']}}
+                  />
+                  <Select params={{
+                    key: 'drug', 
+                    label: 'a Drug', 
+                    value: currentDrug, 
+                    onChange: setCurrentDrug, 
+                    options: Object.keys(drugOptions), 
+                    optionLabel: (key) => drugOptions[key]['titleAll']}}
+                  />
+                  <Select params={{
+                    key: 'jurisdiction', 
+                    label: 'a State', 
+                    value: currentState, 
+                    onChange: setCurrentState, 
+                    options: Object.keys(data.supportedStates), 
+                    optionLabel: (key) => data.supportedStates[key]}}
+                  />
+                  <Select params={{
+                    key: 'timeframe', 
+                    label: 'Time Frame', 
+                    value: currentTimeframe, 
+                    onChange: setCurrentTimeframe, 
+                    options: ['Monthly', 'Yearly'], 
+                    optionLabel: (key) => key}}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
-          <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
-          <h2>Suspected {drugOptions[currentDrug]['titleAll']} Overdoses</h2>
-        </header>
-        <div className="callouts">
-          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-            <span className="callout" style={{ 'color': drugColor }}>{data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear].toLocaleString()}</span>
-            <div>
-              <span className='data-bite-title' style={{ color: drugColor }}>Annual Number of Overdoses</span>
-              <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
+            <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
+              <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
+              <h2>Suspected {drugOptions[currentDrug]['titleAll']} Overdoses</h2>
+            </header>
+            <div className="callouts">
+              <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+                <span className="callout" style={{ 'color': drugColor }}>{data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear].toLocaleString()}</span>
+                <div>
+                  <span className='data-bite-title' style={{ color: drugColor }}>Annual Number of Overdoses</span>
+                  <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
+                </div>
+              </div>
+              <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+                <span className="callout" style={{ 'color': drugColor }}>{Math.round(data.state[currentDataSource][drugOptions[currentDrug].rateColumn]['all'].find(item => item.state === currentState)[currentYear] * 10) / 10}</span>
+                <div>
+                  <span className='data-bite-title' style={{ color: drugColor }}>Annual Rate of Overdoses</span>
+                  <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
+                </div>
+              </div>
+              <div style={{ 'borderLeft': '5px solid' + drugColor }}>
+                <span className="callout" style={{ 'color': drugColor }}>{Object.keys(data.supportedStates).length - 1}</span>
+                <div>
+                  <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
+                  <p>Funded states with reported data</p>
+                </div>
+              </div>
             </div>
-          </div>
-          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-            <span className="callout" style={{ 'color': drugColor }}>{Math.round(data.state[currentDataSource][drugOptions[currentDrug].rateColumn]['all'].find(item => item.state === currentState)[currentYear] * 10) / 10}</span>
-            <div>
-              <span className='data-bite-title' style={{ color: drugColor }}>Annual Rate of Overdoses</span>
-              <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
-            </div>
-          </div>
-          <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-            <span className="callout" style={{ 'color': drugColor }}>{Object.keys(data.supportedStates).length - 1}</span>
-            <div>
-              <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
-              <p>Funded states with reported data</p>
-            </div>
-          </div>
-        </div>
-        {charts}
-        {countyMap}
+
+            {barbellChartMemo}
+
+            {lineChartMemo}
+
+            {sexAgeChartsMemo}
+
+            {usaMapMemo}
+          </>
+          )}
       </div>
       <div className='data-tables'>
         <div className="datatable-container">
@@ -364,7 +438,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable params={{data, drugOptions, currentDataSource, currentDrug, currentYear, currentMonth, currentState}}/>
+              <Datatable params={{data, monthNames, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear, currentYearCounty, currentYearSexAge}}/>
               <small>
                 <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
                 <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>

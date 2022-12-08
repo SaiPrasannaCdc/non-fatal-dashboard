@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Circle, Line } from '@visx/shape';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
+import Select from './Select';
+
 function BarbellChart({params}) {
 
-  const { data, drugOptions, currentDataSource, currentDrug, currentMonth, width } = params;
+  const { data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonth, width } = params;
 
-  if(width === 0) return <></>;
-
-  const filteredData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
+  const filteredData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentTimeframe === 'Monthly' ? currentMonth : 'all'].filter(d => d.state !== 'US');
 
   const years = Object.keys(filteredData[0]).filter(item => item !== 'state');
   const states = filteredData.map(d => d.state);
@@ -67,7 +67,7 @@ function BarbellChart({params}) {
           <rect x={0} y={0} width={xMax} height={yMax} stroke="#ccc" fill="transparent" />
           <Group>
             {filteredData.map((d) => (
-              <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
+              <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
                 <Line x1={xScale(getX1Value(d))} x2={xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])}/>
                 {isNaN(getX1Value(d)) ? <text x={xScale(getX1Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke="#666">X</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue" fill="transparent"/>}
                 {isNaN(getX2Value(d)) ? <text x={xScale(getX2Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke="#666">X</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue"/>}

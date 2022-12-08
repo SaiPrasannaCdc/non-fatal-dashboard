@@ -1,18 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { LinePath } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
+import Select from './Select';
+
+const monthNamesShort = {'1': 'Jan','2': 'Feb','3': 'Mar','4': 'Apr','5': 'May','6': 'Jun','7': 'Jul','8': 'Aug','9': 'Sep','10': 'Oct','11': 'Nov','12': 'Dec'};
+
+const lessMonths = (arr) => {
+  let output = [];
+  for(let i = 0; i < arr.length; i += 3){
+    output.push(arr[i]);
+  }
+  return output;
+};
+
 function LineChart({params}) {
 
-  const { data, drugOptions, currentDataSource, currentState, currentMonth, width } = params;
+  const { monthly = false, data, monthNames, drugOptions, currentDataSource, currentState, currentYear: currentYearUntyped, width } = params;
 
-  if(width === 0) return <></>;
+  const currentYear = parseInt(currentYearUntyped);
 
-  const filteredData = data.year[currentDataSource][currentState][currentMonth];
+  const filteredData = monthly ? 
+    Object.keys(data.year[currentDataSource][currentState]).map(month => {
+      let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
+      if(d){
+        d.month = parseInt(month);
+        return d;
+      }
+    }).filter(d => !isNaN(d.month)) : 
+    data.year[currentDataSource][currentState]['all'];
 
-  const years = filteredData.map(d => parseInt(d.year));
+  const xValues = filteredData.map(d => monthly ? d.month : d.year);
+  const years = data.year[currentDataSource][currentState]['all'].map(d => d.year);
 
   const isSmallViewport = width < 500;
   const fontSize = 20;
@@ -22,14 +43,14 @@ function LineChart({params}) {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
-  const sectionWidth = xMax / years.length;
+  const sectionWidth = xMax / xValues.length;
   const sectionWidthHalf = sectionWidth / 2;
 
   const series = Object.keys(drugOptions);
-  const xKey = 'year';
+  const xKey = monthly ? 'month' : 'year';
 
   const xScale = scaleLinear({
-    domain: [Math.min(...years), Math.max(...years)],
+    domain: [Math.min(...xValues), Math.max(...xValues)],
     range: [0, xMax]
   });
 
@@ -67,7 +88,7 @@ function LineChart({params}) {
                 width={sectionWidth} 
                 height={yMax} 
                 fill='transparent'
-                data-tip={`<h3><strong>${d[xKey]}</strong></h3>` + series.map(drug => `<p><strong>${drugOptions[drug].titleAll}</strong>: ${d[drug]}</p>`).join('')}></rect>
+                data-tip={`<h3><strong>${monthly ? monthNames[d[xKey]] : d[xKey]}</strong></h3>` + series.map(drug => `<p><strong>${drugOptions[drug].titleAll}</strong>: ${d[drug]}</p>`).join('')}></rect>
             )}
           </Group>
           <AxisLeft
@@ -90,9 +111,9 @@ function LineChart({params}) {
           <AxisBottom
             top={yMax}
             scale={xScale}
-            tickValues={filteredData.map(d => d[xKey])}
-            tickFormat={value => value.toFixed(0)}
-            label={'Year'}
+            tickValues={monthly && isSmallViewport ? lessMonths(filteredData.map(d => d[xKey])) : filteredData.map(d => d[xKey])}
+            tickFormat={value => monthly ? monthNamesShort[value] : value.toFixed(0)}
+            label={monthly ? 'Month' : 'Year'}
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'middle'
