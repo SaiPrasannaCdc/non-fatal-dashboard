@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Circle, Line } from '@visx/shape';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
-
-import Select from './Select';
 
 function BarbellChart({params}) {
 
@@ -108,7 +106,7 @@ function BarbellChart({params}) {
       </svg>
       <p className="x-axis-label" style={{marginLeft: margin.left}}>Overdoses Per 100,000 Population</p>
       {isSmallViewport && (
-        <svg style={{height: 75}}>
+        <svg style={{height: legendHeight}}>
           <Group top={10} left={10}>
             {legend}
           </Group>

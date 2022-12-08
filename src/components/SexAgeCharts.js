@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bar } from '@visx/shape';
+import { Bar, Circle } from '@visx/shape';
 import { Text } from '@visx/text';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
@@ -13,8 +13,10 @@ function SexAgeCharts({params}) {
 
   const isSmallViewport = width < 500;
   const fontSize = 20;
+  const legendWidth = 125;
+  const legendHeight = 85;
   const height = 450;
-  const margin = {top: 50, bottom: 100, left: 50, right: 15};
+  const margin = {top: 50, bottom: 100, left: 50, right: isSmallViewport ? 15 : legendWidth};
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
@@ -61,6 +63,12 @@ function SexAgeCharts({params}) {
       </g>
     )
   }
+  const legend = 
+    <>
+      <rect x={0} y={0} width={legendWidth} height={legendHeight} stroke="black" fill="transparent"/>
+      <Circle cx={25} cy={25} r={6} fill="lightblue" /><text x={40} y={25} fill="black" alignmentBaseline="middle">Male</text>
+      <Circle cx={25} cy={55} r={6} fill="rgb(43, 45, 115)" /><text x={40} y={55} fill="black" alignmentBaseline="middle">Female</text>
+    </>;
 
   return (
     <>
@@ -100,8 +108,16 @@ function SexAgeCharts({params}) {
               }
             }}
           />
+          {!isSmallViewport && <Group top={0} left={width - legendWidth - margin.left}>{legend}</Group>}
         </Group>
       </svg>
+      {isSmallViewport && (
+        <svg style={{height: legendHeight}}>
+          <Group top={0} left={0}>
+            {legend}
+          </Group>
+        </svg>
+      )}
     </>
   )
 }
