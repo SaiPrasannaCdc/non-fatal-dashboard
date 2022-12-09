@@ -351,7 +351,7 @@ export default function App({ dataUrl }) {
       <div className="filters-container" ref={outerContainerRef}>
         {width > 0 && (
           <>
-            <div>
+            <div className="filter-wrapper">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
               <div className="filters">
                 <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>

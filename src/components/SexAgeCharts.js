@@ -63,6 +63,7 @@ function SexAgeCharts({params}) {
       </g>
     )
   }
+  
   const legend = 
     <>
       <rect x={0} y={0} width={legendWidth} height={legendHeight} stroke="black" fill="transparent"/>
