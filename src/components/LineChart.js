@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { LinePath } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
-
-import Select from './Select';
 
 const monthNamesShort = {'1': 'Jan','2': 'Feb','3': 'Mar','4': 'Apr','5': 'May','6': 'Jun','7': 'Jul','8': 'Aug','9': 'Sep','10': 'Oct','11': 'Nov','12': 'Dec'};
 
