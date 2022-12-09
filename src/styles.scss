@@ -7,6 +7,7 @@ html {
 }
 
 #non-fatal-container {
+
     /*******************
      Reset
      *******************/
@@ -129,7 +130,8 @@ html {
         margin: auto;
     }
 
-    h2, .select-input {
+    h2,
+    .select-input {
         margin-bottom: 15px;
     }
 
@@ -163,7 +165,7 @@ html {
             padding: '0';
             display: 'block';
             font-weight: 'bold';
-            font-family: "Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif;
+            font-family: "Open Sans", apple-system, blinkmacsystemfont, "Segoe UI", "Helvetica Neue", arial, sans-serif;
         }
     }
 
@@ -183,11 +185,13 @@ html {
         border-radius: .3em;
         transition: .1s background-color;
         cursor: pointer;
+
         &.full-width {
-          width: 100%;
+            width: 100%;
         }
+
         &:hover {
-          transition: .1s background-color;
+            transition: .1s background-color;
         }
     }
 
@@ -196,6 +200,7 @@ html {
         text-decoration: none;
         transition: .3s all;
         margin: 1em 0;
+
         &:hover {
             transition: .3s all;
         }
@@ -210,17 +215,17 @@ html {
         padding-bottom: $gbl-padding;
 
         @include r($md) {
-            grid-template-columns: repeat( 4, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: $gbl-padding;
         }
 
-        > button {
+        >button {
             // height: 60px;
             padding: 20px 0;
             background: none;
             border-radius: 30px;
             box-shadow: 0 2px 5px #d3d3d3;
-            vertical-align:middle;
+            vertical-align: middle;
             cursor: pointer;
 
             &.active {
@@ -238,7 +243,7 @@ html {
     }
 
     header h2 {
-        color: rgb(255,255,255);
+        color: rgb(255, 255, 255);
     }
 
     .filter-wrapper {
@@ -314,7 +319,7 @@ html {
             }
         }
 
-        > div {
+        >div {
             margin-right: 20px;
         }
     }
@@ -322,8 +327,8 @@ html {
     /* Tooltip Styles - overrides some default ones provided by <ReactTooltip /> */
     .tooltip {
         opacity: 1 !important;
-        border: rgba(0,0,0,.3) 1px solid;
-        box-shadow: rgba(0,0,0,.1) 3px 3px 7px;
+        border: rgba(0, 0, 0, .3) 1px solid;
+        box-shadow: rgba(0, 0, 0, .1) 3px 3px 7px;
         opacity: 1;
         line-height: 1;
         font-size: 1em;
@@ -336,12 +341,12 @@ html {
         gap: 1em;
         margin-bottom: 1em;
 
-        @include r($lg){
+        @include r($lg) {
             grid-template-columns: repeat(3, 1fr);
         }
 
-        > div {
-            border: 1px solid rgba(0,0,0,.125);
+        >div {
+            border: 1px solid rgba(0, 0, 0, .125);
             border-left: 5px solid #B890BB;
             border-radius: .25rem;
             min-height: 126px;
@@ -352,6 +357,7 @@ html {
             svg {
                 flex-shrink: 0;
             }
+
             span.callout {
                 font-size: 2em;
                 font-weight: 500;
@@ -359,12 +365,13 @@ html {
                 padding: 0 .5em 0 .1em;
                 font-family: "Merriweather", serif;
             }
+
             p {
                 font-size: .85em;
             }
 
             .data-bite-title {
-                font-family: Merriweather,serif;
+                font-family: Merriweather, serif;
                 line-height: 1.1;
                 font-weight: bold;
                 text-align: left;

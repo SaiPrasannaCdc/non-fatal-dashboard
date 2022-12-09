@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Select({params}) {
+function Select({ params }) {
 
   const { key, label, value, onChange, options, optionLabel } = params;
 

@@ -55,13 +55,13 @@ const drugOptions = {
 };
 
 const supportedYears = [2018, 2019, 2020, 2021];
-const monthNames = {'1': 'January','2': 'February','3': 'March','4': 'April','5': 'May','6': 'June','7': 'July','8': 'August','9': 'September','10': 'October','11': 'November','12': 'December','all': 'All Months'};
-const stateNames = {'US': 'United States', 'AL':'Alabama','AK':'Alaska','AZ':'Arizona','AR':'Arkansas','CA':'California','CO':'Colorado','CT':'Connecticut','DE':'Delaware','DC':'District of Columbia','FL':'Florida','GA':'Georgia','HI':'Hawaii','ID':'Idaho','IL':'Illinois','IN':'Indiana','IA':'Iowa','KS':'Kansas','KY':'Kentucky','LA':'Louisiana','ME':'Maine','MD':'Maryland','MA':'Massachusetts','MI':'Michigan','MN':'Minnesota','MS':'Mississippi','MO':'Missouri','MT':'Montana','NE':'Nebraska','NV':'Nevada','NH':'New Hampshire','NJ':'New Jersey','NM':'New Mexico','NY':'New York','NC':'North Carolina','ND':'North Dakota','OH':'Ohio','OK':'Oklahoma','OR':'Oregon','PA':'Pennsylvania','RI':'Rhode Island','SC':'South Carolina','SD':'South Dakota','TN':'Tennessee','TX':'Texas','UT':'Utah','VT':'Vermont','VA':'Virginia','WA':'Washington','WV':'West Virginia','WI':'Wisconsin','WY':'Wyoming'};
+const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
+const stateNames = { 'US': 'United States', 'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming' };
 
 const createNewDrugObject = (rates = true) => {
   let obj = {};
   Object.keys(drugOptions).forEach(drug => {
-    if(rates){
+    if (rates) {
       obj[drugOptions[drug].rateColumn] = {};
     }
     obj[drug] = {};
@@ -73,23 +73,23 @@ const getColumnsInfo = (sheet) => {
   let columnHeaders = {};
   let columns = 0;
   for (let key in sheet) {
-    if(key.charAt(0) !== '!'){
+    if (key.charAt(0) !== '!') {
       let colKey = key.replace(/[0-9]*/g, '');
       let rowNum = parseInt(key.replace(/[^0-9]*/g, ''));
-      
-      if(rowNum > columns) columns = rowNum;
+
+      if (rowNum > columns) columns = rowNum;
 
       if (rowNum === 1) {
         columnHeaders[sheet[key].v] = colKey;
       }
     }
   }
-  return {columnHeaders, columns};
+  return { columnHeaders, columns };
 };
 
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
-  if(isNaN(numericVal)){
+  if (isNaN(numericVal)) {
     return 'Data suppressed';
   } else {
     return isFloat ? numericVal.toFixed(1) : numericVal;
@@ -98,19 +98,19 @@ const formatNumber = (val, isFloat = true) => {
 
 export default function App({ dataUrl }) {
 
-  const [ data, setData ] = useState();
-  const [ currentDataSource, setCurrentDataSource ] = useState('ED');
-  const [ currentDrug, setCurrentDrug ] = useState('alldrug');
-  const [ currentState, setCurrentState ] = useState('US');
-  const [ currentTimeframe, setCurrentTimeframe ] = useState('Yearly');
-  const [ currentMonthState, setCurrentMonthState ] = useState('1');
-  const [ currentYear, setCurrentYear ] = useState('2018');
-  const [ currentYearCounty, setCurrentYearCounty ] = useState('2018');
-  const [ currentMonthSexAge, setCurrentMonthSexAge ] = useState('1');
-  const [ currentYearSexAge, setCurrentYearSexAge ] = useState('2018');
-  const [ showDatatable, setDatatable ] = useState(false);
-  const [ showConsiderations, setConsiderations ] = useState(false);
-  const [ width, setWidth ] = useState(0);
+  const [data, setData] = useState();
+  const [currentDataSource, setCurrentDataSource] = useState('ED');
+  const [currentDrug, setCurrentDrug] = useState('alldrug');
+  const [currentState, setCurrentState] = useState('US');
+  const [currentTimeframe, setCurrentTimeframe] = useState('Yearly');
+  const [currentMonthState, setCurrentMonthState] = useState('1');
+  const [currentYear, setCurrentYear] = useState('2018');
+  const [currentYearCounty, setCurrentYearCounty] = useState('2018');
+  const [currentMonthSexAge, setCurrentMonthSexAge] = useState('1');
+  const [currentYearSexAge, setCurrentYearSexAge] = useState('2018');
+  const [showDatatable, setDatatable] = useState(false);
+  const [showConsiderations, setConsiderations] = useState(false);
+  const [width, setWidth] = useState(0);
 
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
@@ -121,21 +121,21 @@ export default function App({ dataUrl }) {
 
   const debouncedSetWidth = useMemo(
     () => debounce(setWidth, 300)
-  , []);
+    , []);
 
   const resizeObserver = new ResizeObserver(entries => {
     const { width: newWidth } = entries[0].contentRect;
 
-    if(newWidth !== width) {
+    if (newWidth !== width) {
       debouncedSetWidth(newWidth);
     }
   });
 
   const outerContainerRef = useCallback(node => {
     if (node !== null) {
-        resizeObserver.observe(node);
+      resizeObserver.observe(node);
     } // eslint-disable-next-line
-  },[]);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -145,66 +145,66 @@ export default function App({ dataUrl }) {
       let supportedStates = {};
 
       const stateSheet = wb.Sheets.state_rate_all;
-      let {columnHeaders, columns} = getColumnsInfo(stateSheet);
+      let { columnHeaders, columns } = getColumnsInfo(stateSheet);
 
       let stateData = {};
       let yearData = {};
       let datasetNode;
-      for(let i = 2; i < columns; i++) {
+      for (let i = 2; i < columns; i++) {
         //Populate state data
-        if(!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
+        if (!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
           stateData[stateSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject();
         }
         Object.keys(drugOptions).forEach(drug => {
-          datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v]; 
+          datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
           //Drug rate
-          if(!datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]){
+          if (!datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]) {
             datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v] = [];
           }
           let monthNode = datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v];
           let monthDatum;
-          monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
-          if(!monthDatum){
+          monthNode.forEach(node => { if (node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node; });
+          if (!monthDatum) {
             let state = stateSheet[columnHeaders['state'] + i].v;
-            monthDatum = {state};
+            monthDatum = { state };
             monthNode.push(monthDatum);
 
-            if(!supportedStates[state]) supportedStates[state] = stateNames[state];
+            if (!supportedStates[state]) supportedStates[state] = stateNames[state];
           }
           monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drugOptions[drug].rateColumn] + i].v);
 
           //Drug deaths
           datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
-          if(!datasetNode[drug][stateSheet[columnHeaders['month'] + i].v]){
+          if (!datasetNode[drug][stateSheet[columnHeaders['month'] + i].v]) {
             datasetNode[drug][stateSheet[columnHeaders['month'] + i].v] = [];
           }
           monthNode = datasetNode[drug][stateSheet[columnHeaders['month'] + i].v];
           monthDatum = undefined;
-          monthNode.forEach(node => {if(node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node;});
-          if(!monthDatum){
+          monthNode.forEach(node => { if (node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node; });
+          if (!monthDatum) {
             let state = stateSheet[columnHeaders['state'] + i].v;
-            monthDatum = {state};
+            monthDatum = { state };
             monthNode.push(monthDatum);
           }
           monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drug] + i].v, false);
         });
 
         //Populate year data
-        if(!yearData[stateSheet[columnHeaders['dataset'] + i].v]) {
+        if (!yearData[stateSheet[columnHeaders['dataset'] + i].v]) {
           yearData[stateSheet[columnHeaders['dataset'] + i].v] = {};
         }
         datasetNode = yearData[stateSheet[columnHeaders['dataset'] + i].v];
-        if(!datasetNode[stateSheet[columnHeaders['state'] + i].v]){
+        if (!datasetNode[stateSheet[columnHeaders['state'] + i].v]) {
           datasetNode[stateSheet[columnHeaders['state'] + i].v] = {};
         }
         datasetNode = datasetNode[stateSheet[columnHeaders['state'] + i].v];
-        if(!datasetNode[stateSheet[columnHeaders['month'] + i].v]){
+        if (!datasetNode[stateSheet[columnHeaders['month'] + i].v]) {
           datasetNode[stateSheet[columnHeaders['month'] + i].v] = [];
         }
         datasetNode = datasetNode[stateSheet[columnHeaders['month'] + i].v];
-        let yearDatum = {year: stateSheet[columnHeaders['year'] + i].v};
+        let yearDatum = { year: stateSheet[columnHeaders['year'] + i].v };
         Object.keys(drugOptions).forEach(drug => {
-        yearDatum[drug] = formatNumber(stateSheet[columnHeaders['rate_' + drug] + i].v);
+          yearDatum[drug] = formatNumber(stateSheet[columnHeaders['rate_' + drug] + i].v);
         });
         datasetNode.push(yearDatum);
       }
@@ -216,24 +216,24 @@ export default function App({ dataUrl }) {
 
       //Populate sex data
       let sexData = {};
-      for(let i = 2; i < columns; i++) {
-        if(!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
+      for (let i = 2; i < columns; i++) {
+        if (!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
           sexData[sexSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject(false);
-        } 
+        }
         Object.keys(drugOptions).forEach(drug => {
           let datasetNode = sexData[sexSheet[columnHeaders['dataset'] + i].v];
-          if(!datasetNode[drug][sexSheet[columnHeaders['year'] + i].v]){
+          if (!datasetNode[drug][sexSheet[columnHeaders['year'] + i].v]) {
             datasetNode[drug][sexSheet[columnHeaders['year'] + i].v] = {};
           }
           datasetNode = datasetNode[drug][sexSheet[columnHeaders['year'] + i].v];
-          if(!datasetNode[sexSheet[columnHeaders['month'] + i].v]){
+          if (!datasetNode[sexSheet[columnHeaders['month'] + i].v]) {
             datasetNode[sexSheet[columnHeaders['month'] + i].v] = [];
           }
           datasetNode = datasetNode[sexSheet[columnHeaders['month'] + i].v];
-          if(sexSheet[columnHeaders['sex'] + i].v !== 'Missing' && sexSheet[columnHeaders['age'] + i].v !== 'Missing'){
+          if (sexSheet[columnHeaders['sex'] + i].v !== 'Missing' && sexSheet[columnHeaders['age'] + i].v !== 'Missing') {
             let datasetDatum = datasetNode.find(datum => datum.age === sexSheet[columnHeaders['age'] + i].v);
-            if(!datasetDatum){
-              datasetDatum = {age: sexSheet[columnHeaders['age'] + i].v}
+            if (!datasetDatum) {
+              datasetDatum = { age: sexSheet[columnHeaders['age'] + i].v }
               datasetNode.push(datasetDatum);
             }
             datasetDatum[sexSheet[columnHeaders['sex'] + i].v] = formatNumber(sexSheet[columnHeaders[drug] + i].v, false);
@@ -248,10 +248,10 @@ export default function App({ dataUrl }) {
 
       //Populate sex data
       let countyData = {};
-      for(let i = 2; i < columns; i++) {
-        if(!countyData[countySheet[columnHeaders['year'] + i].v]) {
+      for (let i = 2; i < columns; i++) {
+        if (!countyData[countySheet[columnHeaders['year'] + i].v]) {
           countyData[countySheet[columnHeaders['year'] + i].v] = {};
-        } 
+        }
         countyData[countySheet[columnHeaders['year'] + i].v][countySheet[columnHeaders['fips'] + i].v] = {
           fips: countySheet[columnHeaders['fips'] + i].v,
           county: countySheet[columnHeaders['county'] + i].v,
@@ -260,13 +260,13 @@ export default function App({ dataUrl }) {
         };
       }
 
-      setData({state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates});
+      setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates });
     }
 
     fetchData();
   }, []);
 
-  const barbellChartMemo = useMemo(() => 
+  const barbellChartMemo = useMemo(() =>
     <>
       <h2>Barbell Chart: {dataSourceOptions[currentDataSource]['title']}, {drugOptions[currentDrug]['titleAll']}{currentTimeframe === 'Monthly' && `, ${monthNames[currentMonthState]}`}</h2>
       {currentTimeframe === 'Monthly' && <Select params={{
@@ -276,15 +276,15 @@ export default function App({ dataUrl }) {
         onChange: setCurrentMonthState,
         options: Object.keys(monthNames).filter(key => key !== 'all'),
         optionLabel: (key) => monthNames[key]
-      }}/>}
+      }} />}
       <BarbellChart params={{ data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonth: currentMonthState, width }} />
     </>,
-  [data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonthState, width]);
+    [data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonthState, width]);
 
-  const lineChartMemo = useMemo(() => 
+  const lineChartMemo = useMemo(() =>
     <>
       <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}</h2>
-      <LineChart params={{data, drugOptions, currentDataSource, currentState, width}} />
+      <LineChart params={{ data, drugOptions, currentDataSource, currentState, width }} />
       {currentTimeframe === 'Monthly' && <>
         <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}, {currentYear}</h2>
         <Select params={{
@@ -294,13 +294,13 @@ export default function App({ dataUrl }) {
           onChange: setCurrentYear,
           options: supportedYears,
           optionLabel: (key) => key
-        }}/>
-        <LineChart params={{monthly: true, data, monthNames,  drugOptions, currentDataSource, currentState, currentYear, width}} />
+        }} />
+        <LineChart params={{ monthly: true, data, monthNames, drugOptions, currentDataSource, currentState, currentYear, width }} />
       </>}
     </>,
-  [data, monthNames, drugOptions, currentDataSource, currentState, currentTimeframe, currentYear, width]);
+    [data, monthNames, drugOptions, currentDataSource, currentState, currentTimeframe, currentYear, width]);
 
-  const sexAgeChartsMemo = useMemo(() => 
+  const sexAgeChartsMemo = useMemo(() =>
     <>
       <h2>Bar Chart: {dataSourceOptions[currentDataSource]['title']}, {drugOptions[currentDrug]['titleAll']}, {currentYearSexAge}, {monthNames[currentMonthSexAge]}</h2>
       <Select params={{
@@ -310,7 +310,7 @@ export default function App({ dataUrl }) {
         onChange: setCurrentYearSexAge,
         options: supportedYears,
         optionLabel: (key) => key
-      }}/>
+      }} />
       <Select params={{
         key: 'month',
         label: 'a Month',
@@ -318,12 +318,12 @@ export default function App({ dataUrl }) {
         onChange: setCurrentMonthSexAge,
         options: Object.keys(monthNames).filter(key => key !== 'all'),
         optionLabel: (key) => monthNames[key]
-      }}/>
-      <SexAgeCharts params={{data, currentDataSource, currentDrug, currentYear: currentYearSexAge, currentMonth: currentMonthSexAge, width}} />
+      }} />
+      <SexAgeCharts params={{ data, currentDataSource, currentDrug, currentYear: currentYearSexAge, currentMonth: currentMonthSexAge, width }} />
     </>,
-  [data, currentDataSource, currentDrug, currentYearSexAge, currentMonthSexAge, width]);
+    [data, currentDataSource, currentDrug, currentYearSexAge, currentMonthSexAge, width]);
 
-  const usaMapMemo = useMemo(() => 
+  const usaMapMemo = useMemo(() =>
     <>
       <h2>Map: {currentYearCounty}</h2>
       <Select params={{
@@ -333,10 +333,10 @@ export default function App({ dataUrl }) {
         onChange: setCurrentYearCounty,
         options: supportedYears,
         optionLabel: (key) => key
-      }}/>
-      <UsaMap params={{data, currentYear: currentYearCounty, width}}/>
+      }} />
+      <UsaMap params={{ data, currentYear: currentYearCounty, width }} />
     </>,
-  [data, currentYearCounty, width]);
+    [data, currentYearCounty, width]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -356,36 +356,40 @@ export default function App({ dataUrl }) {
               <div className="filters">
                 <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                   <Select params={{
-                    key: 'data-source', 
-                    label: 'Data Source', 
-                    value: currentDataSource, 
-                    onChange: setCurrentDataSource, 
-                    options: Object.keys(dataSourceOptions), 
-                    optionLabel: (key) => dataSourceOptions[key]['title']}}
+                    key: 'data-source',
+                    label: 'Data Source',
+                    value: currentDataSource,
+                    onChange: setCurrentDataSource,
+                    options: Object.keys(dataSourceOptions),
+                    optionLabel: (key) => dataSourceOptions[key]['title']
+                  }}
                   />
                   <Select params={{
-                    key: 'drug', 
-                    label: 'a Drug', 
-                    value: currentDrug, 
-                    onChange: setCurrentDrug, 
-                    options: Object.keys(drugOptions), 
-                    optionLabel: (key) => drugOptions[key]['titleAll']}}
+                    key: 'drug',
+                    label: 'a Drug',
+                    value: currentDrug,
+                    onChange: setCurrentDrug,
+                    options: Object.keys(drugOptions),
+                    optionLabel: (key) => drugOptions[key]['titleAll']
+                  }}
                   />
                   <Select params={{
-                    key: 'jurisdiction', 
-                    label: 'a State', 
-                    value: currentState, 
-                    onChange: setCurrentState, 
-                    options: Object.keys(data.supportedStates), 
-                    optionLabel: (key) => data.supportedStates[key]}}
+                    key: 'jurisdiction',
+                    label: 'a State',
+                    value: currentState,
+                    onChange: setCurrentState,
+                    options: Object.keys(data.supportedStates),
+                    optionLabel: (key) => data.supportedStates[key]
+                  }}
                   />
                   <Select params={{
-                    key: 'timeframe', 
-                    label: 'Time Frame', 
-                    value: currentTimeframe, 
-                    onChange: setCurrentTimeframe, 
-                    options: ['Monthly', 'Yearly'], 
-                    optionLabel: (key) => key}}
+                    key: 'timeframe',
+                    label: 'Time Frame',
+                    value: currentTimeframe,
+                    onChange: setCurrentTimeframe,
+                    options: ['Monthly', 'Yearly'],
+                    optionLabel: (key) => key
+                  }}
                   />
                 </div>
               </div>
@@ -427,7 +431,7 @@ export default function App({ dataUrl }) {
 
             {usaMapMemo}
           </>
-          )}
+        )}
       </div>
       <div className='data-tables'>
         <div className="datatable-container">
@@ -438,7 +442,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable params={{data, monthNames, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear, currentYearCounty, currentYearSexAge}}/>
+              <Datatable params={{ data, monthNames, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear, currentYearCounty, currentYearSexAge }} />
               <small>
                 <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
                 <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>
@@ -473,7 +477,7 @@ export default function App({ dataUrl }) {
         href={dataUrl}
         aria-label="Download this data in a Excel file format."
         className={`btn btn-download no-border`}
-        style={{'backgroundColor': drugColor}}
+        style={{ 'backgroundColor': drugColor }}
       >
         Download Data (XLSX)
       </a>

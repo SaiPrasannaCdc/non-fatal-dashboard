@@ -4,30 +4,30 @@ import { scaleLinear } from '@visx/scale';
 import { LinePath } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
-const monthNamesShort = {'1': 'Jan','2': 'Feb','3': 'Mar','4': 'Apr','5': 'May','6': 'Jun','7': 'Jul','8': 'Aug','9': 'Sep','10': 'Oct','11': 'Nov','12': 'Dec'};
+const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
 const lessMonths = (arr) => {
   let output = [];
-  for(let i = 0; i < arr.length; i += 3){
+  for (let i = 0; i < arr.length; i += 3) {
     output.push(arr[i]);
   }
   return output;
 };
 
-function LineChart({params}) {
+function LineChart({ params }) {
 
   const { monthly = false, data, monthNames, drugOptions, currentDataSource, currentState, currentYear: currentYearUntyped, width } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
-  const filteredData = monthly ? 
+  const filteredData = monthly ?
     Object.keys(data.year[currentDataSource][currentState]).map(month => {
       let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
-      if(d){
+      if (d) {
         d.month = parseInt(month);
         return d;
       }
-    }).filter(d => !isNaN(d.month)) : 
+    }).filter(d => !isNaN(d.month)) :
     data.year[currentDataSource][currentState]['all'];
 
   const xValues = filteredData.map(d => monthly ? d.month : d.year);
@@ -36,7 +36,7 @@ function LineChart({params}) {
   const isSmallViewport = width < 500;
   const fontSize = 20;
   const height = 400;
-  const margin = {top: 15, bottom: 75, left: 75, right: isSmallViewport ? 10 : 150};
+  const margin = { top: 15, bottom: 75, left: 75, right: isSmallViewport ? 10 : 150 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
@@ -58,15 +58,15 @@ function LineChart({params}) {
   });
 
   let filteredDataNoSuppressed = [];
-  filteredData.forEach(d => filteredDataNoSuppressed.push({...d}));
-  filteredDataNoSuppressed.forEach(d => Object.keys(drugOptions).forEach(drug => {if(isNaN(d[drug])) d[drug] = 0}));
+  filteredData.forEach(d => filteredDataNoSuppressed.push({ ...d }));
+  filteredDataNoSuppressed.forEach(d => Object.keys(drugOptions).forEach(drug => { if (isNaN(d[drug])) d[drug] = 0 }));
 
   return (
     <>
-      <svg style={{height}}>
+      <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
           <Group>
-            {series.map(drug => 
+            {series.map(drug =>
               <Group key={`line-series-${drug}`}>
                 <LinePath
                   data={filteredDataNoSuppressed}
@@ -78,13 +78,13 @@ function LineChart({params}) {
                 {!isSmallViewport && <text x={xMax + 5} y={yScale(filteredData[filteredData.length - 1][drug])} alignmentBaseline="middle" fontSize={fontSize} fill={drugOptions[drug].color || '#333'}>{drugOptions[drug].titleAll}</text>}
               </Group>
             )}
-            {filteredData.map(d => 
-              <rect 
+            {filteredData.map(d =>
+              <rect
                 key={`tooltip-section-${d[xKey]}`}
-                x={Math.max(0, xScale(d[xKey]) - sectionWidthHalf)} 
-                y={0} 
-                width={sectionWidth} 
-                height={yMax} 
+                x={Math.max(0, xScale(d[xKey]) - sectionWidthHalf)}
+                y={0}
+                width={sectionWidth}
+                height={yMax}
                 fill='transparent'
                 data-tip={`<h3><strong>${monthly ? monthNames[d[xKey]] : d[xKey]}</strong></h3>` + series.map(drug => `<p><strong>${drugOptions[drug].titleAll}</strong>: ${d[drug]}</p>`).join('')}></rect>
             )}
@@ -124,13 +124,13 @@ function LineChart({params}) {
         </Group>
       </svg>
       {isSmallViewport && (
-        <svg style={{height: 110}}>
-          {series.map((drug, i) => 
-              <Group key={`line-series-${drug}`}>
-                <rect x={0} y={i * fontSize + fontSize} width={10} height={3} fill={drugOptions[drug].color || '#333'} />
-                <text x={15} y={i * fontSize + fontSize} alignmentBaseline="middle" fontSize={fontSize} fill={drugOptions[drug].color || '#333'}>{drugOptions[drug].titleAll}</text>
-              </Group>
-            )}
+        <svg style={{ height: 110 }}>
+          {series.map((drug, i) =>
+            <Group key={`line-series-${drug}`}>
+              <rect x={0} y={i * fontSize + fontSize} width={10} height={3} fill={drugOptions[drug].color || '#333'} />
+              <text x={15} y={i * fontSize + fontSize} alignmentBaseline="middle" fontSize={fontSize} fill={drugOptions[drug].color || '#333'}>{drugOptions[drug].titleAll}</text>
+            </Group>
+          )}
         </svg>
       )}
     </>

@@ -1,8 +1,8 @@
 import React from 'react';
 
-function Datatable({params}) {
+function Datatable({ params }) {
 
-  const { data, monthNames, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear: currentYearUntyped, currentYearSexAge, currentYearCounty} = params;
+  const { data, monthNames, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear: currentYearUntyped, currentYearSexAge, currentYearCounty } = params;
   const currentYear = parseInt(currentYearUntyped);
   const drugColor = drugOptions[currentDrug].color;
 
@@ -15,7 +15,7 @@ function Datatable({params}) {
 
   const filteredMonthData = Object.keys(data.year[currentDataSource][currentState]).map(month => {
     let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
-    if(d){
+    if (d) {
       d.month = parseInt(month);
       return d;
     }

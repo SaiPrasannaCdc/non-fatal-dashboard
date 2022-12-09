@@ -9,11 +9,11 @@ import { geoAlbersUsaTerritories } from 'd3-composite-projections';
 const { features: countyTopo } = feature(topoJSON, topoJSON.objects.counties)
 const { features: stateTopo } = feature(topoJSON, topoJSON.objects.states)
 
-const UsaMap = ({params}) => {
+const UsaMap = ({ params }) => {
 
   const { data, currentYear, width } = params;
 
-  if(width === 0) return <></>;
+  if (width === 0) return <></>;
 
   const filteredData = data.county[currentYear];
 
@@ -35,12 +35,12 @@ const UsaMap = ({params}) => {
   const colorIntervalWidth = (max - min) / numColorIntervals;
 
   let labelIntervals = [];
-  for(let i = max; i >= min - 0.01; i -= labelIntervalWidth){
+  for (let i = max; i >= min - 0.01; i -= labelIntervalWidth) {
     labelIntervals.push(i)
   }
-  
+
   let colorIntervals = [];
-  for(let i = max; i >= min; i -= colorIntervalWidth){
+  for (let i = max; i >= min; i -= colorIntervalWidth) {
     colorIntervals.push(i)
   }
 
@@ -59,7 +59,7 @@ const UsaMap = ({params}) => {
     geographies.splice(914, 1);
 
     return geographies.map(({ centroid, feature: geo, path = '' }) => {
-      if(!geo.id) return;
+      if (!geo.id) return;
 
       return (
         <g
@@ -73,7 +73,7 @@ const UsaMap = ({params}) => {
             strokeWidth={state ? 1 : isSmallViewport ? 0.1 : .5}
             fill={filteredData[geo.id] ? (isNaN(filteredData[geo.id].rate) ? '#666' : colorScale(filteredData[geo.id].rate)) : 'transparent'}
             d={path}
-            style={{pointerEvents: geo.id.length <= 2 ? 'none' : 'default'}}
+            style={{ pointerEvents: geo.id.length <= 2 ? 'none' : 'default' }}
             data-tip={geo.id.length > 2 && filteredData[geo.id] ? `<h3><strong>${filteredData[geo.id].county}</strong></h3><p><strong>Rate:</strong> ${filteredData[geo.id].rate}</p>` : undefined}
           />
         </g>
@@ -89,15 +89,15 @@ const UsaMap = ({params}) => {
         html={true}
         className="tooltip"
       />
-      <svg style={{height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block'}} fill="none" aria-describedby="main-data-table">
+      <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
         <CustomProjection data={countyTopo} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2, halfHeight]} projection={geoAlbersUsaTerritories}>
           {({ features, projection }) => constructGeoJsx(features, projection)}
         </CustomProjection>
         <CustomProjection data={stateTopo} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2, halfHeight]} projection={geoAlbersUsaTerritories}>
           {({ features, projection }) => constructGeoJsx(features, projection, true)}
         </CustomProjection>
-        </svg>
-      <svg style={{height, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block'}}>
+      </svg>
+      <svg style={{ height, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
         <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={15}>Rate per 100,000 population</text>
         {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
         {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}

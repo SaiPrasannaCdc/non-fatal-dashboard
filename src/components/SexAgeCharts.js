@@ -5,7 +5,7 @@ import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom } from '@visx/axis';
 
-function SexAgeCharts({params}) {
+function SexAgeCharts({ params }) {
 
   const { data, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
 
@@ -16,7 +16,7 @@ function SexAgeCharts({params}) {
   const legendWidth = 125;
   const legendHeight = 85;
   const height = 450;
-  const margin = {top: 50, bottom: 100, left: 50, right: isSmallViewport ? 15 : legendWidth};
+  const margin = { top: 50, bottom: 100, left: 50, right: isSmallViewport ? 15 : legendWidth };
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
@@ -63,22 +63,22 @@ function SexAgeCharts({params}) {
       </g>
     )
   }
-  
-  const legend = 
+
+  const legend =
     <>
-      <rect x={0} y={0} width={legendWidth} height={legendHeight} stroke="black" fill="transparent"/>
+      <rect x={0} y={0} width={legendWidth} height={legendHeight} stroke="black" fill="transparent" />
       <Circle cx={25} cy={25} r={6} fill="lightblue" /><text x={40} y={25} fill="black" alignmentBaseline="middle">Male</text>
       <Circle cx={25} cy={55} r={6} fill="rgb(43, 45, 115)" /><text x={40} y={55} fill="black" alignmentBaseline="middle">Female</text>
     </>;
 
   return (
     <>
-      <svg style={{height}}>
+      <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
-          <Text x={-20} y={yMax / 2} style={{transform: 'rotate(-90deg)', transformOrigin: `-20px ${yMax / 2}px`}} fontSize={fontSize} textAnchor="middle">Age Group</Text>
+          <Text x={-20} y={yMax / 2} style={{ transform: 'rotate(-90deg)', transformOrigin: `-20px ${yMax / 2}px` }} fontSize={fontSize} textAnchor="middle">Age Group</Text>
           <AxisBottom
             top={yMax}
             scale={x1Scale}
@@ -113,7 +113,7 @@ function SexAgeCharts({params}) {
         </Group>
       </svg>
       {isSmallViewport && (
-        <svg style={{height: legendHeight}}>
+        <svg style={{ height: legendHeight }}>
           <Group top={0} left={0}>
             {legend}
           </Group>
