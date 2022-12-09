@@ -4,6 +4,7 @@
 .idea/
 
 # Build files
+build/
 bundle.js
 
 # Logs
