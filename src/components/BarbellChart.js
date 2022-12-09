@@ -55,7 +55,7 @@ function BarbellChart({ params }) {
   const legend =
     <>
       <Circle cx={0} cy={0} r={circleRadius} stroke="blue" /><text x={doubleCircleRadius} y={0} fontSize={fontSize} alignmentBaseline="middle">{x2Key} rate</text>
-      <Circle cx={0} cy={30} r={circleRadius} stroke="blue" fill="transparent" /><text x={doubleCircleRadius} y={30} fontSize={fontSize} alignmentBaseline="middle">{x1Key} rate</text>
+      <Circle cx={0} cy={30} r={circleRadius + 2} stroke="blue" fill="transparent" /><text x={doubleCircleRadius} y={30} fontSize={fontSize} alignmentBaseline="middle">{x1Key} rate</text>
     </>;
 
   return (
@@ -66,8 +66,8 @@ function BarbellChart({ params }) {
           <Group>
             {filteredData.map((d) => (
               <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
-                <Line x1={xScale(getX1Value(d))} x2={xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} />
-                {isNaN(getX1Value(d)) ? <text x={xScale(getX1Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke="#666">X</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue" fill="transparent" />}
+                <Line x1={xScale(getX1Value(d))} x2={xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} stroke="gray" />
+                {isNaN(getX1Value(d)) ? <text x={xScale(getX1Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke="#666">X</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius + 2} stroke="blue" fill="white" />}
                 {isNaN(getX2Value(d)) ? <text x={xScale(getX2Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke="#666">X</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue" />}
               </Group>
             ))}
