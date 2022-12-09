@@ -87,6 +87,13 @@ const getColumnsInfo = (sheet) => {
   return { columnHeaders, columns };
 };
 
+const createIfUndefined = (object, key, value) => {
+  if(!object[key]){
+    object[key] = value;
+  }
+  return object[key];
+}
+
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
   if (isNaN(numericVal)) {
@@ -146,65 +153,50 @@ export default function App({ dataUrl }) {
 
       const stateSheet = wb.Sheets.state_rate_all;
       let { columnHeaders, columns } = getColumnsInfo(stateSheet);
+      let getValue = (key, i) => stateSheet[columnHeaders[key] + i].v;
 
       let stateData = {};
       let yearData = {};
       let datasetNode;
       for (let i = 2; i < columns; i++) {
         //Populate state data
-        if (!stateData[stateSheet[columnHeaders['dataset'] + i].v]) {
-          stateData[stateSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject();
+        if (!stateData[getValue('dataset', i)]) {
+          stateData[getValue('dataset', i)] = createNewDrugObject();
         }
         Object.keys(drugOptions).forEach(drug => {
-          datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
+          datasetNode = stateData[getValue('dataset', i)];
           //Drug rate
-          if (!datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v]) {
-            datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v] = [];
-          }
-          let monthNode = datasetNode[drugOptions[drug].rateColumn][stateSheet[columnHeaders['month'] + i].v];
+          let monthNode = createIfUndefined(datasetNode[drugOptions[drug].rateColumn], getValue('month', i), []);
           let monthDatum;
-          monthNode.forEach(node => { if (node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node; });
+          monthNode.forEach(node => { if (node.state === getValue('state', i)) monthDatum = node; });
           if (!monthDatum) {
-            let state = stateSheet[columnHeaders['state'] + i].v;
+            let state = getValue('state', i);
             monthDatum = { state };
             monthNode.push(monthDatum);
 
             if (!supportedStates[state]) supportedStates[state] = stateNames[state];
           }
-          monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drugOptions[drug].rateColumn] + i].v);
+          monthDatum[getValue('year', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
 
-          //Drug deaths
-          datasetNode = stateData[stateSheet[columnHeaders['dataset'] + i].v];
-          if (!datasetNode[drug][stateSheet[columnHeaders['month'] + i].v]) {
-            datasetNode[drug][stateSheet[columnHeaders['month'] + i].v] = [];
-          }
-          monthNode = datasetNode[drug][stateSheet[columnHeaders['month'] + i].v];
+          //Drug overdoses
+          datasetNode = stateData[getValue('dataset', i)];
+          monthNode = createIfUndefined(datasetNode[drug], getValue('month', i), []);
           monthDatum = undefined;
-          monthNode.forEach(node => { if (node.state === stateSheet[columnHeaders['state'] + i].v) monthDatum = node; });
+          monthNode.forEach(node => { if (node.state === getValue('state', i)) monthDatum = node; });
           if (!monthDatum) {
-            let state = stateSheet[columnHeaders['state'] + i].v;
-            monthDatum = { state };
+            monthDatum = { state: getValue('state', i) };
             monthNode.push(monthDatum);
           }
-          monthDatum[stateSheet[columnHeaders['year'] + i].v] = formatNumber(stateSheet[columnHeaders[drug] + i].v, false);
+          monthDatum[getValue('year', i)] = formatNumber(getValue(drug, i), false);
         });
 
         //Populate year data
-        if (!yearData[stateSheet[columnHeaders['dataset'] + i].v]) {
-          yearData[stateSheet[columnHeaders['dataset'] + i].v] = {};
-        }
-        datasetNode = yearData[stateSheet[columnHeaders['dataset'] + i].v];
-        if (!datasetNode[stateSheet[columnHeaders['state'] + i].v]) {
-          datasetNode[stateSheet[columnHeaders['state'] + i].v] = {};
-        }
-        datasetNode = datasetNode[stateSheet[columnHeaders['state'] + i].v];
-        if (!datasetNode[stateSheet[columnHeaders['month'] + i].v]) {
-          datasetNode[stateSheet[columnHeaders['month'] + i].v] = [];
-        }
-        datasetNode = datasetNode[stateSheet[columnHeaders['month'] + i].v];
-        let yearDatum = { year: stateSheet[columnHeaders['year'] + i].v };
+        datasetNode = createIfUndefined(yearData, getValue('dataset', i), {});
+        datasetNode = createIfUndefined(datasetNode, getValue('state', i), {});
+        datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
+        let yearDatum = { year: getValue('year', i) };
         Object.keys(drugOptions).forEach(drug => {
-          yearDatum[drug] = formatNumber(stateSheet[columnHeaders['rate_' + drug] + i].v);
+          yearDatum[drug] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
         });
         datasetNode.push(yearDatum);
       }
@@ -213,30 +205,23 @@ export default function App({ dataUrl }) {
       let columnInfo = getColumnsInfo(sexSheet);
       columnHeaders = columnInfo.columnHeaders;
       columns = columnInfo.columns;
+      getValue = (key, i) => sexSheet[columnHeaders[key] + i].v;
 
       //Populate sex data
       let sexData = {};
       for (let i = 2; i < columns; i++) {
-        if (!sexData[sexSheet[columnHeaders['dataset'] + i].v]) {
-          sexData[sexSheet[columnHeaders['dataset'] + i].v] = createNewDrugObject(false);
-        }
+        createIfUndefined(sexData, getValue('dataset', i), createNewDrugObject(false));
         Object.keys(drugOptions).forEach(drug => {
-          let datasetNode = sexData[sexSheet[columnHeaders['dataset'] + i].v];
-          if (!datasetNode[drug][sexSheet[columnHeaders['year'] + i].v]) {
-            datasetNode[drug][sexSheet[columnHeaders['year'] + i].v] = {};
-          }
-          datasetNode = datasetNode[drug][sexSheet[columnHeaders['year'] + i].v];
-          if (!datasetNode[sexSheet[columnHeaders['month'] + i].v]) {
-            datasetNode[sexSheet[columnHeaders['month'] + i].v] = [];
-          }
-          datasetNode = datasetNode[sexSheet[columnHeaders['month'] + i].v];
-          if (sexSheet[columnHeaders['sex'] + i].v !== 'Missing' && sexSheet[columnHeaders['age'] + i].v !== 'Missing') {
-            let datasetDatum = datasetNode.find(datum => datum.age === sexSheet[columnHeaders['age'] + i].v);
+          let datasetNode = sexData[getValue('dataset', i)];
+          datasetNode = createIfUndefined(datasetNode[drug], getValue('year', i), {});
+          datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
+          if (getValue('sex', i) !== 'Missing' && getValue('age', i) !== 'Missing') {
+            let datasetDatum = datasetNode.find(datum => datum.age === getValue('age', i));
             if (!datasetDatum) {
-              datasetDatum = { age: sexSheet[columnHeaders['age'] + i].v }
+              datasetDatum = { age: getValue('age', i) }
               datasetNode.push(datasetDatum);
             }
-            datasetDatum[sexSheet[columnHeaders['sex'] + i].v] = formatNumber(sexSheet[columnHeaders[drug] + i].v, false);
+            datasetDatum[getValue('sex', i)] = formatNumber(getValue(drug, i), false);
           }
         });
       }
@@ -245,18 +230,17 @@ export default function App({ dataUrl }) {
       columnInfo = getColumnsInfo(countySheet);
       columnHeaders = columnInfo.columnHeaders;
       columns = columnInfo.columns;
+      getValue = (key, i) => countySheet[columnHeaders[key] + i].v;
 
       //Populate sex data
       let countyData = {};
       for (let i = 2; i < columns; i++) {
-        if (!countyData[countySheet[columnHeaders['year'] + i].v]) {
-          countyData[countySheet[columnHeaders['year'] + i].v] = {};
-        }
-        countyData[countySheet[columnHeaders['year'] + i].v][countySheet[columnHeaders['fips'] + i].v] = {
-          fips: countySheet[columnHeaders['fips'] + i].v,
-          county: countySheet[columnHeaders['county'] + i].v,
-          state: countySheet[columnHeaders['state'] + i].v,
-          rate: formatNumber(countySheet[columnHeaders['rate_alldrug'] + i].v)
+        createIfUndefined(countyData, getValue('year', i), {});
+        countyData[getValue('year', i)][getValue('fips', i)] = {
+          fips: getValue('fips', i),
+          county: getValue('county', i),
+          state: getValue('state', i),
+          rate: formatNumber(getValue('rate_alldrug', i))
         };
       }
 
