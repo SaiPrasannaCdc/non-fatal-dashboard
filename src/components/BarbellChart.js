@@ -6,9 +6,9 @@ import { AxisLeft, AxisBottom } from '@visx/axis';
 
 function BarbellChart({ params }) {
 
-  const { data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonth, width } = params;
+  const { data, monthNames, dataSourceOptions, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentMonth, width } = params;
 
-  const filteredData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentTimeframe === 'Monthly' ? currentMonth : 'all'].filter(d => d.state !== 'US');
+  const filteredData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentTimeframe === 'Monthly' ? currentMonth : 'all'];
 
   const years = Object.keys(filteredData[0]).filter(item => item !== 'state');
   const states = filteredData.map(d => d.state);
@@ -23,6 +23,9 @@ function BarbellChart({ params }) {
   const margin = { top: 15, bottom: 40, left: isSmallViewport ? 75 : 200, right: 15 };
   const circleRadius = 6;
   const doubleCircleRadius = circleRadius * 2;
+  const defaultColor = 'blue';
+  const highlightColor = 'orange';
+  const undefinedColor = 'gray';
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
@@ -31,11 +34,11 @@ function BarbellChart({ params }) {
   const x2Key = years[years.length - 1];
   const getX1Value = (d) => {
     if (d[x1Key]) return d[x1Key];
-    return 0;
+    return 'Not Provided';
   };
   const getX2Value = (d) => {
     if (d[x2Key]) return d[x2Key];
-    return 0;
+    return 'Not Provided';
   };
   const yKey = 'state';
 
@@ -44,7 +47,11 @@ function BarbellChart({ params }) {
     domain: [0, Math.max(...filteredData.map(d => Math.max(isNaN(getX1Value(d)) ? 0 : getX1Value(d), isNaN(getX2Value(d)) ? 0 : getX2Value(d))))]
   });
 
-  filteredData.sort((a, b) => getX2Value(a) < getX2Value(b) ? 1 : -1);
+  filteredData.sort((a, b) => {
+    if(isNaN(getX2Value(a))) return 1;
+    if(isNaN(getX2Value(b))) return -1;
+    return getX2Value(a) < getX2Value(b) ? 1 : -1;
+  });
 
   const yScale = scaleBand({
     range: [0, yMax],
@@ -60,15 +67,16 @@ function BarbellChart({ params }) {
 
   return (
     <>
+      <h2>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {Object.keys(data.supportedStates).length - 1} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${years[0]} - ${monthNames[currentMonth]} ${years[years.length - 1]}` : `${years[0]} - ${years[years.length - 1]}`}</h2>
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
           <rect x={0} y={0} width={xMax} height={yMax} stroke="#ccc" fill="transparent" />
           <Group>
             {filteredData.map((d) => (
               <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
-                <Line x1={xScale(getX1Value(d))} x2={xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} stroke="gray" />
-                {isNaN(getX1Value(d)) ? <text x={xScale(getX1Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke="#666">X</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius + 2} stroke="blue" fill="white" />}
-                {isNaN(getX2Value(d)) ? <text x={xScale(getX2Value(d))} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke="#666">X</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke="blue" />}
+                <Line x1={isNaN(getX1Value(d)) ? xScale(0) : xScale(getX1Value(d))} x2={isNaN(getX2Value(d)) ? xScale(0) + 5 : xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} stroke="gray" />
+                {isNaN(getX1Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>X</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius + 2} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill="white" />}
+                {isNaN(getX2Value(d)) ? <text x={xScale(0) + 5} y={yScale(d[yKey])} textAnchor="middle" alignmentBaseline="middle" fontSize={fontSize} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>X</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill={d[yKey] === currentState ? highlightColor : defaultColor} />}
               </Group>
             ))}
           </Group>
@@ -77,7 +85,7 @@ function BarbellChart({ params }) {
             label={'State'}
             hideAxisLine={true}
             tickValues={states}
-            tickFormat={tick => !isSmallViewport && data.supportedStates[tick] ? data.supportedStates[tick] : tick}
+            tickFormat={tick => !isSmallViewport && data.supportedStates[tick] ? data.supportedStates[tick] : tick === 'US' ? 'All' : tick}
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'end',
@@ -104,9 +112,9 @@ function BarbellChart({ params }) {
           {!isSmallViewport && <Group top={yMax - legendHeight} left={xMax - legendWidth}>{legend}</Group>}
         </Group>
       </svg>
-      <p className="x-axis-label" style={{ marginLeft: margin.left }}>Overdoses Per 100,000 Population</p>
+      <p className="x-axis-label" style={{ marginLeft: margin.left }}>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population</p>
       {isSmallViewport && (
-        <svg style={{ height: legendHeight }}>
+        <svg style={{ height: legendHeight, marginBottom: 20 }}>
           <Group top={10} left={10}>
             {legend}
           </Group>

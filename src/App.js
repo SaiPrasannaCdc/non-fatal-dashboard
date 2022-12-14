@@ -16,10 +16,12 @@ import './styles.scss';
 
 const dataSourceOptions = {
   'ED': {
-    'title': 'ED Visits'
+    'title': 'ED Visits',
+    'titleLowerCase': 'ED visits'
   },
   'HOSP': {
-    'title': 'Hospitalizations'
+    'title': 'Hospitalizations',
+    'titleLowerCase': 'hospitalizations'
   }
 }
 
@@ -56,7 +58,7 @@ const drugOptions = {
 
 const supportedYears = [2018, 2019, 2020, 2021];
 const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
-const stateNames = { 'US': 'United States', 'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming' };
+const stateNames = { 'US': 'Overall', 'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming' };
 
 const createNewDrugObject = (rates = true) => {
   let obj = {};
@@ -99,7 +101,7 @@ const formatNumber = (val, isFloat = true) => {
   if (isNaN(numericVal)) {
     return 'Data suppressed';
   } else {
-    return isFloat ? numericVal.toFixed(1) : numericVal;
+    return isFloat ? (Math.round(numericVal * 10) / 10) : numericVal;
   }
 };
 
@@ -109,7 +111,7 @@ export default function App({ dataUrl }) {
   const [currentDataSource, setCurrentDataSource] = useState('ED');
   const [currentDrug, setCurrentDrug] = useState('alldrug');
   const [currentState, setCurrentState] = useState('US');
-  const [currentTimeframe, setCurrentTimeframe] = useState('Yearly');
+  const [currentTimeframe, setCurrentTimeframe] = useState('Annual');
   const [currentMonthState, setCurrentMonthState] = useState('1');
   const [currentYear, setCurrentYear] = useState('2018');
   const [currentYearCounty, setCurrentYearCounty] = useState('2018');
@@ -252,7 +254,6 @@ export default function App({ dataUrl }) {
 
   const barbellChartMemo = useMemo(() =>
     <>
-      <h2>Barbell Chart: {dataSourceOptions[currentDataSource]['title']}, {drugOptions[currentDrug]['titleAll']}{currentTimeframe === 'Monthly' && `, ${monthNames[currentMonthState]}`}</h2>
       {currentTimeframe === 'Monthly' && <Select params={{
         key: 'month',
         label: 'a Month',
@@ -261,9 +262,9 @@ export default function App({ dataUrl }) {
         options: Object.keys(monthNames).filter(key => key !== 'all'),
         optionLabel: (key) => monthNames[key]
       }} />}
-      <BarbellChart params={{ data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonth: currentMonthState, width }} />
+      <BarbellChart params={{ data, monthNames, dataSourceOptions, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentMonth: currentMonthState, width }} />
     </>,
-    [data, monthNames, drugOptions, currentDataSource, currentDrug, currentTimeframe, currentMonthState, width]);
+    [data, monthNames, dataSourceOptions, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentMonthState, width]);
 
   const lineChartMemo = useMemo(() =>
     <>
@@ -330,6 +331,8 @@ export default function App({ dataUrl }) {
     return <h3>Loading</h3>;
   }
 
+  const totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear]
+
   return (
     <>
       <div className="filters-container" ref={outerContainerRef}>
@@ -371,7 +374,7 @@ export default function App({ dataUrl }) {
                     label: 'Time Frame',
                     value: currentTimeframe,
                     onChange: setCurrentTimeframe,
-                    options: ['Monthly', 'Yearly'],
+                    options: ['Monthly', 'Annual'],
                     optionLabel: (key) => key
                   }}
                   />
@@ -381,21 +384,21 @@ export default function App({ dataUrl }) {
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
-              <h2>Suspected {drugOptions[currentDrug]['titleAll']} Overdoses</h2>
+              <h2>{drugOptions[currentDrug]['titleAll']} Overdoses</h2>
             </header>
             <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                <span className="callout" style={{ 'color': drugColor }}>{data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear].toLocaleString()}</span>
+                <span className="callout" style={{ 'color': drugColor }}>{totalOverdoses ? totalOverdoses.toLocaleString() : 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>Annual Number of Overdoses</span>
-                  <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
+                  <p>{drugOptions[currentDrug]['titleAll']} Overdose</p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                <span className="callout" style={{ 'color': drugColor }}>{Math.round(data.state[currentDataSource][drugOptions[currentDrug].rateColumn]['all'].find(item => item.state === currentState)[currentYear] * 10) / 10}</span>
+                <span className="callout" style={{ 'color': drugColor }}>{totalOverdoses ? Math.round(totalOverdoses * 10) / 10 : 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>Annual Rate of Overdoses</span>
-                  <p>Suspected {drugOptions[currentDrug]['titleAll']} Overdose</p>
+                  <p>{drugOptions[currentDrug]['titleAll']} Overdose</p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
