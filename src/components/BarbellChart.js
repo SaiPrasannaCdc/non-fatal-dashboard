@@ -23,7 +23,7 @@ function BarbellChart({ params }) {
   const margin = { top: 15, bottom: 40, left: isSmallViewport ? 75 : 200, right: 15 };
   const circleRadius = 6;
   const doubleCircleRadius = circleRadius * 2;
-  const defaultColor = 'blue';
+  const defaultColor = 'rgb(43, 45, 115)';
   const highlightColor = 'orange';
   const undefinedColor = 'gray';
 

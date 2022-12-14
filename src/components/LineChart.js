@@ -14,13 +14,8 @@ const lessMonths = (arr) => {
   return output;
 };
 
-function LineChart({ params }) {
-
-  const { monthly = false, data, monthNames, drugOptions, currentDataSource, currentState, currentYear: currentYearUntyped, width } = params;
-
-  const currentYear = parseInt(currentYearUntyped);
-
-  const filteredData = monthly ?
+const getFilteredData = (data, currentTimeframe, currentDataSource, currentState, currentYear) => {
+  return currentTimeframe === 'Monthly' ?
     Object.keys(data.year[currentDataSource][currentState]).map(month => {
       let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
       if (d) {
@@ -29,13 +24,26 @@ function LineChart({ params }) {
       }
     }).filter(d => !isNaN(d.month)) :
     data.year[currentDataSource][currentState]['all'];
+};
 
-  const xValues = filteredData.map(d => monthly ? d.month : d.year);
-  const years = data.year[currentDataSource][currentState]['all'].map(d => d.year);
+function LineChart({ params }) {
+
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource,currentDrug, currentState, currentYear: currentYearUntyped, width } = params;
+
+  const currentYear = parseInt(currentYearUntyped);
+
+  const filteredData = {
+    [currentState]: getFilteredData(data, currentTimeframe, currentDataSource, currentState, currentYear)
+  }
+
+  if(currentState !== 'US') filteredData['US'] = getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear);
+
+  const xValues = filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
 
   const isSmallViewport = width < 500;
   const fontSize = 20;
   const height = 400;
+  const legendHeight = 110;
   const margin = { top: 15, bottom: 75, left: 75, right: isSmallViewport ? 10 : 150 };
 
   const xMax = width - margin.left - margin.right;
@@ -44,8 +52,9 @@ function LineChart({ params }) {
   const sectionWidth = xMax / xValues.length;
   const sectionWidthHalf = sectionWidth / 2;
 
-  const series = Object.keys(drugOptions);
-  const xKey = monthly ? 'month' : 'year';
+  const xKey = currentTimeframe === 'Monthly' ? 'month' : 'year';
+
+  const seriesColor = key => key === 'US' ? 'rgb(43, 45, 115)' : 'lightblue';
 
   const xScale = scaleLinear({
     domain: [Math.min(...xValues), Math.max(...xValues)],
@@ -53,41 +62,59 @@ function LineChart({ params }) {
   });
 
   const yScale = scaleLinear({
-    domain: [0, Math.max(...filteredData.map(d => Math.max(...Object.keys(drugOptions).filter(drug => !isNaN(d[drug])).map(drug => d[drug]))))],
+    domain: [0, Math.max(...Object.keys(filteredData).map(key =>
+        Math.max(...filteredData[key].map(d => 
+          Math.max(...Object.keys(drugOptions).filter(drug => !isNaN(d[drug])).map(drug => d[drug]))
+        ))
+    ))],
     range: [yMax, 0],
   });
 
-  let filteredDataNoSuppressed = [];
-  filteredData.forEach(d => filteredDataNoSuppressed.push({ ...d }));
-  filteredDataNoSuppressed.forEach(d => Object.keys(drugOptions).forEach(drug => { if (isNaN(d[drug])) d[drug] = 0 }));
+  let filteredDataNoSuppressed = {};
+  Object.keys(filteredData).forEach(key => {
+    filteredDataNoSuppressed[key] = [];
+    filteredData[key].forEach(d => filteredDataNoSuppressed[key].push({ ...d }));
+    filteredDataNoSuppressed[key].forEach(d => Object.keys(drugOptions).forEach(drug => { if (isNaN(d[drug])) d[drug] = 0 }));
+  });
 
   return (
     <>
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
           <Group>
-            {series.map(drug =>
-              <Group key={`line-series-${drug}`}>
-                <LinePath
-                  data={filteredDataNoSuppressed}
-                  x={(d) => xScale(d[xKey]) ?? 0}
-                  y={(d) => yScale(d[drug]) ?? 0}
-                  stroke={drugOptions[drug].color || '#333'}
-                  strokeWidth={3}
-                />
-                {!isSmallViewport && <text x={xMax + 5} y={yScale(filteredData[filteredData.length - 1][drug])} alignmentBaseline="middle" fontSize={fontSize} fill={drugOptions[drug].color || '#333'}>{drugOptions[drug].titleAll}</text>}
-              </Group>
-            )}
-            {filteredData.map(d =>
-              <rect
+            {Object.keys(filteredData).map(key => <Group key={`line-path-${key}`}>
+              {filteredData[key].map((d, i) => (
+                <Group key={`line-path-${key}-point-${i}`}>
+                  {i !== filteredData[key].length - 1 && !isNaN(d[currentDrug]) && !isNaN(filteredData[key][i+1][currentDrug]) && 
+                    <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(filteredData[key][i+1][xKey]) ?? 0} y2={yScale(filteredData[key][i+1][currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
+                  }
+                  {isNaN(d[currentDrug]) && <text x={xScale(d[xKey])} y={yScale(0)} stroke={seriesColor(key)} fontSize={16}>*</text>}
+                </Group>
+              ))}
+              {!isSmallViewport && <text x={xMax + 5} y={yScale(filteredData[key][filteredData[key].length - 1][currentDrug])} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>}
+            </Group>)}
+            
+            {filteredData['US'].map(d => {
+              const tooltipValues = [`<p><strong>${stateNames['US']}</strong>: ${d[currentDrug]}</p>`];
+              if(currentState !== 'US'){
+                const stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey])[currentDrug];
+                const stateTooltipValue = `<p><strong>${stateNames[currentState]}</strong>: ${stateValue}</p>`
+                if(stateValue > d[currentDrug]){
+                  tooltipValues.unshift(stateTooltipValue)
+                } else {
+                  tooltipValues.push(stateTooltipValue);
+                }
+              }
+
+              return <rect
                 key={`tooltip-section-${d[xKey]}`}
                 x={Math.max(0, xScale(d[xKey]) - sectionWidthHalf)}
                 y={0}
                 width={sectionWidth}
                 height={yMax}
                 fill='transparent'
-                data-tip={`<h3><strong>${monthly ? monthNames[d[xKey]] : d[xKey]}</strong></h3>` + series.map(drug => `<p><strong>${drugOptions[drug].titleAll}</strong>: ${d[drug]}</p>`).join('')}></rect>
-            )}
+                data-tip={`<h3><strong>${currentTimeframe === 'Monthly' ? monthNames[d[xKey]] : d[xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
+            })}
           </Group>
           <AxisLeft
             scale={yScale}
@@ -109,9 +136,9 @@ function LineChart({ params }) {
           <AxisBottom
             top={yMax}
             scale={xScale}
-            tickValues={monthly && isSmallViewport ? lessMonths(filteredData.map(d => d[xKey])) : filteredData.map(d => d[xKey])}
-            tickFormat={value => monthly ? monthNamesShort[value] : value.toFixed(0)}
-            label={monthly ? 'Month' : 'Year'}
+            tickValues={currentTimeframe === 'Monthly' && isSmallViewport ? lessMonths(filteredData['US'].map(d => d[xKey])) : filteredData['US'].map(d => d[xKey])}
+            tickFormat={value => currentTimeframe === 'Monthly' ? monthNamesShort[value] : value.toFixed(0)}
+            label={currentTimeframe === 'Monthly' ? 'Month' : 'Year'}
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'middle'
@@ -124,11 +151,11 @@ function LineChart({ params }) {
         </Group>
       </svg>
       {isSmallViewport && (
-        <svg style={{ height: 110 }}>
-          {series.map((drug, i) =>
-            <Group key={`line-series-${drug}`}>
-              <rect x={0} y={i * fontSize + fontSize} width={10} height={3} fill={drugOptions[drug].color || '#333'} />
-              <text x={15} y={i * fontSize + fontSize} alignmentBaseline="middle" fontSize={fontSize} fill={drugOptions[drug].color || '#333'}>{drugOptions[drug].titleAll}</text>
+        <svg style={{ height: legendHeight }}>
+          {Object.keys(filteredData).map((key, i) =>
+            <Group key={`line-series-${key}`}>
+              <rect x={0} y={i * fontSize + fontSize} width={10} height={3} fill={seriesColor(key)} />
+              <text x={15} y={i * fontSize + fontSize} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>
             </Group>
           )}
         </svg>

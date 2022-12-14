@@ -268,22 +268,18 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}</h2>
-      <LineChart params={{ data, drugOptions, currentDataSource, currentState, width }} />
-      {currentTimeframe === 'Monthly' && <>
-        <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}, {currentYear}</h2>
-        <Select params={{
-          key: 'year',
-          label: 'a Year',
-          value: currentYear,
-          onChange: setCurrentYear,
-          options: supportedYears,
-          optionLabel: (key) => key
-        }} />
-        <LineChart params={{ monthly: true, data, monthNames, drugOptions, currentDataSource, currentState, currentYear, width }} />
-      </>}
+      <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}, {currentYear}</h2>
+      {currentTimeframe === 'Monthly' && <Select params={{
+        key: 'year',
+        label: 'a Year',
+        value: currentYear,
+        onChange: setCurrentYear,
+        options: supportedYears,
+        optionLabel: (key) => key
+      }} />}
+      <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width }} />
     </>,
-    [data, monthNames, drugOptions, currentDataSource, currentState, currentTimeframe, currentYear, width]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
@@ -331,7 +327,7 @@ export default function App({ dataUrl }) {
     return <h3>Loading</h3>;
   }
 
-  const totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear]
+  const totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState) ? data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear] : undefined;
 
   return (
     <>
