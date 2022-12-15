@@ -266,8 +266,6 @@ export default function App({ dataUrl }) {
         sexData[dataSource][drug].maxMonthly = monthlyMax;
       }));
 
-      console.log(sexData);
-
       setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates });
     }
 
