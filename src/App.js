@@ -246,6 +246,28 @@ export default function App({ dataUrl }) {
         };
       }
 
+      Object.keys(sexData).forEach(dataSource => Object.keys(sexData[dataSource]).forEach(drug => {
+        let annualMax = 0;
+        let monthlyMax = 0;
+        Object.keys(sexData[dataSource][drug]).forEach(year => {
+          sexData[dataSource][drug][year]['all'].forEach(d => {
+            if(d['M'] > annualMax) annualMax = d['M'];
+            if(d['F'] > annualMax) annualMax = d['F'];
+          });
+          Object.keys(sexData[dataSource][drug][year]).forEach(month => {
+            if(month === 'all') return;
+            sexData[dataSource][drug][year][month].forEach(d => {
+              if(d['M'] > monthlyMax) monthlyMax = d['M'];
+              if(d['F'] > monthlyMax) monthlyMax = d['F'];
+            });
+          });
+        });
+        sexData[dataSource][drug].maxAnnual = annualMax;
+        sexData[dataSource][drug].maxMonthly = monthlyMax;
+      }));
+
+      console.log(sexData);
+
       setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates });
     }
 
@@ -268,7 +290,7 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2>Line Chart: {dataSourceOptions[currentDataSource]['title']}, {stateNames[currentState]}, {currentYear}</h2>
+      <h2>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {currentState !== 'US' ? stateNames[currentState] + ' and overall' : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</h2>
       {currentTimeframe === 'Monthly' && <Select params={{
         key: 'year',
         label: 'a Year',
@@ -277,13 +299,13 @@ export default function App({ dataUrl }) {
         options: supportedYears,
         optionLabel: (key) => key
       }} />}
-      <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width }} />
+      <LineChart params={{ data, monthNames, stateNames, drugOptions, dataSourceOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width }} />
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width]);
+    [data, monthNames, stateNames, drugOptions, dataSourceOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2>Bar Chart: {dataSourceOptions[currentDataSource]['title']}, {drugOptions[currentDrug]['titleAll']}, {currentYearSexAge}, {monthNames[currentMonthSexAge]}</h2>
+      <h2>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthSexAge]} ` : ''} {currentYearSexAge}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year',
@@ -292,21 +314,21 @@ export default function App({ dataUrl }) {
         options: supportedYears,
         optionLabel: (key) => key
       }} />
-      <Select params={{
+      {currentTimeframe === 'Monthly' && <Select params={{
         key: 'month',
         label: 'a Month',
         value: currentMonthSexAge,
         onChange: setCurrentMonthSexAge,
         options: Object.keys(monthNames).filter(key => key !== 'all'),
         optionLabel: (key) => monthNames[key]
-      }} />
-      <SexAgeCharts params={{ data, currentDataSource, currentDrug, currentYear: currentYearSexAge, currentMonth: currentMonthSexAge, width }} />
+      }} />}
+      <SexAgeCharts params={{ data, dataSourceOptions, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentYear: currentYearSexAge, currentMonth: currentMonthSexAge, width }} />
     </>,
-    [data, currentDataSource, currentDrug, currentYearSexAge, currentMonthSexAge, width]);
+    [data, dataSourceOptions, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentYearSexAge, currentMonthSexAge, width]);
 
   const usaMapMemo = useMemo(() =>
     <>
-      <h2>Map: {currentYearCounty}</h2>
+      <h2>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 population, by county, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentYearCounty}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year',

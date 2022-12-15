@@ -7,16 +7,16 @@ import { AxisBottom } from '@visx/axis';
 
 function SexAgeCharts({ params }) {
 
-  const { data, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
+  const { data, dataSourceOptions, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
 
-  const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
+  const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'];
 
   const isSmallViewport = width < 500;
   const fontSize = 20;
   const legendWidth = 125;
   const legendHeight = 85;
   const height = 450;
-  const margin = { top: 50, bottom: 100, left: 50, right: isSmallViewport ? 15 : legendWidth };
+  const margin = { top: 50, bottom: 125, left: 50, right: isSmallViewport ? 15 : legendWidth };
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
@@ -26,9 +26,7 @@ function SexAgeCharts({ params }) {
   const x2Key = 'F';
   const yKey = 'age';
 
-  const x1Max = Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)));
-  const x2Max = Math.max(...filteredData.map(d => Math.max(d[x1Key], d[x2Key])).filter(val => !isNaN(val)));
-  const overallMax = Math.max(x1Max, x2Max);
+  const overallMax = data.sex[currentDataSource][currentDrug][`max${currentTimeframe}`];
 
   const x1Scale = scaleLinear({
     range: [xMaxHalf, 0],
@@ -107,6 +105,13 @@ function SexAgeCharts({ params }) {
                   fontSize: fontSize
                 }
               }
+            }}
+            label={`Count of ${dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal ${drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses`}
+            labelProps={{
+              fontSize,
+              textAnchor: 'middle',
+              dx: xMax / -4,
+              dy: 50
             }}
           />
           {!isSmallViewport && <Group top={0} left={width - legendWidth - margin.left}>{legend}</Group>}

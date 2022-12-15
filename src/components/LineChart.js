@@ -1,7 +1,7 @@
 import React from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
-import { LinePath } from '@visx/shape';
+import { Text } from '@visx/text';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
@@ -28,7 +28,7 @@ const getFilteredData = (data, currentTimeframe, currentDataSource, currentState
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource,currentDrug, currentState, currentYear: currentYearUntyped, width } = params;
+  const { data, monthNames, stateNames, drugOptions, dataSourceOptions, currentTimeframe, currentDataSource,currentDrug, currentState, currentYear: currentYearUntyped, width } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -44,7 +44,7 @@ function LineChart({ params }) {
   const fontSize = 20;
   const height = 400;
   const legendHeight = 110;
-  const margin = { top: 15, bottom: 75, left: 75, right: isSmallViewport ? 10 : 150 };
+  const margin = { top: 15, bottom: 75, left: 95, right: isSmallViewport ? 10 : 150 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
@@ -118,27 +118,19 @@ function LineChart({ params }) {
           </Group>
           <AxisLeft
             scale={yScale}
-            label={'Deaths per 100,000 population'}
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'end',
               dx: -5,
               dy: 5
             })}
-            labelProps={{
-              fontSize: fontSize,
-              textAnchor: 'middle',
-              style: {
-                transform: `rotate(-90deg) translate(0px, -10px)`
-              }
-            }}
           />
+          <Text width={yMax} x={margin.left / -2} y={yMax / 2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${margin.left / 2}px ${yMax / 2}px`}}>{`${currentTimeframe} rate of ${dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal overdoses per 100,000 population, by drug type`}</Text>
           <AxisBottom
             top={yMax}
             scale={xScale}
             tickValues={currentTimeframe === 'Monthly' && isSmallViewport ? lessMonths(filteredData['US'].map(d => d[xKey])) : filteredData['US'].map(d => d[xKey])}
             tickFormat={value => currentTimeframe === 'Monthly' ? monthNamesShort[value] : value.toFixed(0)}
-            label={currentTimeframe === 'Monthly' ? 'Month' : 'Year'}
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'middle'
