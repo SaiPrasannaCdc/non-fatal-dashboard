@@ -15,15 +15,22 @@ const lessMonths = (arr) => {
 };
 
 const getFilteredData = (data, currentTimeframe, currentDataSource, currentState, currentYear) => {
-  return currentTimeframe === 'Monthly' ?
-    Object.keys(data.year[currentDataSource][currentState]).map(month => {
-      let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
-      if (d) {
-        d.month = parseInt(month);
-        return d;
-      }
-    }).filter(d => !isNaN(d.month)) :
-    data.year[currentDataSource][currentState]['all'];
+  if(data.year[currentDataSource][currentState]){
+    if(currentTimeframe === 'Monthly'){
+      return Object.keys(data.year[currentDataSource][currentState]).map(month => {
+        let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
+        if (d) {
+          d.month = parseInt(month);
+          return d;
+        }
+      }).filter(d => !!d && !isNaN(d.month));
+    } else {
+      return data.year[currentDataSource][currentState]['all'];
+    }
+
+  } else {
+    return [];
+  }
 };
 
 function LineChart({ params }) {
@@ -91,18 +98,21 @@ function LineChart({ params }) {
                   {isNaN(d[currentDrug]) && <text x={xScale(d[xKey])} y={yScale(0)} stroke={seriesColor(key)} fontSize={16}>*</text>}
                 </Group>
               ))}
-              {!isSmallViewport && <text x={xMax + 5} y={yScale(filteredData[key][filteredData[key].length - 1][currentDrug])} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>}
+              {!isSmallViewport && filteredData[key].length > 0 && <text x={xMax + 5} y={yScale(filteredData[key][filteredData[key].length - 1][currentDrug])} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>}
             </Group>)}
             
             {filteredData['US'].map(d => {
               const tooltipValues = [`<p><strong>${stateNames['US']}</strong>: ${d[currentDrug]}</p>`];
               if(currentState !== 'US'){
-                const stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey])[currentDrug];
-                const stateTooltipValue = `<p><strong>${stateNames[currentState]}</strong>: ${stateValue}</p>`
-                if(stateValue > d[currentDrug]){
-                  tooltipValues.unshift(stateTooltipValue)
-                } else {
-                  tooltipValues.push(stateTooltipValue);
+                let stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey]);
+                if(stateValue){
+                  stateValue = stateValue[currentDrug];
+                  const stateTooltipValue = `<p><strong>${stateNames[currentState]}</strong>: ${stateValue}</p>`
+                  if(stateValue > d[currentDrug]){
+                    tooltipValues.unshift(stateTooltipValue)
+                  } else {
+                    tooltipValues.push(stateTooltipValue);
+                  }
                 }
               }
 
