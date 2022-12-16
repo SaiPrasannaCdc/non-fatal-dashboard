@@ -347,12 +347,16 @@ export default function App({ dataUrl }) {
     </>,
     [data, currentYearCounty, width]);
 
+  const loading = <div className="loading-container">
+    <div className="loading-spinner"></div>
+  </div>;
+
   useEffect(() => {
     ReactTooltip.rebuild();
   });
 
   if (!data) {
-    return <h3>Loading</h3>;
+    return loading;
   }
 
   let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState]['all'].find(item => item.year === supportedYears[supportedYears.length - 1]) : undefined;
@@ -363,6 +367,7 @@ export default function App({ dataUrl }) {
   return (
     <>
       <div className="filters-container" ref={outerContainerRef}>
+        {width === 0 && loading}
         {width > 0 && (
           <>
             <div className="filter-wrapper">

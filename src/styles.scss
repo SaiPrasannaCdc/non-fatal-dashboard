@@ -2,6 +2,15 @@
 @import 'scss/variables';
 @import 'scss/mixins';
 
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -159,6 +168,22 @@ html {
 
         @include r($lg) {
             padding: 0.25em;
+        }
+    }
+    
+    .loading-container {
+        text-align: center;
+
+        .loading-spinner {
+            width: 30px;
+            height: 30px;
+            border-radius: 15px;
+            border: 3px solid black;
+            border-right: none;
+            border-top: none;
+            display: inline-block;
+            margin-top: 2em;
+            animation: spin 1s infinite;
         }
     }
 
