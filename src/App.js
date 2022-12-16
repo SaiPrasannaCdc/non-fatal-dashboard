@@ -213,6 +213,7 @@ export default function App({ dataUrl }) {
 
       //Populate sex data
       let sexData = {};
+      let supportedJurisdictions = {};
       for (let i = 2; i < columns; i++) {
         createIfUndefined(sexData, getValue('dataset', i), createNewDrugObject(false));
         Object.keys(drugOptions).forEach(drug => {
@@ -228,6 +229,10 @@ export default function App({ dataUrl }) {
             datasetDatum[getValue('sex', i)] = formatNumber(getValue(drug, i), false);
           }
         });
+
+        if(!supportedJurisdictions[getValue('year', i)]){
+          supportedJurisdictions[getValue('year', i)] = getValue('jurisdiction_count', i);
+        }
       }
 
       const countySheet = wb.Sheets.cnty_rates_all;
@@ -267,8 +272,8 @@ export default function App({ dataUrl }) {
         sexData[dataSource][drug].maxAnnual = annualMax;
         sexData[dataSource][drug].maxMonthly = monthlyMax;
       }));
-
-      setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates });
+      
+      setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates, supportedJurisdictions });
     }
 
     fetchData();
@@ -428,7 +433,7 @@ export default function App({ dataUrl }) {
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                <span className="callout" style={{ 'color': drugColor }}>{Object.keys(data.supportedStates).length - 1}</span>
+                <span className="callout" style={{ 'color': drugColor }}>{data.supportedJurisdictions[supportedYears[supportedYears.length - 1]]}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
                   <p>Funded states with reported data</p>
