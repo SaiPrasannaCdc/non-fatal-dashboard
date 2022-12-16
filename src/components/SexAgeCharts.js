@@ -12,7 +12,7 @@ function SexAgeCharts({ params }) {
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'];
 
   const isSmallViewport = width < 500;
-  const fontSize = 20;
+  const fontSize = 16;
   const legendWidth = 125;
   const legendHeight = 85;
   const height = 450;

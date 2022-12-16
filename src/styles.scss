@@ -121,6 +121,20 @@ html {
         outline: none !important;
     }
 
+    section:before {
+        content: " ";
+        display: inline-block;
+        width: 80%;
+        height: 2px;
+        background-color: #797979;
+        margin: 54px 10%;
+        top: -0.25em;
+    }
+
+    section.first-section:before {
+        display: none;
+    }
+
     max-width: 100%;
     padding: $gbl-padding $gbl-padding 65px;
     margin: 0;
@@ -310,7 +324,7 @@ html {
             }
 
             @include r($lg) {
-                grid-template-columns: 140px 180px 180px 1fr;
+                grid-template-columns: 180px 180px 180px 1fr;
 
                 .compare {
                     grid-column-start: unset;

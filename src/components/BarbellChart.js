@@ -16,11 +16,11 @@ function BarbellChart({ params }) {
   years.sort();
 
   const isSmallViewport = width < 500;
-  const fontSize = 20;
+  const fontSize = 16;
   const height = 800;
   const legendWidth = 125;
   const legendHeight = 50;
-  const margin = { top: 15, bottom: 40, left: isSmallViewport ? 75 : 200, right: 15 };
+  const margin = { top: 15, bottom: 40, left: isSmallViewport ? 75 : 175, right: 15 };
   const circleRadius = 6;
   const doubleCircleRadius = circleRadius * 2;
   const defaultColor = 'rgb(43, 45, 115)';
@@ -67,14 +67,13 @@ function BarbellChart({ params }) {
 
   return (
     <>
-      <h2>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {Object.keys(data.supportedStates).length - 1} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${years[0]} - ${monthNames[currentMonth]} ${years[years.length - 1]}` : `${years[0]} - ${years[years.length - 1]}`}</h2>
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
           <rect x={0} y={0} width={xMax} height={yMax} stroke="#ccc" fill="transparent" />
           <Group>
             {filteredData.map((d) => (
               <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
-                <Line x1={isNaN(getX1Value(d)) ? xScale(0) : xScale(getX1Value(d))} x2={isNaN(getX2Value(d)) ? xScale(0) + 5 : xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} stroke="gray" />
+                {!isNaN(getX1Value(d)) && !isNaN(getX2Value(d)) && <Line x1={isNaN(getX1Value(d)) ? xScale(0) : xScale(getX1Value(d))} x2={isNaN(getX2Value(d)) ? xScale(0) + 5 : xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} stroke="gray" />}
                 {isNaN(getX1Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>*</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius + 2} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill="white" />}
                 {isNaN(getX2Value(d)) ? <text x={xScale(0) + 5} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>*</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill={d[yKey] === currentState ? highlightColor : defaultColor} />}
               </Group>
@@ -112,7 +111,7 @@ function BarbellChart({ params }) {
           {!isSmallViewport && <Group top={yMax - legendHeight} left={xMax - legendWidth}>{legend}</Group>}
         </Group>
       </svg>
-      <p className="x-axis-label" style={{ marginLeft: margin.left }}>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population</p>
+      <p className="x-axis-label" style={{ marginLeft: margin.left, fontSize }}>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population</p>
       {isSmallViewport && (
         <svg style={{ height: legendHeight, marginBottom: 20 }}>
           <Group top={10} left={10}>

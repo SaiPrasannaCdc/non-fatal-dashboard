@@ -2,6 +2,7 @@ import React from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { Text } from '@visx/text';
+import { Circle } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
@@ -48,7 +49,7 @@ function LineChart({ params }) {
   const xValues = filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
 
   const isSmallViewport = width < 500;
-  const fontSize = 20;
+  const fontSize = 16;
   const height = 400;
   const legendHeight = 110;
   const margin = { top: 15, bottom: 75, left: 95, right: isSmallViewport ? 10 : 150 };
@@ -65,7 +66,7 @@ function LineChart({ params }) {
 
   const xScale = scaleLinear({
     domain: [Math.min(...xValues), Math.max(...xValues)],
-    range: [0, xMax]
+    range: [10, xMax]
   });
 
   const yScale = scaleLinear({
@@ -96,18 +97,19 @@ function LineChart({ params }) {
                     <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(filteredData[key][i+1][xKey]) ?? 0} y2={yScale(filteredData[key][i+1][currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
                   }
                   {isNaN(d[currentDrug]) && <text x={xScale(d[xKey])} y={yScale(0)} stroke={seriesColor(key)} fontSize={16}>*</text>}
+                  {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={seriesColor(key)} />}
                 </Group>
               ))}
               {!isSmallViewport && filteredData[key].length > 0 && <text x={xMax + 5} y={yScale(filteredData[key][filteredData[key].length - 1][currentDrug])} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>}
             </Group>)}
             
             {filteredData['US'].map(d => {
-              const tooltipValues = [`<p><strong>${stateNames['US']}</strong>: ${d[currentDrug]}</p>`];
+              const tooltipValues = [`<p><strong>${stateNames['US']} Rate</strong>: ${d[currentDrug]}</p>`];
               if(currentState !== 'US'){
                 let stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey]);
                 if(stateValue){
                   stateValue = stateValue[currentDrug];
-                  const stateTooltipValue = `<p><strong>${stateNames[currentState]}</strong>: ${stateValue}</p>`
+                  const stateTooltipValue = `<p><strong>${stateNames[currentState]} Rate</strong>: ${stateValue}</p>`
                   if(stateValue > d[currentDrug]){
                     tooltipValues.unshift(stateTooltipValue)
                   } else {
@@ -123,7 +125,7 @@ function LineChart({ params }) {
                 width={sectionWidth}
                 height={yMax}
                 fill='transparent'
-                data-tip={`<h3><strong>${currentTimeframe === 'Monthly' ? monthNames[d[xKey]] : d[xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
+                data-tip={`<h3><strong>${currentTimeframe === 'Monthly' ? `${monthNames[d[xKey]]} ${currentYear}` : d[xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
             })}
           </Group>
           <AxisLeft
@@ -135,7 +137,7 @@ function LineChart({ params }) {
               dy: 5
             })}
           />
-          <Text width={yMax} x={margin.left / -2} y={yMax / 2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${margin.left / 2}px ${yMax / 2}px`}}>{`${currentTimeframe} rate of ${dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal overdoses per 100,000 population, by drug type`}</Text>
+          <Text width={yMax} x={margin.left / -2} y={yMax / 2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${margin.left / 2}px ${yMax / 2}px`}}>{`${currentTimeframe} rate of ${dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal overdoses per 100,000 population`}</Text>
           <AxisBottom
             top={yMax}
             scale={xScale}

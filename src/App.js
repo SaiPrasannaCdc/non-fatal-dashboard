@@ -17,17 +17,19 @@ import './styles.scss';
 const dataSourceOptions = {
   'ED': {
     'title': 'ED Visits',
+    'titleLong': 'Emergency Department (ED) Visits',
     'titleLowerCase': 'ED visits'
   },
   'HOSP': {
     'title': 'Hospitalizations',
+    'titleLong': 'Hospitalizations',
     'titleLowerCase': 'hospitalizations'
   }
 }
 
 const drugOptions = {
   'alldrug': {
-    'titleSingular': 'Drug',
+    'titleSingular': 'All Drug',
     'titlePlural': 'All Drugs',
     'titleAll': 'All Drug',
     'rateColumn': 'rate_alldrug',
@@ -274,6 +276,7 @@ export default function App({ dataUrl }) {
 
   const barbellChartMemo = useMemo(() =>
     <>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthState]} ${supportedYears[0]} - ${monthNames[currentMonthState]} ${supportedYears[supportedYears.length - 1]}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</h2>
       {currentTimeframe === 'Monthly' && <Select params={{
         key: 'month',
         label: 'a Month',
@@ -288,7 +291,7 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {currentState !== 'US' ? stateNames[currentState] + ' and overall' : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {currentState !== 'US' ? stateNames[currentState] + ' and overall' : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</h2>
       {currentTimeframe === 'Monthly' && <Select params={{
         key: 'year',
         label: 'a Year',
@@ -303,7 +306,7 @@ export default function App({ dataUrl }) {
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthSexAge]} ` : ''} {currentYearSexAge}</h2>
+      <h2 className="h3">{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthSexAge]} ` : ''} {currentYearSexAge}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year',
@@ -326,7 +329,7 @@ export default function App({ dataUrl }) {
 
   const usaMapMemo = useMemo(() =>
     <>
-      <h2>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 population, by county, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentYearCounty}</h2>
+      <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 population, by county, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentYearCounty}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year',
@@ -347,7 +350,10 @@ export default function App({ dataUrl }) {
     return <h3>Loading</h3>;
   }
 
-  const totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState) ? data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState)[currentYear] : undefined;
+  let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState]['all'].find(item => item.year === supportedYears[supportedYears.length - 1]) : undefined;
+  if(rateOverdoses) rateOverdoses = rateOverdoses[[currentDrug]];
+  let totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState);
+  if(totalOverdoses) totalOverdoses = totalOverdoses[supportedYears[supportedYears.length - 1]]
 
   return (
     <>
@@ -381,7 +387,11 @@ export default function App({ dataUrl }) {
                     label: 'a State',
                     value: currentState,
                     onChange: setCurrentState,
-                    options: Object.keys(data.supportedStates),
+                    options: Object.keys(data.supportedStates).sort((a, b) => {
+                      if(a === 'US') return -1;
+                      if(b === 'US') return 1;
+                      return a < b;
+                    }),
                     optionLabel: (key) => data.supportedStates[key]
                   }}
                   />
@@ -399,7 +409,7 @@ export default function App({ dataUrl }) {
             </div>
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
-              <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
+              <span>Trends in {dataSourceOptions[currentDataSource]['titleLong']}</span>
               <h2>{drugOptions[currentDrug]['titleAll']} Overdoses</h2>
             </header>
             <div className="callouts">
@@ -411,7 +421,7 @@ export default function App({ dataUrl }) {
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                <span className="callout" style={{ 'color': drugColor }}>{totalOverdoses ? Math.round(totalOverdoses * 10) / 10 : 'N/A'}</span>
+                <span className="callout" style={{ 'color': drugColor }}>{rateOverdoses || 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>Annual Rate of Overdoses</span>
                   <p>{drugOptions[currentDrug]['titleAll']} Overdose</p>
@@ -426,13 +436,21 @@ export default function App({ dataUrl }) {
               </div>
             </div>
 
-            {barbellChartMemo}
+            <section className="first-section">
+              {barbellChartMemo}
+            </section>
 
-            {lineChartMemo}
+            <section>
+              {lineChartMemo}
+            </section>
 
-            {sexAgeChartsMemo}
+            <section>
+              {sexAgeChartsMemo}
+            </section>
 
-            {usaMapMemo}
+            <section>
+              {usaMapMemo}
+            </section>
           </>
         )}
       </div>
