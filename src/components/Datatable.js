@@ -40,8 +40,6 @@ function Datatable({ params }) {
 
   const filteredCountyData = data.county[currentYearCounty];
 
-  console.log(filteredYearData)
-
   return (
     <>
       <table className="main-data-table">
