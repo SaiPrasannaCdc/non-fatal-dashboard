@@ -1,8 +1,26 @@
 import React from 'react';
 
+const getFilteredTimeData = (data, currentTimeframe, currentDataSource, currentState, currentYear) => {
+  if(data.year[currentDataSource][currentState]){
+    if(currentTimeframe === 'Monthly'){
+      return Object.keys(data.year[currentDataSource][currentState]).map(month => {
+        let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
+        if (d) {
+          d.month = parseInt(month);
+          return d;
+        }
+      }).filter(d => !!d && !isNaN(d.month));
+    } else {
+      return data.year[currentDataSource][currentState]['all'];
+    }
+  } else {
+    return [];
+  }
+};
+
 function Datatable({ params }) {
 
-  const { data, monthNames, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear: currentYearUntyped, currentYearSexAge, currentYearCounty } = params;
+  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear: currentYearUntyped, currentYearSexAge, currentYearCounty } = params;
   const currentYear = parseInt(currentYearUntyped);
   const drugColor = drugOptions[currentDrug].color;
 
@@ -11,24 +29,23 @@ function Datatable({ params }) {
   const stateYearMin = Math.min(...stateYears);
   const stateYearMax = Math.max(...stateYears);
 
-  const filteredYearData = data.year[currentDataSource][currentState]['all'];
+  const filteredYearData = {
+    [currentState]: getFilteredTimeData(data, currentTimeframe, currentDataSource, currentState, currentYear)
+  }
 
-  const filteredMonthData = Object.keys(data.year[currentDataSource][currentState]).map(month => {
-    let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
-    if (d) {
-      d.month = parseInt(month);
-      return d;
-    }
-  }).filter(d => !isNaN(d.month));
+  if(currentState !== 'US') filteredYearData['US'] = getFilteredTimeData(data, currentTimeframe, currentDataSource, 'US', currentYear);
+
 
   const filteredSexData = data.sex[currentDataSource][currentDrug][currentYearSexAge][currentMonthSexAge];
 
   const filteredCountyData = data.county[currentYearCounty];
 
+  console.log(filteredYearData)
+
   return (
     <>
       <table className="main-data-table">
-        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
+        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthState]} ${supportedYears[0]} - ${monthNames[currentMonthState]} ${supportedYears[supportedYears.length - 1]}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
         <tr style={{ backgroundColor: drugColor }}>
           <th scope="col"><button>State</button></th>
           <th scope="col"><button>{stateYearMin} Rate</button></th>
@@ -46,39 +63,22 @@ function Datatable({ params }) {
       </table>
 
       <table className="main-data-table">
-        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
+        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 population, {currentState !== 'US' ? stateNames[currentState] + ' and overall' : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
         <tr style={{ backgroundColor: drugColor }}>
-          <th scope="col"><button>Year</button></th>
-          {Object.keys(drugOptions).map(drug => <th scope="col"><button>{drugOptions[drug].titleAll}</button></th>)}
+          <th scope="col"><button>State</button></th>
+          {filteredYearData['US'].map(row => <th scope="col"><button>{currentTimeframe === 'Monthly' ? monthNames[row.month] : row.year}</button></th>)}
         </tr>
-        {filteredYearData.map((row) => {
-          return (
-            <tr>
-              <td>{row.year}</td>
-              {Object.keys(drugOptions).map(drug => <td>{row[drug]}</td>)}
-            </tr>
-          )
+        {Object.keys(filteredYearData).map(state => {
+          return <tr><td>{stateNames[state]}</td>{filteredYearData[state].map((row) => {
+            return (
+                <td>{row[currentDrug]}</td>
+            )
+          })}</tr>
         })}
       </table>
 
-      {currentTimeframe === 'Monthly' && <table className="main-data-table">
-        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
-        <tr style={{ backgroundColor: drugColor }}>
-          <th scope="col"><button>Month</button></th>
-          {Object.keys(drugOptions).map(drug => <th scope="col"><button>{drugOptions[drug].titleAll}</button></th>)}
-        </tr>
-        {filteredMonthData.map((row) => {
-          return (
-            <tr>
-              <td>{monthNames[row.month]}</td>
-              {Object.keys(drugOptions).map(drug => <td>{row[drug]}</td>)}
-            </tr>
-          )
-        })}
-      </table>}
-
       <table className="main-data-table">
-        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
+        <caption>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthSexAge]} ` : ''} {currentYearSexAge}</caption>
         <tr style={{ backgroundColor: drugColor }}>
           <th scope="col"><button>Age</button></th>
           <th scope="col"><button>Male Overdoses</button></th>
@@ -96,7 +96,7 @@ function Datatable({ params }) {
       </table>
 
       <table className="main-data-table">
-        <caption>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System: Percent Change in ED Visits for Suspected {currentDrug} Overdose by OD2A-funded State</caption>
+        <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 population, by county, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentYearCounty}</caption>
         <tr style={{ backgroundColor: drugColor }}>
           <th scope="col"><button>County</button></th>
           <th scope="col"><button>Rate</button></th>
