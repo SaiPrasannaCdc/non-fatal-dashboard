@@ -36,7 +36,7 @@ const getFilteredData = (data, currentTimeframe, currentDataSource, currentState
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, dataSourceOptions, currentTimeframe, currentDataSource,currentDrug, currentState, currentYear: currentYearUntyped, width } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, width } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -52,7 +52,7 @@ function LineChart({ params }) {
   const fontSize = 16;
   const height = 400;
   const legendHeight = 110;
-  const margin = { top: 15, bottom: 75, left: 95, right: isSmallViewport ? 10 : 150 };
+  const margin = { top: 15, bottom: 45, left: 65, right: isSmallViewport ? 10 : 150 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
@@ -104,18 +104,13 @@ function LineChart({ params }) {
             </Group>)}
             
             {filteredData['US'].map(d => {
-              const tooltipValues = [`<p><strong>${stateNames['US']} Rate</strong>: ${d[currentDrug]}</p>`];
+              const tooltipValues = [`<p><strong>Overall (${data.supportedJurisdictions[currentYear]} states) Rate</strong>: ${d[currentDrug]}</p>`];
               if(currentState !== 'US'){
                 let stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey]);
                 if(stateValue){
                   stateValue = stateValue[currentDrug];
-                  const stateTooltipValue = `<p><strong>${stateNames[currentState]} Rate</strong>: ${stateValue}</p>`
-                  if(stateValue > d[currentDrug]){
-                    tooltipValues.unshift(stateTooltipValue)
-                  } else {
-                    tooltipValues.push(stateTooltipValue);
-                  }
                 }
+                tooltipValues.push(`<p><strong>${stateNames[currentState]} Rate</strong>: ${stateValue}</p>`);
               }
 
               return <rect
@@ -137,7 +132,7 @@ function LineChart({ params }) {
               dy: 5
             })}
           />
-          <Text width={yMax} x={margin.left / -2} y={yMax / 2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${margin.left / 2}px ${yMax / 2}px`}}>{`${currentTimeframe} rate of ${dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal overdoses per 100,000 population`}</Text>
+          <Text width={yMax} x={margin.left / -2} y={yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${margin.left / 2}px ${yMax / 2}px`}}>Rate per 100,000 persons</Text>
           <AxisBottom
             top={yMax}
             scale={xScale}

@@ -7,16 +7,14 @@ import { AxisBottom } from '@visx/axis';
 
 function SexAgeCharts({ params }) {
 
-  const { data, dataSourceOptions, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
+  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
 
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'];
 
   const isSmallViewport = width < 500;
   const fontSize = 16;
-  const legendWidth = 125;
-  const legendHeight = 85;
   const height = 450;
-  const margin = { top: 50, bottom: 125, left: 50, right: isSmallViewport ? 15 : legendWidth };
+  const margin = { top: 50, bottom: 125, left: 50, right: 15 };
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
@@ -62,17 +60,12 @@ function SexAgeCharts({ params }) {
     )
   }
 
-  const legend =
-    <>
-      <rect x={0} y={0} width={legendWidth} height={legendHeight} stroke="black" fill="transparent" />
-      <Circle cx={25} cy={25} r={6} fill="lightblue" /><text x={40} y={25} fill="black" alignmentBaseline="middle">Male</text>
-      <Circle cx={25} cy={55} r={6} fill="rgb(43, 45, 115)" /><text x={40} y={55} fill="black" alignmentBaseline="middle">Female</text>
-    </>;
-
   return (
     <>
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
+          <Text x={x1Scale(0) - 15} y={0} textAnchor="end">Male</Text>
+          <Text x={x2Scale(0) + 15} y={0}>Female</Text>
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
@@ -106,7 +99,7 @@ function SexAgeCharts({ params }) {
                 }
               }
             }}
-            label={`Count of ${dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal ${drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses`}
+            label="Count"
             labelProps={{
               fontSize,
               textAnchor: 'middle',
@@ -114,16 +107,8 @@ function SexAgeCharts({ params }) {
               dy: 50
             }}
           />
-          {!isSmallViewport && <Group top={0} left={width - legendWidth - margin.left}>{legend}</Group>}
         </Group>
       </svg>
-      {isSmallViewport && (
-        <svg style={{ height: legendHeight }}>
-          <Group top={0} left={0}>
-            {legend}
-          </Group>
-        </svg>
-      )}
     </>
   )
 }
