@@ -360,7 +360,7 @@ export default function App({ dataUrl }) {
     return loading;
   }
 
-  let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState]['all'].find(item => item.year === supportedYearsLatest) : undefined;
+  let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState]['all'].find(item => item.year == supportedYearsLatest) : undefined;
   if(rateOverdoses) rateOverdoses = rateOverdoses[[currentDrug]];
   let totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState);
   if(totalOverdoses) totalOverdoses = totalOverdoses[supportedYearsLatest];
