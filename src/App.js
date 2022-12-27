@@ -368,6 +368,8 @@ export default function App({ dataUrl }) {
   stateNames['US'] = `Overall (${data.supportedJurisdictions[supportedYearsLatest]} states)`;
   data.supportedStates['US'] = stateNames['US'];
 
+  let stateDropdownOptions = data.state[currentDataSource][currentDrug]['all'].map(d => d.state);
+
   return (
     <>
       <div className="filters-container" ref={outerContainerRef}>
@@ -401,7 +403,7 @@ export default function App({ dataUrl }) {
                     label: 'a State',
                     value: currentState,
                     onChange: setCurrentState,
-                    options: Object.keys(data.supportedStates).sort((a, b) => {
+                    options: stateDropdownOptions.sort((a, b) => {
                       if(a === 'US') return -1;
                       if(b === 'US') return 1;
                       return a < b;
