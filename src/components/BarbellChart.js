@@ -6,14 +6,11 @@ import { AxisLeft, AxisBottom } from '@visx/axis';
 
 function BarbellChart({ params }) {
 
-  const { data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentMonth, width } = params;
+  const { data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth, width } = params;
 
   const filteredData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentTimeframe === 'Monthly' ? currentMonth : 'all'];
 
-  const years = Object.keys(filteredData[0]).filter(item => item !== 'state');
   const states = filteredData.map(d => d.state);
-
-  years.sort();
 
   const isSmallViewport = width < 500;
   const fontSize = 16;
@@ -30,8 +27,8 @@ function BarbellChart({ params }) {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
-  const x1Key = years[0];
-  const x2Key = years[years.length - 1];
+  const x1Key = Math.min(currentYear, currentYearCompare);
+  const x2Key = Math.max(currentYear, currentYearCompare);
   const getX1Value = (d) => {
     if (d[x1Key]) return d[x1Key];
     return 'Not Provided';
