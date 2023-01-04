@@ -279,6 +279,11 @@ export default function App({ dataUrl }) {
     fetchData();
   }, []);
 
+  if(data){
+    stateNames['US'] = `Overall (${data.supportedJurisdictions[currentYear]} states)`;
+    data.supportedStates['US'] = stateNames['US'];
+  }
+
   const barbellChartMemo = useMemo(() =>
     <>
       <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? data.supportedJurisdictions[currentYear] : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthState]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonthState]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
@@ -326,7 +331,7 @@ export default function App({ dataUrl }) {
 
   const usaMapMemo = useMemo(() =>
     <>
-      <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {data ? data.supportedJurisdictions[currentYear] : 'n/a'} states, {currentYear}</h2>
+      <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {stateNames[currentState]}, {currentYear}</h2>
       <UsaMap params={{ data, stateNames, currentState, currentYear, width }} />
     </>,
     [data, stateNames, currentState, currentYear, width]);
@@ -347,9 +352,6 @@ export default function App({ dataUrl }) {
   if(rateOverdoses) rateOverdoses = rateOverdoses[[currentDrug]];
   let totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState);
   if(totalOverdoses) totalOverdoses = totalOverdoses[currentYear];
-
-  stateNames['US'] = `Overall (${data.supportedJurisdictions[currentYear]} states)`;
-  data.supportedStates['US'] = stateNames['US'];
 
   let stateDropdownOptions = data.state[currentDataSource][currentDrug]['all'].map(d => d.state);
 
