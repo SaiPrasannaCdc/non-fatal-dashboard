@@ -20,11 +20,11 @@ const getFilteredTimeData = (data, currentTimeframe, currentDataSource, currentS
 
 function Datatable({ params }) {
 
-  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear: currentYearUntyped } = params;
+  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped } = params;
   const currentYear = parseInt(currentYearUntyped);
   const drugColor = drugOptions[currentDrug].color;
 
-  const filteredStateData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentMonthState].filter(d => d.state !== 'US');
+  const filteredStateData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
   const stateYears = Object.keys(filteredStateData[0]).filter(item => item !== 'state');
   const stateYearMin = Math.min(...stateYears);
   const stateYearMax = Math.max(...stateYears);
@@ -36,14 +36,14 @@ function Datatable({ params }) {
   if(currentState !== 'US') filteredYearData['US'] = getFilteredTimeData(data, currentTimeframe, currentDataSource, 'US', currentYear);
 
 
-  const filteredSexData = data.sex[currentDataSource][currentDrug][currentYear][currentMonthSexAge];
+  const filteredSexData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
 
   const filteredCountyData = data.county[currentYear];
 
   return (
     <>
       <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthState]} ${supportedYears[0]} - ${monthNames[currentMonthState]} ${supportedYears[supportedYears.length - 1]}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
+        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${supportedYears[0]} - ${monthNames[currentMonth]} ${supportedYears[supportedYears.length - 1]}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col"><button>State</button></th>
@@ -84,7 +84,7 @@ function Datatable({ params }) {
       </table>
 
       <table className="main-data-table">
-        <caption>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthSexAge]} ` : ''} {currentYear}</caption>
+        <caption>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col"><button>Age</button></th>

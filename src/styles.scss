@@ -349,7 +349,7 @@ html {
             }
 
             @include r($lg) {
-                grid-template-columns: 180px 180px 180px 180px 1fr;
+                grid-template-columns: 180px 180px 180px 180px 180px 1fr;
 
                 .compare {
                     grid-column-start: unset;

@@ -115,10 +115,9 @@ export default function App({ dataUrl }) {
   const [currentDrug, setCurrentDrug] = useState('alldrug');
   const [currentState, setCurrentState] = useState('US');
   const [currentTimeframe, setCurrentTimeframe] = useState('Annual');
-  const [currentMonthState, setCurrentMonthState] = useState('1');
+  const [currentMonth, setCurrentMonth] = useState('1');
   const [currentYear, setCurrentYear] = useState(supportedYearsLatest);
   const [currentYearCompare, setCurrentYearCompare] = useState(supportedYears[0]);
-  const [currentMonthSexAge, setCurrentMonthSexAge] = useState('1');
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
   const [width, setWidth] = useState(0);
@@ -286,7 +285,7 @@ export default function App({ dataUrl }) {
 
   const barbellChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? data.supportedJurisdictions[currentYear] : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthState]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonthState]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? data.supportedJurisdictions[currentYear] : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year to Compare To',
@@ -295,39 +294,23 @@ export default function App({ dataUrl }) {
         options: supportedYears.filter(year => year !== currentYear),
         optionLabel: (key) => key
       }}/>
-      {currentTimeframe === 'Monthly' && <Select params={{
-        key: 'month',
-        label: 'a Month',
-        value: currentMonthState,
-        onChange: setCurrentMonthState,
-        options: Object.keys(monthNames).filter(key => key !== 'all'),
-        optionLabel: (key) => monthNames[key]
-      }} />}
-      <BarbellChart params={{ data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth: currentMonthState, width }} />
+      <BarbellChart params={{ data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth: currentMonth, width }} />
     </>,
-    [data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonthState, width]);
+    [data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth, width]);
 
   const lineChartMemo = useMemo(() =>
     <>
       <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall' + ` (${data ? data.supportedJurisdictions[currentTimeframe === 'Monthly' ? currentYear : supportedYearsLatest] : 'n/a'} states)`}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYearsLatest}`}</h2>
-      <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width }} />
+      <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, width]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? data.supportedJurisdictions[currentYear] : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonthSexAge]} ` : ''} {currentYear}</h2>
-      {currentTimeframe === 'Monthly' && <Select params={{
-        key: 'month',
-        label: 'a Month',
-        value: currentMonthSexAge,
-        onChange: setCurrentMonthSexAge,
-        options: Object.keys(monthNames).filter(key => key !== 'all'),
-        optionLabel: (key) => monthNames[key]
-      }} />}
-      <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonthSexAge, width }} />
+      <h2 className="h3">{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? data.supportedJurisdictions[currentYear] : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
+      <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, width }} />
     </>,
-    [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonthSexAge, width]);
+    [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, width]);
 
   const usaMapMemo = useMemo(() =>
     <>
@@ -348,9 +331,9 @@ export default function App({ dataUrl }) {
     return loading;
   }
 
-  let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState]['all'].find(item => item.year == currentYear) : undefined;
+  let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.year == currentYear) : undefined;
   if(rateOverdoses) rateOverdoses = rateOverdoses[[currentDrug]];
-  let totalOverdoses = data.state[currentDataSource][currentDrug]['all'].find(item => item.state === currentState);
+  let totalOverdoses = data.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
   if(totalOverdoses) totalOverdoses = totalOverdoses[currentYear];
 
   let stateDropdownOptions = data.state[currentDataSource][currentDrug]['all'].map(d => d.state);
@@ -409,6 +392,14 @@ export default function App({ dataUrl }) {
                     options: supportedYears,
                     optionLabel: (key) => key
                   }}/>
+                  {currentTimeframe === 'Monthly' && <Select params={{
+                    key: 'month',
+                    label: 'a Month',
+                    value: currentMonth,
+                    onChange: setCurrentMonth,
+                    options: Object.keys(monthNames).filter(key => key !== 'all'),
+                    optionLabel: (key) => monthNames[key]
+                  }} />}
                 </div>
               </div>
             </div>
@@ -422,14 +413,14 @@ export default function App({ dataUrl }) {
                 <span className="callout" style={{ 'color': drugColor }}>{totalOverdoses ? totalOverdoses.toLocaleString() : 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
-                  <p>Annual number of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses</p>
+                  <p>{currentTimeframe} number of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses</p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
                 <span className="callout" style={{ 'color': drugColor }}>{rateOverdoses || 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
-                  <p>Annual rate of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons</p>
+                  <p>{currentTimeframe} rate of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons</p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
@@ -468,7 +459,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonthState, currentMonthSexAge, currentYear }} />
+              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear }} />
               <small>
                 <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
                 <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>

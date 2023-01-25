@@ -36,7 +36,7 @@ const getFilteredData = (data, currentTimeframe, currentDataSource, currentState
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, width } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -97,7 +97,7 @@ function LineChart({ params }) {
                     <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(filteredData[key][i+1][xKey]) ?? 0} y2={yScale(filteredData[key][i+1][currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
                   }
                   {isNaN(d[currentDrug]) && <text x={xScale(d[xKey])} y={yScale(0)} stroke={seriesColor(key)} fontSize={16}>*</text>}
-                  {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={seriesColor(key)} />}
+                  {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
                 </Group>
               ))}
               {!isSmallViewport && filteredData[key].length > 0 && <text x={xMax + 5} y={yScale(filteredData[key][filteredData[key].length - 1][currentDrug])} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>}
