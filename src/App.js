@@ -400,6 +400,16 @@ export default function App({ dataUrl }) {
                     options: Object.keys(monthNames).filter(key => key !== 'all'),
                     optionLabel: (key) => monthNames[key]
                   }} />}
+                  <div>
+                    <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
+                      setCurrentDataSource('ED');
+                      setCurrentDrug('alldrug');
+                      setCurrentState('US');
+                      setCurrentTimeframe('Annual');
+                      setCurrentMonth('1');
+                      setCurrentYear(supportedYearsLatest);
+                    }}>Reset</button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -349,7 +349,7 @@ html {
             }
 
             @include r($lg) {
-                grid-template-columns: 180px 180px 180px 180px 180px 1fr;
+                grid-template-columns: 160px 160px 160px 160px 160px 160px 1fr;
 
                 .compare {
                     grid-column-start: unset;
@@ -361,6 +361,13 @@ html {
         >div {
             margin-right: 20px;
         }
+    }
+
+    #reset-button {
+        color: white;
+        padding: 0.5em 1em;
+        border-radius: 5px;
+        margin-top: 27px;
     }
 
     /* Tooltip Styles - overrides some default ones provided by <ReactTooltip /> */
