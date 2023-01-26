@@ -392,14 +392,15 @@ export default function App({ dataUrl }) {
                     options: supportedYears,
                     optionLabel: (key) => key
                   }}/>
-                  {currentTimeframe === 'Monthly' && <Select params={{
+                  <Select params={{
                     key: 'month',
                     label: 'a Month',
                     value: currentMonth,
                     onChange: setCurrentMonth,
                     options: Object.keys(monthNames).filter(key => key !== 'all'),
-                    optionLabel: (key) => monthNames[key]
-                  }} />}
+                    optionLabel: (key) => monthNames[key],
+                    disabled: currentTimeframe === 'Monthly' ? undefined : 'disabled'
+                  }} />
                   <div>
                     <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
                       setCurrentDataSource('ED');
