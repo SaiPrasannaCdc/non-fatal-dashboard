@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState} from 'react';
 
 const getFilteredTimeData = (data, currentTimeframe, currentDataSource, currentState, currentYear) => {
   if(data.year[currentDataSource][currentState]){
@@ -16,6 +16,24 @@ const getFilteredTimeData = (data, currentTimeframe, currentDataSource, currentS
   } else {
     return [];
   }
+};
+
+const getSortFunctionObject = (obj, prop, order) => {
+  return (item1, item2) => {
+    if(obj[item1][prop] === obj[item2][prop]) return 0;
+    if(obj[item1][prop] === 'Data suppressed') return order === 'asc' ? -1 : 1;
+    if(obj[item2][prop] === 'Data suppressed') return order === 'asc' ? 1 : -1;
+    if(obj[item1][prop] < obj[item2][prop]) return order === 'asc' ? -1 : 1;
+    return order === 'asc' ? 1 : -1;
+  };
+};
+
+const getSortFunctionArray = (prop, order) => {
+  return (item1, item2) => {
+    if(item1[prop] === item2[prop]) return 0;
+    if(item1[prop] < item2[prop]) return order === 'asc' ? -1 : 1;
+    return order === 'asc' ? 1 : -1;
+  };
 };
 
 function Datatable({ params }) {
@@ -40,48 +58,136 @@ function Datatable({ params }) {
 
   const filteredCountyData = data.county[currentYear];
 
+  const [ stateSortBy, setStateSortBy ] = useState('state');
+  const [ stateSortOrder, setStateSortOrder ] = useState('asc');
+  const [ yearSortBy, setYearSortBy ] = useState('state');
+  const [ yearSortOrder, setYearSortOrder ] = useState('asc');
+  const [ sexSortBy, setSexSortBy ] = useState('state');
+  const [ sexSortOrder, setSexSortOrder ] = useState('asc');
+  const [ countySortBy, setCountySortBy ] = useState('state');
+  const [ countySortOrder, setCountySortOrder ] = useState('asc');
+
+  const headerClick = (prop, propSetter, order, orderSetter, header) => {
+    if(prop === header){
+      if(order === 'asc'){
+        orderSetter('desc');
+      } else {
+        orderSetter('asc');
+      }
+    } else {
+      propSetter(header);
+      orderSetter('asc');
+    }
+  };
+
+  const stateTable = useMemo(() => (
+    <table className="main-data-table">
+      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${supportedYears[0]} - ${monthNames[currentMonth]} ${supportedYears[supportedYears.length - 1]}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
+      <thead>
+        <tr style={{ backgroundColor: drugColor }}>
+          <th scope="col" className={`${stateSortBy === 'state' ? 'sorting' : ''} ${stateSortOrder}`}>
+            <button onClick={() => {headerClick(stateSortBy, setStateSortBy, stateSortOrder, setStateSortOrder, 'state')}}>
+              State
+            </button>
+          </th>
+          <th scope="col" className={`${stateSortBy === stateYearMin ? 'sorting' : ''} ${stateSortOrder}`}>
+            <button onClick={() => {headerClick(stateSortBy, setStateSortBy, stateSortOrder, setStateSortOrder, stateYearMin)}}>
+              {stateYearMin} Rate
+            </button>
+          </th>
+          <th scope="col" className={`${stateSortBy === stateYearMax ? 'sorting' : ''} ${stateSortOrder}`}>
+            <button onClick={() => {headerClick(stateSortBy, setStateSortBy, stateSortOrder, setStateSortOrder, stateYearMax)}}>
+              {stateYearMax} Rate
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredStateData.sort(getSortFunctionArray(stateSortBy, stateSortOrder)).map((row) => {
+          return (
+            <tr key={`barbell-chart-row-${row.state}`}>
+              <td>{stateNames[row.state]}</td>
+              <td>{row[stateYearMin]}</td>
+              <td>{row[stateYearMax]}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  ), [data, filteredStateData, stateYearMax, stateYearMin, drugColor, currentTimeframe,  dataSourceOptions, drugOptions, stateNames, supportedYears, currentDataSource, currentDrug, currentMonth]);
+
+  const yearTable = useMemo(() => (
+    <table className="main-data-table">
+      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? stateNames[currentState] + ' and overall' : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
+      <thead>
+        <tr style={{ backgroundColor: drugColor }}>
+          <th scope="col">
+            <button>
+              State
+            </button>
+          </th>
+          {filteredYearData['US'].map(row => 
+            <th key={`line-chart-header-${currentTimeframe === 'Monthly' ? monthNames[row.month] : row.year}`} scope="col">
+              <button>
+                {currentTimeframe === 'Monthly' ? monthNames[row.month] : row.year}
+              </button>
+            </th>
+          )}
+        </tr>
+      </thead>
+      <tbody>
+        {Object.keys(filteredYearData).sort(getSortFunctionObject(filteredYearData, yearSortBy, yearSortOrder)).map(state => {
+          return <tr key={`line-chart-row-${state}`}><td>{stateNames[state]}</td>{filteredYearData[state].map((row) => {
+            return (
+                <td key={`line-chart-col-${state}-${row[currentDrug]}`}>{row[currentDrug]}</td>
+            )
+          })}</tr>
+        })}
+      </tbody>
+    </table>
+  ), [filteredYearData, currentTimeframe, dataSourceOptions, drugOptions, stateNames, supportedYears, drugColor, monthNames, currentDataSource, currentDrug, currentState, currentYear, yearSortBy, yearSortOrder]);
+
+  const countyTable = useMemo(() => (
+    <table className="main-data-table">
+      <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentYear}</caption>
+      <thead>
+      <tr style={{ backgroundColor: drugColor }}>
+        <th scope="col" className={`${countySortBy === 'state' ? 'sorting' : ''} ${countySortOrder}`}>
+          <button onClick={() => {headerClick(countySortBy, setCountySortBy, countySortOrder, setCountySortOrder, 'state')}}>
+            State
+          </button>
+        </th>
+        <th scope="col" className={`${countySortBy === 'county' ? 'sorting' : ''} ${countySortOrder}`}>
+          <button onClick={() => {headerClick(countySortBy, setCountySortBy, countySortOrder, setCountySortOrder, 'county')}}>
+            County
+          </button>
+        </th>
+        <th scope="col" className={`${countySortBy === 'rate' ? 'sorting' : ''} ${countySortOrder}`}>
+          <button onClick={() => {headerClick(countySortBy, setCountySortBy, countySortOrder, setCountySortOrder, 'rate')}}>
+            Rate
+          </button>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+        {Object.keys(filteredCountyData).sort(getSortFunctionObject(filteredCountyData, countySortBy, countySortOrder)).map((fips) => {
+          return (
+            <tr key={`county-map-row-${fips}`}>
+              <td>{stateNames[filteredCountyData[fips].state]}</td>
+              <td>{filteredCountyData[fips].county}</td>
+              <td>{filteredCountyData[fips].rate}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  ), [data, filteredCountyData, drugColor, stateNames, currentYear, countySortBy, countySortOrder]);
+
   return (
     <>
-      <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${supportedYears[0]} - ${monthNames[currentMonth]} ${supportedYears[supportedYears.length - 1]}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
-        <thead>
-          <tr style={{ backgroundColor: drugColor }}>
-            <th scope="col"><button>State</button></th>
-            <th scope="col"><button>{stateYearMin} Rate</button></th>
-            <th scope="col"><button>{stateYearMax} Rate</button></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredStateData.map((row) => {
-            return (
-              <tr key={`barbell-chart-row-${row.state}`}>
-                <td>{row.state}</td>
-                <td>{row[stateYearMin]}</td>
-                <td>{row[stateYearMax]}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      {stateTable}
 
-      <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? stateNames[currentState] + ' and overall' : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
-        <thead>
-          <tr style={{ backgroundColor: drugColor }}>
-            <th scope="col"><button>State</button></th>
-            {filteredYearData['US'].map(row => <th key={`line-chart-header-${currentTimeframe === 'Monthly' ? monthNames[row.month] : row.year}`} scope="col"><button>{currentTimeframe === 'Monthly' ? monthNames[row.month] : row.year}</button></th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(filteredYearData).map(state => {
-            return <tr key={`line-chart-row-${state}`}><td>{stateNames[state]}</td>{filteredYearData[state].map((row) => {
-              return (
-                  <td key={`line-chart-col-${state}-${row[currentDrug]}`}>{row[currentDrug]}</td>
-              )
-            })}</tr>
-          })}
-        </tbody>
-      </table>
+      {yearTable}
 
       <table className="main-data-table">
         <caption>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
@@ -105,25 +211,7 @@ function Datatable({ params }) {
         </tbody>
       </table>
 
-      <table className="main-data-table">
-        <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentYear}</caption>
-        <thead>
-        <tr style={{ backgroundColor: drugColor }}>
-          <th scope="col"><button>County</button></th>
-          <th scope="col"><button>Rate</button></th>
-        </tr>
-        </thead>
-        <tbody>
-          {Object.keys(filteredCountyData).map((fips) => {
-            return (
-              <tr key={`county-map-row-${fips}`}>
-                <td>{filteredCountyData[fips].county}</td>
-                <td>{filteredCountyData[fips].rate}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      {countyTable}
     </>
   );
 }

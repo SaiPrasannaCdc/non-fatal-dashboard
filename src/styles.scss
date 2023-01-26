@@ -434,6 +434,15 @@ html {
         padding: .3em .5em;
     }
 
+    #line-chart-legend-container {
+        text-align: center;
+
+        #line-chart-legend {
+            display: inline-block;
+            text-align: left;
+        }
+    }
+
     .datatable-container {
         //z-index: 10;
         position: relative;
@@ -514,11 +523,27 @@ html {
                     }
 
                     th {
+                        position: relative;
                         border: 1px solid #dee2e6;
                         padding: .3rem;
                         text-align: left;
                         color: white;
                         cursor: pointer;
+
+                        &.sorting::before {
+                            content: ">";
+                            position: absolute;
+                            right: 1em;
+                            font-size: large;
+                            font-weight: bold;
+                            top: 0.5em;
+                            transform: rotate(90deg);
+                            pointer-events: none;
+                        }
+
+                        &.sorting.asc::before {
+                            transform: rotate(-90deg);
+                        }
 
                         button {
                             width: 100%;

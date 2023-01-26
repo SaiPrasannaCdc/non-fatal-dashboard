@@ -150,14 +150,15 @@ function LineChart({ params }) {
         </Group>
       </svg>
       {isSmallViewport && (
-        <svg style={{ height: legendHeight }}>
-          {Object.keys(filteredData).map((key, i) =>
-            <Group key={`line-series-${key}`}>
-              <rect x={0} y={i * fontSize + fontSize} width={10} height={3} fill={seriesColor(key)} />
-              <text x={15} y={i * fontSize + fontSize} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>
-            </Group>
-          )}
-        </svg>
+        <div id="line-chart-legend-container">
+          <div id="line-chart-legend">
+            {Object.keys(filteredData).map((key, i) =>
+              <div key={`line-series-${key}`}>
+                <span fontSize={fontSize} style={{color: seriesColor(key)}}>- {stateNames[key]}</span>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </>
   )
