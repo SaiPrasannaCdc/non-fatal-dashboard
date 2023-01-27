@@ -18,12 +18,14 @@ const dataSourceOptions = {
   'ED': {
     'title': 'ED Visits',
     'titleLong': 'Emergency Department (ED) Visits',
+    'titleLongest': 'emergency department visits',
     'titleLowerCase': 'ED visits'
   },
   'HOSP': {
-    'title': 'Hospitalizations',
-    'titleLong': 'Hospitalizations',
-    'titleLowerCase': 'hospitalizations'
+    'title': 'Inpatient Hospitalizations',
+    'titleLong': 'Inpatient Hospitalizations',
+    'titleLongest': ' inpatient hospitalizations',
+    'titleLowerCase': 'inpatient hospitalizations'
   }
 }
 
@@ -424,14 +426,14 @@ export default function App({ dataUrl }) {
                 <span className="callout" style={{ 'color': drugColor }}>{totalOverdoses ? totalOverdoses.toLocaleString() : 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
-                  <p>{currentTimeframe} number of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses</p>
+                  <p>{currentTimeframe} number of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLongest']}</p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
                 <span className="callout" style={{ 'color': drugColor }}>{rateOverdoses || 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
-                  <p>{currentTimeframe} rate of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons</p>
+                  <p>{currentTimeframe} rate of {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLongest']} per 100,000 persons</p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
@@ -464,7 +466,7 @@ export default function App({ dataUrl }) {
       <div className='data-tables'>
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-            Trends by State, {drugOptions[currentDrug]['titleAll']}
+            Data tables, {drugOptions[currentDrug]['titleAll']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
             {!showDatatable && <span>{String.fromCharCode(43)}</span>}
           </button>

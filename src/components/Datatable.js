@@ -31,6 +31,8 @@ const getSortFunctionObject = (obj, prop, order) => {
 const getSortFunctionArray = (prop, order) => {
   return (item1, item2) => {
     if(item1[prop] === item2[prop]) return 0;
+    if(!item1[prop]) return order === 'asc' ? -1 : 1;
+    if(!item2[prop]) return order === 'asc' ? 1 : -1;
     if(item1[prop] < item2[prop]) return order === 'asc' ? -1 : 1;
     return order === 'asc' ? 1 : -1;
   };
@@ -60,9 +62,7 @@ function Datatable({ params }) {
 
   const [ stateSortBy, setStateSortBy ] = useState('state');
   const [ stateSortOrder, setStateSortOrder ] = useState('asc');
-  const [ yearSortBy, setYearSortBy ] = useState('state');
-  const [ yearSortOrder, setYearSortOrder ] = useState('asc');
-  const [ sexSortBy, setSexSortBy ] = useState('state');
+  const [ sexSortBy, setSexSortBy ] = useState('age');
   const [ sexSortOrder, setSexSortOrder ] = useState('asc');
   const [ countySortBy, setCountySortBy ] = useState('state');
   const [ countySortOrder, setCountySortOrder ] = useState('asc');
@@ -136,7 +136,7 @@ function Datatable({ params }) {
         </tr>
       </thead>
       <tbody>
-        {Object.keys(filteredYearData).sort(getSortFunctionObject(filteredYearData, yearSortBy, yearSortOrder)).map(state => {
+        {Object.keys(filteredYearData).map(state => {
           return <tr key={`line-chart-row-${state}`}><td>{stateNames[state]}</td>{filteredYearData[state].map((row) => {
             return (
                 <td key={`line-chart-col-${state}-${row[currentDrug]}`}>{row[currentDrug]}</td>
@@ -145,7 +145,43 @@ function Datatable({ params }) {
         })}
       </tbody>
     </table>
-  ), [filteredYearData, currentTimeframe, dataSourceOptions, drugOptions, stateNames, supportedYears, drugColor, monthNames, currentDataSource, currentDrug, currentState, currentYear, yearSortBy, yearSortOrder]);
+  ), [filteredYearData, currentTimeframe, dataSourceOptions, drugOptions, stateNames, supportedYears, drugColor, monthNames, currentDataSource, currentDrug, currentState, currentYear]);
+
+  const sexTable = useMemo(() => (
+    <table className="main-data-table">
+      <caption>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
+      <thead>
+        <tr style={{ backgroundColor: drugColor }}>
+          <th scope="col" className={`${sexSortBy === 'age' ? 'sorting' : ''} ${sexSortOrder}`}>
+            <button onClick={() => {headerClick(sexSortBy, setSexSortBy, sexSortOrder, setSexSortOrder, 'age')}}>
+              Age
+            </button>
+          </th>
+          <th scope="col" className={`${sexSortBy === 'M' ? 'sorting' : ''} ${sexSortOrder}`}>
+            <button onClick={() => {headerClick(sexSortBy, setSexSortBy, sexSortOrder, setSexSortOrder, 'M')}}>
+              Male Overdoses
+            </button>
+          </th>
+          <th scope="col" className={`${sexSortBy === 'F' ? 'sorting' : ''} ${sexSortOrder}`}>
+            <button onClick={() => {headerClick(sexSortBy, setSexSortBy, sexSortOrder, setSexSortOrder, 'F')}}>
+              Female Overdoses
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredSexData.sort(getSortFunctionArray(sexSortBy, sexSortOrder)).map((row) => {
+          return (
+            <tr key={`bar-chart-row-${row.age}`}>
+              <td>{row.age}</td>
+              <td>{row.M}</td>
+              <td>{row.F}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  ), [data, filteredSexData, currentTimeframe, dataSourceOptions, drugOptions, monthNames, drugColor, currentDataSource, currentDrug, currentMonth, currentYear, sexSortBy, sexSortOrder]);
 
   const countyTable = useMemo(() => (
     <table className="main-data-table">
@@ -189,27 +225,7 @@ function Datatable({ params }) {
 
       {yearTable}
 
-      <table className="main-data-table">
-        <caption>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
-        <thead>
-          <tr style={{ backgroundColor: drugColor }}>
-            <th scope="col"><button>Age</button></th>
-            <th scope="col"><button>Male Overdoses</button></th>
-            <th scope="col"><button>Female Overdoses</button></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredSexData.map((row) => {
-            return (
-              <tr key={`bar-chart-row-${row.age}`}>
-                <td>{row.age}</td>
-                <td>{row.M}</td>
-                <td>{row.F}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      {sexTable}
 
       {countyTable}
     </>
