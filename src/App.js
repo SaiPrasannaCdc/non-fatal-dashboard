@@ -390,7 +390,17 @@ export default function App({ dataUrl }) {
                     key: 'year',
                     label: 'a Year',
                     value: currentYear,
-                    onChange: setCurrentYear,
+                    onChange: (param) => {
+                      if(param === currentYearCompare){
+                        let yearIndex = supportedYears.indexOf(param);
+                        yearIndex++;
+                        if(yearIndex >= supportedYears.length){
+                          yearIndex = 0;
+                        }
+                        setCurrentYearCompare(supportedYears[yearIndex]);
+                      }
+                      setCurrentYear(param);
+                    },
                     options: supportedYears,
                     optionLabel: (key) => key
                   }}/>
