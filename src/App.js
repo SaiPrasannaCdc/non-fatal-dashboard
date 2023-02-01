@@ -155,10 +155,25 @@ export default function App({ dataUrl }) {
       const wb = XLSX.read(binaryData);
 
       let supportedStates = {};
+      let supportedJurisdictions = {};
+
+      const usSheet = wb.Sheets.us_count_all;
+      let { columnHeaders, columns } = getColumnsInfo(usSheet);
+      let getValue = (key, i) => usSheet[columnHeaders[key] + i].v;
+
+      for (let i = 2; i < columns; i++) {
+        if(!supportedJurisdictions[getValue('year', i)]){
+          supportedJurisdictions[getValue('year', i)] = getValue('jurisdiction_count', i);
+        }  
+      }
+
+
 
       const stateSheet = wb.Sheets.state_rate_all;
-      let { columnHeaders, columns } = getColumnsInfo(stateSheet);
-      let getValue = (key, i) => stateSheet[columnHeaders[key] + i].v;
+      let columnInfo = getColumnsInfo(stateSheet);
+      columnHeaders = columnInfo.columnHeaders;
+      columns = columnInfo.columns;
+      getValue = (key, i) => stateSheet[columnHeaders[key] + i].v;
 
       let stateData = {};
       let yearData = {};
@@ -206,15 +221,18 @@ export default function App({ dataUrl }) {
         datasetNode.push(yearDatum);
       }
 
-      const sexSheet = wb.Sheets.us_count_all;
-      let columnInfo = getColumnsInfo(sexSheet);
+
+
+
+
+      const sexSheet = wb.Sheets.state_rate_sex_age;
+      columnInfo = getColumnsInfo(sexSheet);
       columnHeaders = columnInfo.columnHeaders;
       columns = columnInfo.columns;
       getValue = (key, i) => sexSheet[columnHeaders[key] + i].v;
 
       //Populate sex data
       let sexData = {};
-      let supportedJurisdictions = {};
       for (let i = 2; i < columns; i++) {
         createIfUndefined(sexData, getValue('dataset', i), createNewDrugObject(false));
         Object.keys(drugOptions).forEach(drug => {
@@ -230,11 +248,10 @@ export default function App({ dataUrl }) {
             datasetDatum[getValue('sex', i)] = formatNumber(getValue(drug, i), false);
           }
         });
-
-        if(!supportedJurisdictions[getValue('year', i)]){
-          supportedJurisdictions[getValue('year', i)] = getValue('jurisdiction_count', i);
-        }
       }
+
+
+
 
       const countySheet = wb.Sheets.cnty_rates_all;
       columnInfo = getColumnsInfo(countySheet);
@@ -258,17 +275,19 @@ export default function App({ dataUrl }) {
         let annualMax = 0;
         let monthlyMax = 0;
         Object.keys(sexData[dataSource][drug]).forEach(year => {
-          sexData[dataSource][drug][year]['all'].forEach(d => {
-            if(d['M'] > annualMax) annualMax = d['M'];
-            if(d['F'] > annualMax) annualMax = d['F'];
-          });
-          Object.keys(sexData[dataSource][drug][year]).forEach(month => {
-            if(month === 'all') return;
-            sexData[dataSource][drug][year][month].forEach(d => {
-              if(d['M'] > monthlyMax) monthlyMax = d['M'];
-              if(d['F'] > monthlyMax) monthlyMax = d['F'];
+          if(sexData[dataSource][drug][year]['all']){
+            sexData[dataSource][drug][year]['all'].forEach(d => {
+              if(d['M'] > annualMax) annualMax = d['M'];
+              if(d['F'] > annualMax) annualMax = d['F'];
             });
-          });
+            Object.keys(sexData[dataSource][drug][year]).forEach(month => {
+              if(month === 'all') return;
+              sexData[dataSource][drug][year][month].forEach(d => {
+                if(d['M'] > monthlyMax) monthlyMax = d['M'];
+                if(d['F'] > monthlyMax) monthlyMax = d['F'];
+              });
+            });
+          }
         });
         sexData[dataSource][drug].maxAnnual = annualMax;
         sexData[dataSource][drug].maxMonthly = monthlyMax;
