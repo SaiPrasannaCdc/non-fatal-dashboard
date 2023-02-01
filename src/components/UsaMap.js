@@ -25,7 +25,9 @@ const UsaMap = ({ params }) => {
 
   const isSmallViewport = width < 500;
   const fontSize = 15;
+  const zeroColor = 'rgb(10, 2, 87)';
   const suppressedColor = '#999';
+  const unavailableColor = '#EEE';
   const legendWidth = 200;
   const height = Math.max(width / 2, 250);
   const halfHeight = height / 2;
@@ -37,7 +39,7 @@ const UsaMap = ({ params }) => {
 
   const values = Object.keys(filteredData).map(key => filteredData[key].rate);
   const max = Math.max(...values.filter(val => !isNaN(val)));
-  const min = Math.min(...values.filter(val => !isNaN(val)));
+  const min = Math.min(...values.filter(val => !isNaN(val) && val != 0));
   const numLabelIntervals = 2;
   const numColorIntervals = 20;
   const labelIntervalWidth = (max - min) / numLabelIntervals;
@@ -63,6 +65,14 @@ const UsaMap = ({ params }) => {
     range: [halfHeight + colorScaleHalfHeight, halfHeight - colorScaleHalfHeight]
   })
 
+  const getColor = (id) => {
+    if(id.length < 3) return 'transparent';
+    if(!filteredData[id]) return unavailableColor;
+    if(isNaN(filteredData[id].rate)) return suppressedColor;
+    if(filteredData[id].rate == 0) return zeroColor;
+    return colorScale(filteredData[id].rate);
+  }
+
   const constructGeoJsx = (geographies, projection, state = false) => {
     //Not sure why this fixes box outlines around islands
     geographies.splice(914, 1);
@@ -85,7 +95,7 @@ const UsaMap = ({ params }) => {
             className='single-geo'
             stroke={state ? '#000' : '#777'}
             strokeWidth={state ? 1 : currentState === 'US' && isSmallViewport ? 0.1 : .5}
-            fill={filteredData[geo.id] ? (isNaN(filteredData[geo.id].rate) ? suppressedColor : colorScale(filteredData[geo.id].rate)) : 'transparent'}
+            fill={getColor(geo.id)}
             d={path}
             style={{ pointerEvents: geo.id.length <= 2 ? 'none' : 'default' }}
             data-tip={geo.id.length > 2 && filteredData[geo.id] ? `<h3><strong>${filteredData[geo.id].county}, ${stateNames[stateFipsMapping[geo.id.substring(0, 2)]]}</strong></h3><p><strong>Rate:</strong> ${filteredData[geo.id].rate}</p>` : undefined}
@@ -118,8 +128,15 @@ const UsaMap = ({ params }) => {
         {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
         {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
 
-        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5))} width={50} height={150 / colorIntervals.length} fill={suppressedColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data suppressed</text>
+
+        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5))} width={50} height={150 / colorIntervals.length} fill={zeroColor} />
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>0</text>
+
+        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8))} width={50} height={150 / colorIntervals.length} fill={suppressedColor} />
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data suppressed</text>
+
+        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 11))} width={50} height={150 / colorIntervals.length} fill={unavailableColor} />
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 11)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data not available/not reported</text>
       </svg>
     </>
   )
