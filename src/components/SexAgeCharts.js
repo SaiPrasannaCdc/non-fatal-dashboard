@@ -7,9 +7,9 @@ import { AxisBottom } from '@visx/axis';
 
 function SexAgeCharts({ params }) {
 
-  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, width } = params;
+  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width } = params;
 
-  const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'];
+  const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'][currentDataType];
 
   const isSmallViewport = width < 500;
   const fontSize = 16;
@@ -24,16 +24,17 @@ function SexAgeCharts({ params }) {
   const x2Key = 'F';
   const yKey = 'age';
 
-  const overallMax = data.sex[currentDataSource][currentDrug][`max${currentTimeframe}`];
+  let overallMax = data.sex[currentDataSource][currentDrug][`max${currentTimeframe}`][currentDataType];
+  if(overallMax === 0) overallMax = 1;
 
   const x1Scale = scaleLinear({
     range: [xMaxHalf, 0],
-    domain: [0, overallMax]
+    domain: [-.05 * overallMax, overallMax]
   });
 
   const x2Scale = scaleLinear({
     range: [xMaxHalf, xMax],
-    domain: [0, overallMax]
+    domain: [-.05 * overallMax, overallMax]
   });
 
   const yScale = scaleBand({
@@ -51,10 +52,10 @@ function SexAgeCharts({ params }) {
 
     return (
       <g key={d[yKey]}>
-        <Bar x={x1Pos} y={yScale(d[yKey])} width={xMaxHalf - x1Pos} height={yScale.bandwidth()} fill={isNaN(d[x1Key]) ? 'transparent' : 'lightblue'} stroke="lightblue" data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${d[x1Key].toLocaleString()}</p>`} />
+        <Bar x={x1Pos} y={yScale(d[yKey])} width={xMaxHalf - x1Pos} height={yScale.bandwidth()} fill={isNaN(d[x1Key]) ? 'transparent' : 'lightblue'} stroke="lightblue" data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x1Key].toLocaleString()}</p>`} />
         <Text x={(x1Pos) + (alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[yKey]}</Text>
 
-        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Pos - xMaxHalf} height={yScale.bandwidth()} fill={isNaN(d[x2Key]) ? 'transparent' : 'rgb(43, 45, 115)'} stroke="rgb(43, 45, 115)" data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${d[x2Key].toLocaleString()}</p>`} />
+        <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Pos - xMaxHalf} height={yScale.bandwidth()} fill={isNaN(d[x2Key]) ? 'transparent' : 'rgb(43, 45, 115)'} stroke="rgb(43, 45, 115)" data-tip={`<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x2Key].toLocaleString()}</p>`} />
         <Text x={(x2Pos) + (alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} textAnchor={alignEndSecond ? 'end' : 'start'} fill={alignEndSecond ? 'white' : 'black'} fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[yKey]}</Text>
       </g>
     )
@@ -99,7 +100,7 @@ function SexAgeCharts({ params }) {
                 }
               }
             }}
-            label="Count"
+            label={{count: 'Count', rate: 'Rate per 100,000 persons'}[currentDataType]}
             labelProps={{
               fontSize,
               textAnchor: 'middle',

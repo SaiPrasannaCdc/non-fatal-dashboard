@@ -120,6 +120,7 @@ export default function App({ dataUrl }) {
   const [currentMonth, setCurrentMonth] = useState('1');
   const [currentYear, setCurrentYear] = useState(supportedYearsLatest);
   const [currentYearCompare, setCurrentYearCompare] = useState(supportedYears[0]);
+  const [currentDataType, setCurrentDataType] = useState('count');
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
   const [width, setWidth] = useState(0);
@@ -238,14 +239,23 @@ export default function App({ dataUrl }) {
         Object.keys(drugOptions).forEach(drug => {
           let datasetNode = sexData[getValue('dataset', i)];
           datasetNode = createIfUndefined(datasetNode[drug], getValue('year', i), {});
-          datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
+          datasetNode = createIfUndefined(datasetNode, getValue('month', i), {});
+          let datasetNodeCount = createIfUndefined(datasetNode, 'count', []);
+          let datasetNodeRate = createIfUndefined(datasetNode, 'rate', []);
           if (getValue('sex', i) !== 'Missing' && getValue('age', i) !== 'Missing') {
-            let datasetDatum = datasetNode.find(datum => datum.age === getValue('age', i));
-            if (!datasetDatum) {
-              datasetDatum = { age: getValue('age', i) }
-              datasetNode.push(datasetDatum);
+            let datasetDatumCount = datasetNodeCount.find(datum => datum.age === getValue('age', i));
+            if (!datasetDatumCount) {
+              datasetDatumCount = { age: getValue('age', i) }
+              datasetNodeCount.push(datasetDatumCount);
             }
-            datasetDatum[getValue('sex', i)] = formatNumber(getValue(drug, i), false);
+            datasetDatumCount[getValue('sex', i)] = formatNumber(getValue(drug, i), false);
+
+            let datasetDatumRate = datasetNodeRate.find(datum => datum.age === getValue('age', i));
+            if (!datasetDatumRate) {
+              datasetDatumRate = { age: getValue('age', i) }
+              datasetNodeRate.push(datasetDatumRate);
+            }
+            datasetDatumRate[getValue('sex', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i), false);
           }
         });
       }
@@ -272,19 +282,27 @@ export default function App({ dataUrl }) {
       }
 
       Object.keys(sexData).forEach(dataSource => Object.keys(sexData[dataSource]).forEach(drug => {
-        let annualMax = 0;
-        let monthlyMax = 0;
+        let annualMax = {'count': 0, 'rate': 0};
+        let monthlyMax = {'count': 0, 'rate': 0};
         Object.keys(sexData[dataSource][drug]).forEach(year => {
           if(sexData[dataSource][drug][year]['all']){
-            sexData[dataSource][drug][year]['all'].forEach(d => {
-              if(d['M'] > annualMax) annualMax = d['M'];
-              if(d['F'] > annualMax) annualMax = d['F'];
+            sexData[dataSource][drug][year]['all']['count'].forEach(d => {
+              if(d['M'] > annualMax['count']) annualMax['count'] = d['M'];
+              if(d['F'] > annualMax['count']) annualMax['count'] = d['F'];
+            });
+            sexData[dataSource][drug][year]['all']['rate'].forEach(d => {
+              if(d['M'] > annualMax['rate']) annualMax['rate'] = d['M'];
+              if(d['F'] > annualMax['rate']) annualMax['rate'] = d['F'];
             });
             Object.keys(sexData[dataSource][drug][year]).forEach(month => {
               if(month === 'all') return;
-              sexData[dataSource][drug][year][month].forEach(d => {
-                if(d['M'] > monthlyMax) monthlyMax = d['M'];
-                if(d['F'] > monthlyMax) monthlyMax = d['F'];
+              sexData[dataSource][drug][year][month]['count'].forEach(d => {
+                if(d['M'] > monthlyMax['count']) monthlyMax['count'] = d['M'];
+                if(d['F'] > monthlyMax['count']) monthlyMax['count'] = d['F'];
+              });
+              sexData[dataSource][drug][year][month]['rate'].forEach(d => {
+                if(d['M'] > monthlyMax['rate']) monthlyMax['rate'] = d['M'];
+                if(d['F'] > monthlyMax['rate']) monthlyMax['rate'] = d['F'];
               });
             });
           }
@@ -328,10 +346,18 @@ export default function App({ dataUrl }) {
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, overall ({data ? data.supportedJurisdictions[currentYear] : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
-      <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, width }} />
+      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall ({data ? data.supportedJurisdictions[currentYear] : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
+      <Select params={{
+        key: 'data-type',
+        label: 'a Data Type',
+        value: currentDataType,
+        onChange: setCurrentDataType,
+        options: ['count', 'rate'],
+        optionLabel: (key) => ({count: 'Count', rate: 'Rate'}[key])
+      }}/>
+      <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width }} />
     </>,
-    [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, width]);
+    [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
 
   const usaMapMemo = useMemo(() =>
     <>
