@@ -255,7 +255,7 @@ export default function App({ dataUrl }) {
               datasetDatumRate = { age: getValue('age', i) }
               datasetNodeRate.push(datasetDatumRate);
             }
-            datasetDatumRate[getValue('sex', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i), false);
+            datasetDatumRate[getValue('sex', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i), true);
           }
         });
       }
@@ -347,14 +347,9 @@ export default function App({ dataUrl }) {
   const sexAgeChartsMemo = useMemo(() =>
     <>
       <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall ({data ? data.supportedJurisdictions[currentYear] : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
-      <Select params={{
-        key: 'data-type',
-        label: 'a Data Type',
-        value: currentDataType,
-        onChange: setCurrentDataType,
-        options: ['count', 'rate'],
-        optionLabel: (key) => ({count: 'Count', rate: 'Rate'}[key])
-      }}/>
+      Count
+      <input id="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} />
+      Rate
       <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width }} />
     </>,
     [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
@@ -362,6 +357,7 @@ export default function App({ dataUrl }) {
   const usaMapMemo = useMemo(() =>
     <>
       <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}</h2>
+      <small><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
       <UsaMap params={{ data, stateNames, currentState, currentYear, width }} />
     </>,
     [data, stateNames, currentState, currentYear, width]);
