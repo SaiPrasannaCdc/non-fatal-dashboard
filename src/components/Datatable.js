@@ -40,7 +40,8 @@ const getSortFunctionArray = (prop, order) => {
 
 function Datatable({ params }) {
 
-  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped } = params;
+  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped, currentDataType, currentYearCompare } = params;
+  const supportedYearsLatest = supportedYears[supportedYears.length - 1];
   const currentYear = parseInt(currentYearUntyped);
   const drugColor = drugOptions[currentDrug].color;
 
@@ -55,8 +56,7 @@ function Datatable({ params }) {
 
   if(currentState !== 'US') filteredYearData['US'] = getFilteredTimeData(data, currentTimeframe, currentDataSource, 'US', currentYear);
 
-
-  const filteredSexData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth];
+  const filteredSexData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth][currentDataType];
 
   const filteredCountyData = data.county[currentYear];
 
@@ -82,7 +82,7 @@ function Datatable({ params }) {
 
   const stateTable = useMemo(() => (
     <table className="main-data-table">
-      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${supportedYears[0]} - ${monthNames[currentMonth]} ${supportedYears[supportedYears.length - 1]}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
+      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall ({data ? data.supportedJurisdictions[currentYear] : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</caption>
       <thead>
         <tr style={{ backgroundColor: drugColor }}>
           <th scope="col" className={`${stateSortBy === 'state' ? 'sorting' : ''} ${stateSortOrder}`}>
@@ -118,7 +118,7 @@ function Datatable({ params }) {
 
   const yearTable = useMemo(() => (
     <table className="main-data-table">
-      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? stateNames[currentState] + ' and overall' : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYears[supportedYears.length - 1]}`}</caption>
+      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall'} {`(${data ? data.supportedJurisdictions[currentTimeframe === 'Monthly' ? currentYear : supportedYearsLatest] : 'n/a'} states)`}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYearsLatest}`}</caption>
       <thead>
         <tr style={{ backgroundColor: drugColor }}>
           <th scope="col">
@@ -149,7 +149,7 @@ function Datatable({ params }) {
 
   const sexTable = useMemo(() => (
     <table className="main-data-table">
-      <caption>{currentTimeframe} count of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
+      <caption>{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall ({data ? data.supportedJurisdictions[currentYear] : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
       <thead>
         <tr style={{ backgroundColor: drugColor }}>
           <th scope="col" className={`${sexSortBy === 'age' ? 'sorting' : ''} ${sexSortOrder}`}>
@@ -185,7 +185,7 @@ function Datatable({ params }) {
 
   const countyTable = useMemo(() => (
     <table className="main-data-table">
-      <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {data ? Object.keys(data.supportedStates).length - 1 : 'n/a'} states, {currentYear}</caption>
+      <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}</caption>
       <thead>
       <tr style={{ backgroundColor: drugColor }}>
         <th scope="col" className={`${countySortBy === 'state' ? 'sorting' : ''} ${countySortOrder}`}>

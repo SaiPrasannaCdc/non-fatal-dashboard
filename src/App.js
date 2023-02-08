@@ -324,7 +324,7 @@ export default function App({ dataUrl }) {
 
   const barbellChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall ({data ? data.supportedJurisdictions[currentYear] : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall ({data ? (data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentTimeframe === 'Monthly' ? currentMonth : 'all'].length - 1) : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year to Compare To',
@@ -523,7 +523,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear }} />
+              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear, currentDataType, currentYearCompare }} />
               <small>
                 <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
                 <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests</p>

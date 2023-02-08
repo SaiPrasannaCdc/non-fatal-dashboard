@@ -69,7 +69,7 @@ function BarbellChart({ params }) {
           <rect x={0} y={0} width={xMax} height={yMax} stroke="#ccc" fill="transparent" />
           <Group>
             {filteredData.map((d) => (
-              <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
+              <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${d[yKey] === 'US' ? `Overall (${states.length - 1} states)` : data.supportedStates[d[yKey]]}</strong></h3><p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
                 {!isNaN(getX1Value(d)) && !isNaN(getX2Value(d)) && <Line x1={isNaN(getX1Value(d)) ? xScale(0) : xScale(getX1Value(d))} x2={isNaN(getX2Value(d)) ? xScale(0) + 5 : xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} stroke="gray" />}
                 {isNaN(getX1Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>*</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius + 2} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill="white" />}
                 {isNaN(getX2Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>*</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill={d[yKey] === currentState ? highlightColor : defaultColor} />}
@@ -81,7 +81,7 @@ function BarbellChart({ params }) {
             label={'State'}
             hideAxisLine={true}
             tickValues={states}
-            tickFormat={tick => !isSmallViewport && data.supportedStates[tick] ? data.supportedStates[tick] : tick === 'US' ? 'All' : tick}
+            tickFormat={tick => !isSmallViewport && data.supportedStates[tick] ? (tick === 'US' ? 'Overall' : data.supportedStates[tick]) : (tick === 'US' ? 'All' : tick)}
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'end',
