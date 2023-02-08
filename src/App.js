@@ -357,7 +357,7 @@ export default function App({ dataUrl }) {
   const usaMapMemo = useMemo(() =>
     <>
       <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}</h2>
-      <small><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
+      <div><small><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small></div>
       <UsaMap params={{ data, stateNames, currentState, currentYear, width }} />
     </>,
     [data, stateNames, currentState, currentYear, width]);
