@@ -34,6 +34,7 @@ const drugOptions = {
     'titleSingular': 'All Drug',
     'titlePlural': 'All Drugs',
     'titleAll': 'All Drug',
+    'titleHeader': 'All Drug',
     'rateColumn': 'rate_alldrug',
     'color': '#2B2D73',
   },
@@ -41,6 +42,7 @@ const drugOptions = {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
     'titleAll': 'All Opioids',
+    'titleHeader': 'All Opioid',
     'rateColumn': 'rate_opioid',
     'color': '#4A2866',
   },
@@ -48,6 +50,7 @@ const drugOptions = {
     'titleSingular': 'Heroin',
     'titlePlural': 'Heroin',
     'titleAll': 'Heroin',
+    'titleHeader': 'Heroin',
     'rateColumn': 'rate_heroin',
     'color': '#353535',
   },
@@ -55,6 +58,7 @@ const drugOptions = {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
     'titleAll': 'All Stimulants',
+    'titleHeader': 'All Stimulant',
     'rateColumn': 'rate_stimulant',
     'color': '#24574E',
   },
@@ -317,14 +321,9 @@ export default function App({ dataUrl }) {
     fetchData();
   }, []);
 
-  if(data){
-    stateNames['US'] = `Overall (${data.supportedJurisdictions[currentYear]} states)`;
-    data.supportedStates['US'] = stateNames['US'];
-  }
-
   const barbellChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall ({data ? (data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentTimeframe === 'Monthly' ? currentMonth : 'all'].length - 1) : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year to Compare To',
@@ -339,14 +338,14 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall'} {`(${data ? data.supportedJurisdictions[currentTimeframe === 'Monthly' ? currentYear : supportedYearsLatest] : 'n/a'} states)`}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYearsLatest}`}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYearsLatest}`}</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall ({data ? data.supportedJurisdictions[currentYear] : 'n/a'} states), {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
+      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
       Count
       <input id="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} />
       Rate
@@ -470,7 +469,7 @@ export default function App({ dataUrl }) {
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span>Trends in {dataSourceOptions[currentDataSource]['titleLong']}</span>
-              <h2>{drugOptions[currentDrug]['titleAll']} Overdoses</h2>
+              <h2>{drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
             </header>
             <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
@@ -514,6 +513,11 @@ export default function App({ dataUrl }) {
           </>
         )}
       </div>
+      <small>
+        <p>* Counts are suppressed when based on 1-9 overdoses and rates are suppressed when based on 1-19 overdoses to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the U.S. Census Bureau for the calculation of rates; monthly population denominators were estimated through linear extrapolation of the annual population denominators.</p>
+        <br/><p>† A total of 22 states submitted emergency department discharge data and 21 states submitted inpatient hospitalization discharge data. All of these states reported data from 2018-2021 except for Nebraska, which, reported data from 2018-2020, and Oklahoma, which reported data from 2020-2021.</p>
+        <br/><p>§ There are several important caveats to consider when viewing the figures included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</p>
+      </small>
       <div className='data-tables'>
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
@@ -524,10 +528,6 @@ export default function App({ dataUrl }) {
           {showDatatable &&
             <div className="datatable-body">
               <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear, currentDataType, currentYearCompare }} />
-              <small>
-                <p>* Counts are suppressed when based on 1-9 overdoses and rates are suppressed when based on 1-19 overdoses to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the U.S. Census Bureau for the calculation of rates; monthly population denominators were estimated through linear extrapolation of the annual population denominators.</p>
-                <p>† There are several important caveats to consider when viewing the figures included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</p>
-              </small>
             </div>}
         </div>
         <div className="datatable-container">

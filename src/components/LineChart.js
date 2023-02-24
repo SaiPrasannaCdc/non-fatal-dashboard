@@ -104,7 +104,7 @@ function LineChart({ params }) {
             </Group>)}
             
             {filteredData['US'].map(d => {
-              const tooltipValues = [`<p><strong>Overall (${data.supportedJurisdictions[currentYear]} states) Rate</strong>: ${d[currentDrug]}</p>`];
+              const tooltipValues = [`<p><strong>Overall Rate</strong>: ${d[currentDrug]}</p>`];
               if(currentState !== 'US'){
                 let stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey]);
                 if(stateValue){
