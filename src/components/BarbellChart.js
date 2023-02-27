@@ -31,11 +31,11 @@ function BarbellChart({ params }) {
   const x2Key = Math.max(currentYear, currentYearCompare);
   const getX1Value = (d) => {
     if (d[x1Key]) return d[x1Key];
-    return 'Not Provided';
+    return 'Data not available/not reported';
   };
   const getX2Value = (d) => {
     if (d[x2Key]) return d[x2Key];
-    return 'Not Provided';
+    return 'Data not available/not reported';
   };
   const yKey = 'state';
 
@@ -71,8 +71,8 @@ function BarbellChart({ params }) {
             {filteredData.map((d) => (
               <Group key={`bar-${d[yKey]}`} data-tip={`<h3><strong>${data.supportedStates[d[yKey]]}</strong></h3><p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x1Key} Rate</strong>: ${getX1Value(d)}</p><strong>${currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}${x2Key} Rate</strong>: ${getX2Value(d)}</p>`}>
                 {!isNaN(getX1Value(d)) && !isNaN(getX2Value(d)) && <Line x1={isNaN(getX1Value(d)) ? xScale(0) : xScale(getX1Value(d))} x2={isNaN(getX2Value(d)) ? xScale(0) + 5 : xScale(getX2Value(d))} y1={yScale(d[yKey])} y2={yScale(d[yKey])} stroke="gray" />}
-                {isNaN(getX1Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>*</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius + 2} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill="white" />}
-                {isNaN(getX2Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>*</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill={d[yKey] === currentState ? highlightColor : defaultColor} />}
+                {isNaN(getX1Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>†</text> : <Circle cx={xScale(getX1Value(d))} cy={yScale(d[yKey])} r={circleRadius + 2} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill="white" />}
+                {isNaN(getX2Value(d)) ? <text x={xScale(0)} y={yScale(d[yKey]) + 8} textAnchor="middle" alignmentBaseline="middle" fontSize={30} stroke={d[yKey] === currentState ? highlightColor : undefinedColor}>†</text> : <Circle cx={xScale(getX2Value(d))} cy={yScale(d[yKey])} r={circleRadius} stroke={d[yKey] === currentState ? highlightColor : defaultColor} fill={d[yKey] === currentState ? highlightColor : defaultColor} />}
               </Group>
             ))}
           </Group>
@@ -82,8 +82,9 @@ function BarbellChart({ params }) {
             hideAxisLine={true}
             tickValues={states}
             tickFormat={tick => !isSmallViewport && data.supportedStates[tick] ? (data.supportedStates[tick]) : (tick === 'US' ? 'All' : tick)}
-            tickLabelProps={() => ({
+            tickLabelProps={(tick) => ({
               fontSize,
+              fontWeight: tick === 'US' ? 'bold' : 'normal',
               textAnchor: 'end',
               dx: -5,
               dy: 5

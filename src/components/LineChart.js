@@ -51,7 +51,7 @@ function LineChart({ params }) {
   const isSmallViewport = width < 500;
   const fontSize = 16;
   const height = 400;
-  const legendHeight = 110;
+  const seriesLabelPadding = 15; 
   const margin = { top: 15, bottom: 45, left: 65, right: isSmallViewport ? 10 : 150 };
 
   const xMax = width - margin.left - margin.right;
@@ -77,13 +77,9 @@ function LineChart({ params }) {
     ))],
     range: [yMax, 0],
   });
-
-  let filteredDataNoSuppressed = {};
-  Object.keys(filteredData).forEach(key => {
-    filteredDataNoSuppressed[key] = [];
-    filteredData[key].forEach(d => filteredDataNoSuppressed[key].push({ ...d }));
-    filteredDataNoSuppressed[key].forEach(d => Object.keys(drugOptions).forEach(drug => { if (isNaN(d[drug])) d[drug] = 0 }));
-  });
+  
+  const seriesLabelPositionUS = yScale(filteredData['US'][filteredData['US'].length - 1][currentDrug]);
+  const seriesLabelPositionState = filteredData[currentState].length > 0 ? yScale(filteredData[currentState][filteredData[currentState].length - 1][currentDrug]) : 0;
 
   return (
     <>
@@ -91,24 +87,40 @@ function LineChart({ params }) {
         <Group top={margin.top} left={margin.left}>
           <Group>
             {Object.keys(filteredData).map(key => <Group key={`line-path-${key}`}>
-              {filteredData[key].map((d, i) => (
-                <Group key={`line-path-${key}-point-${i}`}>
-                  {i !== filteredData[key].length - 1 && !isNaN(d[currentDrug]) && !isNaN(filteredData[key][i+1][currentDrug]) && 
-                    <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(filteredData[key][i+1][xKey]) ?? 0} y2={yScale(filteredData[key][i+1][currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
-                  }
-                  {isNaN(d[currentDrug]) && <text x={xScale(d[xKey])} y={yScale(0)} stroke={seriesColor(key)} fontSize={16}>*</text>}
-                  {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
-                </Group>
-              ))}
-              {!isSmallViewport && filteredData[key].length > 0 && <text x={xMax + 5} y={yScale(filteredData[key][filteredData[key].length - 1][currentDrug])} alignmentBaseline="middle" fontSize={fontSize} fill={seriesColor(key)}>{stateNames[key]}</text>}
+              {xValues.map((xVal, i) => {
+                const d = filteredData[key].find(d => d[xKey] === xVal) || {};
+                const dNext = i === xValues.length - 1 ? {} : filteredData[key].find(d => d[xKey] === xValues[i + 1]) || {}
+
+                return (
+                  <Group key={`line-path-${key}-point-${i}`}>
+                    {!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && 
+                      <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(dNext[xKey]) ?? 0} y2={yScale(dNext[currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
+                    }
+                    {isNaN(d[currentDrug]) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">†</text>}
+                    {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
+                  </Group>
+                )
+              })}
+              {!isSmallViewport && filteredData[key].length > 0 && 
+                <text 
+                  x={xMax + 5} 
+                  y={key === 'US' ? seriesLabelPositionUS : (seriesLabelPositionState < seriesLabelPositionUS + seriesLabelPadding && seriesLabelPositionState > seriesLabelPositionUS - seriesLabelPadding ? seriesLabelPositionState - seriesLabelPadding * 1.5 : seriesLabelPositionState)}
+                  alignmentBaseline="middle" 
+                  fontSize={fontSize} 
+                  fill={seriesColor(key)}>
+                    {stateNames[key]}
+                </text>
+              }
             </Group>)}
             
             {filteredData['US'].map(d => {
-              const tooltipValues = [`<p><strong>Overall Rate</strong>: ${d[currentDrug]}</p>`];
+              const tooltipValues = [`<p><strong>Overall† Rate</strong>: ${d[currentDrug]}</p>`];
               if(currentState !== 'US'){
                 let stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey]);
                 if(stateValue){
                   stateValue = stateValue[currentDrug];
+                } else {
+                  stateValue = 'Data not available/not reported'
                 }
                 tooltipValues.push(`<p><strong>${stateNames[currentState]} Rate</strong>: ${stateValue}</p>`);
               }
