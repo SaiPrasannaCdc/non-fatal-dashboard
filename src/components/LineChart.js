@@ -96,7 +96,7 @@ function LineChart({ params }) {
                     {!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && 
                       <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(dNext[xKey]) ?? 0} y2={yScale(dNext[currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
                     }
-                    {isNaN(d[currentDrug]) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">†</text>}
+                    {isNaN(d[currentDrug]) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">{d[currentDrug] === 'Data suppressed*' ? '*' : '†'}</text>}
                     {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
                   </Group>
                 )
