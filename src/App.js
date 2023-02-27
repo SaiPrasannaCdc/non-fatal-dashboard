@@ -108,7 +108,7 @@ const createIfUndefined = (object, key, value) => {
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
   if (isNaN(numericVal)) {
-    return 'Data suppressed';
+    return 'Data suppressed*';
   } else {
     return isFloat ? (Math.round(numericVal * 10) / 10) : numericVal;
   }
@@ -354,12 +354,12 @@ export default function App({ dataUrl }) {
     [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
 
   const usaMapMemo = useMemo(() =>
-    <>
+    currentDataSource === 'ED' ? <>
       <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}</h2>
       <div><small><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small></div>
       <UsaMap params={{ data, stateNames, currentState, currentYear, width }} />
-    </>,
-    [data, stateNames, currentState, currentYear, width]);
+    </> : <></>,
+    [data, stateNames, currentDataSource, currentState, currentYear, width]);
 
   const loading = <div className="loading-container">
     <div className="loading-spinner"></div>

@@ -38,6 +38,8 @@ const getSortFunctionArray = (prop, order) => {
   };
 };
 
+const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
+
 function Datatable({ params }) {
 
   const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped, currentDataType, currentYearCompare } = params;
@@ -45,10 +47,9 @@ function Datatable({ params }) {
   const currentYear = parseInt(currentYearUntyped);
   const drugColor = drugOptions[currentDrug].color;
 
-  const filteredStateData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentMonth].filter(d => d.state !== 'US');
-  const stateYears = Object.keys(filteredStateData[0]).filter(item => item !== 'state');
-  const stateYearMin = Math.min(...stateYears);
-  const stateYearMax = Math.max(...stateYears);
+  const filteredStateData = data.state[currentDataSource][drugOptions[currentDrug].rateColumn][currentTimeframe === 'Monthly' ? currentMonth : 'all'].filter(d => d.state !== 'US');
+  const stateYearMin = Math.min(...[currentYear, currentYearCompare]);
+  const stateYearMax = Math.max(...[currentYear, currentYearCompare]);
 
   const filteredYearData = {
     [currentState]: getFilteredTimeData(data, currentTimeframe, currentDataSource, currentState, currentYear)
@@ -56,7 +57,7 @@ function Datatable({ params }) {
 
   if(currentState !== 'US') filteredYearData['US'] = getFilteredTimeData(data, currentTimeframe, currentDataSource, 'US', currentYear);
 
-  const filteredSexData = data.sex[currentDataSource][currentDrug][currentYear][currentMonth][currentDataType];
+  const filteredSexData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'][currentDataType];
 
   const filteredCountyData = data.county[currentYear];
 
@@ -107,8 +108,8 @@ function Datatable({ params }) {
           return (
             <tr key={`barbell-chart-row-${row.state}`}>
               <td>{stateNames[row.state]}</td>
-              <td>{row[stateYearMin]}</td>
-              <td>{row[stateYearMax]}</td>
+              <td>{row[stateYearMin] || 'Data not available/not reported†'}</td>
+              <td>{row[stateYearMax] || 'Data not available/not reported†'}</td>
             </tr>
           )
         })}
@@ -118,7 +119,7 @@ function Datatable({ params }) {
 
   const yearTable = useMemo(() => (
     <table className="main-data-table">
-      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? `January ${currentYear} - December ${currentYear}` : `${supportedYears[0]} - ${supportedYearsLatest}`}</caption>
+      <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8212;December {currentYear}</> : <>{supportedYears[0]}&#8212;{supportedYearsLatest}</>}</caption>
       <thead>
         <tr style={{ backgroundColor: drugColor }}>
           <th scope="col">
@@ -129,7 +130,7 @@ function Datatable({ params }) {
           {filteredYearData['US'].map(row => 
             <th key={`line-chart-header-${currentTimeframe === 'Monthly' ? monthNames[row.month] : row.year}`} scope="col">
               <button>
-                {currentTimeframe === 'Monthly' ? monthNames[row.month] : row.year}
+                {currentTimeframe === 'Monthly' ? monthNamesShort[row.month] : row.year}
               </button>
             </th>
           )}
@@ -137,9 +138,10 @@ function Datatable({ params }) {
       </thead>
       <tbody>
         {Object.keys(filteredYearData).map(state => {
-          return <tr key={`line-chart-row-${state}`}><td>{stateNames[state]}</td>{filteredYearData[state].map((row) => {
+          return <tr key={`line-chart-row-${state}`}><td>{stateNames[state]}</td>{filteredYearData['US'].map((usRow, i) => {
+            const row = state === 'US' ? usRow : filteredYearData[state].find(row => row[currentTimeframe === 'Monthly' ? 'month' : 'year'] === usRow[currentTimeframe === 'Monthly' ? 'month' : 'year']) || {}
             return (
-                <td key={`line-chart-col-${state}-${row[currentDrug]}`}>{row[currentDrug]}</td>
+                <td key={`line-chart-col-${state}-${i}`}>{row[currentDrug] || 'Data not available/not reported†'}</td>
             )
           })}</tr>
         })}
@@ -183,9 +185,11 @@ function Datatable({ params }) {
     </table>
   ), [data, filteredSexData, currentTimeframe, dataSourceOptions, drugOptions, monthNames, drugColor, currentDataSource, currentDrug, currentMonth, currentYear, sexSortBy, sexSortOrder]);
 
-  const countyTable = useMemo(() => (
+  const countyTable = useMemo(() => currentDataSource === 'ED' ? (
     <table className="main-data-table">
-      <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}</caption>
+      <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}
+        <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
+      </caption>
       <thead>
       <tr style={{ backgroundColor: drugColor }}>
         <th scope="col" className={`${countySortBy === 'state' ? 'sorting' : ''} ${countySortOrder}`}>
@@ -217,16 +221,16 @@ function Datatable({ params }) {
         })}
       </tbody>
     </table>
-  ), [data, filteredCountyData, drugColor, stateNames, currentYear, countySortBy, countySortOrder]);
+  ) : <></>, [data, filteredCountyData, drugColor, stateNames, currentDataSource, currentYear, countySortBy, countySortOrder]);
 
   return (
     <>
       {stateTable}
-
+      <br/>
       {yearTable}
-
+      <br/>
       {sexTable}
-
+      <br/>
       {countyTable}
     </>
   );

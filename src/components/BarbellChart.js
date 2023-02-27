@@ -31,11 +31,11 @@ function BarbellChart({ params }) {
   const x2Key = Math.max(currentYear, currentYearCompare);
   const getX1Value = (d) => {
     if (d[x1Key]) return d[x1Key];
-    return 'Data not available/not reported';
+    return 'Data not available/not reported†';
   };
   const getX2Value = (d) => {
     if (d[x2Key]) return d[x2Key];
-    return 'Data not available/not reported';
+    return 'Data not available/not reported†';
   };
   const yKey = 'state';
 
