@@ -51,8 +51,8 @@ function LineChart({ params }) {
   const isSmallViewport = width < 500;
   const fontSize = 16;
   const height = 400;
-  const seriesLabelPadding = 30; 
-  const seriesLabelPaddingHalf = seriesLabelPadding / 2; 
+  const seriesOverlapMargin = 20; 
+  const seriesSpacing = 20; 
   const margin = { top: 15, bottom: 45, left: 65, right: isSmallViewport ? 10 : 150 };
 
   const xMax = width - margin.left - margin.right;
@@ -107,17 +107,17 @@ function LineChart({ params }) {
                   let yPos = seriesLabelPositionUS;
 
                   if(key !== 'US'){
-                    const isOverlapping = seriesLabelPositionState < seriesLabelPositionUS + seriesLabelPaddingHalf && seriesLabelPositionState > seriesLabelPositionUS - seriesLabelPaddingHalf;
+                    const isOverlapping = seriesLabelPositionState < seriesLabelPositionUS + seriesOverlapMargin && seriesLabelPositionState > seriesLabelPositionUS - seriesOverlapMargin;
                     if(isOverlapping){
                       if(seriesLabelPositionState < seriesLabelPositionUS){
-                        yPos = seriesLabelPositionUS - seriesLabelPadding;
-                        if(yPos < seriesLabelPadding){
-                          yPos = seriesLabelPositionUS + seriesLabelPadding;
+                        yPos = seriesLabelPositionUS - seriesSpacing;
+                        if(yPos < seriesOverlapMargin){
+                          yPos = seriesLabelPositionUS + seriesSpacing;
                         }
                       } else {
-                        yPos = seriesLabelPositionUS + seriesLabelPadding;
-                        if(yPos > yMax - seriesLabelPadding){
-                          yPos = seriesLabelPositionUS - seriesLabelPadding;
+                        yPos = seriesLabelPositionUS + seriesSpacing;
+                        if(yPos > yMax - seriesOverlapMargin){
+                          yPos = seriesLabelPositionUS - seriesSpacing;
                         }
                       }
                     } else {
