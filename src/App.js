@@ -338,7 +338,7 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8212;December {currentYear}</> : <>{supportedYears[0]}&#8212;{supportedYearsLatest}</>}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);

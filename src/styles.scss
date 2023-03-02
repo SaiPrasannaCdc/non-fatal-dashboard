@@ -103,7 +103,7 @@ html {
      Useful table styles
      *******************/
     table {
-        table-layout: fixed;
+        table-layout: auto;
         width: 100%;
     }
 
@@ -532,71 +532,75 @@ html {
                 }
             }
 
-            .main-data-table {
-                border-collapse: collapse;
-                margin-bottom: $gbl-padding;
-                font-size: .75em;
+            .main-data-table-container {
+                overflow-x: auto;
 
-                @include r($sm) {
-                    font-size: .85em;
-                }
+                .main-data-table {
+                    border-collapse: collapse;
+                    margin-bottom: $gbl-padding;
+                    font-size: .75em;
 
-                caption {
-                    color: black;
-                    text-align: left;
-                    margin-bottom: 1em;
-                    caption-side: top;
-                    font-weight: bold;
-                    font-size: medium;
-                }
-
-                tr {
-                    &.state-header {
-                        th {
-                            color: #000 !important;
-                        }
+                    @include r($sm) {
+                        font-size: .85em;
                     }
 
-                    th {
-                        position: relative;
-                        border: 1px solid #dee2e6;
-                        padding: .3rem;
+                    caption {
+                        color: black;
                         text-align: left;
-                        color: white;
-                        cursor: pointer;
-
-                        &.sorting::before {
-                            content: ">";
-                            position: absolute;
-                            right: 1em;
-                            font-size: large;
-                            font-weight: bold;
-                            top: 0.5em;
-                            transform: rotate(90deg);
-                            pointer-events: none;
-                        }
-
-                        &.sorting.asc::before {
-                            transform: rotate(-90deg);
-                        }
-
-                        button {
-                            width: 100%;
-                            border: 0;
-                        }
+                        margin-bottom: 1em;
+                        caption-side: top;
+                        font-weight: bold;
+                        font-size: medium;
                     }
 
-                    td {
-                        border: 1px solid #dee2e6;
-                        padding: .3rem;
+                    tr {
+                        &.state-header {
+                            th {
+                                color: #000 !important;
+                            }
+                        }
 
-                        .datatable-hex-container {
-                            display: flex;
-                            justify-items: flex-start;
+                        th {
+                            position: relative;
+                            border: 1px solid #dee2e6;
+                            padding: 0.3rem 0.5rem;
+                            text-align: left;
+                            color: white;
+                            cursor: pointer;
 
-                            .datatable-hex {
-                                width: 18px;
-                                margin-right: 5px;
+                            &.sorting::before {
+                                content: ">";
+                                position: absolute;
+                                right: 1em;
+                                font-size: large;
+                                font-weight: bold;
+                                top: 0.5em;
+                                transform: rotate(90deg);
+                                pointer-events: none;
+                            }
+
+                            &.sorting.asc::before {
+                                transform: rotate(-90deg);
+                            }
+
+                            button {
+                                width: 100%;
+                                border: 0;
+                            }
+                        }
+
+                        td {
+                            border: 1px solid #dee2e6;
+                            padding: 0.3rem 0.5rem;
+
+                            .datatable-hex-container {
+                                display: flex;
+                                justify-items: flex-start;
+
+                                .datatable-hex {
+                                    width: 18px;
+                                    margin-right: 5px;
+                                }
                             }
                         }
                     }
