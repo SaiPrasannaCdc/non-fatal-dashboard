@@ -226,6 +226,21 @@ export default function App({ dataUrl }) {
         datasetNode.push(yearDatum);
       }
 
+      let yearMaxes = {}
+      Object.keys(yearData).forEach(dataSource => {
+        Object.keys(yearData[dataSource]).forEach(state => {
+          Object.keys(yearData[dataSource][state]).forEach(month => {
+            yearData[dataSource][state][month].forEach(row => {
+              Object.keys(drugOptions).forEach(drug => {
+                if(!isNaN(row[drug]) && (!yearMaxes[drug] || yearMaxes[drug] < row[drug])){
+                  yearMaxes[drug] = row[drug]
+                }
+              });
+            })
+          })
+        })
+      });
+      yearData['maxes'] = yearMaxes;
 
 
 

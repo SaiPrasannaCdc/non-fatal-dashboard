@@ -71,11 +71,7 @@ function LineChart({ params }) {
   });
 
   const yScale = scaleLinear({
-    domain: [0, Math.max(...Object.keys(filteredData).map(key =>
-        Math.max(...filteredData[key].map(d => 
-          Math.max(...Object.keys(drugOptions).filter(drug => !isNaN(d[drug])).map(drug => d[drug]))
-        ))
-    ))],
+    domain: [0, data.year.maxes[currentDrug]],
     range: [yMax, 0],
   });
   
