@@ -51,7 +51,8 @@ function LineChart({ params }) {
   const isSmallViewport = width < 500;
   const fontSize = 16;
   const height = 400;
-  const seriesLabelPadding = 15; 
+  const seriesLabelPadding = 20; 
+  const seriesLabelPaddingHalf = seriesLabelPadding / 2; 
   const margin = { top: 15, bottom: 45, left: 65, right: isSmallViewport ? 10 : 150 };
 
   const xMax = width - margin.left - margin.right;
@@ -79,7 +80,8 @@ function LineChart({ params }) {
   });
   
   const seriesLabelPositionUS = yScale(filteredData['US'][filteredData['US'].length - 1][currentDrug]);
-  const seriesLabelPositionState = filteredData[currentState].length > 0 ? yScale(filteredData[currentState][filteredData[currentState].length - 1][currentDrug]) : 0;
+  const valueState = filteredData[currentState].length > 0 ? filteredData[currentState][filteredData[currentState].length - 1][currentDrug] : 'Data suppressed*';
+  const seriesLabelPositionState = valueState === 'Data suppressed*' ? yScale(0) - 30 : yScale(valueState);
 
   return (
     <>
@@ -101,15 +103,37 @@ function LineChart({ params }) {
                   </Group>
                 )
               })}
-              {!isSmallViewport && filteredData[key].length > 0 && 
-                <text 
-                  x={xMax + 5} 
-                  y={key === 'US' ? seriesLabelPositionUS : (seriesLabelPositionState < seriesLabelPositionUS + seriesLabelPadding && seriesLabelPositionState > seriesLabelPositionUS - seriesLabelPadding ? seriesLabelPositionState - seriesLabelPadding * 1.5 : seriesLabelPositionState)}
-                  alignmentBaseline="middle" 
-                  fontSize={fontSize} 
-                  fill={seriesColor(key)}>
-                    {stateNames[key]}
-                </text>
+              {!isSmallViewport && (() => {
+                  let yPos = seriesLabelPositionUS;
+
+                  if(key !== 'US'){
+                    const isOverlapping = seriesLabelPositionState < seriesLabelPositionUS + seriesLabelPaddingHalf && seriesLabelPositionState > seriesLabelPositionUS - seriesLabelPaddingHalf;
+                    if(isOverlapping){
+                      if(seriesLabelPositionState < seriesLabelPositionUS){
+                        yPos = seriesLabelPositionUS - seriesLabelPadding;
+                        if(yPos < seriesLabelPadding){
+                          yPos = seriesLabelPositionUS + seriesLabelPadding;
+                        }
+                      } else {
+                        yPos = seriesLabelPositionUS + seriesLabelPadding;
+                        if(yPos > yMax - seriesLabelPadding){
+                          yPos = seriesLabelPositionUS - seriesLabelPadding;
+                        }
+                      }
+                    } else {
+                      yPos = seriesLabelPositionState;
+                    }
+                  }
+
+                  return <text 
+                    x={xMax + 5} 
+                    y={yPos}
+                    alignmentBaseline="middle" 
+                    fontSize={fontSize} 
+                    fill={seriesColor(key)}>
+                      {stateNames[key]}
+                  </text>
+                })()
               }
             </Group>)}
             
