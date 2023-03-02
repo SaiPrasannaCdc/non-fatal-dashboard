@@ -51,7 +51,7 @@ function LineChart({ params }) {
   const isSmallViewport = width < 500;
   const fontSize = 16;
   const height = 400;
-  const seriesLabelPadding = 20; 
+  const seriesLabelPadding = 30; 
   const seriesLabelPaddingHalf = seriesLabelPadding / 2; 
   const margin = { top: 15, bottom: 45, left: 65, right: isSmallViewport ? 10 : 150 };
 
