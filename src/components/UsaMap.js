@@ -30,6 +30,7 @@ const UsaMap = ({ params }) => {
   const unavailableColor = '#EEE';
   const legendWidth = 200;
   const height = Math.max(width / 2, 250);
+  const legendHeight = Math.max(width / 2, 350);
   const halfHeight = height / 2;
   const colorScaleHeight = 150;
   const colorScaleHalfHeight = colorScaleHeight / 2;
@@ -123,7 +124,7 @@ const UsaMap = ({ params }) => {
           </CustomProjection>
         </g>
       </svg>
-      <svg style={{ height, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+      <svg style={{ height: legendHeight, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
         <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={fontSize}>Rate per 100,000 persons</text>
         {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
         {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
