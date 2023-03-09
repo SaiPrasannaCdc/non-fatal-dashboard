@@ -42,7 +42,7 @@ const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': '
 
 function Datatable({ params }) {
 
-  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped, currentDataType, currentYearCompare } = params;
+  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped, currentDataType, currentYearCompare, currentYearGroup } = params;
   const supportedYearsLatest = supportedYears[supportedYears.length - 1];
   const currentYear = parseInt(currentYearUntyped);
   const drugColor = drugOptions[currentDrug].color;
@@ -194,7 +194,7 @@ function Datatable({ params }) {
   const countyTable = useMemo(() => currentDataSource === 'ED' ? (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}
+        <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYearGroup === 'all' ? `${supportedYears[0]} - ${supportedYearsLatest}` : currentYear}
           <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
         </caption>
         <thead>
@@ -229,7 +229,7 @@ function Datatable({ params }) {
         </tbody>
       </table>
     </div>
-  ) : <></>, [data, filteredCountyData, drugColor, stateNames, currentDataSource, currentYear, countySortBy, countySortOrder]);
+  ) : <></>, [data, filteredCountyData, drugColor, stateNames, currentDataSource, currentYear, currentYearGroup, countySortBy, countySortOrder]);
 
   return (
     <>

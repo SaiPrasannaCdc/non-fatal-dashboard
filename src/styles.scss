@@ -445,14 +445,14 @@ html {
         }
     }
 
-    #data-type-checkbox {
+    .data-type-checkbox {
         display: inline-block;
         position: relative;
         appearance: none;
         border: none;
         width: 30px;
         height: 20px;
-        margin-top: 5px;
+        margin: 5px 10px 3px 10px;
         border-radius: 10px;
         background-color: gray;
         vertical-align: bottom;

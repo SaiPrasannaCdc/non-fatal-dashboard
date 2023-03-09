@@ -123,6 +123,7 @@ export default function App({ dataUrl }) {
   const [currentTimeframe, setCurrentTimeframe] = useState('Annual');
   const [currentMonth, setCurrentMonth] = useState('1');
   const [currentYear, setCurrentYear] = useState(supportedYearsLatest);
+  const [currentYearGroup, setCurrentYearGroup] = useState('one');
   const [currentYearCompare, setCurrentYearCompare] = useState(supportedYears[0]);
   const [currentDataType, setCurrentDataType] = useState('count');
   const [showDatatable, setDatatable] = useState(false);
@@ -291,8 +292,9 @@ export default function App({ dataUrl }) {
       //Populate sex data
       let countyData = {};
       for (let i = 2; i < columns; i++) {
-        createIfUndefined(countyData, getValue('year', i), {});
-        countyData[getValue('year', i)][getValue('fips', i)] = {
+        let year = countySheet[columnHeaders['year'] + i] ? getValue('year', i) : 'all';
+        createIfUndefined(countyData, year, {});
+        countyData[year][getValue('fips', i)] = {
           fips: getValue('fips', i),
           county: getValue('county', i),
           state: getValue('state', i),
@@ -362,7 +364,7 @@ export default function App({ dataUrl }) {
     <>
       <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
       Count
-      <input id="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
+      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate
       <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width }} />
     </>,
@@ -370,11 +372,14 @@ export default function App({ dataUrl }) {
 
   const usaMapMemo = useMemo(() =>
     currentDataSource === 'ED' ? <>
-      <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYear}</h2>
+      <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYearGroup === 'all' ? `${supportedYears[0]} - ${supportedYearsLatest}` : currentYear}</h2>
       <div><small><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small></div>
-      <UsaMap params={{ data, stateNames, currentState, currentYear, width }} />
+      1 Year Rate
+      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
+      4 Year Rate
+      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, width }} />
     </> : <></>,
-    [data, stateNames, currentDataSource, currentState, currentYear, width]);
+    [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, width]);
 
   const loading = <div className="loading-container">
     <div className="loading-spinner"></div>
@@ -542,7 +547,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear, currentDataType, currentYearCompare }} />
+              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear, currentDataType, currentYearCompare, currentYearGroup }} />
             </div>}
         </div>
         <div className="datatable-container">

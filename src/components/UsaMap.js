@@ -17,11 +17,12 @@ const statePositions = { 'US': { scale: 1, x: 0, y: 0 }, 'CA': { scale: 2.2, x: 
 
 const UsaMap = ({ params }) => {
 
-  const { data, stateNames, currentState, currentYear, width } = params;
+  const { data, stateNames, currentState, currentYear, currentYearGroup, width } = params;
 
   if (width === 0) return <></>;
 
-  const filteredData = data.county[currentYear];
+  console.log(currentYearGroup);
+  const filteredData = data.county[currentYearGroup === 'all' ? 'all' : currentYear];
 
   const isSmallViewport = width < 500;
   const fontSize = 15;
@@ -116,10 +117,10 @@ const UsaMap = ({ params }) => {
       />
       <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
         <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
-          <CustomProjection data={currentYear > 2020 ? countyTopoPre2020 : countyTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} projection={geoAlbersUsaTerritories}>
+          <CustomProjection data={currentYearGroup !== 'all' && currentYear > 2020 ? countyTopoPre2020 : countyTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} projection={geoAlbersUsaTerritories}>
             {({ features, projection }) => constructGeoJsx(features, projection)}
           </CustomProjection>
-          <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
+          <CustomProjection data={currentYearGroup !== 'all' && currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
             {({ features, projection }) => constructGeoJsx(features, projection, true)}
           </CustomProjection>
         </g>
