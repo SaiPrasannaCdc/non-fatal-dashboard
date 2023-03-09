@@ -21,7 +21,6 @@ const UsaMap = ({ params }) => {
 
   if (width === 0) return <></>;
 
-  console.log(currentYearGroup);
   const filteredData = data.county[currentYearGroup === 'all' ? 'all' : currentYear];
 
   const isSmallViewport = width < 500;
