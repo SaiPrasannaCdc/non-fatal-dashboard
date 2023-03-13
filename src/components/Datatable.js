@@ -194,7 +194,7 @@ function Datatable({ params }) {
   const countyTable = useMemo(() => currentDataSource === 'ED' ? (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYearGroup === 'all' ? `${supportedYears[0]} - ${supportedYearsLatest}` : currentYear}
+        <caption>Annual rate of ED visits for nonfatal all drug overdoses per 100,000 {currentYearGroup === 'all' ? 'person-years' : 'persons'}, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYearGroup === 'all' ? <>{supportedYears[0]}&#8211;{supportedYearsLatest}</> : currentYear}
           <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
         </caption>
         <thead>

@@ -372,7 +372,7 @@ export default function App({ dataUrl }) {
 
   const usaMapMemo = useMemo(() =>
     currentDataSource === 'ED' ? <>
-      <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 persons, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYearGroup === 'all' ? `${supportedYears[0]} - ${supportedYearsLatest}` : currentYear}</h2>
+      <h2 className="h3">Annual rate of ED visits for nonfatal all drug overdoses per 100,000 {currentYearGroup === 'all' ? 'person-years' : 'persons'}, by county, {currentState === 'US' ? stateNames[currentState].toLowerCase() : stateNames[currentState]}, {currentYearGroup === 'all' ? <>{supportedYears[0]}&#8211;{supportedYearsLatest}</> : currentYear}</h2>
       <div><small><i>The county-level heat map is only available for the annual rate of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small></div>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
