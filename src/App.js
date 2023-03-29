@@ -501,7 +501,7 @@ export default function App({ dataUrl }) {
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span>Trends in {dataSourceOptions[currentDataSource]['titleLong']}</span>
-              <h2>{drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
+              <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
             </header>
             <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
