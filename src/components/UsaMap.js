@@ -25,7 +25,6 @@ const UsaMap = ({ params }) => {
 
   const isSmallViewport = width < 500;
   const fontSize = 15;
-  const zeroColor = 'rgb(10, 2, 87)';
   const suppressedColor = '#999';
   const unavailableColor = '#EEE';
   const legendWidth = 200;
@@ -40,7 +39,7 @@ const UsaMap = ({ params }) => {
 
   const values = Object.keys(filteredData).map(key => filteredData[key].rate);
   const max = Math.max(...values.filter(val => !isNaN(val)));
-  const min = Math.min(...values.filter(val => !isNaN(val) && val != 0));
+  const min = Math.min(...values.filter(val => !isNaN(val)));
   const numLabelIntervals = 2;
   const numColorIntervals = 20;
   const labelIntervalWidth = (max - min) / numLabelIntervals;
@@ -58,7 +57,7 @@ const UsaMap = ({ params }) => {
 
   const colorScale = scaleLinear({
     domain: [min, max],
-    range: ['#280E78', '#F0A53C']
+    range: ['#381E88', '#F0A53C']
   })
 
   const colorLegendScale = scaleLinear({
@@ -70,7 +69,6 @@ const UsaMap = ({ params }) => {
     if(id.length < 3) return 'transparent';
     if(!filteredData[id]) return unavailableColor;
     if(isNaN(filteredData[id].rate)) return suppressedColor;
-    if(filteredData[id].rate == 0) return zeroColor;
     return colorScale(filteredData[id].rate);
   }
 
@@ -94,7 +92,7 @@ const UsaMap = ({ params }) => {
           <path
             tabIndex={-1}
             className='single-geo'
-            stroke={state ? '#000' : '#777'}
+            stroke={'#000'}
             strokeWidth={state ? 1 : currentState === 'US' && isSmallViewport ? 0.1 : .5}
             fill={getColor(geo.id)}
             d={path}
@@ -129,16 +127,12 @@ const UsaMap = ({ params }) => {
         {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
         {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
 
+        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5))} width={50} height={150 / colorIntervals.length} fill={suppressedColor} />
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data suppressed *</text>
 
-        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5))} width={50} height={150 / colorIntervals.length} fill={zeroColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>0</text>
-
-        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8))} width={50} height={150 / colorIntervals.length} fill={suppressedColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data suppressed *</text>
-
-        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 11))} width={50} height={150 / colorIntervals.length} fill={unavailableColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 11)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data not available/</text>
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 11)) + 25} fill="black" alignmentBaseline="middle" fontSize={fontSize}>not reported †</text>
+        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8))} width={50} height={150 / colorIntervals.length} fill={unavailableColor} />
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data not available/</text>
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 25} fill="black" alignmentBaseline="middle" fontSize={fontSize}>not reported †</text>
       </svg>
     </>
   )
