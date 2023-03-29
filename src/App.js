@@ -234,8 +234,9 @@ export default function App({ dataUrl }) {
           Object.keys(yearData[dataSource][state]).forEach(month => {
             yearData[dataSource][state][month].forEach(row => {
               Object.keys(drugOptions).forEach(drug => {
-                if(!isNaN(row[drug]) && (!yearMaxes[drug] || yearMaxes[drug] < row[drug])){
-                  yearMaxes[drug] = row[drug]
+                const rowVal = parseFloat(row[drug])
+                if(!isNaN(rowVal) && (!yearMaxes[drug] || yearMaxes[drug] < rowVal)){
+                  yearMaxes[drug] = rowVal
                 }
               });
             })
@@ -313,8 +314,10 @@ export default function App({ dataUrl }) {
               if(d['F'] > annualMax['count']) annualMax['count'] = d['F'];
             });
             sexData[dataSource][drug][year]['all']['rate'].forEach(d => {
-              if(d['M'] > annualMax['rate']) annualMax['rate'] = d['M'];
-              if(d['F'] > annualMax['rate']) annualMax['rate'] = d['F'];
+              const dM = parseFloat(d['M']);
+              const dF = parseFloat(d['F']);
+              if(dM > annualMax['rate']) annualMax['rate'] = dM;
+              if(dF > annualMax['rate']) annualMax['rate'] = dF;
             });
             Object.keys(sexData[dataSource][drug][year]).forEach(month => {
               if(month === 'all') return;
@@ -323,8 +326,10 @@ export default function App({ dataUrl }) {
                 if(d['F'] > monthlyMax['count']) monthlyMax['count'] = d['F'];
               });
               sexData[dataSource][drug][year][month]['rate'].forEach(d => {
-                if(d['M'] > monthlyMax['rate']) monthlyMax['rate'] = d['M'];
-                if(d['F'] > monthlyMax['rate']) monthlyMax['rate'] = d['F'];
+                const dM = parseFloat(d['M']);
+                const dF = parseFloat(d['F']);
+                if(dM > monthlyMax['rate']) monthlyMax['rate'] = dM;
+                if(dF > monthlyMax['rate']) monthlyMax['rate'] = dF;
               });
             });
           }
@@ -332,6 +337,7 @@ export default function App({ dataUrl }) {
         sexData[dataSource][drug].maxAnnual = annualMax;
         sexData[dataSource][drug].maxMonthly = monthlyMax;
       }));
+      console.log(sexData)
       
       setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates, supportedJurisdictions });
     }
