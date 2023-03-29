@@ -58,8 +58,8 @@ function BarbellChart({ params }) {
 
   const legend =
     <>
-      <Circle cx={0} cy={0} r={circleRadius} stroke="blue" /><text x={doubleCircleRadius} y={0} fontSize={fontSize} alignmentBaseline="middle">{x2Key} rate</text>
-      <Circle cx={0} cy={30} r={circleRadius + 2} stroke="blue" fill="transparent" /><text x={doubleCircleRadius} y={30} fontSize={fontSize} alignmentBaseline="middle">{x1Key} rate</text>
+      <Circle cx={0} cy={0} r={circleRadius} stroke={defaultColor} fill={defaultColor} /><text x={doubleCircleRadius} y={0} fontSize={fontSize} alignmentBaseline="middle">{x2Key} rate</text>
+      <Circle cx={0} cy={30} r={circleRadius + 2} stroke={defaultColor} fill="transparent" /><text x={doubleCircleRadius} y={30} fontSize={fontSize} alignmentBaseline="middle">{x1Key} rate</text>
     </>;
 
   return (
