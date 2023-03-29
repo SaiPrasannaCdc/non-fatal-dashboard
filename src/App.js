@@ -18,7 +18,7 @@ const dataSourceOptions = {
   'ED': {
     'title': 'ED Visits',
     'titleLong': 'Emergency Department (ED) Visits',
-    'titleLongest': 'emergency department visits',
+    'titleLongest': 'emergency department (ED) visits',
     'titleLowerCase': 'ED visits'
   },
   'HOSP': {
@@ -347,7 +347,7 @@ export default function App({ dataUrl }) {
 
   const barbellChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year to Compare To',
@@ -362,14 +362,14 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
+      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</h2>
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate

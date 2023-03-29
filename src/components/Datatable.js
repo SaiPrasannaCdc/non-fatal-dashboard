@@ -84,7 +84,7 @@ function Datatable({ params }) {
   const stateTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</caption>
+        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col" className={`${stateSortBy === 'state' ? 'sorting' : ''} ${stateSortOrder}`}>
@@ -122,7 +122,7 @@ function Datatable({ params }) {
   const yearTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}</caption>
+        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall†` : 'overall†'}, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col">
@@ -156,7 +156,7 @@ function Datatable({ params }) {
   const sexTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
+        <caption>{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall†, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col" className={`${sexSortBy === 'age' ? 'sorting' : ''} ${sexSortOrder}`}>
