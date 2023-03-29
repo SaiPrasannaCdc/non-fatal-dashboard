@@ -110,7 +110,7 @@ const formatNumber = (val, isFloat = true) => {
   if (isNaN(numericVal)) {
     return 'Data suppressed*';
   } else {
-    return isFloat ? (Math.round(numericVal * 10) / 10) : numericVal;
+    return (isFloat ? (Math.round(numericVal * 10) / 10).toFixed(1) : numericVal);
   }
 };
 
