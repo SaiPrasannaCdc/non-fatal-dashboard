@@ -128,6 +128,7 @@ export default function App({ dataUrl }) {
   const [currentDataType, setCurrentDataType] = useState('count');
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
+  const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
 
   const toggleDatatable = () => setDatatable(!showDatatable);
@@ -442,7 +443,12 @@ export default function App({ dataUrl }) {
                     key: 'timeframe',
                     label: 'Time Frame',
                     value: currentTimeframe,
-                    onChange: setCurrentTimeframe,
+                    onChange: (val) => {
+                      if(!timeframeChanged){
+                        setTimeframeChanged(true)
+                      }
+                      setCurrentTimeframe(val)
+                    },
                     options: ['Monthly', 'Annual'],
                     optionLabel: (key) => key
                   }}/>
@@ -464,7 +470,7 @@ export default function App({ dataUrl }) {
                     options: supportedYears,
                     optionLabel: (key) => key
                   }}/>
-                  <Select params={{
+                  {timeframeChanged && <Select params={{
                     key: 'month',
                     label: 'a Month',
                     value: currentMonth,
@@ -472,7 +478,7 @@ export default function App({ dataUrl }) {
                     options: Object.keys(monthNames).filter(key => key !== 'all'),
                     optionLabel: (key) => monthNames[key],
                     disabled: currentTimeframe === 'Monthly' ? undefined : 'disabled'
-                  }} />
+                  }} />}
                   <div>
                     <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
                       setCurrentDataSource('ED');
