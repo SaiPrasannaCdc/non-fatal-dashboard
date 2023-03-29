@@ -71,7 +71,7 @@ function LineChart({ params }) {
   });
 
   const yScale = scaleLinear({
-    domain: [0, data.year.maxes[currentDrug]],
+    domain: [0, data.year.maxes[currentTimeframe][currentDrug]],
     range: [yMax, 0],
   });
   

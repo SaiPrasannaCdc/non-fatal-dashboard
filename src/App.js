@@ -232,11 +232,13 @@ export default function App({ dataUrl }) {
       Object.keys(yearData).forEach(dataSource => {
         Object.keys(yearData[dataSource]).forEach(state => {
           Object.keys(yearData[dataSource][state]).forEach(month => {
+            const timeframe = month === 'all' ? 'Annual' : 'Monthly';
+            if(!yearMaxes[timeframe]) yearMaxes[timeframe] = {};
             yearData[dataSource][state][month].forEach(row => {
               Object.keys(drugOptions).forEach(drug => {
                 const rowVal = parseFloat(row[drug])
-                if(!isNaN(rowVal) && (!yearMaxes[drug] || yearMaxes[drug] < rowVal)){
-                  yearMaxes[drug] = rowVal
+                if(!isNaN(rowVal) && (!yearMaxes[timeframe][drug] || yearMaxes[timeframe][drug] < rowVal)){
+                  yearMaxes[timeframe][drug] = rowVal
                 }
               });
             })
