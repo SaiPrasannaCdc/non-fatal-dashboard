@@ -412,6 +412,13 @@ html {
                 color: #712177;
                 padding: 0 .5em 0 .1em;
                 font-family: "Merriweather", serif;
+                align-self: flex-start;
+                margin-top: .25em;
+
+                &+div {
+                    align-self: flex-start;
+                    margin-top: .5em;
+                }
             }
 
             p {
