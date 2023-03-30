@@ -15,7 +15,7 @@ function BarbellChart({ params }) {
   const isSmallViewport = width < 500;
   const fontSize = 16;
   const height = 800;
-  const legendWidth = 125;
+  const legendWidth = currentTimeframe === 'Monthly' ? 185 : 125;
   const legendHeight = 50;
   const margin = { top: 15, bottom: 40, left: isSmallViewport ? 75 : 175, right: 15 };
   const circleRadius = 6;
@@ -58,8 +58,8 @@ function BarbellChart({ params }) {
 
   const legend =
     <>
-      <Circle cx={0} cy={0} r={circleRadius} stroke={defaultColor} fill={defaultColor} /><text x={doubleCircleRadius} y={0} fontSize={fontSize} alignmentBaseline="middle">{x2Key} rate</text>
-      <Circle cx={0} cy={30} r={circleRadius + 2} stroke={defaultColor} fill="transparent" /><text x={doubleCircleRadius} y={30} fontSize={fontSize} alignmentBaseline="middle">{x1Key} rate</text>
+      <Circle cx={0} cy={0} r={circleRadius} stroke={defaultColor} fill={defaultColor} /><text x={doubleCircleRadius} y={0} fontSize={fontSize} alignmentBaseline="middle">{currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}{x2Key} rate</text>
+      <Circle cx={0} cy={30} r={circleRadius + 2} stroke={defaultColor} fill="transparent" /><text x={doubleCircleRadius} y={30} fontSize={fontSize} alignmentBaseline="middle">{currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''}{x1Key} rate</text>
     </>;
 
   return (
