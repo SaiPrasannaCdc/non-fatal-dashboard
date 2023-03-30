@@ -57,7 +57,7 @@ const UsaMap = ({ params }) => {
 
   const colorScale = scaleLinear({
     domain: [min, max],
-    range: ['#381E88', '#F0A53C']
+    range: ['rgb(76, 50, 156)', 'rgb(235, 125, 40)']
   })
 
   const colorLegendScale = scaleLinear({
