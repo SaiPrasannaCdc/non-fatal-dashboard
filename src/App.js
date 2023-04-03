@@ -168,7 +168,7 @@ export default function App({ dataUrl }) {
       let { columnHeaders, columns } = getColumnsInfo(usSheet);
       let getValue = (key, i) => usSheet[columnHeaders[key] + i].v;
 
-      for (let i = 2; i < columns; i++) {
+      for (let i = 2; i <= columns; i++) {
         if(!supportedJurisdictions[getValue('year', i)]){
           supportedJurisdictions[getValue('year', i)] = getValue('jurisdiction_count', i);
         }  
@@ -185,7 +185,7 @@ export default function App({ dataUrl }) {
       let stateData = {};
       let yearData = {};
       let datasetNode;
-      for (let i = 2; i < columns; i++) {
+      for (let i = 2; i <= columns; i++) {
         //Populate state data
         if (!stateData[getValue('dataset', i)]) {
           stateData[getValue('dataset', i)] = createNewDrugObject();
@@ -258,7 +258,7 @@ export default function App({ dataUrl }) {
 
       //Populate sex data
       let sexData = {};
-      for (let i = 2; i < columns; i++) {
+      for (let i = 2; i <= columns; i++) {
         createIfUndefined(sexData, getValue('dataset', i), createNewDrugObject(false));
         Object.keys(drugOptions).forEach(drug => {
           let datasetNode = sexData[getValue('dataset', i)];
@@ -295,7 +295,7 @@ export default function App({ dataUrl }) {
 
       //Populate sex data
       let countyData = {};
-      for (let i = 2; i < columns; i++) {
+      for (let i = 2; i <= columns; i++) {
         let year = countySheet[columnHeaders['year'] + i] ? getValue('year', i) : 'all';
         createIfUndefined(countyData, year, {});
         countyData[year][getValue('fips', i)] = {
