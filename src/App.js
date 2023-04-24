@@ -1003,68 +1003,17 @@ export default function App({ dataUrl }) {
     }
   }
 
-  const objectFlip = (obj) => {
-    const ret = {};
-    Object.keys(obj).forEach(key => {
-      ret[obj[key]] = key;
-    });
-    return ret;
-  }
-
   let footnote1 = ["§", "The state does not share data from syndromic surveillance systems with DOSE." ];
   // let footnote2 = ["¶", "The funded state did not provide CDC enough months of data to calculate all percent change cells." ];
   let footnote3 = ["¶", "State does not participate in OD2A DOSE ED data sharing." ];
   let footnote4 = ["**", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
 
-  const DownloadButton = ({ data }) => {
-    const fileName = `Non-Fatal-Overdose-Data.csv`;
-
-    //Remove the first column and move the primary columns to the front
-    let processedData = [...data].map(row => {
-      let newRow = [...row];
-      newRow.shift();
-      const itemsToAdd = newRow.splice(12, 6);
-      newRow = itemsToAdd.concat(newRow);
-      return newRow;
-    });
-
-    //Insert the header row
-    const reversedKeyIndex = objectFlip(keyIndex);
-    let headerRow = [];
-    for (let i = 1; i < Object.keys(reversedKeyIndex).length; i++) {
-      headerRow.push(reversedKeyIndex[i]);
-    }
-
-    //Move the primary columns to the front
-    const itemsToAdd = headerRow.splice(12, 6);
-    headerRow = itemsToAdd.concat(headerRow);
-
-    //Add header row to beginning of dataset
-    processedData.unshift(headerRow);
-
-    processedData.unshift(footnote1);
-    // processedData.unshift(footnote2);
-    processedData.unshift(footnote3);
-    processedData.unshift(footnote4);
-
-    //Parse to CSV
-    const csvData = Papa.unparse(processedData);
-    const dataBlob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-
-    //Save and download
-    const saveBlob = () => {
-      if (typeof window.navigator.msSaveBlob === 'function') {
-
-        window.navigator.msSaveBlob(dataBlob, fileName);
-      }
-    }
-
+  const DownloadButton = () => {
     return (
       <a
-        download={fileName}
-        onClick={saveBlob}
-        href={`data:text/csv;base64,${Base64.encode(csvData)}`}
-        aria-label="Download this data in a CSV file format."
+        download
+        href="/drugoverdose/nonfatal/dashboard/data/DOSE_dashboard_output-download.xlsx"
+        aria-label="Download this data in an Excel file format."
         className={`btn btn-download no-border`}
         style={{'backgroundColor':drugColor}}
       >
