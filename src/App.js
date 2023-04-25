@@ -1017,7 +1017,7 @@ export default function App({ dataUrl }) {
         className={`btn btn-download no-border`}
         style={{'backgroundColor':drugColor}}
       >
-        Download Data (CSV)
+        Download Data (XLSX)
       </a>
     )
   };
