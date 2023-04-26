@@ -21,7 +21,7 @@ const UsaMap = ({ params }) => {
 
   if (width === 0) return <></>;
 
-  const filteredData = data.county[currentYearGroup === 'all' ? 'all' : currentYear];
+  const filteredData = data.county[currentYearGroup === 'all' ? '2018-2021' : currentYear];
 
   const isSmallViewport = width < 500;
   const fontSize = 15;

@@ -164,7 +164,7 @@ export default function App({ dataUrl }) {
       let supportedStates = {};
       let supportedJurisdictions = {};
 
-      const usSheet = wb.Sheets.us_count_all;
+      const usSheet = wb.Sheets['US State Submission Counts'];
       let { columnHeaders, columns } = getColumnsInfo(usSheet);
       let getValue = (key, i) => usSheet[columnHeaders[key] + i].v;
 
@@ -176,7 +176,7 @@ export default function App({ dataUrl }) {
 
 
 
-      const stateSheet = wb.Sheets.state_rate_all;
+      const stateSheet = wb.Sheets['State Counts & Rates'];
       let columnInfo = getColumnsInfo(stateSheet);
       columnHeaders = columnInfo.columnHeaders;
       columns = columnInfo.columns;
@@ -214,7 +214,7 @@ export default function App({ dataUrl }) {
             monthDatum = { state: getValue('state', i) };
             monthNode.push(monthDatum);
           }
-          monthDatum[getValue('year', i)] = formatNumber(getValue(drug, i), false);
+          monthDatum[getValue('year', i)] = formatNumber(getValue('count_' + drug, i), false);
         });
 
         //Populate year data
@@ -250,7 +250,7 @@ export default function App({ dataUrl }) {
 
 
 
-      const sexSheet = wb.Sheets.state_rate_sex_age;
+      const sexSheet = wb.Sheets['Overall by Sex & Age'];
       columnInfo = getColumnsInfo(sexSheet);
       columnHeaders = columnInfo.columnHeaders;
       columns = columnInfo.columns;
@@ -272,7 +272,7 @@ export default function App({ dataUrl }) {
               datasetDatumCount = { age: getValue('age', i) }
               datasetNodeCount.push(datasetDatumCount);
             }
-            datasetDatumCount[getValue('sex', i)] = formatNumber(getValue(drug, i), false);
+            datasetDatumCount[getValue('sex', i)] = formatNumber(getValue('count_' + drug, i), false);
 
             let datasetDatumRate = datasetNodeRate.find(datum => datum.age === getValue('age', i));
             if (!datasetDatumRate) {
@@ -287,7 +287,7 @@ export default function App({ dataUrl }) {
 
 
 
-      const countySheet = wb.Sheets.cnty_rates_all;
+      const countySheet = wb.Sheets['County Counts & Rates'];
       columnInfo = getColumnsInfo(countySheet);
       columnHeaders = columnInfo.columnHeaders;
       columns = columnInfo.columns;
