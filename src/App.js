@@ -370,7 +370,7 @@ export default function App({ dataUrl }) {
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}{currentYear === '2021' && ''}</h2>
+      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}{currentYear === '2021' && <sup>¶</sup>}</h2>
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate
