@@ -195,7 +195,7 @@ function Datatable({ params }) {
     <div className="main-data-table-container">
       <table className="main-data-table">
         <caption>{currentYearGroup === 'one' ? 'Annual r' : 'R'}ate of emergency department (ED) visits for nonfatal all drug overdoses per 100,000 {currentYearGroup === 'all' ? 'person-years' : 'persons'}, by county{currentState === 'US' ? <sup>†</sup> : ', '}{currentState === 'US' ? '' : stateNames[currentState]}, {currentYearGroup === 'all' ? <>{supportedYears[0]}&#8211;{supportedYearsLatest}</> : currentYear}{(currentYearGroup === 'all' || currentYear === 2021) && <sup>¶</sup>}
-          <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the rate (annual and 4-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
+          <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
         </caption>
         <thead>
         <tr style={{ backgroundColor: drugColor }}>
