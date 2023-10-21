@@ -108,6 +108,8 @@ const createIfUndefined = (object, key, value) => {
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
   if (isNaN(numericVal)) {
+    if(val == 'not available')
+    return 'Data not available';
     return 'Data suppressed*';
   } else {
     return (isFloat ? (Math.round(numericVal * 10) / 10).toFixed(1) : numericVal);
