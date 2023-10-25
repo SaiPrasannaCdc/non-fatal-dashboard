@@ -64,7 +64,7 @@ const drugOptions = {
   },
 };
 
-const supportedYears = ['2018', '2019', '2020', '2021'];
+const supportedYears = ['2018', '2019', '2020', '2021', '2022'];
 const supportedYearsLatest = supportedYears[supportedYears.length - 1];
 const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
 let stateNames = { 'US': 'Overall†', 'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming' };
@@ -108,6 +108,8 @@ const createIfUndefined = (object, key, value) => {
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
   if (isNaN(numericVal)) {
+    if(val == 'not available')
+    return 'Data not available';
     return 'Data suppressed*';
   } else {
     return (isFloat ? (Math.round(numericVal * 10) / 10).toFixed(1) : numericVal);
@@ -348,7 +350,7 @@ export default function App({ dataUrl }) {
 
   const barbellChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}{(currentYear === '2021' || currentYearCompare === '2021') && <sup>¶</sup>}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}{(currentYear === '2022' || currentYearCompare === '2022' || currentYear === '2021' || currentYearCompare === '2021') && <sup>¶</sup>}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year to Compare To',
@@ -363,14 +365,14 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall'}<sup>†</sup>, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}{(currentYear === '2021' || currentTimeframe === 'Annual') && <sup>¶</sup>}</h2>
+      <h2 className="h3">{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall'}<sup>†</sup>, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}{(currentYear === '2022' || currentYear === '2021' || currentTimeframe === 'Annual') && <sup>¶</sup>}</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}{currentYear === '2021' && <sup>¶</sup>}</h2>
+      <h2 className="h3">{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}{(currentYear === '2022' || currentYear === '2021') && <sup>¶</sup>}</h2>
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate
@@ -380,11 +382,11 @@ export default function App({ dataUrl }) {
 
   const usaMapMemo = useMemo(() =>
     currentDataSource === 'ED' ? <>
-      <h2 className="h3">{currentYearGroup === 'one' ? 'Annual r' : 'R'}ate of emergency department (ED) visits for nonfatal all drug overdoses per 100,000 {currentYearGroup === 'all' ? 'person-years' : 'persons'}, by county{currentState === 'US' ? <sup>†</sup> : ', '}{currentState === 'US' ? '' : stateNames[currentState]}, {currentYearGroup === 'all' ? <>{supportedYears[0]}&#8211;{supportedYearsLatest}</> : currentYear}{(currentYearGroup === 'all' || currentYear === '2021') && <sup>¶</sup>}</h2>
-      <div><small><i>The county-level heat map is only available for the rate (annual and 4-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small></div>
+      <h2 className="h3">{currentYearGroup === 'one' ? 'Annual r' : 'R'}ate of emergency department (ED) visits for nonfatal all drug overdoses per 100,000 {currentYearGroup === 'all' ? 'person-years' : 'persons'}, by county{currentState === 'US' ? <sup>†</sup> : ', '}{currentState === 'US' ? '' : stateNames[currentState]}, {currentYearGroup === 'all' ? <>{supportedYears[0]}&#8211;{supportedYearsLatest}</> : currentYear}{(currentYearGroup === 'all' || currentYear === '2022' || currentYear === '2021') && <sup>¶</sup>}</h2>
+      <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small></div>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
-      4 Year Rate
+      5 Year Rate
       <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, width }} />
     </> : <></>,
     [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, width]);
@@ -548,9 +550,10 @@ export default function App({ dataUrl }) {
       </div>
       <small>
         <p>* Counts are suppressed when based on 1-9 overdoses and rates are suppressed when based on 1-19 overdoses to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the U.S. Census Bureau for the calculation of rates; monthly population denominators were estimated through linear extrapolation of the annual population denominators.</p>
-        <br/><p>† A total of 22 states submitted emergency department discharge data and 21 states submitted inpatient hospitalization discharge data. All of these states reported data from 2018-2021 except for Oklahoma, which, reported data from 2020-2021.</p>
+        <br/><p>† A total of 22 states submitted emergency department discharge data and 21 states submitted inpatient hospitalization discharge data. All of these states reported data from 2018-2022 except for Oklahoma, which, reported data from 2020-2021.</p>
         <br/><p>§ There are several important caveats to consider when viewing the figures included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</p>
-        <br/><p>¶ Counts and rates for all drug overdoses during October–December 2021 are not directly comparable to prior months and years and may be an underestimate of true all drug overdose burden. Cannabis poisonings were captured in the all drug overdose category from January 2018–September 2021 but not during October–December 2021 due to discharge diagnosis code changes (more information is provided in “Important Data Considerations” #7). Cannabis poisonings in these data likely represent approximately 5% of all drug overdoses; however, certain sex and age groups may be more impacted by the accidental exclusion of the new cannabis codes.</p>
+        <br/><p>¶ For some states, counts and rates for all drug overdoses during October 2021–September 2022 are not directly comparable to prior months and years and may be an underestimate of true all drug overdose burden. Cannabis poisonings were captured in the all drug overdose category from January 2018–September 2021 in all states; however, in certain states, cannabis poisonings were not captured during October 2021–September 2022 due to discharge diagnosis code changes (more information is provided in “Important Data Considerations” #7). Cannabis poisonings in these data likely represent approximately 5% of all drug overdoses; however, certain sex and age groups may be more impacted by the accidental exclusion of the new cannabis codes.</p>
+        <p>States that submitted revised data that include the cannabis codes, thus not impacted by this issue, include: Alaska, Hawaii, Iowa, Indiana, Kentucky, Nebraska, New York, North Carolina, Rhode Island, and Washington.</p>
       </small>
       <div className='data-tables'>
         <div className="datatable-container">
@@ -580,7 +583,11 @@ export default function App({ dataUrl }) {
                 <li><strong>Data are included for overdoses of unintentional and undetermined intents.</strong> Only discharge diagnosis codes for overdoses of unintentional and undetermined intent are included in the data presented on this dashboard. Detailed information on case classification criteria can be found on <a target="_blank" href="https://www.cdc.gov/drugoverdose/nonfatal/case.html">About DOSE</a>.</li>
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of opioid-, heroin-, and stimulant-involved overdose visits are included in the numbers of all drug overdose visits; suspected heroin-involved overdose visits are included in the numbers of opioid-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
                 <li><strong>Rates beginning in 2021 may not be directly comparable to prior years.</strong> The U.S. Census Bureau instituted new methodology to calculate population estimates beginning with 2021 data. The new methodology, referred to as differential privacy, ensures that data from individuals and individual households remain confidential.</li>
-                <li><strong>Counts and rates for all drug overdoses during October–December 2021 are not directly comparable to prior months and years.</strong> Data from January 2018–September 2021 included discharge diagnosis codes for cannabis poisonings in the all drug overdose category. In October 2021, the prior cannabis poisoning diagnosis code (T40.7X) was retired, and new codes (T40.71, T40.72) for cannabis poisoning and synthetic cannabinoid poisoning were implemented (<a href="https://www.cms.gov/medicare/icd-10/2022-icd-10-cm" target="_blank">FY2022 ICD-10-CM</a>). However, these new codes were not queried in DOSE ED visit and inpatient hospitalization discharge data during October–December 2021. Thus, there may be underestimates in the counts and rates of all drug overdoses during October–December 2021. Cannabis poisonings in these data likely represent approximately 5% of all drug overdoses; however, certain sex and age groups may be more impacted by the accidental exclusion of the new cannabis codes.</li>
+                <li>
+                  <strong>For some states, counts and rates for all drug overdoses during October 2021–September 2022 are not directly comparable to prior months and years.</strong> Data from January 2018–September 2021 included discharge diagnosis codes for cannabis poisonings in the all drug overdose category. In October 2021, the prior cannabis poisoning diagnosis code (T40.7X) was retired, and new codes (T40.71, T40.72) for cannabis poisoning and synthetic cannabinoid poisoning were implemented (<a href="https://www.cms.gov/medicare/icd-10/2022-icd-10-cm" target="_blank">FY2022 ICD-10-CM</a>). However, these new codes were not queried in DOSE ED visit and inpatient hospitalization discharge data until October 2022. Thus, there may be underestimates in the counts and rates of all drug overdoses during October 2021–September 2022. Cannabis poisonings in these data likely represent approximately 5% of all drug overdoses; however, certain sex and age groups may be more impacted by the accidental exclusion of the new cannabis codes.
+                  <br/>
+                  States that submitted revised data that include the cannabis codes, thus not impacted by this issue, include: Alaska, Hawaii, Iowa, Indiana, Kentucky, Nebraska, New York, North Carolina, Rhode Island, and Washington.
+                </li>
               </ol>
             </div>}
         </div>
