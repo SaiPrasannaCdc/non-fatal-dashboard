@@ -93,7 +93,7 @@
             <tspan x="414" dy="0em">20%</tspan>
           </text></svg>
       </g>
-      <line class="visx-line visx-axis-line" x1="0.5" y1="0" x2="480.5" y2="0" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1"></line><svg x="0" y="0" font-size="10" style="overflow: visible;"><text class="visx-axis-label bar-chart-xaxis-label" x="240" y="51" font-family="Arial" font-size="10" fill="#222" text-anchor="middle">
+      <line class="visx-line visx-axis-line" x1="0.5" y1="0" x2="480.5" y2="0" fill="transparent" shape-rendering="crispEdges" stroke="#444" stroke-width="1"></line><svg x="0" y="0" font-size="10" style="overflow: visible;"><text class="visx-axis-label bar-chart-xaxis-label" x="240" y="51" font-size="10" fill="#222" text-anchor="middle">
           <tspan x="240" dy="0em">Percent Change</tspan>
         </text></svg>
     </g>

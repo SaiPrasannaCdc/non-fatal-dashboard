@@ -1258,7 +1258,7 @@ export default function App({ dataUrl }) {
             </ul>
 
             <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
-            <p><a href="#dataDownload">Data Considerations and Data Download</a></p>
+            <p><a href="#impdataconsiderations">Data Considerations and Data Download</a></p>
           </div>
         </aside>
 
@@ -1326,7 +1326,7 @@ export default function App({ dataUrl }) {
               </small>
             </div>}
         </div>
-        <div className="datatable-container">
+        <div className="datatable-container" id="impdataconsiderations">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
           Important Data Considerations
             {showConsiderations && <span>{String.fromCharCode(8722)}</span>}
@@ -1346,10 +1346,10 @@ export default function App({ dataUrl }) {
             </div>}
         </div>
       </div>
-      <a id="dataDownload" data={csvData}>data download</a>
-      <p>
+      {/* <a id="dataDownload" data={csvData}>data download</a> */}
+      {/* <p>
         <DownloadButton data={csvData} />
-      </p>
+      </p> */}
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
     </Context.Provider>
   );

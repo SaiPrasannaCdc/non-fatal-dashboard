@@ -18,8 +18,8 @@ module.exports = (env, { mode }) => ({
   devtool: mode === 'development' ? 'inline-source-map' : false,
   performance: {
     hints: mode === 'development' ? false : 'error',
-    maxEntrypointSize: 512000,
-    maxAssetSize: 512000
+    maxEntrypointSize: 1024000,
+    maxAssetSize: 1024000
   },
   optimization: {
     splitChunks: {
