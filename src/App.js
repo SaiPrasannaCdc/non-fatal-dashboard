@@ -592,14 +592,14 @@ export default function App({ dataUrl }) {
             </div>}
         </div>
       </div>
-      <a
+      {/* <a
         href={dataUrl}
         aria-label="Download this data in a Excel file format."
         className={`btn btn-download no-border`}
         style={{ 'backgroundColor': drugColor }}
       >
         Download Data (XLSX)
-      </a>
+      </a> */}
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
     </>
   );

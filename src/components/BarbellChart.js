@@ -47,8 +47,9 @@ function BarbellChart({ params }) {
   filteredData.sort((a, b) => {
     if(isNaN(getX2Value(a))) return 1;
     if(isNaN(getX2Value(b))) return -1;
-    return getX2Value(a) < getX2Value(b) ? 1 : -1;
+    return parseInt(getX2Value(a)) < parseInt(getX2Value(b)) ? 1 : -1;
   });
+  console.log(filteredData)
 
   const yScale = scaleBand({
     range: [0, yMax],
