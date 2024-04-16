@@ -1258,7 +1258,7 @@ export default function App({ dataUrl }) {
             </ul>
 
             <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
-            <p><a href="#impdataconsiderations">Data Considerations and Data Download</a></p>
+            <p><a href="#impdataconsiderations">Data Considerations</a></p>
           </div>
         </aside>
 
