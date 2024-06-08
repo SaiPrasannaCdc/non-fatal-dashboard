@@ -200,6 +200,14 @@ const drugScreenOptions = {
     'percentageColumn': 'allPercentageChange',
     'color': '#2B2D73',
   },
+  'benzodiazepine': {
+    'titleSingular': 'Benzodiazepine',
+    'titlePlural': 'Benzodiazepine',
+    'titleAll': 'Benzodiazepine',
+    'significanceColumn': 'benzoSignificance',
+    'percentageColumn': 'benzoPercentageChange',
+    'color': '#573325',
+  },
   'opioids': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
@@ -207,6 +215,14 @@ const drugScreenOptions = {
     'significanceColumn': 'opioidSignificance',
     'percentageColumn': 'opioidPercentageChange',
     'color': '#4A2866',
+  },
+  'fentanyl': {
+    'titleSingular': 'Fentanyl',
+    'titlePlural': 'Fentanyl',
+    'titleAll': 'Fentanyl',
+    'significanceColumn': 'fentanylSignificance',
+    'percentageColumn': 'fentanylPercentageChange',
+    'color': '#d6cae2',
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -224,6 +240,22 @@ const drugScreenOptions = {
     'percentageColumn': 'stimulantPercentageChange',
     'color': '#24574E',
   },
+  'cocaine': {
+    'titleSingular': 'Cocaine',
+    'titlePlural': 'Cocaine',
+    'titleAll': 'Cocaine',
+    'significanceColumn': 'cocaineSignificance',
+    'percentageColumn': 'cocainePercentageChange',
+    'color': '#bad7d2',
+  },
+  'methamphetamine': {
+    'titleSingular': 'Methamphetamine',
+    'titlePlural': 'Methamphetamine',
+    'titleAll': 'Methamphetamine',
+    'significanceColumn': 'methamphetamineSignificance',
+    'percentageColumn': 'methamphetaminePercentageChange',
+    'color': '#bad7d2',
+  }
 }
 
 const months = [
@@ -1003,10 +1035,10 @@ export default function App({ dataUrl }) {
     }
   }
 
-  let footnote1 = ["§", "The state does not share data from syndromic surveillance systems with DOSE." ];
+  let footnote1 = ["§", "State does not currently share data from syndromic surveillance systems with DOSE." ];
   // let footnote2 = ["¶", "The funded state did not provide CDC enough months of data to calculate all percent change cells." ];
-  let footnote3 = ["¶", "State does not participate in OD2A DOSE ED data sharing." ];
-  let footnote4 = ["**", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnos is codes." ];
+  let footnote3 = ["¶", "State does not participate in DOSE syndromic surveillance system." ];
+  let footnote4 = ["**", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnosis codes." ];
 
   const DownloadButton = () => {
     return (
@@ -1089,11 +1121,11 @@ export default function App({ dataUrl }) {
       <div className="filters-container">
 
         <div className={ `filter-wrapper ${ showTimeline ? 'show-timeline' : '' }`}>
-          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Time Range</div>
+          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
           <div className="filters">
             <div className="dropdowns">
               <div>
-                <label htmlFor="drug-select">Select a Drug: </label>
+                <label htmlFor="drug-select">Select a drug syndrome: </label>
                 <select id="drug-select" value={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
                   {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
                 </select>
@@ -1208,7 +1240,7 @@ export default function App({ dataUrl }) {
             Show Legend <Caret />
           </div>
           <div id="toggleTimeline" className={`${ showTimeline ? 'open' : '' }`} onClick={toggleTimeline}>
-            <span className="hide-on-mobile">Edit</span> Time Range <Caret />
+            <span className="hide-on-mobile">Edit</span> Filters <Caret />
           </div>
           <div id="toggleShare" className={`${ showShare ? 'open' : '' }`} onClick={toggleShare}>
             Share <Caret />
@@ -1341,7 +1373,7 @@ export default function App({ dataUrl }) {
                 <li><strong>Data are updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in syndromic surveillance systems within 48 hours for ~70% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be updated over the course of several weeks, and relevant overdose discharge diagnosis codes or revised chief complaint text may be received during this time. However, DOSE data are reported with a one-month time lag and not typically updated each month.</li>
                 <li><strong>These are suspected overdoses.</strong> Because these data are not determined by toxicological testing, they are not considered confirmed cases, but “suspected” overdoses.</li>
                 <li><strong>Data likely represent an undercount,</strong> given inaccuracies in coding and missing chief complaint information.</li>
-                <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of suspected opioid-, heroin-, and stimulant-involved overdose visits are included in the numbers of suspected all drug overdose visits; suspected heroin-involved overdose visits are included in the numbers of suspected opioid-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
+                <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories (depicted in the figure below) and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
               </ol>
             </div>}
         </div>
