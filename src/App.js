@@ -222,7 +222,7 @@ const drugScreenOptions = {
     'titleAll': 'Fentanyl',
     'significanceColumn': 'fentanylSignificance',
     'percentageColumn': 'fentanylPercentageChange',
-    'color': '#d6cae2',
+    'color': '#8C5EA7',
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -230,7 +230,7 @@ const drugScreenOptions = {
     'titleAll': 'Heroin',
     'significanceColumn': 'heroinSignificance',
     'percentageColumn': 'heroinPercentageChange',
-    'color': '#353535',
+    'color': '#8C5EA7',
   },
   'stimulants': {
     'titleSingular': 'Stimulant',
@@ -246,7 +246,7 @@ const drugScreenOptions = {
     'titleAll': 'Cocaine',
     'significanceColumn': 'cocaineSignificance',
     'percentageColumn': 'cocainePercentageChange',
-    'color': '#bad7d2',
+    'color': '#357F70',
   },
   'methamphetamine': {
     'titleSingular': 'Methamphetamine',
@@ -254,7 +254,7 @@ const drugScreenOptions = {
     'titleAll': 'Methamphetamine',
     'significanceColumn': 'methamphetamineSignificance',
     'percentageColumn': 'methamphetaminePercentageChange',
-    'color': '#bad7d2',
+    'color': '#357F70',
   }
 }
 
@@ -1373,7 +1373,11 @@ export default function App({ dataUrl }) {
                 <li><strong>Data are updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in syndromic surveillance systems within 48 hours for ~70% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be updated over the course of several weeks, and relevant overdose discharge diagnosis codes or revised chief complaint text may be received during this time. However, DOSE data are reported with a one-month time lag and not typically updated each month.</li>
                 <li><strong>These are suspected overdoses.</strong> Because these data are not determined by toxicological testing, they are not considered confirmed cases, but “suspected” overdoses.</li>
                 <li><strong>Data likely represent an undercount,</strong> given inaccuracies in coding and missing chief complaint information.</li>
-                <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories (depicted in the figure below) and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
+                <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and discharge diagnosis fields to identify suspected cases.  ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
+                <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories (depicted in the figure below) and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).
+                  {/* https://wcms-wp.cdc.gov/ */}
+                  <img src="/overdose-prevention/data-dashboards/dose-surveillance-dashboard/img/24_Lyons_DOSEDash_Chart-03.png" alt="drug categories" />
+                </li>
               </ol>
             </div>}
         </div>
