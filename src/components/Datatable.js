@@ -40,7 +40,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
       symbols.push('**');
     }
 
-    if ('US-ND' === row[keyIndex['geo']] || 'US-TX' === row[keyIndex['geo']] || 'US-WY' === row[keyIndex['geo']]) {
+    if ('US-ND' === row[keyIndex['geo']] || 'US-CA' === row[keyIndex['geo']] || 'US-OK' === row[keyIndex['geo']]) {
       symbols.push('¶');
     }
 
@@ -93,15 +93,15 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
       }
     });
   }
-
+  
   // set months and years for comparison wording
-  const fromYear = runtimeUSData[15];
-  const toYear   = runtimeUSData[17];
+  const fromYear = runtimeUSData[27];
+  const toYear   = runtimeUSData[29];
 
-  const fromDate  = new Date( fromYear, runtimeUSData[16] - 1, 1);
+  const fromDate  = new Date( fromYear, runtimeUSData[28] - 1, 1);
   const fromMonth = fromDate.toLocaleString('default', { month: 'long' });
 
-  const toDate  = new Date( toYear, runtimeUSData[18] - 1, 1);
+  const toDate  = new Date( toYear, runtimeUSData[30] - 1, 1);
   const toMonth = toDate.toLocaleString('default', { month: 'long' });
 
   return (
