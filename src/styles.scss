@@ -717,7 +717,7 @@ line { stroke: #ccc; stroke-width: 1; }
 
         .toggle-area {
             display: grid;
-            grid-template-columns: 1fr 1fr 80px;
+            grid-template-columns: 1fr 1fr;
             gap: 5px;
 
             @include r($lg) {
@@ -979,7 +979,7 @@ line { stroke: #ccc; stroke-width: 1; }
                 }
                 svg {
                     width: 100%;
-                    max-width: 1.4em;
+                    max-width: 1.5em;
                     margin: 1px .5em 0 0;
                 }
             }

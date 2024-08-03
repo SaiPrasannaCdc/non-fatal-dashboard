@@ -11,7 +11,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
     if ('missing' === row[percentageColumn] || 'unfunded' === row[percentageColumn]) {
       displayVal = '.';
     } else if ('suppressed' === row[percentageColumn]) {
-      displayVal = String.fromCharCode(8224);
+      displayVal = ''; //String.fromCharCode(8224)
     }
 
     return (
@@ -140,7 +140,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
               <td className={'Significant Increase' === row[significanceColumn] || 'Significant Decrease' === row[significanceColumn] ? 'is-significant' : ''}>
                 <div className="datatable-hex-container">
                   <div className="datatable-hex">
-                    <Hexagon fill={stateColors[0]} />
+                    <Hexagon fill={stateColors[0]} patternn={ (row[significanceColumn] == 'Data Suppressed') ? 'url(#pattern_KJD3DK2)' : ''} />
                   </div>
                   {getPercentageColumn(row)}
                 </div>

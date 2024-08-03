@@ -59,10 +59,15 @@ const hashObj = (row) => {
   return hash;
 }
 
-const Hexagon = ({fill}) => {
+const Hexagon = ({fill, patternn}) => {
   return (
     <svg viewBox="0 0 45 51">
-      <polygon fill={fill} strokeWidth={1} stroke="gray" points="22 0 44 12.702 44 38.105 22 50.807 0 38.105 0 12.702"/>
+      <defs>
+          <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
+            <line x1="0" y="0" x2="0" y2="9.5" stroke="#0C0824" style={{ strokeWidth: 2 }} />
+          </pattern>
+        </defs>
+      <polygon fill={ (patternn && patternn != '') ? patternn : fill } strokeWidth={1} stroke="gray" points="22 0 44 12.702 44 38.105 22 50.807 0 38.105 0 12.702"/>
     </svg>
   )
 }
@@ -465,6 +470,15 @@ export default function App({ dataUrl }) {
     percentage += '%';
     return percentage;
   };
+
+  const getSignificanceForGeo = (geoName) => {
+    const stateData = runtimeData[geoName] ?? false;
+    if (stateData) {
+      return stateData[keyIndex[drugScreenOptions[currentDrug]['significanceColumn']]];
+    }
+
+    return '';
+  }
 
   const applyTooltipsToGeo = (geoName) => {
     let toolTipText = '<div class="tooltip-body">';
@@ -1117,7 +1131,7 @@ export default function App({ dataUrl }) {
   }
 
   return (
-    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates }}>
+    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates, getSignificanceForGeo }}>
       <div className="filters-container">
 
         <div className={ `filter-wrapper ${ showTimeline ? 'show-timeline' : '' }`}>
@@ -1242,9 +1256,9 @@ export default function App({ dataUrl }) {
           <div id="toggleTimeline" className={`${ showTimeline ? 'open' : '' }`} onClick={toggleTimeline}>
             <span className="hide-on-mobile">Edit</span> Filters <Caret />
           </div>
-          <div id="toggleShare" className={`${ showShare ? 'open' : '' }`} onClick={toggleShare}>
+          {/* <div id="toggleShare" className={`${ showShare ? 'open' : '' }`} onClick={toggleShare}>
             Share <Caret />
-          </div>
+          </div> */}
         </div>
       </div>
       <div id="closeShare" onClick={toggleShare}>
@@ -1268,7 +1282,7 @@ export default function App({ dataUrl }) {
                 </li>)}
 
               <li>
-                <svg
+                {/* <svg
                     // y={-15}
                     // x={barX - 10}
                     aria-hidden="true"
@@ -1284,7 +1298,8 @@ export default function App({ dataUrl }) {
                     style={{ 'marginLeft': '2px'}}
                 >
                   <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
-                </svg>
+                </svg> */}
+                <Hexagon patternn={'url(#pattern_KJD3DK2)'}></Hexagon>
                 <a href="#suppressed">Suppressed Data</a>
               </li>
             </ul>

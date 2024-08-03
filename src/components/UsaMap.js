@@ -13,7 +13,7 @@ import Context from '../context';
 const { features: unitedStatesHex } = feature(hexTopoJSON, hexTopoJSON.objects.states)
 
 const UsaMap = () => {
-  const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo, supportedStates } = useContext(Context);
+  const { data, applyLegendToRow, setStateSelected, selected, applyTooltipsToGeo, supportedStates, getSignificanceForGeo } = useContext(Context);
   
   const geoLabel = (geo, bgColor = "#FFFFFF", projection) => {
     let centroid = projection(geoCentroid(geo))
@@ -113,6 +113,7 @@ const UsaMap = () => {
                   stroke={'#333'}
                   strokeWidth={(selected && selected === geoKey) ? 6 : 1}
                   d={path}
+                  fill= { (getSignificanceForGeo(geo.properties.iso) == 'Data Suppressed') ? 'url(#pattern_KJD3DK2)' : ''}
                 />
                 {geoLabel(geo, legendColors[0], projection)}
               </g>
@@ -149,6 +150,11 @@ const UsaMap = () => {
             className="tooltip"
           />
       <svg viewBox="0 0 880 500" aria-describedby="main-data-table">
+        <defs>
+          <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
+            <line x1="0" y="0" x2="0" y2="9.5" stroke="#0C0824" style={{ strokeWidth: 2 }} />
+          </pattern>
+        </defs>
         <Mercator data={unitedStatesHex} scale={705} translate={[1705, 825]}>
           {({ features, projection }) => constructGeoJsx(features, projection)}
         </Mercator>
