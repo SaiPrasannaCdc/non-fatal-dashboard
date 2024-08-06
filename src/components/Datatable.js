@@ -2,8 +2,19 @@ import React, { useState } from 'react';
 
 function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionColumn,percentageColumn,keyIndex,supportedStates,drugColor,Hexagon,applyLegendToRow,drugName}) {
 
+  
+
   const [sortBy, setSortBy] = useState('state');
   const [sortAscending, setSortAscending] = useState(false);
+  // set months and years for comparison wording
+  const fromYear = runtimeUSData[27];
+  const toYear   = runtimeUSData[29];
+
+  const fromDate  = new Date( fromYear, runtimeUSData[28] - 1, 1);
+  const fromMonth = fromDate.toLocaleString('default', { month: 'long' });
+
+  const toDate  = new Date( toYear, runtimeUSData[30] - 1, 1);
+  const toMonth = toDate.toLocaleString('default', { month: 'long' });
 
   const getPercentageColumn = (row) => {
 
@@ -20,6 +31,11 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
       </>
     );
   };
+
+  const checkDateIsInBetween = (date, startDate, endDate) => {
+    return date >= startDate && date <= endDate;
+  }
+
 
   const getSymbols = (row) => {
     let symbols = [];
@@ -43,6 +59,25 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
     if ('US-ND' === row[keyIndex['geo']] || 'US-CA' === row[keyIndex['geo']] || 'US-OK' === row[keyIndex['geo']]) {
       symbols.push('¶');
     }
+
+    if('US-MI' === row[keyIndex['geo']])
+    {
+      if( 
+        (checkDateIsInBetween(fromDate, new Date(2018, 0, 1), new Date(2019, 1, 28)) ||
+        checkDateIsInBetween(toDate, new Date(2018, 0, 1), new Date(2019, 1, 28)))
+        && !symbols.includes('§')
+      )
+      symbols.push('§');
+    }
+    if('US-NC' === row[keyIndex['geo']])
+      {
+        if( 
+          (checkDateIsInBetween(fromDate, new Date(2021, 4, 1), new Date(2021, 5, 30)) ||
+          checkDateIsInBetween(toDate, new Date(2021, 4, 1), new Date(2021, 5, 30)))
+          && !symbols.includes('**')
+        )
+        symbols.push('**');
+      }
 
     return (
       <>{symbols.join(' ')}</>
@@ -94,15 +129,7 @@ function Datatable({runtimeData,runtimeUSData,significanceColumn,jurisdictionCol
     });
   }
   
-  // set months and years for comparison wording
-  const fromYear = runtimeUSData[27];
-  const toYear   = runtimeUSData[29];
-
-  const fromDate  = new Date( fromYear, runtimeUSData[28] - 1, 1);
-  const fromMonth = fromDate.toLocaleString('default', { month: 'long' });
-
-  const toDate  = new Date( toYear, runtimeUSData[30] - 1, 1);
-  const toMonth = toDate.toLocaleString('default', { month: 'long' });
+  
 
   return (
     <>

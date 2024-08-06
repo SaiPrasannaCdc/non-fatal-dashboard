@@ -573,10 +573,12 @@ export default function App({ dataUrl }) {
   }
 
   const handleMonthSliderChange = (data) => {
+    console.log(data)
     setSliderPointMonth(data);
   };
 
   const handleYearSliderChange = (data) => {
+    console.log(data)
     setSliderPointYear(data);
   };
 
@@ -1272,7 +1274,7 @@ export default function App({ dataUrl }) {
         }>
           <div className="legend">
             <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
-            <ul className="legend">
+            <ul className="legend" style={{paddingLeft: '0.5em'}}>
               {runtimeLegend.map(({color, value}) => <li key={color}>
 
                 <svg viewBox="-5 -5 110 110" xmlns="http://www.w3.org/2000/svg">
@@ -1282,7 +1284,8 @@ export default function App({ dataUrl }) {
                 </li>)}
 
               <li>
-                {/* <svg
+                <Hexagon patternn={'url(#pattern_KJD3DK2)'}></Hexagon>
+                <svg
                     // y={-15}
                     // x={barX - 10}
                     aria-hidden="true"
@@ -1298,8 +1301,7 @@ export default function App({ dataUrl }) {
                     style={{ 'marginLeft': '2px'}}
                 >
                   <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
-                </svg> */}
-                <Hexagon patternn={'url(#pattern_KJD3DK2)'}></Hexagon>
+                </svg>
                 <a href="#suppressed">Suppressed Data</a>
               </li>
             </ul>
