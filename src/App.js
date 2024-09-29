@@ -181,7 +181,7 @@ const fundedStates = {
   'US-WA': ['Washington', 'WA'],
   'US-WV': ['West Virginia', 'WV'],
   'US-WI': ['Wisconsin', 'WI'],
-  // 'US-WY': ['Wyoming', 'WY']
+  'US-WY': ['Wyoming', 'WY']
 };
 
 const getStateName = (geo) => {
