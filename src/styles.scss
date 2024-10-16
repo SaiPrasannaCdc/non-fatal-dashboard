@@ -193,6 +193,10 @@ html {
         padding: .75em 18px;
         margin-bottom: 1em;
 
+        &.sub {
+            padding: .2em 0.5em;
+        }
+
         span {
             font-size: .8em;
             font-weight: bold;
@@ -204,6 +208,10 @@ html {
             padding: '0';
             display: 'block';
             font-weight: 'bold';
+
+            &.sub {
+                font-size: '1em';
+            }
             // font-family: "Open Sans", apple-system, blinkmacsystemfont, "Segoe UI", "Helvetica Neue", arial, sans-serif;
         }
     }
