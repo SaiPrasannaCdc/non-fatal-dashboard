@@ -169,7 +169,7 @@ function LineChart({ params }) {
             top={yMax}
             scale={xScale}
             tickValues={currentTimeframe === 'Monthly' && isSmallViewport ? lessMonths(filteredData['US'].map(d => d[xKey])) : filteredData['US'].map(d => d[xKey])}
-            tickFormat={value => currentTimeframe === 'Monthly' ? monthNamesShort[value] : value.toFixed(0)}
+            tickFormat={value => currentTimeframe === 'Monthly' ? monthNamesShort[value] : (value.toFixed ?value.toFixed(0) :value) }
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'middle'
