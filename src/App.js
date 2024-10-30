@@ -62,9 +62,41 @@ const drugOptions = {
     'rateColumn': 'rate_stimulant',
     'color': '#24574E',
   },
+  'fentanyl': {
+    'titleSingular': 'Fentanyl',
+    'titlePlural': 'Fentanyls',
+    'titleAll': 'All Fentanyls',
+    'titleHeader': 'All Fentanyl',
+    'rateColumn': 'rate_fentanyl',
+    'color': '#24574E',
+  },
+  'cocaine': {
+    'titleSingular': 'Cocaine',
+    'titlePlural': 'Cocaines',
+    'titleAll': 'All Cocaines',
+    'titleHeader': 'All Cocaine',
+    'rateColumn': 'rate_cocaine',
+    'color': '#24574E',
+  },
+  'methamphetamine': {
+    'titleSingular': 'Methamphetamine',
+    'titlePlural': 'Methamphetamines',
+    'titleAll': 'All Methamphetamines',
+    'titleHeader': 'All Methamphetamine',
+    'rateColumn': 'rate_methamphetamine',
+    'color': '#24574E',
+  },
+  'benzo': {
+    'titleSingular': 'Benzo',
+    'titlePlural': 'Benzos',
+    'titleAll': 'All Benzos',
+    'titleHeader': 'All Benzo',
+    'rateColumn': 'rate_benzo',
+    'color': '#24574E',
+  },
 };
 
-const supportedYears = ['2018', '2019', '2020', '2021', '2022'];
+const supportedYears = ['2018', '2019', '2020', '2021', '2022', '2023'];
 const supportedYearsLatest = supportedYears[supportedYears.length - 1];
 const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
 let stateNames = { 'US': 'Overall', 'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming' };
