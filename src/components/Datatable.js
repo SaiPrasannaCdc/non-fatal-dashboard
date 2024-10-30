@@ -84,7 +84,7 @@ function Datatable({ params }) {
   const stateTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}{(currentYear === 2021 || currentYearCompare === 2021) && <sup>¶</sup>}</caption>
+        <caption>How did the rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal drug overdoses change by state and overall, from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col" className={`${stateSortBy === 'state' ? 'sorting' : ''} ${stateSortOrder}`}>
@@ -122,7 +122,7 @@ function Datatable({ params }) {
   const yearTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall'}<sup>†</sup>, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}{(currentYear === 2021 || currentTimeframe === 'Annual') && <sup>¶</sup>}</caption>
+        <caption>How did the overall rate<sup>†</sup> of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal drug overdoses change from {currentTimeframe === 'Monthly' ? <>January {currentYear} to December {currentYear}?</> : <>{supportedYears[0]} to {supportedYearsLatest}?</>}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col">
@@ -194,7 +194,7 @@ function Datatable({ params }) {
   const countyTable = useMemo(() => currentDataSource === 'ED' ? (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentYearGroup === 'one' ? 'Annual r' : 'R'}ate of emergency department (ED) visits for nonfatal all drug overdoses per 100,000 {currentYearGroup === 'all' ? 'person-years' : 'persons'}, by county{currentState === 'US' ? <sup>†</sup> : ', '}{currentState === 'US' ? '' : stateNames[currentState]}, {currentYearGroup === 'all' ? <>{supportedYears[0]}&#8211;{supportedYearsLatest}</> : currentYear}{(currentYearGroup === 'all' || currentYear === 2021) && <sup>¶</sup>}
+        <caption>How did the rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal drug overdoses change by county and overall, from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}
           <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
         </caption>
         <thead>
