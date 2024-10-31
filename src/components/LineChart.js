@@ -4,6 +4,7 @@ import { scaleLinear } from '@visx/scale';
 import { Text } from '@visx/text';
 import { Circle } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
+import { UtilityFunctions } from '../utility'
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
@@ -95,6 +96,7 @@ function LineChart({ params }) {
                       <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(dNext[xKey]) ?? 0} y2={yScale(dNext[currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
                     }
                     {isNaN(d[currentDrug]) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">{d[currentDrug] === 'Data suppressed*' ? '*' : '†'}</text>}
+                    {!isNaN(d[currentDrug]) && <text x={xScale(d[xKey])} y={yScale(d[currentDrug])-8} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} fontSize={12} textAnchor="middle">{d[currentDrug]}</text>}
                     {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
                   </Group>
                 )
@@ -122,7 +124,7 @@ function LineChart({ params }) {
                   }
 
                   return <text 
-                    x={xMax + 5} 
+                    x={xMax + 15} 
                     y={yPos}
                     alignmentBaseline="middle" 
                     fontSize={fontSize} 
