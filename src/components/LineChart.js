@@ -4,7 +4,6 @@ import { scaleLinear } from '@visx/scale';
 import { Text } from '@visx/text';
 import { Circle } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
-import { UtilityFunctions } from '../utility'
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
@@ -65,7 +64,6 @@ function LineChart({ params }) {
   const xKey = currentTimeframe === 'Monthly' ? 'month' : 'year';
 
   const seriesColor = key => key === 'US' ? 'rgb(43, 45, 115)' : 'lightblue';
-  const yScaleDomainPeriod = UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, currentState)
 
   const xScale = scaleLinear({
     domain: [Math.min(...xValues), Math.max(...xValues)],
@@ -73,7 +71,7 @@ function LineChart({ params }) {
   });
 
   const yScale = scaleLinear({
-    domain: [0, currentTimeframe === 'Monthly' ? yScaleDomainPeriod + 0.5 : yScaleDomainPeriod + 20],
+    domain: [0, data.year.maxes[currentTimeframe][currentDrug]],
     range: [yMax, 0],
   });
   
@@ -97,7 +95,6 @@ function LineChart({ params }) {
                       <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(dNext[xKey]) ?? 0} y2={yScale(dNext[currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
                     }
                     {isNaN(d[currentDrug]) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">{d[currentDrug] === 'Data suppressed*' ? '*' : '†'}</text>}
-                    {!isNaN(d[currentDrug]) && <text x={xScale(d[xKey])} y={yScale(d[currentDrug])-8} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} fontSize={12} textAnchor="middle">{d[currentDrug]}</text>}
                     {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
                   </Group>
                 )
@@ -184,6 +181,28 @@ function LineChart({ params }) {
           />
         </Group>
       </svg>
+      {currentDrug == 'heroin' && //TODO
+      <table style={{width: '100%'}}>
+        <tr>
+          <td style={{width: '15%'}}></td>
+          <td style={{width: '70%'}}>
+          <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Counts and rates for this indicator are shown as NA for time periods prior to the introduction of the ICD-10-CM code.</i></small></span></div>
+          </td>
+          <td style={{width: '15%'}}></td>
+        </tr>
+      </table>
+      }
+      {currentDrug == 'stimulant' && //TODO
+        <table style={{width: '100%'}}>
+        <tr>
+          <td style={{width: '15%'}}></td>
+          <td style={{width: '70%'}}>
+          <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Data on methamphetamine are shown starting in October 2022, when the ICD-10-CM code for methamphetamine-involved poisoning (T43.65) was introduced. Counts and rates for these indicators are shown as NA for time periods prior to the introduction of the ICD-10-CM code.</i></small></span></div>
+          </td>
+          <td style={{width: '15%'}}></td>
+        </tr>
+      </table>
+      }
       {isSmallViewport && (
         <div id="line-chart-legend-container">
           <div id="line-chart-legend">

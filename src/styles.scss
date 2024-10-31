@@ -553,6 +553,15 @@ html {
                 }
             }
 
+            ul {
+                list-style-type:circle;
+                margin-left: $gbl-padding;
+
+                li {
+                    margin-bottom: $gbl-padding;
+                }
+            }
+
             .main-data-table-container {
                 overflow-x: auto;
 
@@ -629,4 +638,9 @@ html {
             }
         }
     }
+}
+
+.colorRed
+{
+    color: red;
 }
