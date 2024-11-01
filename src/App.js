@@ -382,7 +382,6 @@ export default function App({ dataUrl }) {
 
   const barbellChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal drug overdoses change by state and overall ({'TBD'} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year to Compare To',
@@ -441,7 +440,7 @@ export default function App({ dataUrl }) {
   if(totalOverdoses) totalOverdoses = totalOverdoses[currentYear];
 
   let stateDropdownOptions = data.state[currentDataSource][currentDrug]['all'].map(d => d.state);
-
+  
   return (
     <>
       <div className="filters-container" ref={outerContainerRef}>
@@ -568,6 +567,7 @@ export default function App({ dataUrl }) {
             </section>
 
             <section>
+              <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal drug overdoses change by state and overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all'].map(d => d.state)).length - 1)} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</h2>
               {barbellChartMemo}
             </section>
 
@@ -583,7 +583,7 @@ export default function App({ dataUrl }) {
       </div>
       <small>
         <p><sup>1</sup>Counts and rates are suppressed when based on 1-19 overdoses to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the U.S. Census Bureau  for the calculation of rates.</p>
-        <p><sup>2</sup>A total of {'TBD'} states submitted DOSE emergency department discharge data and {'TBD'} states submitted DOSE inpatient hospitalization discharge data under OD2A in States. Certain states participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet complete. Oklahoma reported ED data beginning in 2021. The "Overall" (all jurisdictions) category may not be comparable across years because different jurisdictions may be included in different years based on data availability.</p>
+        <p><sup>2</sup>A total of {(Object.keys(data.state['ED'][currentDrug]['all'].map(d => d.state)).length - 1)} states submitted DOSE emergency department discharge data and {(Object.keys(data.state['HOSP'][currentDrug]['all'].map(d => d.state)).length - 1)} states submitted DOSE inpatient hospitalization discharge data under OD2A in States. Certain states participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet complete. Oklahoma reported ED data beginning in 2021. The "Overall" (all jurisdictions) category may not be comparable across years because different jurisdictions may be included in different years based on data availability.</p>
         <p><sup>3</sup>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction; however, some jurisdictions' coverage was lower (i.e., between 60% and 79%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. States with 60-79.99% ED facility coverage include IN (2020 only), LA (2018-2021),  and MT (2023 only). States with 60-79.99% inpatient hospital facility coverage include MT (2018-2023). State data with &lt;60% facility coverage are not posted on the DOSE dashboard.</p>
         <p><sup>4</sup>There are several important caveats to consider when viewing the figures included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</p>
         <p><sup>5</sup>Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Methamphetamine data are displayed beginning in October 2022, reflecting the introduction of the ICD-10-CM code for methamphetamine-involved poisoning (T43.65). Counts and rates for these indicators are shown as NA for time periods prior to the introduction of these ICD-10-CM codes.</p>
