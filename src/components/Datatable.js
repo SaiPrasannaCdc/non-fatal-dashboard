@@ -84,7 +84,7 @@ function Datatable({ params }) {
   const stateTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal drug overdoses change by state and overall ({'TBD'} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</caption>
+        <caption>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal drug overdoses change by state and overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col" className={`${stateSortBy === 'state' ? 'sorting' : ''} ${stateSortOrder}`}>
@@ -157,7 +157,7 @@ function Datatable({ params }) {
   const sexTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>How many {dataSourceOptions[currentDataSource]['titleLong']} visits occurred for nonfatal drug overdoses overall ({'TBD'} states) in {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}, by age group and Sex?</caption>
+        <caption>How many {dataSourceOptions[currentDataSource]['titleLong']} visits occurred for nonfatal drug overdoses overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)} states) in {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}, by age group and Sex?</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col" className={`${sexSortBy === 'age' ? 'sorting' : ''} ${sexSortOrder}`}>

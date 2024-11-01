@@ -47,6 +47,8 @@ function LineChart({ params }) {
 
   if(currentState !== 'US') filteredData['US'] = getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear);
 
+  const yScaleDomainPeriod = UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, currentState)
+
   const xValues = filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
 
   const isSmallViewport = width < 500;
@@ -72,7 +74,7 @@ function LineChart({ params }) {
   });
 
   const yScale = scaleLinear({
-    domain: [0, data.year.maxes[currentTimeframe][currentDrug]],
+    domain: [0, yScaleDomainPeriod * 1.2],
     range: [yMax, 0],
   });
   
