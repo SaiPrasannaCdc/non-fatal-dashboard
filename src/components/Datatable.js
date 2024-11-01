@@ -84,7 +84,7 @@ function Datatable({ params }) {
   const stateTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, by state and overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} compared to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}` : `${Math.min(currentYear, currentYearCompare)} compared to ${Math.max(currentYear, currentYearCompare)}`}{(currentYear === 2021 || currentYearCompare === 2021) && <sup>¶</sup>}</caption>
+        <caption>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal drug overdoses change by state and overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col" className={`${stateSortBy === 'state' ? 'sorting' : ''} ${stateSortOrder}`}>
@@ -122,7 +122,7 @@ function Datatable({ params }) {
   const yearTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} rate of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses per 100,000 persons, {currentState !== 'US' ? `${stateNames[currentState]} and overall` : 'overall'}<sup>†</sup>, {currentTimeframe === 'Monthly' ? <>January {currentYear}&#8211;December {currentYear}</> : <>{supportedYears[0]}&#8211;{supportedYearsLatest}</>}{(currentYear === 2021 || currentTimeframe === 'Annual') && <sup>¶</sup>}</caption>
+        <caption>How did the overall rate<sup>†</sup> of {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal drug overdoses change from {currentTimeframe === 'Monthly' ? <>January {currentYear} to December {currentYear}</> : <>{supportedYears[0]} to {supportedYearsLatest}</>}?</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col">
@@ -141,7 +141,7 @@ function Datatable({ params }) {
         </thead>
         <tbody>
           {Object.keys(filteredYearData).map(state => {
-            return <tr key={`line-chart-row-${state}`}><td>{stateNames[state]}</td>{filteredYearData['US'].map((usRow, i) => {
+            return <tr key={`line-chart-row-${state}`}><td>{state === 'US' ? stateNames[state] + ' (' + (Object.keys(data.state[currentDataSource][currentDrug]['all'].map(d => d.state)).length - 1) + ' States)': stateNames[state]}</td>{filteredYearData['US'].map((usRow, i) => {
               const row = state === 'US' ? usRow : filteredYearData[state].find(row => row[currentTimeframe === 'Monthly' ? 'month' : 'year'] === usRow[currentTimeframe === 'Monthly' ? 'month' : 'year']) || {}
               return (
                   <td key={`line-chart-col-${state}-${i}`}>{row[currentDrug] || 'Data not available/not reported†'}</td>
@@ -150,13 +150,14 @@ function Datatable({ params }) {
           })}
         </tbody>
       </table>
+      <div><sup>†</sup><small><i>The term "rate" in the context of {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses refers to the number of visits standardized per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED visit frequencies across different populations sizes and demographics.</i></small></div>
     </div>
   ), [filteredYearData, currentTimeframe, dataSourceOptions, drugOptions, stateNames, supportedYears, drugColor, monthNames, currentDataSource, currentDrug, currentState, currentYear]);
 
   const sexTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentTimeframe} {currentDataType} of {dataSourceOptions[currentDataSource]['titleLongest']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses{currentDataType === 'rate' ? ' per 100,000 persons' : ''}, overall<sup>†</sup>, {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}{currentYear === 2021 && <sup>¶</sup>}</caption>
+        <caption>How many {dataSourceOptions[currentDataSource]['titleLong']} visits occurred for nonfatal drug overdoses overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)} states) in {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}, by age group and Sex?</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col" className={`${sexSortBy === 'age' ? 'sorting' : ''} ${sexSortOrder}`}>
@@ -194,8 +195,8 @@ function Datatable({ params }) {
   const countyTable = useMemo(() => currentDataSource === 'ED' ? (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>{currentYearGroup === 'one' ? 'Annual r' : 'R'}ate of emergency department (ED) visits for nonfatal all drug overdoses per 100,000 {currentYearGroup === 'all' ? 'person-years' : 'persons'}, by county{currentState === 'US' ? <sup>†</sup> : ', '}{currentState === 'US' ? '' : stateNames[currentState]}, {currentYearGroup === 'all' ? <>{supportedYears[0]}&#8211;{supportedYearsLatest}</> : currentYear}{(currentYearGroup === 'all' || currentYear === 2021) && <sup>¶</sup>}
-          <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made.</i></small>
+        <caption>How many {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal all drug overdoses were there per county{currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', '} in {currentYear}
+          <br/><br/><small style={{fontWeight: 'normal'}}><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The heat map tabulates ED visits occurring within each state to in-state residents (people who visit an ED in another state are not represented in this heat map).</i></small>
         </caption>
         <thead>
         <tr style={{ backgroundColor: drugColor }}>
