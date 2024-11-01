@@ -185,7 +185,7 @@ function LineChart({ params }) {
           />
         </Group>
       </svg>
-      {currentDrug == 'heroin' && //TODO
+      {currentDrug == 'fentanyl' &&
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '15%'}}></td>
@@ -196,7 +196,7 @@ function LineChart({ params }) {
         </tr>
       </table>
       }
-      {currentDrug == 'stimulant' && //TODO
+      {currentDrug == 'methamphetamine' &&
         <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '15%'}}></td>

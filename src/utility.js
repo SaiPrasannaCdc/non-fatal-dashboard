@@ -35,8 +35,11 @@ export const UtilityFunctions = {
       stateNums.push(filteredData[currentState][rec][currentDrug])
   } 
 
-  let usmax = usNums?.length > 0 ? Math.max(...usNums) : 0;
-  let statemax = stateNums?.length > 0 ? Math.max(...stateNums) : 0;
+  const usNumsFinal = usNums?.filter(i => !isNaN(i));
+  const stateNumsFinal = stateNums?.filter(i => !isNaN(i));
+
+  let usmax = usNumsFinal?.length > 0 ? Math.max(...usNumsFinal) : 0;
+  let statemax = stateNumsFinal?.length > 0 ? Math.max(...stateNumsFinal) : 0;
 
   if (usmax < statemax)
     return statemax;
