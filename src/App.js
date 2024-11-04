@@ -52,7 +52,7 @@ const drugOptions = {
     'titleAll': 'Heroin',
     'titleHeader': 'Heroin',
     'rateColumn': 'rate_heroin',
-    'color': '#353535',
+    'color': '#8C5EA7',
   },
   'stimulant': {
     'titleSingular': 'Stimulant',
@@ -68,7 +68,7 @@ const drugOptions = {
     'titleAll': 'Fentanyl',
     'titleHeader': 'Fentanyl',
     'rateColumn': 'rate_fentanyl',
-    'color': '#24574E',
+    'color': '#8C5EA7',
   },
   'cocaine': {
     'titleSingular': 'Cocaine',
@@ -76,7 +76,7 @@ const drugOptions = {
     'titleAll': 'Cocaine',
     'titleHeader': 'Cocaine',
     'rateColumn': 'rate_cocaine',
-    'color': '#24574E',
+    'color': '#357F70',
   },
   'methamphetamine': {
     'titleSingular': 'Methamphetamine',
@@ -84,7 +84,7 @@ const drugOptions = {
     'titleAll': 'Methamphetamine',
     'titleHeader': 'Methamphetamine',
     'rateColumn': 'rate_methamphetamine',
-    'color': '#24574E',
+    'color': '#357F70',
   },
   'benzo': {
     'titleSingular': 'Benzodiazepine',
@@ -92,7 +92,7 @@ const drugOptions = {
     'titleAll': 'Benzodiazepine',
     'titleHeader': 'Benzodiazepine',
     'rateColumn': 'rate_benzo',
-    'color': '#24574E',
+    'color': '#573325',
   },
 };
 
