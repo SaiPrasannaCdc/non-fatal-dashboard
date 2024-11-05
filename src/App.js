@@ -396,7 +396,7 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses from {currentTimeframe === 'Monthly' ? <>January {currentYear} to December {currentYear}?</> : <>{supportedYears[0]} to {supportedYearsLatest}?</>}</h2>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses from {currentTimeframe === 'Monthly' ? <>compared to {currentYear}?</> : <>{supportedYears[0]} to {supportedYearsLatest}?</>}</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
@@ -414,7 +414,7 @@ export default function App({ dataUrl }) {
   const usaMapMemo = useMemo(() =>
     currentDataSource === 'ED' ? <>
       <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses by county{currentState === 'US' ? '' : ', '}{currentState === 'US' ? '' : stateNames[currentState] + ', '} in {currentYear}?</h2>
-      <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The heat map tabulates ED visits occurring within each state to in-state residents (people who visit an ED in another state are not represented in this heat map).</i></small></div>
+      <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. The heat map tabulates ED visits occurring within each state to in-state residents (people who visit an ED in another state are not represented in this heat map).</i></small></div>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
       5 Year Rate
@@ -549,7 +549,7 @@ export default function App({ dataUrl }) {
                 <span className="callout" style={{ 'color': drugColor }}>{rateOverdoses || 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
-                  <p>Rate<sup>†</sup> of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdoses in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
+                  <p>Rate<sup>1</sup> of {dataSourceOptions[currentDataSource]['titleLowerCase']} for nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
@@ -560,14 +560,14 @@ export default function App({ dataUrl }) {
                 </div>
               </div>
             </div>
-            <div><sup>†</sup><small><i>Overall rate is calculated per 100,000 persons using population denominator of involved nonfatal overdose encompassing possible polysubstance overdoses.</i></small></div>
+            <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using population denominator of involved nonfatal overdose encompassing possible polysubstance overdoses.</i></small></div>
        
             <section className="first-section">
               {lineChartMemo}
             </section>
 
             <section>
-              <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} visits for nonfatal drug overdoses change by state and overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all'].map(d => d.state)).length - 1)} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</h2>
+              <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} {currentDataSource == 'ED' ? 'visits' : ''} for nonfatal drug overdoses change by state and overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all'].map(d => d.state)).length - 1)} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</h2>
               {barbellChartMemo}
             </section>
 
@@ -611,9 +611,9 @@ export default function App({ dataUrl }) {
               <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ul>
                 <li><strong>Some data may be missing or incomplete.</strong> Data not available by the reporting deadline may not ever be submitted, as data are typically considered final at submission.</li>
-                <li><strong>Reporting facilities and the data they report can change over time.</strong><sup>†</sup> States may receive data from new facilities, and the data they report could change over time. The average percent of ED visits/inpatient hospitalizations currently captured from states participating in DOSE discharge data sharing is 90%.</li>
+                <li><strong>Reporting facilities and the data they report can change over time.</strong><sup>†</sup> States may receive data from new facilities, and the data they report could change over time. The average percent of ED or hospital facilities currently captured from states participating in DOSE discharge data sharing is more than 90%.</li>
                 <li><strong>These overdoses may not be confirmed by toxicological testing.</strong> These data may not be determined by toxicological testing, which is often limited in ED or hospital settings. Additionally, ED and inpatient hospitalization discharge data are collected for administrative/billing purposes; thus, surveillance for drug overdoses using these data may not accurately reflect the true overdose burden.</li>
-                <li><strong>Data are included for overdoses of unintentional and undetermined intents.</strong> Only discharge diagnosis codes for overdoses of unintentional and undetermined intent, initial encounter are included in the data presented on this dashboard. Detailed information on case classification criteria can be found on the <a target="_blank" href="/overdose-prevention/data-research/facts-stats/about-dose-system.html">About DOSE</a>.</li>
+                <li><strong>Data are included for overdoses of unintentional and undetermined intents.</strong> Only discharge diagnosis codes for overdoses of unintentional and undetermined intent, initial encounter are included in the data presented on this dashboard. Detailed information on case classification criteria can be found on the <a target="_blank" href="/overdose-prevention/data-research/facts-stats/about-dose-system.html">About DOSE</a> page.</li>
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of opioid-, fentanyl-, heroin-, benzodiazepine-, stimulant-, cocaine-, and methamphetamine-involved overdose visits are included in the numbers of all drug overdose visits; heroin- and fentanyl-involved overdose visits are included in the numbers of opioid-involved overdose visits; cocaine- and methamphetamine-involved overdose visits are included in the numbers of stimulant-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
                 <li><strong>Rates beginning in 2021 may not be directly comparable to prior years.</strong> The U.S. Census Bureau instituted new methodology to calculate population estimates beginning with 2021 data. The new methodology, referred to as differential privacy, ensures that data from individuals and individual households remain confidential.</li>
               </ul>
