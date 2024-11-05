@@ -396,7 +396,7 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses from {currentTimeframe === 'Monthly' ? <>January {currentYear} to December {currentYear}?</> : <>{supportedYears[0]} to {supportedYearsLatest}?</>}</h2>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses from {currentTimeframe === 'Monthly' ? <>compared to {currentYear}?</> : <>{supportedYears[0]} to {supportedYearsLatest}?</>}</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
