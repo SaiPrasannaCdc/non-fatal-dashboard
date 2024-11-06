@@ -114,9 +114,9 @@ function Datatable({ params }) {
       case 'yearTable':
         
         if (currentDataSource == 'ED')
-          txt = ' ED visits for nonfatal ' + currentDrug + ' overdoses change by state and overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states), from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+          txt = ' ED visits for nonfatal ' + currentDrug + ' overdoses change from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
         else if (currentDataSource == 'HOSP')
-          txt = ' hospitalizations for nonfatal ' + currentDrug + ' overdoses change by state and overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states), from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+          txt = ' hospitalizations for nonfatal ' + currentDrug + ' overdoses change from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
     
         break;
 

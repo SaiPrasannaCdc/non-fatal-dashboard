@@ -38,6 +38,14 @@ const drugOptions = {
     'rateColumn': 'rate_alldrug',
     'color': '#2B2D73',
   },
+  'benzo': {
+    'titleSingular': 'Benzodiazepine',
+    'titlePlural': 'Benzodiazepine',
+    'titleAll': 'Benzodiazepine',
+    'titleHeader': 'Benzodiazepine',
+    'rateColumn': 'rate_benzo',
+    'color': '#573325',
+  },
   'opioid': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
@@ -45,6 +53,14 @@ const drugOptions = {
     'titleHeader': 'All Opioid',
     'rateColumn': 'rate_opioid',
     'color': '#4A2866',
+  },
+  'fentanyl': {
+    'titleSingular': 'Fentanyl',
+    'titlePlural': 'Fentanyl',
+    'titleAll': 'Fentanyl',
+    'titleHeader': 'Fentanyl',
+    'rateColumn': 'rate_fentanyl',
+    'color': '#8C5EA7',
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -62,14 +78,6 @@ const drugOptions = {
     'rateColumn': 'rate_stimulant',
     'color': '#24574E',
   },
-  'fentanyl': {
-    'titleSingular': 'Fentanyl',
-    'titlePlural': 'Fentanyl',
-    'titleAll': 'Fentanyl',
-    'titleHeader': 'Fentanyl',
-    'rateColumn': 'rate_fentanyl',
-    'color': '#8C5EA7',
-  },
   'cocaine': {
     'titleSingular': 'Cocaine',
     'titlePlural': 'Cocaine',
@@ -85,14 +93,6 @@ const drugOptions = {
     'titleHeader': 'Methamphetamine',
     'rateColumn': 'rate_methamphetamine',
     'color': '#357F70',
-  },
-  'benzo': {
-    'titleSingular': 'Benzodiazepine',
-    'titlePlural': 'Benzodiazepine',
-    'titleAll': 'Benzodiazepine',
-    'titleHeader': 'Benzodiazepine',
-    'rateColumn': 'rate_benzo',
-    'color': '#573325',
   },
 };
 
@@ -200,13 +200,13 @@ export default function App({ dataUrl }) {
         
         if (currentDataSource == 'ED') {
           if (currentTimeframe === 'Monthly') 
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses monthly in ' + currentYear + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
           else
             txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
         }
         else if (currentDataSource == 'HOSP') {
           if (currentTimeframe === 'Monthly') 
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses monthly in ' + currentYear + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
           else
             txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
         }
@@ -223,15 +223,9 @@ export default function App({ dataUrl }) {
 
       case 'sexChart':
         if (currentDataSource == 'ED') {
-          if (currentTimeframe === 'Monthly') 
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
-          else
             txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses in ' + currentYear + '?';
         }
         else if (currentDataSource == 'HOSP') {
-          if (currentTimeframe === 'Monthly') 
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
-          else
             txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses in ' + currentYear + '?';
         }
 
@@ -594,7 +588,7 @@ export default function App({ dataUrl }) {
             </div>
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
-              <span>Trends in {dataSourceOptions[currentDataSource]['titleLong']}</span>
+              <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
               <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
             </header>
             <div className="callouts">
@@ -602,7 +596,7 @@ export default function App({ dataUrl }) {
                 <span className="callout" style={{ 'color': drugColor }}>{totalOverdoses ? totalOverdoses.toLocaleString() : 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
-                  <p>{currentTimeframe} number of nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLongest']} in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
+                  <p>{currentTimeframe} number of nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLowerCase']} in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
