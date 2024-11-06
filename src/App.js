@@ -17,7 +17,7 @@ import './styles.scss';
 const dataSourceOptions = {
   'ED': {
     'title': 'ED Visits',
-    'titleLong': 'Emergency Department (ED)',
+    'titleLong': 'ED',
     'titleLongest': 'emergency department (ED) visits',
     'titleLowerCase': 'ED visits'
   },
@@ -38,6 +38,14 @@ const drugOptions = {
     'rateColumn': 'rate_alldrug',
     'color': '#2B2D73',
   },
+  'benzo': {
+    'titleSingular': 'Benzodiazepine',
+    'titlePlural': 'Benzodiazepine',
+    'titleAll': 'Benzodiazepine',
+    'titleHeader': 'Benzodiazepine',
+    'rateColumn': 'rate_benzo',
+    'color': '#573325',
+  },
   'opioid': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
@@ -45,6 +53,14 @@ const drugOptions = {
     'titleHeader': 'All Opioid',
     'rateColumn': 'rate_opioid',
     'color': '#4A2866',
+  },
+  'fentanyl': {
+    'titleSingular': 'Fentanyl',
+    'titlePlural': 'Fentanyl',
+    'titleAll': 'Fentanyl',
+    'titleHeader': 'Fentanyl',
+    'rateColumn': 'rate_fentanyl',
+    'color': '#8C5EA7',
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -62,14 +78,6 @@ const drugOptions = {
     'rateColumn': 'rate_stimulant',
     'color': '#24574E',
   },
-  'fentanyl': {
-    'titleSingular': 'Fentanyl',
-    'titlePlural': 'Fentanyl',
-    'titleAll': 'Fentanyl',
-    'titleHeader': 'Fentanyl',
-    'rateColumn': 'rate_fentanyl',
-    'color': '#8C5EA7',
-  },
   'cocaine': {
     'titleSingular': 'Cocaine',
     'titlePlural': 'Cocaine',
@@ -85,14 +93,6 @@ const drugOptions = {
     'titleHeader': 'Methamphetamine',
     'rateColumn': 'rate_methamphetamine',
     'color': '#357F70',
-  },
-  'benzo': {
-    'titleSingular': 'Benzodiazepine',
-    'titlePlural': 'Benzodiazepine',
-    'titleAll': 'Benzodiazepine',
-    'titleHeader': 'Benzodiazepine',
-    'rateColumn': 'rate_benzo',
-    'color': '#573325',
   },
 };
 
@@ -189,6 +189,58 @@ export default function App({ dataUrl }) {
       resizeObserver.observe(node);
     } // eslint-disable-next-line
   }, []);
+
+
+  const getSubBannerText = (imgtype) => {
+    var txt = '';
+
+    switch (imgtype) {
+
+      case 'lineChart':
+        
+        if (currentDataSource == 'ED') {
+          if (currentTimeframe === 'Monthly') 
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
+          else
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+        }
+        else if (currentDataSource == 'HOSP') {
+          if (currentTimeframe === 'Monthly') 
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
+          else
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+        }
+        break;
+      
+      case 'barbelchart':
+
+        if (currentDataSource == 'ED') 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + currentDrug + ' by state in ' + currentYear + '?'; 
+        else if (currentDataSource == 'HOSP')
+            txt = 'What is the rate of inpatient hospitalization for nonfatal overdoses involving ' + currentDrug + ' by state in ' + currentYear + '?'; 
+
+        break;
+
+      case 'sexChart':
+        if (currentDataSource == 'ED') {
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses in ' + currentYear + '?';
+        }
+        else if (currentDataSource == 'HOSP') {
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses in ' + currentYear + '?';
+        }
+
+        break;
+
+      case 'usaMap':
+        if (currentDataSource == 'ED') 
+           txt = 'How often did people visit the ED for nonfatal ' + currentDrug + ' overdoses by county in ' + currentYear + '?';
+       
+        break;
+      }
+  
+      return txt;
+
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -380,8 +432,10 @@ export default function App({ dataUrl }) {
     fetchData();
   }, []);
 
+  
   const barbellChartMemo = useMemo(() =>
     <>
+     <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('barbelchart')}</h2>
       <Select params={{
         key: 'year',
         label: 'a Year to Compare To',
@@ -396,14 +450,14 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses from {currentTimeframe === 'Monthly' ? <>compared to {currentYear}?</> : <>{supportedYears[0]} to {supportedYearsLatest}?</>}</h2>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses in {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : ''} {currentYear}?</h2>
+      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('sexChart')}</h2>
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate
@@ -412,15 +466,15 @@ export default function App({ dataUrl }) {
     [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
 
   const usaMapMemo = useMemo(() =>
-    currentDataSource === 'ED' ? <>
-      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How often did people visit the {dataSourceOptions[currentDataSource]['titleLong']} for nonfatal drug overdoses by county{currentState === 'US' ? '' : ', '}{currentState === 'US' ? '' : stateNames[currentState] + ', '} in {currentYear}?</h2>
+    (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
+      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}</h2>
       <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. The heat map tabulates ED visits occurring within each state to in-state residents (people who visit an ED in another state are not represented in this heat map).</i></small></div>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
       5 Year Rate
-      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, width }} />
+      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, currentDrug, width }} />
     </> : <></>,
-    [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, width]);
+    [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, currentDrug, width]);
 
   const loading = <div className="loading-container">
     <div className="loading-spinner"></div>
@@ -534,7 +588,7 @@ export default function App({ dataUrl }) {
             </div>
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
-              <span>Trends in {dataSourceOptions[currentDataSource]['titleLong']}</span>
+              <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
               <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
             </header>
             <div className="callouts">
@@ -542,7 +596,7 @@ export default function App({ dataUrl }) {
                 <span className="callout" style={{ 'color': drugColor }}>{totalOverdoses ? totalOverdoses.toLocaleString() : 'N/A'}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
-                  <p>{currentTimeframe} number of nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLongest']} in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
+                  <p>{currentTimeframe} number of nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLowerCase']} in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
@@ -560,14 +614,13 @@ export default function App({ dataUrl }) {
                 </div>
               </div>
             </div>
-            <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using population denominator of involved nonfatal overdose encompassing possible polysubstance overdoses.</i></small></div>
+            <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using population denominator of {currentDrug == 'alldrug' ? '': 'involved'} nonfatal overdose encompassing possible polysubstance overdoses.</i></small></div>
        
             <section className="first-section">
               {lineChartMemo}
             </section>
 
             <section>
-              <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>How did the rate of {dataSourceOptions[currentDataSource]['titleLong']} {currentDataSource == 'ED' ? 'visits' : ''} for nonfatal drug overdoses change by state and overall ({(Object.keys(data.state[currentDataSource][currentDrug]['all'].map(d => d.state)).length - 1)} states), from {currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`}</h2>
               {barbellChartMemo}
             </section>
 
