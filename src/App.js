@@ -202,13 +202,13 @@ export default function App({ dataUrl }) {
           if (currentTimeframe === 'Monthly') 
             txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
           else
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
         }
         else if (currentDataSource == 'HOSP') {
           if (currentTimeframe === 'Monthly') 
             txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
           else
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
         }
         break;
       

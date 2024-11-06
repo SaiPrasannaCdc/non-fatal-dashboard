@@ -97,9 +97,9 @@ function Datatable({ params }) {
 
       case 'sexTable':
         if (currentDataSource == 'ED')
-          txt = 'How many ED visits occurred for nonfatal ' + currentDrug + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states), in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'How many ED visits occurred for nonfatal ' + currentDrug + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
         else if (currentDataSource == 'HOSP')
-          txt = 'How many hospitalizations occurred for nonfatal ' + currentDrug + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states), in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'How many hospitalizations occurred for nonfatal ' + currentDrug + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
     
         break;
 
