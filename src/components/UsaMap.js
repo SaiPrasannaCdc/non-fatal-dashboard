@@ -17,7 +17,7 @@ const statePositions = { 'US': { scale: 1, x: 0, y: 0 }, 'CA': { scale: 2.2, x: 
 
 const UsaMap = ({ params }) => {
 
-  const { data, stateNames, currentState, currentYear, currentYearGroup, currentDrug, width } = params;
+  const { data, stateNames, currentState, currentYear, currentYearGroup, width } = params;
 
   if (width === 0) return <></>;
 
