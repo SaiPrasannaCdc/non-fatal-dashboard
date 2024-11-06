@@ -621,7 +621,7 @@ export default function App({ dataUrl }) {
             </section>
 
             <section>
-              {barbellChartMemo}
+              {/* {barbellChartMemo} */}
             </section>
 
             <section>
