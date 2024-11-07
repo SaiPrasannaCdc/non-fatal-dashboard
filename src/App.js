@@ -162,11 +162,13 @@ export default function App({ dataUrl }) {
   const [currentDataType, setCurrentDataType] = useState('count');
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
+  const [showFootnotes, setFootnotes] = useState(false);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
 
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
+  const toggleFootnotes = () => setFootnotes(!showFootnotes);
 
   const isSmallViewport = width < 500;
 
@@ -450,7 +452,7 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}</h2>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>2</sup></h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
@@ -588,7 +590,7 @@ export default function App({ dataUrl }) {
             </div>
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
-              <span>Trends in {dataSourceOptions[currentDataSource]['title']}</span>
+              <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>
               <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
             </header>
             <div className="callouts">
@@ -607,23 +609,23 @@ export default function App({ dataUrl }) {
                 </div>
               </div>
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                <span className="callout" style={{ 'color': drugColor }}>{data.supportedJurisdictions[currentYear]}</span>
+                <span className="callout" style={{ 'color': drugColor }}>{Object.keys(stateDropdownOptions).length - 1}</span>
                 <div>
-                  <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
-                  <p>Funded states with reported data</p>
+                  <span className='data-bite-title' style={{ color: drugColor }}>States Participating<sup>2</sup></span>
+                  <p>Participating states with reported data</p>
                 </div>
               </div>
             </div>
-            <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using population denominator of {currentDrug == 'alldrug' ? '': 'involved'} nonfatal overdose encompassing possible polysubstance overdoses.</i></small></div>
+            <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Overdoses counted in each category may involve multiple substances.</i></small></div>
        
             <section className="first-section">
               {lineChartMemo}
             </section>
 
-            <section>
-              {/* {barbellChartMemo} */}
+           {/*  <section>
+              { {barbellChartMemo} }
             </section>
-
+          */}
             <section>
               {sexAgeChartsMemo}
             </section>
@@ -635,11 +637,8 @@ export default function App({ dataUrl }) {
         )}
       </div>
       <small>
-        <p><sup>1</sup>Counts based on 1-9 overdoses and rates when based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> for the calculation of rates.</p>
-        <p><sup>2</sup>A total of 31 jurisdictions submit DOSE emergency department discharge data and 34 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet complete. Oklahoma reported ED data beginning in 2021. The "Overall" (all jurisdictions) category may not be comparable across years because different jurisdictions may be included in different years based on data availability.</p>
-        <p><sup>3</sup>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction; however, some jurisdictions' coverage was lower (i.e., between 60% and 79%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. Jurisdictions with 60-&lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 only). Jurisdictions with 60-&lt;80% inpatient hospital facility coverage include MT (2018-2023). Jurisdictions with &lt;60% facility coverage are not posted on the DOSE dashboard.</p>
-        <p><sup>4</sup>There are several important caveats to consider when viewing the figures included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</p>
-        <p><sup>5</sup>Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Methamphetamine data are displayed beginning in October 2022, reflecting the introduction of the ICD-10-CM code for methamphetamine-involved poisoning (T43.65). Counts and rates for these indicators are shown as NA for time periods prior to the introduction of these ICD-10-CM codes.</p>
+        <p><sup>*</sup>Counts based on 1-9 overdoses and rates when based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> for the calculations of rates.</p>
+        <p><sup>†</sup>A total of 31 jurisdictions submit DOSE ED discharge data and 34 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because of different jurisdictions may be included in different years based on data availability.</p>
       </small>
       <div className='data-tables'>
         <div className="datatable-container">
@@ -654,6 +653,21 @@ export default function App({ dataUrl }) {
             </div>}
         </div>
         <div className="datatable-container">
+          <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleFootnotes}>
+            Footnotes 
+            {showFootnotes && <span>{String.fromCharCode(8722)}</span>}
+            {!showFootnotes && <span>{String.fromCharCode(43)}</span>}
+          </button>
+          {showFootnotes &&
+            <div className="datatable-body">
+            <ul id='noBullets'>
+              <li><strong><sup>1</sup></strong>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Mid-year annual population denominators were obtained from the U.S. Census Bureau using the most recently updated data at the time of analysis (<a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html</a>).</li>
+              <li><strong><sup>2</sup></strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction; however, some jurisdictions’ coverage was lower (i.e., between 60%-&lt;80%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. Jurisdictions with 60-&lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 only). Jurisdictions with 60-&lt;80% inpatient hospital facility coverage include MT (2018-2023). Jurisdictions with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
+              <li><strong><sup>3</sup></strong>The term "rate" in the context of ED or inpatient hospitalization visits for nonfatal drug overdoses refers to the number of visits per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED or inpatient hospitalization visit frequencies across different population sizes and demographics.</li>
+              </ul>
+          </div>}
+        </div>
+        <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
             Important Data Considerations
             {showConsiderations && <span>{String.fromCharCode(8722)}</span>}
@@ -664,12 +678,13 @@ export default function App({ dataUrl }) {
               <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ul>
                 <li><strong>Some data may be missing or incomplete.</strong> Data not available by the reporting deadline may not ever be submitted or incomplete, as data are typically considered final at submission.</li>
-                <li><strong>Reporting facilities and the data they report can change over time<sup>1</sup>.</strong> Jurisdictions may receive data from new facilities, and the data they report could change over time. The average percent of ED or hospital facilities currently captured from jurisdictions participating in DOSE discharge data sharing is &#8805; 90%.</li>
-                <li><strong>These overdoses may not be confirmed by toxicological testing.</strong> These data may not be determined by toxicological testing, which is often limited in ED or hospital settings. Additionally, ED and inpatient hospitalization discharge data are collected for administrative/billing purposes; thus, surveillance for drug overdoses using these data may not accurately reflect the true overdose burden.</li>
-                <li><strong>Data are included for overdoses of unintentional and undetermined intents.</strong> Only discharge diagnosis codes for overdoses of unintentional and undetermined intent, initial encounter are included in the data presented on this dashboard. Detailed information on case classification criteria can be found on the <a target="_blank" href="/overdose-prevention/data-research/facts-stats/about-dose-system.html">About DOSE</a> page.</li>
+                <li><strong>Reporting facilities and the data they report can change over time.</strong> Jurisdictions may receive data from new facilities, and the data they report could change over time. The average percent of ED or hospital facilities currently captured from jurisdictions participating in DOSE discharge data sharing is &gt; 90%. A total of 31 jurisdictions submit DOSE ED discharge data and 34 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because of different jurisdictions may be included in different years based on data availability.</li>
+                <li><strong>These overdoses may not be confirmed by toxicological testing.</strong> These data may not be determined by toxicological testing, which is often limited in ED or hospital settings. Additionally, ED and inpatient hospitalization discharge data are collected for administrative/billing purposes; thus, surveillance for drug overdoses using these data may not accurately reflect the true overdose trend.</li>
+                <li><strong>Data are included for overdoses of unintentional and undetermined intents.</strong> Only discharge diagnosis codes for overdoses of unintentional and undetermined intent, initial encounters are included in the data presented on this dashboard. Detailed information on case classification criteria can be found on the <a target="_blank" href="/overdose-prevention/data-research/facts-stats/about-dose-system.html">About DOSE</a> page.</li>
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of opioid-, fentanyl-, heroin-, benzodiazepine-, stimulant-, cocaine-, and methamphetamine-involved overdose visits are included in the numbers of all drug overdose visits; heroin- and fentanyl-involved overdose visits are included in the numbers of opioid-involved overdose visits; cocaine- and methamphetamine-involved overdose visits are included in the numbers of stimulant-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
-                <li><strong>Rates beginning in 2021 may not be directly comparable to prior years.</strong> The U.S. Census Bureau instituted new methodology to calculate population estimates beginning with 2021 data. The new methodology, referred to as differential privacy, ensures that data from individuals and individual households remain confidential.</li>
+                <li><strong>Rates beginning in 2021 may not be directly comparable to prior years.</strong> The <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> instituted new methodology to calculate population estimates beginning with 2021 data. The new methodology, referred to as differential privacy, ensures that data from individuals and individual households remain confidential.</li>
                 <li><strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction;</strong> however, some jurisdictions' coverage was lower (i.e., between 60% and 79%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. States with 60% - &lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 only). States with 60 - &lt;80% inpatient hospital facility coverage include MT (2018-2023). State data with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
+                <li><strong>There are several important caveats to consider</strong> when viewing the figures included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</li>
               </ul>
             </div>}
         </div>

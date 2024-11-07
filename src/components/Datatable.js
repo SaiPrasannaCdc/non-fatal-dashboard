@@ -89,9 +89,9 @@ function Datatable({ params }) {
       case 'stateTable':
         
         if (currentDataSource == 'ED')
-            txt = 'How did the rate of ED visits for nonfatal ' + currentDrug + ' overdoses change by state and overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states), from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+            txt = 'How did the rate of ED visits for nonfatal ' + currentDrug + ' overdoses change by state from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
         else if (currentDataSource == 'HOSP')
-            txt = 'How did the rate of hospitalizations for nonfatal ' + currentDrug + ' overdoses change by state and overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states), from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+            txt = 'How did the rate of hospitalizations for nonfatal ' + currentDrug + ' overdoses change by state from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
         
         break;
 
@@ -121,11 +121,8 @@ function Datatable({ params }) {
         break;
 
       case 'yearTableFootNotes':
-        if (currentDataSource == 'ED')
-          txt = 'The term “rate” in the context of ED visits for nonfatal ' + currentDrug + ' overdoses refers to the number of visits standardized per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED visit frequencies across different population sizes and demographics.';
-        else if (currentDataSource == 'HOSP')
-          txt = 'The term “rate” in the context of hospitalizations for nonfatal ' + currentDrug + ' overdoses refers to the number of visits standardized per 100,000 individuals in the population. This metric allows for a more accurate comparison of hospitalization frequencies across different population sizes and demographics.';
-      
+          txt = 'The term "rate" in the context of ED or inpatient hospitalization visits for nonfatal drug overdoses refers to the number of visits per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED or inpatient hospitalization visit frequencies across different population sizes and demographics.';
+
         break;
         
       }
@@ -175,7 +172,7 @@ function Datatable({ params }) {
   const yearTable = useMemo(() => (
     <div className="main-data-table-container">
       <table className="main-data-table">
-        <caption>How did the overall rate<sup>1</sup> of {getDataTableText('yearTable')}</caption>
+        <caption>How did the overall rate<sup>3</sup> of {getDataTableText('yearTable')}</caption>
         <thead>
           <tr style={{ backgroundColor: drugColor }}>
             <th scope="col">
@@ -203,7 +200,7 @@ function Datatable({ params }) {
           })}
         </tbody>
       </table>
-      <div><sup>1</sup><small><i>{getDataTableText('yearTableFootNotes')}</i></small></div>
+      <div><sup>3</sup><small><i>{getDataTableText('yearTableFootNotes')}</i></small></div>
     </div>
   ), [filteredYearData, currentTimeframe, dataSourceOptions, drugOptions, stateNames, supportedYears, drugColor, monthNames, currentDataSource, currentDrug, currentState, currentYear]);
 

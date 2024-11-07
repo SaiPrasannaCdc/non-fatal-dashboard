@@ -650,5 +650,16 @@ html {
 }
 
 .h2, h2 {
-    font-size: 1.60rem!important;;
+    font-size: 1.60rem!important;
+}
+
+#noBullets {
+    list-style-type: none!important; 
+    padding: 0; 
+    margin: 0; 
+}
+
+.biggerFont
+{
+    font-size: 22px!important;
 }
