@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback, Fragment } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
 import "babel-polyfill";
 import debounce from 'lodash.debounce';
 import ReactTooltip from 'react-tooltip';
 import * as XLSX from 'xlsx';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import BarbellChart from './components/BarbellChart';
+import StateChart from './components/StateChart';
 import LineChart from './components/LineChart';
 import SexAgeCharts from './components/SexAgeCharts';
 import UsaMap from './components/UsaMap';
@@ -172,6 +172,8 @@ export default function App({ dataUrl }) {
 
   const isSmallViewport = width < 500;
 
+  const stateBarChartRef = useRef();
+
   const drugColor = drugOptions[currentDrug].color;
 
   const debouncedSetWidth = useMemo(
@@ -214,7 +216,7 @@ export default function App({ dataUrl }) {
         }
         break;
       
-      case 'barbelchart':
+      case 'statebarChart':
 
         if (currentDataSource == 'ED') 
           txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + currentDrug.replace('alldrug', 'all drug') + ' by state in ' + currentYear + '?'; 
@@ -447,20 +449,32 @@ export default function App({ dataUrl }) {
     )
   }
   
-  const barbellChartMemo = useMemo(() =>
+  const getDimension = (ref, dimension) => {
+    if (!ref.current) {
+      return 0;
+    }
+    return dimension === 'width' ? ref.current.clientWidth : ref.current.clientHeight
+  }
+
+  const stateBarChartMemo = useMemo(() =>
     <>
-     <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('barbelchart')}</h2>
-      <Select params={{
-        key: 'year',
-        label: 'a Year to Compare To',
-        value: currentYearCompare,
-        onChange: setCurrentYearCompare,
-        options: supportedYears.filter(year => year !== currentYear),
-        optionLabel: (key) => key
-      }}/>
-      <BarbellChart params={{ data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth: currentMonth, width }} />
-    </>,
-    [data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth, width]);
+    <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('statebarChart')}</h2>
+   <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
+      <StateChart
+        data={data}
+        width={width}
+        height={getDimension(stateBarChartRef, 'height')}
+        el={stateBarChartRef}
+        currentState={currentState}
+        currentDrug={currentDrug}
+        currentDataSource={currentDataSource}
+        currentYear={currentYear}
+        drugOptions={drugOptions}
+        stateNames={stateNames}
+        />
+    </div>
+  </>,
+  [data, width, currentDrug, currentDataSource, currentYear]);
 
   const lineChartMemo = useMemo(() =>
     <>
@@ -635,10 +649,10 @@ export default function App({ dataUrl }) {
               {(currentDrug == 'fentanyl' || currentDrug == 'methamphetamine') && getFootNotesForData()}
             </section>
 
-           {/*  <section>
-              { {barbellChartMemo} }
+            <section>
+              {stateBarChartMemo}
             </section>
-          */}
+     
             <section>
               {sexAgeChartsMemo}
               {getFootNotesForData()}
