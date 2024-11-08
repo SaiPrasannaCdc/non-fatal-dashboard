@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import "babel-polyfill";
 import debounce from 'lodash.debounce';
 import ReactTooltip from 'react-tooltip';
@@ -438,14 +438,12 @@ export default function App({ dataUrl }) {
 
   const getFootNotesForData = () => {
     return (
-      <Fragment>
           <div className="datatable-body">
             <table style={{ width: '100%' }}>
               <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
               <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
             </table>
           </div>
-      </Fragment>
     )
   }
   

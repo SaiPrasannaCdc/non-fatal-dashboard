@@ -53,15 +53,15 @@ function StateChart(params) {
       if(parseFloat(dataRates[a].rate) < parseFloat(dataRates[b].rate)) return -1;
     }
     if (!isNaN(dataRates[a].rate) && isNaN(dataRates[b].rate)) {
-      return -1;
+      return 1;
     }
     if (isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
-      return 1;
+      return -1;
     }
 
     if (isNaN(dataRates[a].rate) && isNaN(dataRates[b].rate)) {
-      if (dataRates[a].rate < dataRates[b].rate) return -1;
-      else return 1;
+      if (dataRates[a].rate < dataRates[b].rate) return 1;
+      else return -1;
     }
     return 0;
    
@@ -75,7 +75,7 @@ function StateChart(params) {
   const yScale = scaleBand({
     range: [ adjustedHeight, 0 ],
     domain: dataKeys.sort(sort), 
-    padding: 0.35
+    padding: 0.25
   });
 
   const onScroll = () => {
@@ -113,7 +113,7 @@ function StateChart(params) {
         <svg
           id="state-chart" 
           width={width} 
-          height={900}>
+          height={height}>
             <Group top={margin.top} left={margin.left}>
               {dataKeys.map(d => {
                 const name = d;
@@ -132,7 +132,7 @@ function StateChart(params) {
                       stroke={name === currentState ? 'rgba(255, 102, 1, 0.9)' : drugOptions[currentDrug].color}
                       strokeWidth="3"
                       opacity={0.7}
-                      data-tip={`<strong>${name}</strong><br/>
+                      data-tip={`<strong>${name}</strong><br/><br/>
                       Rate: ${Number(rate).toLocaleString()}`}
                     ></path>
                     <text 
