@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import "babel-polyfill";
 import debounce from 'lodash.debounce';
 import ReactTooltip from 'react-tooltip';
 import * as XLSX from 'xlsx';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import BarbellChart from './components/BarbellChart';
+import StateChart from './components/StateChart';
 import LineChart from './components/LineChart';
 import SexAgeCharts from './components/SexAgeCharts';
 import UsaMap from './components/UsaMap';
@@ -172,6 +172,8 @@ export default function App({ dataUrl }) {
 
   const isSmallViewport = width < 500;
 
+  const stateBarChartRef = useRef();
+
   const drugColor = drugOptions[currentDrug].color;
 
   const debouncedSetWidth = useMemo(
@@ -202,40 +204,40 @@ export default function App({ dataUrl }) {
         
         if (currentDataSource == 'ED') {
           if (currentTimeframe === 'Monthly') 
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
           else
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
         }
         else if (currentDataSource == 'HOSP') {
           if (currentTimeframe === 'Monthly') 
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
           else
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
         }
         break;
       
-      case 'barbelchart':
+      case 'statebarChart':
 
         if (currentDataSource == 'ED') 
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + currentDrug + ' by state in ' + currentYear + '?'; 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + currentDrug.replace('alldrug', 'all drug') + ' by state in ' + currentYear + '?'; 
         else if (currentDataSource == 'HOSP')
-            txt = 'What is the rate of inpatient hospitalization for nonfatal overdoses involving ' + currentDrug + ' by state in ' + currentYear + '?'; 
+            txt = 'What is the rate of inpatient hospitalization for nonfatal overdoses involving ' + currentDrug.replace('alldrug', 'all drug') + ' by state in ' + currentYear + '?'; 
 
         break;
 
       case 'sexChart':
         if (currentDataSource == 'ED') {
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug + ' overdoses in ' + currentYear + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses in ' + currentYear + '?';
         }
         else if (currentDataSource == 'HOSP') {
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug + ' overdoses in ' + currentYear + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses in ' + currentYear + '?';
         }
 
         break;
 
       case 'usaMap':
         if (currentDataSource == 'ED') 
-           txt = 'How often did people visit the ED for nonfatal ' + currentDrug + ' overdoses by county in ' + currentYear + '?';
+           txt = 'How often did people visit the ED for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses by county in ' + currentYear + '?';
        
         break;
       }
@@ -434,21 +436,36 @@ export default function App({ dataUrl }) {
     fetchData();
   }, []);
 
+  const getFootNotesForData = () => {
+    return (
+          <div className="datatable-body">
+            <table style={{ width: '100%' }}>
+              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
+              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
+            </table>
+          </div>
+    )
+  }
   
-  const barbellChartMemo = useMemo(() =>
+  const stateBarChartMemo = useMemo(() =>
     <>
-     <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('barbelchart')}</h2>
-      <Select params={{
-        key: 'year',
-        label: 'a Year to Compare To',
-        value: currentYearCompare,
-        onChange: setCurrentYearCompare,
-        options: supportedYears.filter(year => year !== currentYear),
-        optionLabel: (key) => key
-      }}/>
-      <BarbellChart params={{ data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth: currentMonth, width }} />
-    </>,
-    [data, monthNames, drugOptions, currentState, currentDataSource, currentDrug, currentTimeframe, currentYear, currentYearCompare, currentMonth, width]);
+    <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('statebarChart')}</h2>
+   <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
+      <StateChart
+        data={data}
+        width={width} 
+        height={900} //TODO
+        el={stateBarChartRef}
+        currentState={currentState}
+        currentDrug={currentDrug}
+        currentDataSource={currentDataSource}
+        currentYear={currentYear}
+        drugOptions={drugOptions}
+        stateNames={stateNames}
+        />
+    </div>
+  </>,
+  [data, width, currentDrug, currentDataSource, currentYear]);
 
   const lineChartMemo = useMemo(() =>
     <>
@@ -459,7 +476,7 @@ export default function App({ dataUrl }) {
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('sexChart')}</h2>
+      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('sexChart')}<sup>3,4</sup></h2>
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate
@@ -469,7 +486,7 @@ export default function App({ dataUrl }) {
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
-      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}</h2>
+      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup></h2>
       <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. The heat map tabulates ED visits occurring within each state to in-state residents (people who visit an ED in another state are not represented in this heat map).</i></small></div>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
@@ -620,14 +637,16 @@ export default function App({ dataUrl }) {
        
             <section className="first-section">
               {lineChartMemo}
+              {(currentDrug == 'fentanyl' || currentDrug == 'methamphetamine') && getFootNotesForData()}
             </section>
 
-           {/*  <section>
-              { {barbellChartMemo} }
+            <section>
+              {stateBarChartMemo}
             </section>
-          */}
+     
             <section>
               {sexAgeChartsMemo}
+              {getFootNotesForData()}
             </section>
 
             <section>
@@ -636,10 +655,6 @@ export default function App({ dataUrl }) {
           </>
         )}
       </div>
-      <small>
-        <p><sup>*</sup>Counts based on 1-9 overdoses and rates when based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> for the calculations of rates.</p>
-        <p><sup>†</sup>A total of 31 jurisdictions submit DOSE ED discharge data and 34 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because of different jurisdictions may be included in different years based on data availability.</p>
-      </small>
       <div className='data-tables'>
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
@@ -663,7 +678,9 @@ export default function App({ dataUrl }) {
             <ul id='noBullets'>
               <li><strong><sup>1</sup></strong>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Mid-year annual population denominators were obtained from the U.S. Census Bureau using the most recently updated data at the time of analysis (<a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html</a>).</li>
               <li><strong><sup>2</sup></strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction; however, some jurisdictions’ coverage was lower (i.e., between 60%-&lt;80%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. Jurisdictions with 60-&lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 only). Jurisdictions with 60-&lt;80% inpatient hospital facility coverage include MT (2018-2023). Jurisdictions with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
-              <li><strong><sup>3</sup></strong>The term "rate" in the context of ED or inpatient hospitalization visits for nonfatal drug overdoses refers to the number of visits per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED or inpatient hospitalization visit frequencies across different population sizes and demographics.</li>
+              <li><strong><sup>3</sup></strong>Counts based on 1-9 overdoses and rates when based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> for the calculations of rates.</li>
+              <li><strong><sup>4</sup></strong>A total of 31 jurisdictions submit DOSE ED discharge data and 34 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because of different jurisdictions may be included in different years based on data availability.</li>
+              <li><strong><sup>5</sup></strong>The term "rate" in the context of ED or inpatient hospitalization visits for nonfatal drug overdoses refers to the number of visits per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED or inpatient hospitalization visit frequencies across different population sizes and demographics.</li>
               </ul>
           </div>}
         </div>

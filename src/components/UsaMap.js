@@ -128,11 +128,11 @@ const UsaMap = ({ params }) => {
         {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
 
         <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5))} width={50} height={150 / colorIntervals.length} fill={suppressedColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data suppressed *</text>
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>* Data suppressed<tspan baselineShift="super" fontSize="10">3</tspan></text>
 
         <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8))} width={50} height={150 / colorIntervals.length} fill={unavailableColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Data not available/</text>
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 25} fill="black" alignmentBaseline="middle" fontSize={fontSize}>not reported †</text>
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>† Data not available/</text>
+        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 25} fill="black" alignmentBaseline="middle" fontSize={fontSize}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">4</tspan></text>
       </svg>
     </>
   )
