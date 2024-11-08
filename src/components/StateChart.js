@@ -4,10 +4,7 @@ import { scaleLinear, scaleBand } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Text } from '@visx/text';
 import { UtilityFunctions } from '../utility'
-
 import Utils from '../shared/Utils';
-import constantsInfo from '../constants.json';
-
 import '../css/StateChart.css';
 
 const getData = (data, currentDataSource, currentYear, currentDrug, stateNames) => {
@@ -20,7 +17,7 @@ const getData = (data, currentDataSource, currentYear, currentDrug, stateNames) 
       if (data.year[currentDataSource][key]){
         let rec = data.year[currentDataSource][key]['all'].find(d => d.year == String(currentYear));
         if (rec)
-          finalData[stateNames[key]] = {rate: rec[currentDrug]};
+          finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug]};
         }
       }
       return finalData;
@@ -38,13 +35,13 @@ function StateChart(params) {
 
   const { data, width, height, el, currentState, currentDrug, currentDataSource, currentYear, drugOptions, stateNames } = params;
 
-  const dataRates = getData(data, currentDataSource, currentYear, currentDrug, stateNames)
+  const dataRates = getData(data, currentDataSource, currentYear, currentDrug, stateNames);
 
   const dataKeys = Object.keys(dataRates || {}).filter(name => name !== 'max' && name !== 'min');
   const max = UtilityFunctions.calculateMax(dataRates);
 
   const margin = {top: 10, bottom: 0, left: 130, right: 10};
-  const adjustedHeight = 900 - margin.top - margin.bottom - 100;
+  const adjustedHeight = height - margin.top - margin.bottom - 100;
   const adjustedWidth = width - margin.left - margin.right - 100; 
 
   const sort = (a,b) => {
@@ -133,7 +130,7 @@ function StateChart(params) {
                       strokeWidth="3"
                       opacity={0.7}
                       data-tip={`<strong>${name}</strong><br/><br/>
-                      Rate: ${Number(rate).toLocaleString()}`}
+                      Rate: ${rate < 0 ? `*Data Suppressed` : Number(rate).toLocaleString()}`}
                     ></path>
                     <text 
                       className="bar-label"
@@ -141,7 +138,7 @@ function StateChart(params) {
                       y={yScale(name)}
                       dy="12"
                       dx="5">
-                        { rate }
+                        {rate < 0 ? '*' : rate}
                     </text>
                   </Group>
                 )}

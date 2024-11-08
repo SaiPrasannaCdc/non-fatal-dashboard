@@ -447,21 +447,14 @@ export default function App({ dataUrl }) {
     )
   }
   
-  const getDimension = (ref, dimension) => {
-    if (!ref.current) {
-      return 0;
-    }
-    return dimension === 'width' ? ref.current.clientWidth : ref.current.clientHeight
-  }
-
   const stateBarChartMemo = useMemo(() =>
     <>
     <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('statebarChart')}</h2>
    <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
       <StateChart
         data={data}
-        width={width}
-        height={getDimension(stateBarChartRef, 'height')}
+        width={width} 
+        height={900} //TODO
         el={stateBarChartRef}
         currentState={currentState}
         currentDrug={currentDrug}
