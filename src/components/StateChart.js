@@ -67,7 +67,7 @@ function StateChart(params) {
 
   const xScale = scaleLinear({
     domain: [0, max * (width < viewportCutoff ? 1.3 : 1.1)],
-    range: [ 10, adjustedWidth ]
+    range: [ 0, adjustedWidth ]
   });
 
   const yScale = scaleBand({
