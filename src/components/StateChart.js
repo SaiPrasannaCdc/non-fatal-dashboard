@@ -17,7 +17,7 @@ const getData = (data, currentDataSource, currentYear, currentDrug, stateNames) 
       if (data.year[currentDataSource][key]){
         let rec = data.year[currentDataSource][key]['all'].find(d => d.year == String(currentYear));
         if (rec)
-          finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug]};
+          finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug], stateKey: key};
         }
       }
       return finalData;
@@ -33,7 +33,7 @@ function StateChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentState, currentDrug, currentDataSource, currentYear, drugOptions, stateNames } = params;
+  const { data, width, height, el, currentState, currentDrug, currentDataSource, currentYear, drugOptions, stateNames, setCurrentState } = params;
 
   const dataRates = getData(data, currentDataSource, currentYear, currentDrug, stateNames);
 
@@ -41,8 +41,9 @@ function StateChart(params) {
   const max = UtilityFunctions.calculateMax(dataRates);
 
   const margin = {top: 10, bottom: 0, left: 130, right: 10};
-  const adjustedHeight = height - margin.top - margin.bottom - 100;
+  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
   const adjustedWidth = width - margin.left - margin.right - 100; 
+  const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.55));
 
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
@@ -72,7 +73,7 @@ function StateChart(params) {
   const yScale = scaleBand({
     range: [ adjustedHeight, 0 ],
     domain: dataKeys.sort(sort), 
-    padding: 0.25
+    padding: 0.30
   });
 
   const onScroll = () => {
@@ -110,11 +111,12 @@ function StateChart(params) {
         <svg
           id="state-chart" 
           width={width} 
-          height={height}>
+          height={heightNew}>
             <Group top={margin.top} left={margin.left}>
               {dataKeys.map(d => {
                 const name = d;
                 const rate = dataRates[name].rate;
+                const stateKey = dataRates[name].stateKey;
 
                 return (
                   <Group key={`bar-${name}`}>
@@ -125,10 +127,17 @@ function StateChart(params) {
                         'transformOrigin': `0px 0px`
                       }}
                       d={Utils.horizontalBarPath(true, 0, yScale(name), rate < 0 ? 10 : xScale(rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
-                      fill={name === 'Overall' ? 'white' : drugOptions[currentDrug].color}
-                      stroke={name === currentState ? 'rgba(255, 102, 1, 0.9)' : drugOptions[currentDrug].color}
+                      fill={stateKey === 'US' ? 'white' : drugOptions[currentDrug].color}
+                      stroke={stateKey === currentState ? 'rgba(255, 102, 1, 0.9)' : drugOptions[currentDrug].color}
                       strokeWidth="3"
-                      opacity={0.7}
+                      opacity={(currentState === 'US' || stateKey === currentState) ? 1 : 0.4}
+                      onClick={() => {
+                        if(currentState === stateKey){
+                          setCurrentState('US');
+                        } else {
+                          setCurrentState(stateKey);
+                        }
+                      }}
                       data-tip={`<strong>${name}</strong><br/><br/>
                       Rate: ${rate < 0 ? `*Data Suppressed` : Number(rate).toLocaleString()}`}
                     ></path>

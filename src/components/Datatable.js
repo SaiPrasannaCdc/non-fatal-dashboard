@@ -89,34 +89,34 @@ function Datatable({ params }) {
       case 'stateTable':
         
         if (currentDataSource == 'ED')
-            txt = 'How did the rate of ED visits for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses change by state from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+            txt = 'How did the rate of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses change by state from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
         else if (currentDataSource == 'HOSP')
-            txt = 'How did the rate of hospitalizations for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses change by state from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+            txt = 'How did the rate of hospitalizations for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses change by state from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
         
         break;
 
       case 'sexTable':
         if (currentDataSource == 'ED')
-          txt = 'How many ED visits occurred for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'How many ED visits occurred for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
         else if (currentDataSource == 'HOSP')
-          txt = 'How many hospitalizations occurred for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'How many hospitalizations occurred for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
     
         break;
 
       case 'countyTable':
         if (currentDataSource == 'ED')
-          txt = 'How many ED visits for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses were there per county ' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear;
+          txt = 'How many ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses were there per county ' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear;
         else if (currentDataSource == 'HOSP')
-          txt = 'How many hospitalizations for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses were there per county ' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear;
+          txt = 'How many hospitalizations for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses were there per county ' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear;
       
         break;
 
       case 'yearTable':
         
         if (currentDataSource == 'ED')
-          txt = ' ED visits for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses change from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+          txt = ' ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses change from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
         else if (currentDataSource == 'HOSP')
-          txt = ' hospitalizations for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses change from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
+          txt = ' hospitalizations for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses change from ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ${Math.min(currentYear, currentYearCompare)} to ${monthNames[currentMonth]} ${Math.max(currentYear, currentYearCompare)}?` : `${Math.min(currentYear, currentYearCompare)} to ${Math.max(currentYear, currentYearCompare)}?`);
     
         break;
 

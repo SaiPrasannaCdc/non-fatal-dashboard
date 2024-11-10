@@ -204,40 +204,40 @@ export default function App({ dataUrl }) {
         
         if (currentDataSource == 'ED') {
           if (currentTimeframe === 'Monthly') 
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
           else
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
         }
         else if (currentDataSource == 'HOSP') {
           if (currentTimeframe === 'Monthly') 
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
           else
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
         }
         break;
       
       case 'statebarChart':
 
         if (currentDataSource == 'ED') 
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + currentDrug.replace('alldrug', 'all drug') + ' by state in ' + currentYear + '?'; 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' by state in ' + currentYear + '?'; 
         else if (currentDataSource == 'HOSP')
-            txt = 'What is the rate of inpatient hospitalization for nonfatal overdoses involving ' + currentDrug.replace('alldrug', 'all drug') + ' by state in ' + currentYear + '?'; 
+            txt = 'What is the rate of inpatient hospitalization for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' by state in ' + currentYear + '?'; 
 
         break;
 
       case 'sexChart':
         if (currentDataSource == 'ED') {
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses in ' + currentYear + '?';
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear;
         }
         else if (currentDataSource == 'HOSP') {
-            txt = 'How often were people hospitalized for nonfatal ' +  currentDrug.replace('alldrug', 'all drug') + ' overdoses in ' + currentYear + '?';
+            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear;
         }
 
         break;
 
       case 'usaMap':
         if (currentDataSource == 'ED') 
-           txt = 'How often did people visit the ED for nonfatal ' + currentDrug.replace('alldrug', 'all drug') + ' overdoses by county in ' + currentYear + '?';
+           txt = 'How often did people visit the ED for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county in ' + currentYear;
        
         break;
       }
@@ -462,21 +462,22 @@ export default function App({ dataUrl }) {
         currentYear={currentYear}
         drugOptions={drugOptions}
         stateNames={stateNames}
+        setCurrentState={setCurrentState}
         />
     </div>
   </>,
-  [data, width, currentDrug, currentDataSource, currentYear]);
+  [data, width, currentDrug, currentDataSource, currentYear, currentState]);
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>2</sup></h2>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>2</sup>?</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('sexChart')}<sup>3,4</sup></h2>
+      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate
@@ -486,7 +487,7 @@ export default function App({ dataUrl }) {
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
-      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup></h2>
+      <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
       <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. The heat map tabulates ED visits occurring within each state to in-state residents (people who visit an ED in another state are not represented in this heat map).</i></small></div>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>

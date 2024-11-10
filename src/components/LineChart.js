@@ -47,7 +47,7 @@ function LineChart({ params }) {
 
   if(currentState !== 'US') filteredData['US'] = getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear);
 
-  const yScaleDomainPeriod = UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, currentState) * 1.2
+  const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, currentState) * 1.2);
 
   const xValues = filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
 
@@ -107,7 +107,8 @@ function LineChart({ params }) {
                       <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(dNext[xKey]) ?? 0} y2={yScale(dNext[currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
                     }
                     {isNaN(d[currentDrug]) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">{d[currentDrug] === 'Data suppressed*' ? '*' : '†'}</text>}
-                    {!isNaN(d[currentDrug]) && <text x={i == 0 ? xScale(d[xKey]) + 8 :  xScale(d[xKey])} y={yScale(d[currentDrug])-8} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} fontSize={12} textAnchor="middle">{d[currentDrug]}</text>}
+                    {(!isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? xScale(d[xKey]) :  xScale(d[xKey])} y={yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{d[currentDrug]}</text>}
+                    {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? xScale(d[xKey]) :  xScale(d[xKey])} y={yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{d[currentDrug]}</text>}
                     {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
                   </Group>
                 )
@@ -135,7 +136,7 @@ function LineChart({ params }) {
                   }
 
                   return <text 
-                    x={xMax + 20} 
+                    x={xMax + 30} 
                     y={yPos}
                     alignmentBaseline="middle" 
                     fontSize={fontSize} 
@@ -147,7 +148,7 @@ function LineChart({ params }) {
             </Group>)}
             
             {filteredData['US'].map(d => {
-              const tooltipValues = [`<p><strong>Overall† Rate</strong>: ${d[currentDrug]} (${data.supportedJurisdictions[currentTimeframe === 'Monthly' ? currentYear : d[xKey]]} states)</p>`];
+              const tooltipValues = [`<p><strong>Overall Rate</strong>: ${d[currentDrug]} (${data.supportedJurisdictions[currentTimeframe === 'Monthly' ? currentYear : d[xKey]]} states)</p>`];
               if(currentState !== 'US'){
                 let stateValue = filteredData[currentState].find(d2 => d2[xKey] === d[xKey]);
                 if(stateValue){
@@ -198,22 +199,18 @@ function LineChart({ params }) {
       {currentDrug == 'fentanyl' &&
       <table style={{width: '100%'}}>
         <tr>
-          <td style={{width: '15%'}}></td>
-          <td style={{width: '70%'}}>
+          <td style={{width: '100%'}}>
           <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Counts and rates for this indicator are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T40.41 ICD-10-CM code as there was no way to code fentanyl-involved poisonings.</i></small></span></div>
           </td>
-          <td style={{width: '15%'}}></td>
         </tr>
       </table>
       }
       {currentDrug == 'methamphetamine' &&
         <table style={{width: '100%'}}>
         <tr>
-          <td style={{width: '15%'}}></td>
-          <td style={{width: '70%'}}>
+          <td style={{width: '100%'}}>
           <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Data on methamphetamine are shown starting in October 2022, when the ICD-10-CM code for methamphetamine-involved poisoning (T43.65) was introduced. Counts and rates for these indicators are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T43.65 ICD-10-CM code as there was no way to code methamphetamine-involved poisonings.</i></small></span></div>
           </td>
-          <td style={{width: '15%'}}></td>
         </tr>
       </table>
       }
