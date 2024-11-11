@@ -480,7 +480,8 @@ export default function App({ dataUrl }) {
       <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
-      Rate
+      Rate<br/><br/>
+      <span className="individual-header margin-top-small-viewport">By Age and Sex</span>
       <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width }} />
     </>,
     [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);

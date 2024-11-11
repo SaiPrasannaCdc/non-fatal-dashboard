@@ -3,7 +3,7 @@ import { Bar, Circle } from '@visx/shape';
 import { Text } from '@visx/text';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
-import { AxisBottom } from '@visx/axis';
+import { AxisBottom, AxisLeft } from '@visx/axis';
 
 function SexAgeCharts({ params }) {
 
@@ -57,11 +57,11 @@ function SexAgeCharts({ params }) {
       <g key={d[yKey]}>
         {!isNaN(d[x1Key]) && <Bar x={x1Pos} y={yScale(d[yKey])} width={xMaxHalf - x1Pos} height={yScale.bandwidth()} fill={isNaN(d[x1Key]) ? 'transparent' : 'lightblue'} stroke="lightblue" data-tip={x1Tip} />}
         {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill="lightblue" fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x1Tip}>*</Text>}
-        <Text x={(x1Pos) + (isNaN(d[x1Key]) ? -25 : alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[yKey]}</Text>
+        <Text x={(x1Pos-60) + (isNaN(d[x1Key]) ? -25 : alignEndFirst ? -10 : 10)} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} textAnchor={alignEndFirst ? 'end' : 'start'} fill="black" fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x1Key]}</Text>
 
         {!isNaN(d[x2Key]) && <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Pos - xMaxHalf} height={yScale.bandwidth()} fill={isNaN(d[x2Key]) ? 'transparent' : 'rgb(43, 45, 115)'} stroke="rgb(43, 45, 115)" data-tip={x2Tip} />}
         {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill="rgb(43, 45, 115)" fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x2Tip}>*</Text>}
-        <Text x={(x2Pos) + (isNaN(d[x2Key]) ? 25 : alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} textAnchor={alignEndSecond ? 'end' : 'start'} fill={!isNaN(d[x2Key]) && alignEndSecond ? 'white' : 'black'} fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[yKey]}</Text>
+        <Text x={(x2Pos+60) + (isNaN(d[x2Key]) ? 25 : alignEndSecond ? -10 : 10)} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} textAnchor={alignEndSecond ? 'end' : 'start'} fill={'black'} fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x2Key]}</Text>
       </g>
     )
   }
@@ -75,7 +75,17 @@ function SexAgeCharts({ params }) {
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
-          <Text x={-20} y={yMax / 2} style={{ transform: 'rotate(-90deg)', transformOrigin: `-20px ${yMax / 2}px` }} fontSize={fontSize} textAnchor="middle">Age Group</Text>
+          <AxisLeft
+            scale={yScale}
+            tickLabelProps={() => ({
+              fontSize: 'medium',
+              textAnchor: 'end',
+              verticalAnchor: 'middle'
+          })}
+          left={5}
+          hideTicks
+          hideAxisLine
+        />
           <AxisBottom
             top={yMax}
             scale={x1Scale}
