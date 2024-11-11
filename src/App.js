@@ -480,8 +480,12 @@ export default function App({ dataUrl }) {
       Count
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true"/>
       Rate
-      <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width }} />
-    </>,
+      <br></br>
+      <div className='subsection marked'>
+        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age and Sex</span>
+        <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width }} />
+      </div>
+      </>,
     [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
 
   const usaMapMemo = useMemo(() =>
