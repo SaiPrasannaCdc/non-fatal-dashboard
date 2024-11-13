@@ -27,7 +27,7 @@ const UsaMap = ({ params }) => {
   const fontSize = 15;
   const suppressedColor = '#999';
   const unavailableColor = '#EEE';
-  const legendWidth = 220;
+  const legendWidth = 240;
   const height = Math.max(width / 2, 250);
   const legendHeight = Math.max(width / 2, 350);
   const halfHeight = height / 2;
@@ -112,6 +112,7 @@ const UsaMap = ({ params }) => {
         html={true}
         className="tooltip"
       />
+      <br></br>
       <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
         <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
           <CustomProjection data={currentYearGroup !== 'all' && currentYear > 2020 ? countyTopoPre2020 : countyTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} projection={geoAlbersUsaTerritories}>
