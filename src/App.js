@@ -140,7 +140,7 @@ const createIfUndefined = (object, key, value) => {
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
   if (isNaN(numericVal)) {
-    if(val == 'not available')
+    if(val == 'not available' || val == 'NA')
     return 'Data not available';
     return 'Data suppressed*';
   } else {
@@ -225,9 +225,9 @@ export default function App({ dataUrl }) {
       case 'statebarChart':
 
         if (currentDataSource == 'ED') 
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('by state '))+ ' in ' + currentYear + '?'; 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all states ')) + ' in ' + currentYear + '?'; 
         else if (currentDataSource == 'HOSP')
-            txt = 'What is the rate of hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('by state '))+ ' in ' + ' in ' + currentYear + '?'; 
+            txt = 'What is the rate of hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all states ')) + ' in ' + currentYear + '?'; 
 
         break;
 
@@ -307,7 +307,7 @@ export default function App({ dataUrl }) {
 
             if (!supportedStates[state]) supportedStates[state] = stateNames[state];
           }
-          monthDatum[getValue('year', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue(drugOptions[drug].rateColumn, i));
+          monthDatum[getValue('year', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
 
           //Drug overdoses
           datasetNode = stateData[getValue('dataset', i)];
@@ -318,7 +318,7 @@ export default function App({ dataUrl }) {
             monthDatum = { state: getValue('state', i) };
             monthNode.push(monthDatum);
           }
-          monthDatum[getValue('year', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue('count_' + drug, i), false);
+          monthDatum[getValue('year', i)] = formatNumber(getValue('count_' + drug, i), false);
         });
 
         //Populate year data
@@ -327,7 +327,7 @@ export default function App({ dataUrl }) {
         datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
         let yearDatum = { year: getValue('year', i) };
         Object.keys(drugOptions).forEach(drug => {
-          yearDatum[drug] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue(drugOptions[drug].rateColumn, i));
+          yearDatum[drug] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
         });
         datasetNode.push(yearDatum);
       }
@@ -373,14 +373,14 @@ export default function App({ dataUrl }) {
               datasetDatumCount = { age: getValue('age', i) }
               datasetNodeCount.push(datasetDatumCount);
             }
-            datasetDatumCount[getValue('sex', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue('count_' + drug, i), false);
+            datasetDatumCount[getValue('sex', i)] = formatNumber(getValue('count_' + drug, i), false);
 
             let datasetDatumRate = datasetNodeRate.find(datum => datum.age === getValue('age', i));
             if (!datasetDatumRate) {
               datasetDatumRate = { age: getValue('age', i) }
               datasetNodeRate.push(datasetDatumRate);
             }
-            datasetDatumRate[getValue('sex', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue(drugOptions[drug].rateColumn, i), true);
+            datasetDatumRate[getValue('sex', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i), true);
           }
         });
       }
@@ -525,12 +525,12 @@ export default function App({ dataUrl }) {
 
   let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.year == currentYear) : undefined;
   if(rateOverdoses) {
-    rateOverdoses = overrideSuppMessage(currentYear, currentDrug) && isNaN(rateOverdoses[[currentDrug]]) ?  rateOverdoses[[currentDrug]]?.replace('Data suppressed*', 'Data Not Available') : rateOverdoses[[currentDrug]];
+    rateOverdoses =  rateOverdoses[[currentDrug]];
   }
 
   let totalOverdoses = data.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
   if(totalOverdoses) {
-    totalOverdoses = overrideSuppMessage(currentYear, currentDrug) && isNaN(totalOverdoses[currentYear]) ?  totalOverdoses[currentYear]?.replace('Data suppressed*', 'Data Not Available') : totalOverdoses[currentYear];
+    totalOverdoses =  totalOverdoses[currentYear];
   }
 
   let stateDropdownOptions = data.state[currentDataSource][currentDrug]['all'].map(d => d.state);

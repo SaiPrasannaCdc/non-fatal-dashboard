@@ -34,6 +34,13 @@ const getFilteredData = (data, currentTimeframe, currentDataSource, currentState
   }
 };
 
+const overrideSuppMessage = (year, drug) => {
+  if ((year === 2018 || year === 2019 || year === 2020) && (drug === 'fentanyl' || drug === 'methamphetamine'))
+    return true;
+  else
+    return false;
+}
+
 function LineChart({ params }) {
 
   const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width } = params;
@@ -105,7 +112,8 @@ function LineChart({ params }) {
                     {!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && 
                       <line x1={xScale(d[xKey]) ?? 0} y1={yScale(d[currentDrug]) ?? 0} x2={xScale(dNext[xKey]) ?? 0} y2={yScale(dNext[currentDrug]) ?? 0} stroke={seriesColor(key)} strokeWidth={3} />
                     }
-                    {isNaN(d[currentDrug]) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">{d[currentDrug] === 'Data suppressed*' ? '*' : '†'}</text>}
+                    {(overrideSuppMessage(currentYear, currentDrug) && isNaN(d[currentDrug])) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">{''}</text>}
+                    {(!overrideSuppMessage(currentYear, currentDrug) && isNaN(d[currentDrug])) && <text x={xScale(xVal)} y={yScale(0) - 20} stroke={seriesColor(key)} fill={seriesColor(key)} fontSize={20} textAnchor="middle">{d[currentDrug] === 'Data suppressed*' ? '*' : '†'}</text>}
                     {(!isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? xScale(d[xKey]) :  xScale(d[xKey])} y={yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{d[currentDrug]}</text>}
                     {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? xScale(d[xKey]) :  xScale(d[xKey])} y={yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{d[currentDrug]}</text>}
                     {!isNaN(d[currentDrug]) && <Circle cx={xScale(d[xKey])} cy={yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[xKey] == currentMonth ? 'orange' : seriesColor(key)} />}
@@ -170,7 +178,6 @@ function LineChart({ params }) {
           </Group>
           <AxisLeft
             scale={yScale}
-            tickValues={yScaleDomainPeriod > 0 ? range(0,  yScaleDomainPeriod, Math.round(yScaleDomainPeriod/8 * 100) / 100) : null}
             tickLabelProps={() => ({
               fontSize,
               textAnchor: 'end',
