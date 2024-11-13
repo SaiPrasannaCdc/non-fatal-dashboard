@@ -7,7 +7,7 @@ import { AxisBottom,AxisLeft } from '@visx/axis';
 
 function SexAgeCharts({ params }) {
 
-  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width } = params;
+  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions } = params;
 
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'][currentDataType];
 
@@ -44,6 +44,7 @@ function SexAgeCharts({ params }) {
   });
 
   const getBar = (d) => {
+
     const x1Pos = isNaN(d[x1Key]) ? xMaxHalf - 15 : x1Scale(d[x1Key]);
     const x2Pos = isNaN(d[x2Key]) ? xMaxHalf + 15 : x2Scale(d[x2Key]);
 
@@ -55,8 +56,8 @@ function SexAgeCharts({ params }) {
 
     return (
       <g key={d[yKey]}>
-        {!isNaN(d[x1Key]) && <Bar x={x1Pos} y={yScale(d[yKey])} width={xMaxHalf - x1Pos} height={yScale.bandwidth()} fill={isNaN(d[x1Key]) ? 'transparent' : 'lightblue'} stroke="lightblue" data-tip={x1Tip} />}
-        {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill="lightblue" fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x1Tip}>*</Text>}
+        {!isNaN(d[x1Key]) && <Bar x={x1Pos} y={yScale(d[yKey])} width={xMaxHalf - x1Pos} height={yScale.bandwidth()} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x1Tip} />}
+        {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x1Tip}>{d[x1Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
         <Text 
           x={(x1Pos) + (isNaN(d[x1Key]) ? -25 : alignEndFirst ? -10 : 10)} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
@@ -64,8 +65,8 @@ function SexAgeCharts({ params }) {
           fill="black" 
           fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x1Key]?.toLocaleString()}</Text>
 
-        {!isNaN(d[x2Key]) && <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Pos - xMaxHalf} height={yScale.bandwidth()} fill={isNaN(d[x2Key]) ? 'transparent' : 'rgb(43, 45, 115)'} stroke="rgb(43, 45, 115)" data-tip={x2Tip} />}
-        {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill="rgb(43, 45, 115)" fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x2Tip}>*</Text>}
+        {!isNaN(d[x2Key]) && <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Pos - xMaxHalf} height={yScale.bandwidth()} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x2Tip} />}
+        {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
         <Text 
           x={(x2Pos) + (isNaN(d[x2Key]) ? 25 : alignEndSecond ? -10 : 10)} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
@@ -126,14 +127,9 @@ function SexAgeCharts({ params }) {
                 }
               }
             }}
-            label={{count: 'Count', rate: 'Rate per 100,000 persons'}[currentDataType]}
-            labelProps={{
-              fontSize,
-              textAnchor: 'middle',
-              dx: xMax / -4,
-              dy: 50
-            }}
           />
+          {currentDataType == 'count' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} textAnchor="middle">{'Count'}</text>}
+          {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} textAnchor="middle">{'Rate per 100,000 persons'}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
         </Group>
       </svg>
     </>
