@@ -194,6 +194,12 @@ export default function App({ dataUrl }) {
     } // eslint-disable-next-line
   }, []);
 
+  const overrideSuppMessage = (year, drug) => {
+    if ((year === '2018' || year === '2019' || year === '2020') && (drug === 'fentanyl' || drug === 'methamphetamine'))
+      return true;
+    else
+      return false;
+  }
 
   const getSubBannerText = (imgtype) => {
     var txt = '';
@@ -219,18 +225,26 @@ export default function App({ dataUrl }) {
       case 'statebarChart':
 
         if (currentDataSource == 'ED') 
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' by state in ' + currentYear + '?'; 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('by state '))+ ' in ' + currentYear + '?'; 
         else if (currentDataSource == 'HOSP')
-            txt = 'What is the rate of inpatient hospitalization for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' by state in ' + currentYear + '?'; 
+            txt = 'What is the rate of hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('by state '))+ ' in ' + ' in ' + currentYear + '?'; 
 
         break;
 
       case 'sexChart':
-        if (currentDataSource == 'ED') {
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear;
+
+        if (currentTimeframe === 'Monthly') {
+          if (currentDataSource == 'ED') 
+              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + monthNames[currentMonth] + ' ' + currentYear;
+          else if (currentDataSource == 'HOSP')
+              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + monthNames[currentMonth] + ' ' + currentYear;
         }
-        else if (currentDataSource == 'HOSP') {
-            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear;
+        else
+        {
+          if (currentDataSource == 'ED') 
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + currentYear;
+        else if (currentDataSource == 'HOSP')
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + currentYear;
         }
 
         break;
@@ -263,8 +277,8 @@ export default function App({ dataUrl }) {
           supportedJurisdictions[getValue('year', i)] = getValue('jurisdiction_count', i);
         }  
       }
-
-
+    
+      const overrideMsg = 'Data not available/not reported†';
 
       const stateSheet = wb.Sheets['State Counts & Rates'];
       let columnInfo = getColumnsInfo(stateSheet);
@@ -293,7 +307,7 @@ export default function App({ dataUrl }) {
 
             if (!supportedStates[state]) supportedStates[state] = stateNames[state];
           }
-          monthDatum[getValue('year', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
+          monthDatum[getValue('year', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue(drugOptions[drug].rateColumn, i));
 
           //Drug overdoses
           datasetNode = stateData[getValue('dataset', i)];
@@ -304,7 +318,7 @@ export default function App({ dataUrl }) {
             monthDatum = { state: getValue('state', i) };
             monthNode.push(monthDatum);
           }
-          monthDatum[getValue('year', i)] = formatNumber(getValue('count_' + drug, i), false);
+          monthDatum[getValue('year', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue('count_' + drug, i), false);
         });
 
         //Populate year data
@@ -313,7 +327,7 @@ export default function App({ dataUrl }) {
         datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
         let yearDatum = { year: getValue('year', i) };
         Object.keys(drugOptions).forEach(drug => {
-          yearDatum[drug] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
+          yearDatum[drug] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue(drugOptions[drug].rateColumn, i));
         });
         datasetNode.push(yearDatum);
       }
@@ -336,10 +350,7 @@ export default function App({ dataUrl }) {
         })
       });
       yearData['maxes'] = yearMaxes;
-
-
-
-
+      
       const sexSheet = wb.Sheets['Overall by Sex & Age'];
       columnInfo = getColumnsInfo(sexSheet);
       columnHeaders = columnInfo.columnHeaders;
@@ -362,14 +373,14 @@ export default function App({ dataUrl }) {
               datasetDatumCount = { age: getValue('age', i) }
               datasetNodeCount.push(datasetDatumCount);
             }
-            datasetDatumCount[getValue('sex', i)] = formatNumber(getValue('count_' + drug, i), false);
+            datasetDatumCount[getValue('sex', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue('count_' + drug, i), false);
 
             let datasetDatumRate = datasetNodeRate.find(datum => datum.age === getValue('age', i));
             if (!datasetDatumRate) {
               datasetDatumRate = { age: getValue('age', i) }
               datasetNodeRate.push(datasetDatumRate);
             }
-            datasetDatumRate[getValue('sex', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i), true);
+            datasetDatumRate[getValue('sex', i)] = overrideSuppMessage(getValue('year', i), drug) ? overrideMsg : formatNumber(getValue(drugOptions[drug].rateColumn, i), true);
           }
         });
       }
@@ -392,7 +403,7 @@ export default function App({ dataUrl }) {
           fips: getValue('fips', i),
           county: getValue('county', i),
           state: getValue('state', i),
-          rate: formatNumber(getValue('rate_alldrug', i))
+          rate: formatNumber(getValue('rate_alldrug', i)) 
         };
       }
 
@@ -429,7 +440,7 @@ export default function App({ dataUrl }) {
         sexData[dataSource][drug].maxAnnual = annualMax;
         sexData[dataSource][drug].maxMonthly = monthlyMax;
       }));
-      
+
       setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates, supportedJurisdictions });
     }
 
@@ -470,7 +481,7 @@ export default function App({ dataUrl }) {
 
   const lineChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>2</sup>?</h2>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
       <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width }} />
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width]);
@@ -484,7 +495,7 @@ export default function App({ dataUrl }) {
       <br></br>
       <div className='subsection marked'>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age and Sex</span>
-        <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width }} />
+        <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width, drugOptions }} />
       </div>
       </>,
     [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
@@ -513,9 +524,14 @@ export default function App({ dataUrl }) {
   }
 
   let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.year == currentYear) : undefined;
-  if(rateOverdoses) rateOverdoses = rateOverdoses[[currentDrug]];
+  if(rateOverdoses) {
+    rateOverdoses = overrideSuppMessage(currentYear, currentDrug) && isNaN(rateOverdoses[[currentDrug]]) ?  rateOverdoses[[currentDrug]]?.replace('Data suppressed*', 'Data Not Available') : rateOverdoses[[currentDrug]];
+  }
+
   let totalOverdoses = data.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
-  if(totalOverdoses) totalOverdoses = totalOverdoses[currentYear];
+  if(totalOverdoses) {
+    totalOverdoses = overrideSuppMessage(currentYear, currentDrug) && isNaN(totalOverdoses[currentYear]) ?  totalOverdoses[currentYear]?.replace('Data suppressed*', 'Data Not Available') : totalOverdoses[currentYear];
+  }
 
   let stateDropdownOptions = data.state[currentDataSource][currentDrug]['all'].map(d => d.state);
   

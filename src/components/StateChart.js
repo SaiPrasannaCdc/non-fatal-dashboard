@@ -17,7 +17,7 @@ const getData = (data, currentDataSource, currentYear, currentDrug, stateNames) 
       if (data.year[currentDataSource][key]){
         let rec = data.year[currentDataSource][key]['all'].find(d => d.year == String(currentYear));
         if (rec)
-          finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug], stateKey: key};
+          finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug], stateKey: key, forTooltip: rec[currentDrug]};
         }
       }
       return finalData;
@@ -117,6 +117,7 @@ function StateChart(params) {
                 const name = d;
                 const rate = dataRates[name].rate;
                 const stateKey = dataRates[name].stateKey;
+                const toolTip = dataRates[name].forTooltip;
 
                 return (
                   <Group key={`bar-${name}`}>
@@ -139,7 +140,7 @@ function StateChart(params) {
                         }
                       }}
                       data-tip={`<strong>${name}</strong><br/><br/>
-                      Rate: ${rate < 0 ? `*Data Suppressed` : Number(rate).toLocaleString()}`}
+                      Rate: ${rate < 0 ? toolTip : Number(rate).toLocaleString()}`}
                     ></path>
                     <text 
                       className="bar-label"
@@ -147,7 +148,7 @@ function StateChart(params) {
                       y={yScale(name)}
                       dy="12"
                       dx="5">
-                        {rate < 0 ? '*' : rate}
+                        {rate < 0 ? (toolTip.includes('Data suppressed') ? '*' : '†') : rate}
                     </text>
                   </Group>
                 )}
@@ -171,7 +172,7 @@ function StateChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <Text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabel()}</Text>
+              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">5</tspan></text>
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}

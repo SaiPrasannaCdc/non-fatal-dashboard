@@ -1,7 +1,6 @@
 import React from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
-import { Text } from '@visx/text';
 import { Circle } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { UtilityFunctions } from '../utility'
@@ -179,7 +178,7 @@ function LineChart({ params }) {
               dy: 5
             })}
           />
-          <Text width={yMax} x={margin.left / -2} y={yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${margin.left / 2}px ${yMax / 2}px`}}>Rate per 100,000 persons</Text>
+          <text width={yMax} x={margin.left / -2} y={yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${margin.left / 2}px ${yMax / 2}px`}}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>
           <AxisBottom
             top={yMax}
             scale={xScale}
