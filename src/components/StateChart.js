@@ -38,7 +38,8 @@ function StateChart(params) {
   const dataRates = getData(data, currentDataSource, currentYear, currentDrug, stateNames);
 
   const dataKeys = Object.keys(dataRates || {}).filter(name => name !== 'max' && name !== 'min');
-  const max = UtilityFunctions.calculateMax(dataRates);
+  const maxValue = UtilityFunctions.calculateMax(dataRates) ;
+  const max = maxValue> 0 ? maxValue : 1;
 
   const margin = {top: 10, bottom: 0, left: 130, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
