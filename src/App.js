@@ -228,7 +228,7 @@ export default function App({ dataUrl }) {
         if (currentDataSource == 'ED') 
           txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all states ')) + ' in ' + currentYear + '?'; 
         else if (currentDataSource == 'HOSP')
-            txt = 'What is the rate of hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all states ')) + ' in ' + currentYear + '?'; 
+            txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all states ')) + ' in ' + currentYear + '?'; 
 
         break;
 
@@ -711,7 +711,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear, currentDataType, currentYearCompare, currentYearGroup }} />
+              <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear, currentDataType, currentYearCompare, currentYearGroup, stateDropdownOptions }} />
             </div>}
         </div>
         <div className="datatable-container">
