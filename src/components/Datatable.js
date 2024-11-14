@@ -42,7 +42,7 @@ const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': '
 
 function Datatable({ params }) {
 
-  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped, currentDataType, currentYearCompare, currentYearGroup } = params;
+  const { data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear: currentYearUntyped, currentDataType, currentYearCompare, currentYearGroup, stateDropdownOptions } = params;
   const supportedYearsLatest = supportedYears[supportedYears.length - 1];
   const currentYear = parseInt(currentYearUntyped);
   const drugColor = drugOptions[currentDrug].color;
@@ -97,17 +97,17 @@ function Datatable({ params }) {
 
       case 'sexTable':
         if (currentDataSource == 'ED')
-          txt = 'How many ED visits occurred for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'What was the ' + currentDataType + ' of ED visits for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (stateDropdownOptions.length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
         else if (currentDataSource == 'HOSP')
-          txt = 'How many hospitalizations occurred for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (Object.keys(data.state[currentDataSource][currentDrug]['all']).length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'What was the ' + currentDataType + ' of inpatient hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (stateDropdownOptions.length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
     
         break;
 
       case 'countyTable':
         if (currentDataSource == 'ED')
-          txt = 'What was the rate of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county ' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear;
+          txt = 'What was the rate of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear + '?';
         else if (currentDataSource == 'HOSP')
-          txt = 'How many hospitalizations for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county ' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear;
+          txt = 'How many hospitalizations for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county' + (currentState === 'US' ? '' : ', ' + stateNames[currentState] + ', ') + ' in ' +  currentYear + '?';
       
         break;
 
