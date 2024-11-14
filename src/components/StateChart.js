@@ -99,9 +99,9 @@ function StateChart(params) {
 
   const getXAxisLabel = () => {
       if (currentDataSource == 'ED')
-          return 'Rate of nonfatal ' + currentDrug + ' visits per 100,000 persons';
+          return 'Rate of nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' visits per 100,000 persons';
       else if (currentDataSource == 'HOSP')
-        return 'Rate of nonfatal ' + currentDrug + ' inpatient hospitalizations per 100,000 persons';
+        return 'Rate of nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' inpatient hospitalizations per 100,000 persons';
       else
         return ''
   }

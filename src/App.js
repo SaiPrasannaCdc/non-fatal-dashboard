@@ -226,9 +226,9 @@ export default function App({ dataUrl }) {
       case 'statebarChart':
 
         if (currentDataSource == 'ED') 
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all states ')) + ' in ' + currentYear + '?'; 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear + '?'; 
         else if (currentDataSource == 'HOSP')
-            txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all states ')) + ' in ' + currentYear + '?'; 
+            txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear + '?'; 
 
         break;
 
