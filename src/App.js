@@ -151,6 +151,7 @@ const formatNumber = (val, isFloat = true) => {
 export default function App({ dataUrl }) {
 
   const [data, setData] = useState();
+  const [stateDropdownOptions, setStateDropdownOptions] = useState(false);
   const [currentDataSource, setCurrentDataSource] = useState('ED');
   const [currentDrug, setCurrentDrug] = useState('alldrug');
   const [currentState, setCurrentState] = useState('US');
@@ -268,23 +269,11 @@ export default function App({ dataUrl }) {
       let supportedStates = {};
       let supportedJurisdictions = {};
 
-      const usSheet = wb.Sheets['US State Submission Counts'];
-      let { columnHeaders, columns } = getColumnsInfo(usSheet);
-      let getValue = (key, i) => usSheet[columnHeaders[key] + i].v;
-
-      for (let i = 2; i <= columns; i++) {
-        if(!supportedJurisdictions[getValue('year', i)]){
-          supportedJurisdictions[getValue('year', i)] = getValue('jurisdiction_count', i);
-        }  
-      }
-    
-      const overrideMsg = 'Data not available/not reported†';
-
       const stateSheet = wb.Sheets['State Counts & Rates'];
       let columnInfo = getColumnsInfo(stateSheet);
-      columnHeaders = columnInfo.columnHeaders;
-      columns = columnInfo.columns;
-      getValue = (key, i) => stateSheet[columnHeaders[key] + i].v;
+      let columnHeaders = columnInfo.columnHeaders;
+      let columns = columnInfo.columns;
+      let getValue = (key, i) => stateSheet[columnHeaders[key] + i].v;
 
       let stateData = {};
       let yearData = {};
@@ -304,8 +293,6 @@ export default function App({ dataUrl }) {
             let state = getValue('state', i);
             monthDatum = { state };
             monthNode.push(monthDatum);
-
-            if (!supportedStates[state]) supportedStates[state] = stateNames[state];
           }
           monthDatum[getValue('year', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
 
@@ -330,6 +317,18 @@ export default function App({ dataUrl }) {
           yearDatum[drug] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
         });
         datasetNode.push(yearDatum);
+
+        //prepare jurisdictions data
+        let ds = getValue('dataset', i);
+        let yr = getValue('year', i);
+        let tmp = getValue('month', i);
+        let st = getValue('state', i);
+        let mon = tmp == 'all' ? '00' : tmp.padStart(2, '0');
+        let key = ds + '_' + yr + mon;
+        if(supportedJurisdictions[key])
+          supportedJurisdictions[key] = supportedJurisdictions[key] + ',' + st;
+        else
+          supportedJurisdictions[key] = st;
       }
 
       let yearMaxes = {}
@@ -385,9 +384,6 @@ export default function App({ dataUrl }) {
         });
       }
 
-
-
-
       const countySheet = wb.Sheets['County Counts & Rates'];
       columnInfo = getColumnsInfo(countySheet);
       columnHeaders = columnInfo.columnHeaders;
@@ -441,7 +437,17 @@ export default function App({ dataUrl }) {
         sexData[dataSource][drug].maxMonthly = monthlyMax;
       }));
 
-      setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedStates, supportedJurisdictions });
+      //supported jurisdictions
+      let strStates = supportedJurisdictions['ED_' + supportedYearsLatest + '00']?.split(',');
+      for (const st of strStates) {
+        if (!supportedStates[st]) 
+          supportedStates[st] = stateNames[st]; 
+      }
+      setStateDropdownOptions(Object.keys(supportedStates))
+
+      //set data
+      setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedJurisdictions });
+      
     }
 
     fetchData();
@@ -458,6 +464,19 @@ export default function App({ dataUrl }) {
     )
   }
   
+  function getSupportedStates(ds, yr, mon, tframe) {
+    let supportedStates = {};
+    let monMain = tframe != 'Monthly' ? '00' : mon.padStart(2, '0');
+    let key = ds + '_' + yr + monMain;
+
+    let strStates = data.supportedJurisdictions[key]?.split(',');
+    for (const st of strStates) {
+      if (!supportedStates[st]) 
+        supportedStates[st] = stateNames[st]; 
+    }
+    setStateDropdownOptions(Object.keys(supportedStates))
+  }
+
   const stateBarChartMemo = useMemo(() =>
     <>
     <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('statebarChart')}</h2>
@@ -533,8 +552,6 @@ export default function App({ dataUrl }) {
     totalOverdoses =  totalOverdoses[currentYear];
   }
 
-  let stateDropdownOptions = data.state[currentDataSource][currentDrug]['all'].map(d => d.state);
-  
   return (
     <>
       <div className="filters-container" ref={outerContainerRef}>
@@ -549,7 +566,10 @@ export default function App({ dataUrl }) {
                     key: 'data-source',
                     label: 'Data Source',
                     value: currentDataSource,
-                    onChange: setCurrentDataSource,
+                    onChange: (param) => {
+                      setCurrentDataSource(param);
+                      getSupportedStates(param, currentYear, currentMonth, currentTimeframe);
+                    },
                     options: Object.keys(dataSourceOptions),
                     optionLabel: (key) => dataSourceOptions[key]['title']
                   }}/>
@@ -566,12 +586,12 @@ export default function App({ dataUrl }) {
                     label: 'a State',
                     value: currentState,
                     onChange: setCurrentState,
-                    options: stateDropdownOptions.sort((a, b) => {
+                    options: stateDropdownOptions?.sort((a, b) => {
                       if(a === 'US') return -1;
                       if(b === 'US') return 1;
                       return a < b;
                     }),
-                    optionLabel: (key) => key != 'US' ? data.supportedStates[key] : data.supportedStates[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
+                    optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
                   }}/>
                   <Select params={{
                     key: 'timeframe',
@@ -582,6 +602,7 @@ export default function App({ dataUrl }) {
                         setTimeframeChanged(true)
                       }
                       setCurrentTimeframe(val)
+                      getSupportedStates(currentDataSource, currentYear, currentMonth, val);
                     },
                     options: ['Monthly', 'Annual'],
                     optionLabel: (key) => key
@@ -600,6 +621,7 @@ export default function App({ dataUrl }) {
                         setCurrentYearCompare(supportedYears[yearIndex]);
                       }
                       setCurrentYear(param);
+                      getSupportedStates(currentDataSource, param, currentMonth, currentTimeframe);
                     },
                     options: supportedYears,
                     optionLabel: (key) => key
@@ -608,7 +630,10 @@ export default function App({ dataUrl }) {
                     key: 'month',
                     label: 'a Month',
                     value: currentMonth,
-                    onChange: setCurrentMonth,
+                    onChange: (param) => {
+                      setCurrentMonth(param);
+                      getSupportedStates(currentDataSource, currentYear, param, currentTimeframe);
+                    },
                     options: Object.keys(monthNames).filter(key => key !== 'all'),
                     optionLabel: (key) => monthNames[key],
                     disabled: currentTimeframe === 'Monthly' ? undefined : 'disabled'
