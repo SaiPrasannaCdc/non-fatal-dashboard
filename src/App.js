@@ -684,7 +684,6 @@ export default function App({ dataUrl }) {
        
             <section className="first-section">
               {lineChartMemo}
-              {(currentDrug == 'fentanyl' || currentDrug == 'methamphetamine') && getFootNotesForData()}
             </section>
 
             <section>
