@@ -323,7 +323,7 @@ export default function App({ dataUrl }) {
         let yr = getValue('year', i);
         let tmp = getValue('month', i);
         let st = getValue('state', i);
-        let mon = tmp == 'all' ? '00' : tmp.padStart(2, '0');
+        let mon = tmp == 'all' ? '00' : String(tmp).padStart(2, '0');
         let key = ds + '_' + yr + mon;
         if(supportedJurisdictions[key])
           supportedJurisdictions[key] = supportedJurisdictions[key] + ',' + st;
@@ -467,7 +467,7 @@ export default function App({ dataUrl }) {
   
   function getSupportedStates(ds, yr, mon, tframe) {
     let supportedStates = {};
-    let monMain = tframe != 'Monthly' ? '00' : mon.padStart(2, '0');
+    let monMain = tframe != 'Monthly' ? '00' : String(mon).padStart(2, '0');
     let key = ds + '_' + yr + monMain;
 
     let strStates = data.supportedJurisdictions[key]?.split(',');
