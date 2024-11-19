@@ -1,45 +1,45 @@
 export const UtilityFunctions = {
 
-  getSeriesColor : (currentDrug, key) => {
+  getSeriesColor : (currentDrug, key, showOverAll) => {
 
     var seriesColor;
   
     switch (currentDrug) {
       case 'alldrug':
-        seriesColor = (key === 'US') ? 'rgb(43, 45, 115)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(43, 45, 115)' : !showOverAll ? 'rgb(43, 45, 115)' : 'lightblue';
         break;
       case 'opioid':
-        seriesColor = (key === 'US') ? 'rgb(74, 40, 102)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(74, 40, 102)' : !showOverAll ? 'rgb(74, 40, 102)' : 'lightblue';
         break;
       case 'heroin':
-        seriesColor = (key === 'US') ? 'rgb(53, 53, 53)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(53, 53, 53)' : !showOverAll ? 'rgb(53, 53, 53)' : 'lightblue';
         break;
       case 'stimulant':
-        seriesColor = (key === 'US') ? 'rgb(36, 87, 78)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(36, 87, 78)' : !showOverAll ? 'rgb(36, 87, 78)' : 'lightblue';
         break;
       case 'benzo':
-        seriesColor = (key === 'US') ? 'rgb(87, 51, 37)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(87, 51, 37)' : !showOverAll ? 'rgb(87, 51, 37)' : 'lightblue';
         break;
       case 'fentanyl':
-        seriesColor = (key === 'US') ? 'rgb(140, 94, 167)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(140, 94, 167)' : !showOverAll ? 'rgb(140, 94, 167)' : 'lightblue';
         break;
       case 'cocaine':
-        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : !showOverAll ? 'rgb(53, 127, 112)' : 'lightblue';
         break;
       case 'methamphetamine':
-        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : !showOverAll ? 'rgb(53, 127, 112)' : 'lightblue';
         break;
       }
   
       return seriesColor;
   },
 
- calculateYScaleDomain: (filteredData, currentDrug, selectedDrugs, currentState, isPeriod)=> {
+ calculateYScaleDomain: (filteredData, currentDrug, selectedDrugs, currentState, showOverAll)=> {
 
     var usNums = [];
     var stateNums = [];
 
-    if (!isPeriod) {
+    if (selectedDrugs?.length == 0) {
       for (var rec in filteredData["US"])
         usNums.push(filteredData["US"][rec][currentDrug])
 
@@ -67,6 +67,9 @@ export const UtilityFunctions = {
 
     let usmax = usNumsFinal?.length > 0 ? Math.max(...usNumsFinal) : 0;
     let statemax = stateNumsFinal?.length > 0 ? Math.max(...stateNumsFinal) : 0;
+
+    if (!showOverAll)
+      return statemax;
 
     if (usmax < statemax)
       return statemax;

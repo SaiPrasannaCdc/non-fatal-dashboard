@@ -784,6 +784,22 @@ html {
     color: #24574E;
   }
 
+  .benzoToolTip {
+    color: #573325;
+  }
+
+ .fentanylToolTip {
+    color: #8C5EA7;
+  }
+
+  .cocaineToolTip {
+    color: #357F70;
+  }
+
+.methamphetamineToolTip {
+    color: #357F70;
+ }
+
   .drugSelections
   {
     margin-top: 6px;
@@ -974,6 +990,174 @@ html {
     -o-transition: All 0.3s ease;
 }
 
+.toggleB {
+    position: relative;
+    display: block;
+    width: 125px;
+    height: 30px;
+    padding: 3px;
+    margin: auto;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.toggleB-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+.toggleB-label {
+    position: relative;
+    display: block;
+    height: inherit;
+    font-size: 14px;
+    background: #3c024a;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
+                inset 0 0 3px rgba(0, 0, 0, 0.15);
+}
+.toggleB-label:before, .toggleB-label:after {
+    position: absolute;
+    top: 50%;
+    color: black;
+    margin-top: -.5em;
+    line-height: 1;
+}
+.toggleB-label:before {
+    content: attr(data-off);
+    right: 10px;
+    color: #fff;
+}
+.toggleB-label:after {
+    content: attr(data-on);
+    left: 12px;
+    color: #fff;
+    opacity: 0;
+}
+.toggleB-input:checked~.toggleB-label {
+    background: green;
+}
+.toggleB-input:checked~.toggleB-label:before {
+    opacity: 0;
+}
+.toggleB-input:checked~.toggleB-label:after {
+    opacity: 1;
+}
+.toggleB-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(to bottom, 
+              #FFFFFF 40%, #f0f0f0);
+    border-radius: 50%;
+}
+.toggleB-handle:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -6px 0 0 -6px;
+    width: 16px;
+    height: 16px;
+}
+.toggleB-input:checked~.toggleB-handle {
+    left: 92.5px;
+    box-shadow: -1px 1px 5px 
+              rgba(0, 0, 0, 0.2);
+}
+.toggleB-label,
+.toggleB-handle {
+    transition: All 0.3s ease;
+    -webkit-transition: All 0.3s ease;
+    -moz-transition: All 0.3s ease;
+    -o-transition: All 0.3s ease;
+}
+
+.toggleC {
+    position: relative;
+    display: block;
+    width: 145px;
+    height: 30px;
+    padding: 3px;
+    margin: auto;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.toggleC-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+.toggleC-label {
+    position: relative;
+    display: block;
+    height: inherit;
+    font-size: 14px;
+    background: #3c024a;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
+                inset 0 0 3px rgba(0, 0, 0, 0.15);
+}
+.toggleC-label:before, .toggleC-label:after {
+    position: absolute;
+    top: 50%;
+    color: black;
+    margin-top: -.5em;
+    line-height: 1;
+}
+.toggleC-label:before {
+    content: attr(data-off);
+    right: 10px;
+    color: #fff;
+}
+.toggleC-label:after {
+    content: attr(data-on);
+    left: 12px;
+    color: #fff;
+    opacity: 0;
+}
+.toggleC-input:checked~.toggleC-label {
+    background: green;
+}
+.toggleC-input:checked~.toggleC-label:before {
+    opacity: 0;
+}
+.toggleC-input:checked~.toggleC-label:after {
+    opacity: 1;
+}
+.toggleC-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(to bottom, 
+              #FFFFFF 40%, #f0f0f0);
+    border-radius: 50%;
+}
+.toggleC-handle:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -6px 0 0 -6px;
+    width: 16px;
+    height: 16px;
+}
+.toggleC-input:checked~.toggleC-handle {
+    left: 112.5px;
+    box-shadow: -1px 1px 5px 
+              rgba(0, 0, 0, 0.2);
+}
+.toggleC-label,
+.toggleC-handle {
+    transition: All 0.3s ease;
+    -webkit-transition: All 0.3s ease;
+    -moz-transition: All 0.3s ease;
+    -o-transition: All 0.3s ease;
+}
+
 .select-input
 {
     display: inline-block;
@@ -1052,3 +1236,10 @@ html {
   display: inline-block;
 
 }
+
+
+
+
+
+
+

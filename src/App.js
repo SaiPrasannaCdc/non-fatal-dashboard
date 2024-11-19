@@ -172,6 +172,8 @@ export default function App({ dataUrl }) {
   const [showFootnotes, setFootnotes] = useState(false);
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
+  const [showPeriod, setPeriodToggle] = useState(false);
+  const [showOverAll, setOverallToggle] = useState(true);
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
@@ -200,12 +202,14 @@ export default function App({ dataUrl }) {
 
   const handleDrugSelectionsChange = (event) => {
     const checkedId = event.target.value;
-    if(event.target.checked){
-      setselectedDrugs([...selectedDrugs,checkedId])
-    }else{
-      setselectedDrugs(selectedDrugs.filter(id=>id !== checkedId))
-    }
+    if (checkedId != currentDrug){
+      if(event.target.checked){
+        setselectedDrugs([...selectedDrugs,checkedId])
+      }else{
+        setselectedDrugs(selectedDrugs.filter(id=>id !== checkedId))
+      }
    }
+  }
 
    const resetDates = () => {
     setLookupPeriodEndYear(currentYear);
@@ -235,10 +239,16 @@ export default function App({ dataUrl }) {
       case 'lineChart':
         
         if (currentDataSource == 'ED') {
-          if (currentTimeframe === 'Monthly') 
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+          if (!showPeriod) {
+            if (currentTimeframe === 'Monthly') 
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+            else
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          }
           else
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          {
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+          }
         }
         else if (currentDataSource == 'HOSP') {
           if (currentTimeframe === 'Monthly') 
@@ -286,71 +296,96 @@ export default function App({ dataUrl }) {
 
   }
 
+  const getPeriodControls = () => {
+
+    return (
+      <Fragment>
+        <div style={{ display: (showPeriod ? 'block' : 'none') }}>
+          <Select params={{
+            key: 'year',
+            label: 'Start Period: ',
+            value: lookupPeriodStartYear,
+            onChange: (val) => {
+              if(!UtilityFunctions.areValidSelections(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth))
+                resetDates()
+              else
+                setLookupPeriodStartYear(val)
+            },
+            options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+            optionLabel: (key) => key,
+            noSelectPrefix: true
+          }}/>
+          <Select params={{
+              key: 'month',
+              label: '',
+              value: lookupPeriodStartMonth,
+              onChange: setLookupPeriodStartMonth,
+              onChange: (val) => {
+                if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth))
+                  resetDates();
+                else
+                  setLookupPeriodStartMonth(val)
+              },
+              options: Object.keys(monthNames).filter(key => key !== 'all'),
+              optionLabel: (key) => monthNames[key],
+              noSelectPrefix: true
+            }} />
+          <Select params={{
+              key: 'year',
+              label: 'End Period: ',
+              value: lookupPeriodEndYear,
+              onChange: (val) => {
+                if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth))
+                  resetDates();
+                else
+                  setLookupPeriodEndYear(val)
+              },
+              options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+              optionLabel: (key) => key,
+              noSelectPrefix: true
+            }}/>
+          <Select params={{
+            key: 'month',
+            label: '',
+            value: lookupPeriodEndMonth,
+            onChange: (val) => {
+              if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val))
+                resetDates(); 
+              else
+                setLookupPeriodEndMonth(val)
+            },
+            options: Object.keys(monthNames).filter(key => key !== 'all'),
+            optionLabel: (key) => monthNames[key],
+            noSelectPrefix: true
+          }} />
+        </div>
+      </Fragment>
+      )
+  }
+
   const getInputControls = () => {
+
       return (
         <Fragment>
           <table>
             <tr>
-              <td style={{width: '80%'}}>
-                    <div>
-                      <Select params={{
-                        key: 'year',
-                        label: 'Start Period: ',
-                        value: lookupPeriodStartYear,
-                        onChange: (val) => {
-                          if(!UtilityFunctions.areValidSelections(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth))
-                            resetDates()
-                          else
-                            setLookupPeriodStartYear(val)
-                        },
-                        options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
-                        optionLabel: (key) => key,
-                        noSelectPrefix: true
-                      }}/>
-                    <Select params={{
-                          key: 'month',
-                          label: '',
-                          value: lookupPeriodStartMonth,
-                          onChange: setLookupPeriodStartMonth,
-                          onChange: (val) => {
-                            if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth))
-                              resetDates();
-                            else
-                              setLookupPeriodStartMonth(val)
-                          },
-                          options: Object.keys(monthNames).filter(key => key !== 'all'),
-                          optionLabel: (key) => monthNames[key],
-                          noSelectPrefix: true
-                        }} />
-                    <Select params={{
-                        key: 'year',
-                        label: 'End Period: ',
-                        value: lookupPeriodEndYear,
-                        onChange: (val) => {
-                          if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth))
-                            resetDates();
-                          else
-                            setLookupPeriodEndYear(val)
-                        },
-                        options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
-                        optionLabel: (key) => key,
-                        noSelectPrefix: true
-                      }}/>
-                    <Select params={{
-                        key: 'month',
-                        label: '',
-                        value: lookupPeriodEndMonth,
-                        onChange: (val) => {
-                          if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val))
-                            resetDates(); 
-                          else
-                            setLookupPeriodEndMonth(val)
-                        },
-                        options: Object.keys(monthNames).filter(key => key !== 'all'),
-                        optionLabel: (key) => monthNames[key],
-                        noSelectPrefix: true
-                      }} />
-                      </div>
+              <td style={{width: '60%!important'}}>
+                  {getPeriodControls()}
+                  </td>
+                  <td style={{width: '10%!important'}}>
+                    <label class="toggleB">
+                        <input id="togglePeriod" class="toggleB-input" type="checkbox" 
+                        onChange={(e) => {
+                          if(e.target.checked)
+                            setPeriodToggle(true)
+                          else 
+                            setPeriodToggle(false)
+                        }}/>
+                        <span class="toggleB-label" data-off="Period Off" 
+                              data-on="Period On">
+                        </span>
+                        <span class="toggleB-handle"></span>
+                    </label>
                   </td>
                   <td style={{width: '10%'}}>
                     <label class="toggleA">
@@ -382,18 +417,33 @@ export default function App({ dataUrl }) {
                         <span class="toggle-handle"></span>
                     </label>
                   </td>
+                  <td style={{width: '10%'}}>
+                    <label class="toggleC">
+                        <input id="toggleOverall" class="toggleC-input" type="checkbox" 
+                        onChange={(e) => {
+                          if(e.target.checked) 
+                            setOverallToggle(false)
+                          else
+                            setOverallToggle(true)
+                        }}/>
+                        <span class="toggleC-label" data-off="No Overall Off" 
+                              data-on="No Overall On">
+                        </span>
+                        <span class="toggleC-handle"></span>
+                    </label>
+                  </td>
             </tr>
             <tr>
               <td style={{width: '100%', height: '40px'}}></td>
             </tr>
             <tr>
-              <td style={{width: '100%', textAlign: 'center', paddingLeft: '200px'}}>
+              <td style={{width: '100%', textAlign: 'center'}}>
               {
                 
                     Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleAll]).map((drug, index) => (
                       <label key={drug[0]}>
                         <input type="checkbox" class="drugSelections" value={drug[0]} 
-                        checked={selectedDrugs.includes(drug[0])}
+                        checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
                         onChange={(event) => { handleDrugSelectionsChange(event) }}
                         />
                         <span class={drug[0]}></span>{drug[1]}
@@ -594,6 +644,8 @@ export default function App({ dataUrl }) {
 
       //set data
       setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedJurisdictions });
+
+      setOverallToggle(true);
       
     }
 
@@ -649,9 +701,9 @@ export default function App({ dataUrl }) {
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
       {getInputControls()}
-      <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, selectedDrugs }} />
+      <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showPeriod, showOverAll, selectedDrugs }} />
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, selectedDrugs]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showPeriod, showOverAll, selectedDrugs]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
@@ -725,7 +777,10 @@ export default function App({ dataUrl }) {
                     key: 'drug',
                     label: 'a Drug',
                     value: currentDrug,
-                    onChange: setCurrentDrug,
+                    onChange: (param) => {
+                      setCurrentDrug(param);
+                      setselectedDrugs([param])
+                    },
                     options: Object.keys(drugOptions),
                     optionLabel: (key) => drugOptions[key]['titleAll']
                   }}/>
