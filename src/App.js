@@ -241,9 +241,9 @@ export default function App({ dataUrl }) {
         if (currentDataSource == 'ED') {
           if (!showPeriod) {
             if (currentTimeframe === 'Monthly') 
-              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
             else
-              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
           else
           {
@@ -426,8 +426,8 @@ export default function App({ dataUrl }) {
                           else
                             setOverallToggle(true)
                         }}/>
-                        <span class="toggleC-label" data-off="No Overall Off" 
-                              data-on="No Overall On">
+                        <span class="toggleC-label" data-off="Overall" 
+                              data-on="No Overall">
                         </span>
                         <span class="toggleC-handle"></span>
                     </label>

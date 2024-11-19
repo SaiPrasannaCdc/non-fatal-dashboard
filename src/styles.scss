@@ -1077,7 +1077,7 @@ html {
 .toggleC {
     position: relative;
     display: block;
-    width: 145px;
+    width: 125px;
     height: 30px;
     padding: 3px;
     margin: auto;
@@ -1146,7 +1146,7 @@ html {
     height: 16px;
 }
 .toggleC-input:checked~.toggleC-handle {
-    left: 112.5px;
+    left: 92.5px;
     box-shadow: -1px 1px 5px 
               rgba(0, 0, 0, 0.2);
 }

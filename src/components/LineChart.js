@@ -148,6 +148,7 @@ function LineChart({ params }) {
   const [percentChgYear, setPercentChgYear] = useState(['']);
   const [percentChgValue, setPercentChgValue] = useState(['']);
   const [percentState, setPercentState] = useState(['']);
+  const [yearMon, setYearMon] = useState(['']);
 
   const specs = [];
   specs['width'] = showPercent ? width - 500 : width;
@@ -185,7 +186,7 @@ function LineChart({ params }) {
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
   
-  const percentfunc = (drug, yr, value, yrPrev, valuePrev, state) => {
+  const percentfunc = (drug, yr, value, yrPrev, valuePrev, state, yearmon) => {
 
     var perc = 0;
     var diff, rounded;
@@ -193,6 +194,7 @@ function LineChart({ params }) {
     setPercentChgDrug(drug);
     setPercentChgYear(yr);
     setPercentState(state === 'US' ? 'overall' : state);
+    setYearMon(yearmon)
   
     if (value != valuePrev) //it is an increase
     {
@@ -301,18 +303,52 @@ function LineChart({ params }) {
     )
   }
   
-  const buildPercentChartInd = (percentChgDrug, percentChgYear, percentChgValue, percentState) => {
+  const buildPercentChartInd = (percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon) => {
 
-    if (selectedDrugs?.length > 0 && percentChgYear != '2018' && parseFloat(percentChgValue) != 0) {
-     return (
-      <QuickStat
-          colorScale={colorScale}
-          defaultValueIfEmpty={defaultValueIfEmpty}
-          value={percentChgValue}
-          text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
-          label={percentChgDrug}
-      ></QuickStat>
-      ); 
+    if (currentTimeframe === 'Annual' && !showPeriod) {
+      if (selectedDrugs?.length > 0 && percentChgYear != '2018') { //} && parseFloat(percentChgValue) != 0) {
+      return (
+        <QuickStat
+            colorScale={colorScale}
+            defaultValueIfEmpty={defaultValueIfEmpty}
+            value={percentChgValue}
+            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
+            label={percentChgDrug}
+            timeframe={'year'}
+        ></QuickStat>
+        ); 
+      }
+    }
+    else if (currentTimeframe === 'Monthly' && !showPeriod){
+      if (selectedDrugs?.length > 0 && percentChgYear != '1') {
+        return (
+          <QuickStat
+              colorScale={colorScale}
+              defaultValueIfEmpty={defaultValueIfEmpty}
+              value={percentChgValue}
+              text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + inp.monthNames[percentChgYear] + ' ' + currentYear + ' vs. ' + inp.monthNames[String((parseInt(percentChgYear) - 1))] + ' ' + currentYear}
+              label={percentChgDrug}
+              timeframe={'month'}
+          ></QuickStat>
+          ); 
+        }
+    }
+    else if (showPeriod){
+      if (selectedDrugs?.length > 0) {
+        var year = yearMon?.substring(0,4);
+        var cmon = yearMon?.substring(4).replace(/^0+/, '');
+        var pmon = Number(cmon) - 1;
+        return (
+          <QuickStat
+              colorScale={colorScale}
+              defaultValueIfEmpty={defaultValueIfEmpty}
+              value={percentChgValue}
+              text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + inp.monthNames[cmon] + ' ' + year + ' vs. ' + inp.monthNames[pmon] + ' ' + year}
+              label={percentChgDrug}
+              timeframe={'month'}
+          ></QuickStat>
+          ); 
+        }
     }
   }
 
@@ -344,8 +380,8 @@ function LineChart({ params }) {
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && showOverAll) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && showOverAll) && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key, showOverAll)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key, showOverAll)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && showOverAll) && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key, showOverAll)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key, showOverAll)} />}
                         </Group>
                       )
                     })}
@@ -454,7 +490,7 @@ function LineChart({ params }) {
       }
         </td>
         <td style={showPercent ? {width: '100px!important', verticalAlign: 'top', paddingTop: '50px'} : {}}>
-          {showPercent && buildPercentChartInd(percentChgDrug, percentChgYear, percentChgValue, percentState)}
+          {showPercent && buildPercentChartInd(percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon)}
         </td>
         </tr>
       </table>
