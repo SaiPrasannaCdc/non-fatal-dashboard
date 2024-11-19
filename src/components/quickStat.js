@@ -23,7 +23,7 @@ function QuickStat(params) {
                           </span>
                         </div>
                         <div className='stats-note'>
-                          Click a circle on the Line chart to view statistics for the selected year compared to the previous year for a specific drug .
+                          Hover on a circle on the Line chart to view statistics for the selected year compared to the previous year for a specific drug .
                         </div>
                       </div>
   );

@@ -17,23 +17,50 @@ export const UtilityFunctions = {
       case 'stimulant':
         seriesColor = (key === 'US') ? 'rgb(36, 87, 78)' : 'lightblue';
         break;
+      case 'benzo':
+        seriesColor = (key === 'US') ? 'rgb(87, 51, 37)' : 'lightblue';
+        break;
+      case 'fentanyl':
+        seriesColor = (key === 'US') ? 'rgb(140, 94, 167)' : 'lightblue';
+        break;
+      case 'cocaine':
+        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : 'lightblue';
+        break;
+      case 'methamphetamine':
+        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : 'lightblue';
+        break;
       }
   
       return seriesColor;
   },
 
- calculateYScaleDomain: (filteredData, currentDrug, currentState)=> {
+ calculateYScaleDomain: (filteredData, currentDrug, selectedDrugs, currentState, isPeriod)=> {
 
     var usNums = [];
     var stateNums = [];
 
-    for (var rec in filteredData["US"])
-      usNums.push(filteredData["US"][rec][currentDrug])
+    if (!isPeriod) {
+      for (var rec in filteredData["US"])
+        usNums.push(filteredData["US"][rec][currentDrug])
 
-    if (currentState != 'US') {
-      for (var rec in filteredData[currentState])
-        stateNums.push(filteredData[currentState][rec][currentDrug])
-    } 
+      if (currentState != 'US') {
+        for (var rec in filteredData[currentState])
+          stateNums.push(filteredData[currentState][rec][currentDrug])
+      }
+    }
+    else
+    {
+      for (var idx in selectedDrugs) {
+        for (var rec in filteredData["US"])
+          usNums.push(filteredData["US"][rec][selectedDrugs[idx]])
+      }
+      for (var idx in selectedDrugs) {
+        if (currentState != 'US') {
+          for (var rec in filteredData[currentState])
+            stateNums.push(filteredData[currentState][rec][selectedDrugs[idx]])
+        }
+      }
+    }
 
     const usNumsFinal = usNums?.filter(i => !isNaN(i));
     const stateNumsFinal = stateNums?.filter(i => !isNaN(i));

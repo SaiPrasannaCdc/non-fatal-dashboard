@@ -173,7 +173,6 @@ export default function App({ dataUrl }) {
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
-/*   const [selectedDrugsAnnual, setselectedDrugsAnnual] = useState(['alldrug']); */
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
 
@@ -207,15 +206,6 @@ export default function App({ dataUrl }) {
       setselectedDrugs(selectedDrugs.filter(id=>id !== checkedId))
     }
    }
-
-   /* const handleDrugSelectionsAnnualChange = (event) => {
-    const checkedId = event.target.value;
-    if(event.target.checked){
-      setselectedDrugsAnnual([...selectedDrugsAnnual,checkedId])
-    }else{
-      setselectedDrugsAnnual(selectedDrugsAnnual.filter(id=>id !== checkedId))
-    }
-   } */
 
    const resetDates = () => {
     setLookupPeriodEndYear(currentYear);
@@ -909,14 +899,6 @@ export default function App({ dataUrl }) {
             </div>}
         </div>
       </div>
-      {/* <a
-        href={dataUrl}
-        aria-label="Download this data in a Excel file format."
-        className={`btn btn-download no-border`}
-        style={{ 'backgroundColor': drugColor }}
-      >
-        Download Data (XLSX)
-      </a> */}
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
     </>
   );

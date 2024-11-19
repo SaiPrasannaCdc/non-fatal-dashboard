@@ -130,7 +130,7 @@ const overrideSuppMessage = (year, drug) => {
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth,  showLabels, showPercent, selectedDrugs } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, selectedDrugs } = params;
 
   const currentYear = parseInt(currentYearUntyped);
   const isPeriod = (lookupPeriodStartYear === '2023' && lookupPeriodStartMonth === '1' && lookupPeriodEndYear === '2023' && lookupPeriodEndMonth === '12' ? false : true);
@@ -142,7 +142,7 @@ function LineChart({ params }) {
   if (currentState !== 'US') 
     filteredData['US'] = isPeriod ? getFilteredDataPeriod(data, currentDataSource, 'US', currentYear, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
 
-  const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, currentState) * 1.2);
+  const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, isPeriod) * 1.2);
 
   const [percentChgDrug, setPercentChgDrug] = useState(['']);
   const [percentChgYear, setPercentChgYear] = useState(['']);
@@ -159,8 +159,8 @@ function LineChart({ params }) {
   specs['margin'] = isPeriod ? { top: 15, bottom: 75, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;;
-  specs['xKey'] = isPeriod ? 'index' : 'year';;
-  specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => d.year);;
+  specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
+  specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
   specs['xScale'] = scaleLinear({
     domain: [Math.min(...specs.xValues), Math.max(...specs.xValues)],
     range: [10, specs.xMax]
@@ -187,7 +187,6 @@ function LineChart({ params }) {
   inp['currentDrug'] = currentDrug;
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
-/*   inp['selectedDrugsAnnual'] = selectedDrugsAnnual; */
   
   const percentfunc = (drug, yr, value, yrPrev, valuePrev, state) => {
 
@@ -326,17 +325,6 @@ function LineChart({ params }) {
                       const dNext = i === specs.xValues.length - 1 ? {} : inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i + 1]) || {}
                       const dPrev = i > 0  ? inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i - 1]) || {} : {}
     
-/*                       return (
-                        <Group key={`line-path-${key}-point-${i}`}>
-                          {!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && 
-                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} strokeWidth={3} />
-                          }
-                          {isNaN(d[currentDrug]) && <text x={specs.xScale(xVal)} y={specs.yScale(0) - 20} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} fontSize={20} textAnchor="middle">{d[currentDrug] === 'Data suppressed*' ? '*' : '†'}</text>}
-                          {(!isNaN(d[currentDrug]) && showLabels) && <text x={specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} fontSize={12} textAnchor="middle">{d[currentDrug]}</text>}
-                          {!isNaN(d[currentDrug]) && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={isPeriod ? 4 : 6} fill={inp.currentTimeframe === 'Monthly' && d[specs.xKey] == inp.currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
-                        </Group>
-                      ) */
-
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
                           {!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && 
@@ -383,11 +371,11 @@ function LineChart({ params }) {
                   </Group>)}
 
                   {
-                    (!isPeriod) && 
+                    (!isPeriod && !showPercent) && 
                       buildToolTipValues(data, inp, specs, currentDrug, isPeriod, sectionWidth, sectionWidthHalf)
                   }
                   {
-                    (isPeriod) && 
+                    (isPeriod && !showPercent) && 
                       buildMultiToolTipValues(data, inp, specs, isPeriod, sectionWidth, sectionWidthHalf)
                   }
                 </Group>
@@ -395,12 +383,21 @@ function LineChart({ params }) {
       )
   }
 
-if (!isPeriod)  {
   return (
     <>
-      <svg style={{height: specs.height}}>
+      <table style={{width: '100%'}}>
+        <tr>
+        <td style={showPercent ? {width: specs.width + 150} : {width: '100%'}}>
+        <svg style={showPercent ? {height: specs.height, width: specs.width + 50} : {height: specs.height}}>
         <Group top={specs.margin.top} left={specs.margin.left}>
-          {buildLineForDrug(specs, data, inp, currentDrug, showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('alldrug') && buildLineForDrug(specs, data, inp, 'alldrug', showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('opioid') && buildLineForDrug(specs, data, inp, 'opioid', showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('heroin') && buildLineForDrug(specs, data, inp, 'heroin', showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('stimulant') && buildLineForDrug(specs, data, inp, 'stimulant', showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('benzo') && buildLineForDrug(specs, data, inp, 'benzo', showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('fentanyl') && buildLineForDrug(specs, data, inp, 'fentanyl', showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('cocaine') && buildLineForDrug(specs, data, inp, 'cocaine', showLabels, showPercent, isPeriod)}
+          {inp.selectedDrugs.includes('methamphetamine') && buildLineForDrug(specs, data, inp, 'methamphetamine', showLabels, showPercent, isPeriod)}
           <AxisLeft
             scale={specs.yScale}
             tickLabelProps={() => ({
@@ -446,89 +443,12 @@ if (!isPeriod)  {
         </tr>
       </table>
       }
-      {specs.isSmallViewport && (
-        <div id="line-chart-legend-container">
-          <div id="line-chart-legend">
-            {Object.keys(filteredData).map((key, i) =>
-              <div key={`line-series-${key}`}>
-                <span fontSize={specs.fontSize} style={{color: UtilityFunctions.getSeriesColor(currentDrug, key)}}>- {stateNames[key]}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-    )
-  }
-else {
-  return (
-    <>
-      <table style={{width: '100%'}}>
-        <tr>
-        <td style={showPercent ? {width: specs.width + 150} : {width: '100%'}}>
-        <svg style={showPercent ? {height: specs.height, width: specs.width + 50} : {height: specs.height}}>
-        <Group top={specs.margin.top} left={specs.margin.left}>
-          {inp.selectedDrugs.includes('alldrug') && buildLineForDrug(specs, data, inp, 'alldrug', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('opioid') && buildLineForDrug(specs, data, inp, 'opioid', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('heroin') && buildLineForDrug(specs, data, inp, 'heroin', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('stimulant') && buildLineForDrug(specs, data, inp, 'stimulant', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('benzo') && buildLineForDrug(specs, data, inp, 'benzo', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('fentanyl') && buildLineForDrug(specs, data, inp, 'fentanyl', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('cocaine') && buildLineForDrug(specs, data, inp, 'cocaine', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('methamphetamine') && buildLineForDrug(specs, data, inp, 'methamphetamine', showLabels, showPercent, isPeriod)}
-
-          <AxisLeft
-            scale={specs.yScale}
-            tickLabelProps={() => ({
-              fontSize: specs.fontSize,
-              textAnchor: 'end',
-              dx: -5,
-              dy: 5
-            })}
-          />
-          <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>
-          <AxisBottom
-            top={specs.yMax}
-            scale={specs.xScale}
-            tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : filteredData['US'].map(d => d[specs.xKey])}
-            tickFormat={value => isPeriod ? inp.monthNamesShortPeriod[value] : currentTimeframe === 'Monthly' ? monthNamesShort[value] : value.toFixed(0)}
-            tickLabelProps={() => ({
-              fontSize: specs.fontSize,
-              textAnchor: isPeriod ? 'end' : 'middle',
-              angle: isPeriod ? -90 : 0
-            })}
-            labelProps={{
-              fontSize: specs.fontSize,
-              textAnchor: 'middle'
-            }}
-          />
-        </Group>
-      </svg>
-      {currentDrug == 'fentanyl' &&
-      <table style={{width: '100%'}}>
-        <tr>
-          <td style={{width: '100%'}}>
-          <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Counts and rates for this indicator are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T40.41 ICD-10-CM code as there was no way to code fentanyl-involved poisonings.</i></small></span></div>
-          </td>
-        </tr>
-      </table>
-      }
-      {currentDrug == 'methamphetamine' &&
-        <table style={{width: '100%'}}>
-        <tr>
-          <td style={{width: '100%'}}>
-          <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Data on methamphetamine are shown starting in October 2022, when the ICD-10-CM code for methamphetamine-involved poisoning (T43.65) was introduced. Counts and rates for these indicators are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T43.65 ICD-10-CM code as there was no way to code methamphetamine-involved poisonings.</i></small></span></div>
-          </td>
-        </tr>
-      </table>
-      }
         </td>
         <td style={showPercent ? {width: '100px!important', verticalAlign: 'top', paddingTop: '50px'} : {}}>
           {showPercent && buildPercentChartInd(percentChgDrug, percentChgYear, percentChgValue, percentState)}
         </td>
         </tr>
       </table>
-      
       {specs.isSmallViewport && (
         <div id="line-chart-legend-container">
           <div id="line-chart-legend">
@@ -542,7 +462,7 @@ else {
       )}
     </>
     )
-  }
+
 }
 
 export default LineChart
