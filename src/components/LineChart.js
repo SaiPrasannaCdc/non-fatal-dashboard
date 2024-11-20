@@ -295,6 +295,7 @@ function LineChart({ params }) {
               y={0}
               width={sectionWidth}
               height={specs.yMax}
+              style={{outline: 'none'}}
               fill='transparent'
               data-tip={`<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
           })
