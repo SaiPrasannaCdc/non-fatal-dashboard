@@ -335,8 +335,8 @@ function LineChart({ params }) {
     }
     else if (showPeriod){
       if (selectedDrugs?.length > 0) {
-        var year = yearMon?.substring(0,4);
-        var cmon = yearMon?.substring(4).replace(/^0+/, '');
+        var year = String(yearMon)?.substring(0,4);
+        var cmon = String(yearMon)?.substring(4).replace(/^0+/, '');
         var pmon = Number(cmon) - 1;
         return (
           <QuickStat
