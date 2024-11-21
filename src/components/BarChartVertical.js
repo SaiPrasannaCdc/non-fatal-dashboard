@@ -3,6 +3,7 @@ import { Bar, Circle } from '@visx/shape';
 import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { scaleBand, scaleLinear } from '@visx/scale';
+import { UtilityFunctions } from '../utility'
 
 import Context from '../context';
 
@@ -64,7 +65,11 @@ function BarChartVertical({
   const getYValue = (d) => Number(d ? d[percentColumn] : 0);
 
   const ticksFromRange = () => {
-    const intervalWidth = Math.max(1, Math.ceil((range[0] - range[1]) / 50) * 10);
+
+    var maxRange = UtilityFunctions.calculateMinMax(data, currentDrug, 'max');
+    var minRange = UtilityFunctions.calculateMinMax(data, currentDrug, 'min');
+
+    const intervalWidth = Math.max(1, Math.ceil((maxRange - minRange) / 50) * 10);
 
     let ticks = [];
 
@@ -73,7 +78,7 @@ function BarChartVertical({
     ticks.push(value);
 
     //Count up by interval width ensuring greatest value is represented
-    while(value < range[0]){
+    while(value < maxRange){
       value += intervalWidth;
       ticks.push(value);
     }
@@ -81,7 +86,7 @@ function BarChartVertical({
     //Count down by interval width ensuring lowest value is represented
     value = -1 * intervalWidth;
     ticks.unshift(value);
-    while(value > range[1]){
+    while(value > minRange){
       value -= intervalWidth;
       ticks.unshift(value);
     }
