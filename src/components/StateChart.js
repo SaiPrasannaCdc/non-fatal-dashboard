@@ -126,7 +126,8 @@ function StateChart(params) {
                       className={`animated-bar ${animated ? 'animated' : ''}`}
                       style={{
                         'transition': animated ? 'transform 1s ease-in-out' : '',
-                        'transformOrigin': `0px 0px`
+                        'transformOrigin': `0px 0px`,
+                        outline: 'none'
                       }}
                       d={Utils.horizontalBarPath(true, 0, yScale(name), rate < 0 ? 10 : xScale(rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
                       fill={stateKey === 'US' ? 'white' : drugOptions[currentDrug].color}
