@@ -170,6 +170,7 @@ function LineChart({ params }) {
                 y={0}
                 width={sectionWidth}
                 height={yMax}
+                style={{outline: 'none'}}
                 fill='transparent'
                 data-tip={`<h3><strong>${currentTimeframe === 'Monthly' ? `${monthNames[d[xKey]]} ${currentYear}` : d[xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
             })}
