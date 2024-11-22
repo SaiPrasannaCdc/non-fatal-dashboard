@@ -282,4 +282,13 @@ export const UtilityFunctions = {
         return false;
     },
 
+    getAllIndexes(arr, val) {
+      
+      var indexes = [], i;
+      for(i = 1; i <= Object.keys(arr).length; i++)
+          if (arr[i]?.length === val)
+              indexes.push(i);
+      return indexes;
+  }
+
 }

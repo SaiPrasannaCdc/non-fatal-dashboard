@@ -157,11 +157,12 @@ function LineChart({ params }) {
   specs['height'] = 400;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 75, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = isPeriod ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
   specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
+
   specs['xScale'] = scaleLinear({
     domain: [Math.min(...specs.xValues), Math.max(...specs.xValues)],
     range: [10, specs.xMax]
@@ -178,6 +179,7 @@ function LineChart({ params }) {
   inp['monthNamesShort'] = monthNamesShort;
   inp['monthNamesPeriod'] = UtilityFunctions.buildMonthNamesPeriod(filteredData['US'])
   inp['monthNamesShortPeriod'] = UtilityFunctions.buildMonthNumbersPeriod(filteredData['US'])
+  inp['tickIndexes'] = UtilityFunctions.getAllIndexes(inp['monthNamesShortPeriod'], 4)
   inp['currentTimeframe'] = currentTimeframe;
   inp['currentDataSource'] = currentDataSource;
   inp['currentYear'] = currentYear;
@@ -185,7 +187,8 @@ function LineChart({ params }) {
   inp['currentDrug'] = currentDrug;
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
-  
+  inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
+
   const percentfunc = (drug, yr, value, yrPrev, valuePrev, state, yearmon) => {
 
     var perc = 0;
@@ -217,6 +220,23 @@ function LineChart({ params }) {
     }
     return result;
   };
+
+  const generateYearLabels = () => {
+    return (
+      <Fragment>
+        <Fragment>
+            return <text y={specs.yMax + 80} x={(inp['tickWidth'] *((inp['tickIndexes'][0] == 1 ? 6 : (inp['tickIndexes'][0] - 1)/2))) + 5} textAnchor="middle" style={{fontWeight: 'bold'}}>{lookupPeriodStartYear}</text>
+        </Fragment>
+        <Fragment>
+          {inp['tickIndexes'].map((yearIdx, idx) => {
+            if(yearIdx > 1) {
+              return <text y={specs.yMax + 80} x={((inp['tickWidth'] * (inp['tickIndexes'][idx] - 1)) + (inp['tickWidth'] * 6 )  + 5)} textAnchor="middle" style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
+            }
+            })}
+        </Fragment>
+      </Fragment>
+    )
+  }
 
   const buildToolTipValues = (data, inp, specs, currentDrug, isPeriod, sectionWidth, sectionWidthHalf) => {
     return (
@@ -457,18 +477,21 @@ function LineChart({ params }) {
           <AxisBottom
             top={specs.yMax}
             scale={specs.xScale}
-            tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : filteredData['US'].map(d => d[specs.xKey])}
-            tickFormat={value => isPeriod ? inp.monthNamesShortPeriod[value] : currentTimeframe === 'Monthly' ? monthNamesShort[value] : Number(value)?.toFixed(0)}
-            tickLabelProps={() => ({
+            tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
+            tickFormat={value => isPeriod ? monthNamesShort[parseInt(inp.monthNamesShortPeriod[value].length == 4 ? '1' : inp.monthNamesShortPeriod[value])]  : (currentTimeframe === 'Monthly' ? ((value == 1 || value == 12) ? monthNamesShort[value] + ' ' + currentYear : monthNamesShort[value]) : Number(value)?.toFixed(0))}
+            tickLabelProps={(value) => ({
               fontSize: specs.fontSize,
               textAnchor: isPeriod ? 'end' : 'middle',
-              angle: isPeriod ? -90 : 0
+              angle: isPeriod ? -90 : 0,
+              fontWeight: isPeriod && inp['tickIndexes'].includes(value) ? 'bold' : ''
             })}
             labelProps={{
               fontSize: specs.fontSize,
               textAnchor: 'middle'
             }}
-          />
+           >
+          </AxisBottom>
+          {generateYearLabels()}
         </Group>
       </svg>
       {currentDrug == 'fentanyl' &&
