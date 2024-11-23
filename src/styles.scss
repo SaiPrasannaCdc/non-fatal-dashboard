@@ -1237,6 +1237,31 @@ html {
 
 }
 
+rect:hover
+{
+    outline: .1rem dashed!important;
+}
+
+.container {
+    display: flex;
+    height: 150px;
+    width: 200px;
+  }
+  
+  .col {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .left {
+    box-shadow: .5px 0 0 #000;
+  }
+  
+  .right {
+    box-shadow: -.5px 0 0 #000;
+  }
 
 
 

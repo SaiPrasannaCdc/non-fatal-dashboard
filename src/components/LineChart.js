@@ -1,4 +1,4 @@
-import {React, Fragment, useState} from 'react';
+import {React, Fragment, useState, useEffect} from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { Text } from '@visx/text';
@@ -150,6 +150,10 @@ function LineChart({ params }) {
   const [percentState, setPercentState] = useState(['']);
   const [yearMon, setYearMon] = useState(['']);
 
+  useEffect(() => {
+    markYears()
+  });
+
   const specs = [];
   specs['width'] = showPercent ? width - 500 : width;
   specs['isSmallViewport'] = specs['width'] < 500;
@@ -225,17 +229,36 @@ function LineChart({ params }) {
     return (
       <Fragment>
         <Fragment>
-            return <text y={specs.yMax + 80} x={(inp['tickWidth'] *((inp['tickIndexes'][0] == 1 ? 6 : (inp['tickIndexes'][0] - 1)/2))) + 5} textAnchor="middle" style={{fontWeight: 'bold'}}>{lookupPeriodStartYear}</text>
+            return <text y={specs.yMax + 80} x={(inp['tickWidth'] *((inp['tickIndexes'][0] == 1 ? 5.5 : (inp['tickIndexes'][0] - 2)/2))) + 5} textAnchor="middle" style={{fontWeight: 'bold'}}>{lookupPeriodStartYear}</text>
         </Fragment>
         <Fragment>
           {inp['tickIndexes'].map((yearIdx, idx) => {
             if(yearIdx > 1) {
-              return <text y={specs.yMax + 80} x={((inp['tickWidth'] * (inp['tickIndexes'][idx] - 1)) + (inp['tickWidth'] * 6 )  + 5)} textAnchor="middle" style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
+              return <text y={specs.yMax + 80} x={((inp['tickWidth'] * (inp['tickIndexes'][idx] - 2)) + (inp['tickWidth'] * 6 )  + 5)} textAnchor="middle" style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
             }
             })}
         </Fragment>
       </Fragment>
     )
+  }
+
+ const markYears= () => {
+
+    const xAxis = document?.getElementsByClassName("visx-axis-bottom")[0];
+    const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
+    if (ticks !== undefined && ticks != null)
+    {
+      for (var i=0; i<ticks?.length; i++) {
+        var tickText = ticks[i]?.childNodes[1].childNodes[0].childNodes[0].innerHTML;
+        var ln = ticks[i]?.getElementsByClassName("visx-line");
+        if (ln !== undefined && ln != null) {
+          ln[0]?.setAttribute("y1","0");
+          if (tickText == 'Dec') {
+            ln[0]?.setAttribute("y1","-10");
+          }
+        }
+      }
+    } 
   }
 
   const buildToolTipValues = (data, inp, specs, currentDrug, isPeriod, sectionWidth, sectionWidthHalf) => {
@@ -267,7 +290,7 @@ function LineChart({ params }) {
   }
   
   const buildMultiToolTipValues = (data, inp, specs, isPeriod, sectionWidth, sectionWidthHalf) => {
-
+    
     return (
       <Fragment>
         {
@@ -317,7 +340,7 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={`<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
+              data-tip={inp.currentState !== 'US' ? `<table><tr><td><div class="container"><div class="col left">Left</div><div class="col right">Right</div></div></td></tr></table>` : `<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
           })
         }
       </Fragment>
@@ -327,7 +350,7 @@ function LineChart({ params }) {
   const buildPercentChartInd = (percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon) => {
 
     if (currentTimeframe === 'Annual' && !showPeriod) {
-      if (selectedDrugs?.length > 0 && percentChgYear != '2018') { //} && parseFloat(percentChgValue) != 0) {
+      if (selectedDrugs?.length > 0 && percentChgYear != '2018') {
       return (
         <QuickStat
             colorScale={colorScale}
@@ -482,8 +505,7 @@ function LineChart({ params }) {
             tickLabelProps={(value) => ({
               fontSize: specs.fontSize,
               textAnchor: isPeriod ? 'end' : 'middle',
-              angle: isPeriod ? -90 : 0,
-              fontWeight: isPeriod && inp['tickIndexes'].includes(value) ? 'bold' : ''
+              angle: isPeriod ? -90 : 0
             })}
             labelProps={{
               fontSize: specs.fontSize,
