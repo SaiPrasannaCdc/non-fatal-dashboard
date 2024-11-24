@@ -151,7 +151,7 @@ function LineChart({ params }) {
   const [yearMon, setYearMon] = useState(['']);
 
   useEffect(() => {
-    markYears()
+    markYearsForTicks()
   });
 
   const specs = [];
@@ -229,7 +229,7 @@ function LineChart({ params }) {
     return (
       <Fragment>
         <Fragment>
-            return <text y={specs.yMax + 80} x={(inp['tickWidth'] *((inp['tickIndexes'][0] == 1 ? 5.5 : (inp['tickIndexes'][0] - 2)/2))) + 5} textAnchor="middle" style={{fontWeight: 'bold'}}>{lookupPeriodStartYear}</text>
+            return <text y={specs.yMax + 80} x={inp['tickIndexes'].length == 0 ? ((specs.xMax + 5)/2) : ((inp['tickWidth'] *((inp['tickIndexes'][0] == 1 ? 5.5 : (inp['tickIndexes'][0] - 2)/2))) + 5)} textAnchor="middle" style={{fontWeight: 'bold'}}>{lookupPeriodStartYear}</text>
         </Fragment>
         <Fragment>
           {inp['tickIndexes'].map((yearIdx, idx) => {
@@ -242,7 +242,7 @@ function LineChart({ params }) {
     )
   }
 
- const markYears= () => {
+ const markYearsForTicks = () => {
 
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[0];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
