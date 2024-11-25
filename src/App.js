@@ -662,6 +662,16 @@ export default function App({ dataUrl }) {
           </div>
     )
   }
+
+  const drugTab = (drugName, drugLabel) => (
+    <button
+      className={`drug-tab${drugName === currentDrug ? ' active' : ''}`}
+      onClick={() => {
+        setCurrentDrug(drugName);
+        setselectedDrugs([drugName])
+      }}
+    >{drugLabel || drugName}</button>
+  );
   
   function getSupportedStates(ds, yr, mon, tframe) {
     let supportedStates = {};
@@ -774,17 +784,6 @@ export default function App({ dataUrl }) {
                     optionLabel: (key) => dataSourceOptions[key]['title']
                   }}/>
                   <Select params={{
-                    key: 'drug',
-                    label: 'a Drug',
-                    value: currentDrug,
-                    onChange: (param) => {
-                      setCurrentDrug(param);
-                      setselectedDrugs([param])
-                    },
-                    options: Object.keys(drugOptions),
-                    optionLabel: (key) => drugOptions[key]['titleAll']
-                  }}/>
-                  <Select params={{
                     key: 'jurisdiction',
                     label: 'a State',
                     value: currentState,
@@ -796,6 +795,7 @@ export default function App({ dataUrl }) {
                     }),
                     optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
                   }}/>
+                  <br></br>
                   <Select params={{
                     key: 'timeframe',
                     label: 'Time Frame',
@@ -852,8 +852,27 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
+                <div>
+                  <div className="drug-tab-section">
+                    {drugTab('alldrug', <span>All Drug</span>)}
+                    {drugTab('benzo', <span>Benzodiazepine</span>)}
+                  </div>
+                  <div className="drug-tab-section">
+                    {drugTab('opioid', <span>All Opioids</span>)}
+                    {drugTab('fentanyl', <span>Fentanyl</span>)}
+                  </div>
+                  <div className="drug-tab-section">
+                    {drugTab('heroin', <span>Heroin</span>)}
+                    {drugTab('stimulant', <span>All Stimulants</span>)}
+                  </div>
+                  <div className="drug-tab-section">
+                    {drugTab('cocaine',<span>Cocaine</span>)}
+                    {drugTab('methamphetamine', <span>Methamphetamine</span>)}
+                  </div>
+                </div>
               </div>
             </div>
+            
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>

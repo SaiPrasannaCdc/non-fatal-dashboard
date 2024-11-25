@@ -34,7 +34,58 @@ const lessMonths = (arr) => {
   return output;
 };
 
+const getCountsYearly = (data, currentDataSource, drugOptions) => {
+  var arr = [];
+
+  Object.keys(drugOptions).forEach(drug => {
+    Object.keys(data[currentDataSource][drug]).forEach(year => {
+      if (!isNaN(year)) {
+        var cnt = 0;
+        Object.keys(data[currentDataSource][drug][year]['all']['count']).forEach(rec => {
+          var femCnt = isNaN(data[currentDataSource][drug][year]['all']['count'][rec]['F']) ? 0 : Number(data[currentDataSource][drug][year]['all']['count'][rec]['F']);
+          var maleCnt = isNaN(data[currentDataSource][drug][year]['all']['count'][rec]['M']) ? 0 : Number(data[currentDataSource][drug][year]['all']['count'][rec]['M']);
+          cnt = Number(cnt) + Number(femCnt) + Number(maleCnt);
+        })
+        arr.push({
+          year: year,
+          drug: drug,
+          count: cnt,
+        });
+      }
+    })
+  })
+  return arr;
+}
+
+const getCountsMonthly = (data, currentDataSource, drugOptions) => {
+  var arr = [];
+
+  Object.keys(drugOptions).forEach(drug => {
+    Object.keys(data[currentDataSource][drug]).forEach(year => {
+      if (!isNaN(year)) {
+        for (var mon=1;mon<=12;mon++)
+        {
+          var cnt = 0;
+          Object.keys(data[currentDataSource][drug][year][mon]['count']).forEach(rec => {
+            var femCnt = isNaN(data[currentDataSource][drug][year][mon]['count'][rec]['F']) ? 0 : Number(data[currentDataSource][drug][year][mon]['count'][rec]['F']);
+            var maleCnt = isNaN(data[currentDataSource][drug][year][mon]['count'][rec]['M']) ? 0 : Number(data[currentDataSource][drug][year][mon]['count'][rec]['M']);
+            cnt = Number(cnt) + Number(femCnt) + Number(maleCnt);
+          })
+          arr.push({
+            year: year,
+            month: mon,
+            drug: drug,
+            count: cnt,
+          });
+        }
+      }
+    })
+  })
+  return arr;
+}
+
 const getFilteredData = (data, currentTimeframe, currentDataSource, currentState, currentYear) => {
+
   if(data.year[currentDataSource][currentState]){
     if(currentTimeframe === 'Monthly'){
       return Object.keys(data.year[currentDataSource][currentState]).map(month => {
@@ -141,6 +192,9 @@ function LineChart({ params }) {
 
   if (currentState !== 'US') 
     filteredData['US'] = isPeriod ? getFilteredDataPeriod(data, currentDataSource, 'US', currentYear, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
+
+  const countsDataYearly = getCountsYearly(data.sex, currentDataSource, drugOptions);
+  const countsDataMonthly = getCountsMonthly(data.sex, currentDataSource, drugOptions);
 
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverAll) * 1.2);
 
