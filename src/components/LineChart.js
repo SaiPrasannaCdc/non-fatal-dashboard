@@ -315,6 +315,71 @@ function LineChart({ params }) {
     } 
   }
 
+  const getRateforDrug = (drug, currentState, val) => {
+    var rate;
+    if (currentState == 'US')
+    {
+      for (var i=0;i<Object.keys(inp.filteredData['US']).length;i++) {
+        if (inp.filteredData['US'][i]['year'] === val) {
+         rate = inp.filteredData['US'][i][drug]
+        break;
+        }
+      }
+    }
+    else
+    {
+        let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === val);
+        if (stateValue)
+            rate = stateValue[drug];
+    }
+
+    return rate;
+  }
+
+  const getCountforDrug = (drug, currentState, val) => {
+    var cnt = 0;
+    for (var i=0;i<Object.keys(countsDataYearly).length;i++) {
+      if (countsDataYearly[i]['year'] === val && countsDataYearly[i]['drug'] === drug) {
+        cnt = countsDataYearly[i]['count'];
+        break;
+      }
+    }
+    return cnt;
+  }
+
+  const getRateHTMLforDrug = (selectedDrugs, currentState, val) => {
+
+    var leftRateStr = ''
+    for (var i in selectedDrugs) {
+      leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + getRateforDrug(selectedDrugs[i], currentState, val) + '</span></br>'
+    }
+    return leftRateStr;
+  }
+
+  const getCountHTMLforDrug = (selectedDrugs, currentState, val) => {
+
+    var leftCntStr = ''
+    for (var i in selectedDrugs) {
+      leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + getCountforDrug(selectedDrugs[i], currentState, val) + '</span></br>'
+    }
+    return leftCntStr;
+  }
+
+  const getTooltipFragment = (inp, val) => {
+
+    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>(' + (stateDropdownOptions.length - 1) + ' States)</p></td></tr>';
+    var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
+    var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
+    var leftStr = leftComStr + leftRateStr + leftCountStr;
+    var rightComStr = `<table><tr><td><p><strong>` + inp.stateNames[inp.currentState] + '</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</strong></p></td></tr>';
+    var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
+    var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
+    var rightStr = rightComStr + rightRateStr + rightCountStr;
+    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br></br>' + val + ' </br>') : ('Month </br>' + val + ' </br>') )+ '</strong></h3></div>';
+
+    return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+  }
+
   const buildToolTipValues = (data, inp, specs, currentDrug, isPeriod, sectionWidth, sectionWidthHalf) => {
     return (
       <Fragment>
@@ -344,7 +409,6 @@ function LineChart({ params }) {
   }
   
   const buildMultiToolTipValues = (data, inp, specs, isPeriod, sectionWidth, sectionWidthHalf) => {
-    
     return (
       <Fragment>
         {
@@ -394,7 +458,7 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={inp.currentState !== 'US' ? `<table><tr><td><div class="container"><div class="col left">Left</div><div class="col right">Right</div></div></td></tr></table>` : `<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
+              data-tip={inp.currentState !== 'US' ? getTooltipFragment(inp, d[specs.xKey]) : `<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
           })
         }
       </Fragment>

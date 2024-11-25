@@ -1244,7 +1244,7 @@ rect:hover
 
 .container {
     display: flex;
-    height: 150px;
+    height: auto;
     width: 200px;
   }
   
@@ -1295,6 +1295,9 @@ rect:hover
     outline: 3px solid lightblue!important;
   }
 
+  .alignCenter{
+    text-align: center;
+  }
 
 
 
