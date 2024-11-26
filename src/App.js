@@ -174,7 +174,7 @@ const fundedStates = {
   'US-SC': ['South Carolina', 'SC'],
   'US-SD': ['South Dakota', 'SD'],
   'US-TN': ['Tennessee', 'TN'],
-  // 'US-TX': ['Texas', 'TX'],
+  'US-TX': ['Texas', 'TX'],
   'US-UT': ['Utah', 'UT'],
   'US-VT': ['Vermont', 'VT'],
   'US-VA': ['Virginia', 'VA'],
