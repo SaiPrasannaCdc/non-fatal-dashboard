@@ -442,7 +442,8 @@ function LineChart({ params }) {
 
     var leftRateStr = ''
     for (var i in selectedDrugs) {
-      leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + getRateforDrug(selectedDrugs[i], currentState, val) + '</span></br>'
+      let rate = getRateforDrug(selectedDrugs[i], currentState, val);
+      leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
     }
     return leftRateStr;
   }
@@ -451,7 +452,8 @@ function LineChart({ params }) {
 
     var leftCntStr = ''
     for (var i in selectedDrugs) {
-      leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + getCountforDrug(selectedDrugs[i], currentState, val) + '</span></br>'
+      let cnt = getCountforDrug(selectedDrugs[i], currentState, val);
+      leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
     }
     return leftCntStr;
   }
@@ -466,7 +468,7 @@ function LineChart({ params }) {
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br></br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') )+ '</strong></h3></div>';
+    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') )+ '</strong></h3></div>';
 
     return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
