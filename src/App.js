@@ -36,6 +36,7 @@ const drugOptions = {
     'titleSingular': 'All Drug',
     'titlePlural': 'All Drugs',
     'titleAll': 'All Drug',
+    'titleForDropDown': 'All Drugs',
     'titleHeader': 'All Drug',
     'rateColumn': 'rate_alldrug',
     'color': '#2B2D73',
@@ -44,6 +45,7 @@ const drugOptions = {
     'titleSingular': 'Benzodiazepine',
     'titlePlural': 'Benzodiazepine',
     'titleAll': 'Benzodiazepine',
+    'titleForDropDown': 'Benzodiazepine',
     'titleHeader': 'Benzodiazepine',
     'rateColumn': 'rate_benzo',
     'color': '#573325',
@@ -51,7 +53,8 @@ const drugOptions = {
   'opioid': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
-    'titleAll': 'All Opioids',
+    'titleAll': 'All Opioid',
+    'titleForDropDown': 'All Opioids',
     'titleHeader': 'All Opioid',
     'rateColumn': 'rate_opioid',
     'color': '#4A2866',
@@ -60,6 +63,7 @@ const drugOptions = {
     'titleSingular': 'Fentanyl',
     'titlePlural': 'Fentanyl',
     'titleAll': 'Fentanyl',
+    'titleForDropDown': 'Fentanyl',
     'titleHeader': 'Fentanyl',
     'rateColumn': 'rate_fentanyl',
     'color': '#8C5EA7',
@@ -68,6 +72,7 @@ const drugOptions = {
     'titleSingular': 'Heroin',
     'titlePlural': 'Heroin',
     'titleAll': 'Heroin',
+    'titleForDropDown': 'Heroin',
     'titleHeader': 'Heroin',
     'rateColumn': 'rate_heroin',
     'color': '#8C5EA7',
@@ -75,7 +80,8 @@ const drugOptions = {
   'stimulant': {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
-    'titleAll': 'All Stimulants',
+    'titleAll': 'All Stimulant',
+    'titleForDropDown': 'All Stimulants',
     'titleHeader': 'All Stimulant',
     'rateColumn': 'rate_stimulant',
     'color': '#24574E',
@@ -84,6 +90,7 @@ const drugOptions = {
     'titleSingular': 'Cocaine',
     'titlePlural': 'Cocaine',
     'titleAll': 'Cocaine',
+    'titleForDropDown': 'Cocaine',
     'titleHeader': 'Cocaine',
     'rateColumn': 'rate_cocaine',
     'color': '#357F70',
@@ -92,6 +99,7 @@ const drugOptions = {
     'titleSingular': 'Methamphetamine',
     'titlePlural': 'Methamphetamine',
     'titleAll': 'Methamphetamine',
+    'titleForDropDown': 'Methamphetamine',
     'titleHeader': 'Methamphetamine',
     'rateColumn': 'rate_methamphetamine',
     'color': '#357F70',
@@ -259,11 +267,12 @@ export default function App({ dataUrl }) {
         break;
       
       case 'statebarChart':
-
-        if (currentDataSource == 'ED') 
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
-        else if (currentDataSource == 'HOSP')
-            txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
+        let drugName = drugOptions[currentDrug].titleAll.toLowerCase();
+        let drugNameMod = ((currentDrug === 'alldrug' || currentDrug === 'opioid' || currentDrug === 'stimulant') ? drugName + 's' : drugName);
+        if (currentDataSource == 'ED')  
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
+        else if (currentDataSource == 'HOSP') 
+          txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
 
         break;
 
@@ -784,6 +793,14 @@ export default function App({ dataUrl }) {
                     optionLabel: (key) => dataSourceOptions[key]['title']
                   }}/>
                   <Select params={{
+                    key: 'drug',
+                    label: 'a Drug',
+                    value: currentDrug,
+                    onChange: setCurrentDrug,
+                    options: Object.keys(drugOptions),
+                    optionLabel: (key) => drugOptions[key]['titleForDropDown']
+                  }}/>
+                  <Select params={{
                     key: 'jurisdiction',
                     label: 'a State',
                     value: currentState,
@@ -925,7 +942,7 @@ export default function App({ dataUrl }) {
       <div className='data-tables'>
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-            Data tables, {drugOptions[currentDrug]['titleAll']}
+            Data tables, {drugOptions[currentDrug]['titleForDropDown']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
             {!showDatatable && <span>{String.fromCharCode(43)}</span>}
           </button>
