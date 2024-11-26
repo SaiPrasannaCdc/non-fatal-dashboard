@@ -268,6 +268,51 @@ export const UtilityFunctions = {
       return monFull;
     },
   
+    getMonthNumber : (month)=> {
+  
+      var monNum = 0;
+  
+      switch (month) {
+        case 'January':
+          monNum = 1;
+          break;
+        case 'February':
+          monNum = 2;
+          break;
+        case 'March':
+          monNum = 3;
+          break;
+        case 'April':
+          monNum = 4;
+          break;
+        case 'May':
+          monNum = 5;
+          break;
+        case 'June':
+          monNum = 6;
+          break;
+        case 'July':
+          monNum = 7;
+          break;
+        case 'August':
+          monNum = 8;
+          break;
+        case 'September':
+          monNum = 9;
+          break;
+        case 'October':
+          monNum = 10;
+          break;
+        case 'November':
+          monNum = 11;
+          break;
+        case 'December':
+          monNum = 12;
+      }
+  
+      return monNum;
+    },
+
     areValidSelections: (lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) => {
   
       var lsmStr = String(lookupPeriodStartYear) + (lookupPeriodStartMonth?.length == 1 ? String(lookupPeriodStartMonth).padStart(2, '0') :  String(lookupPeriodStartMonth));

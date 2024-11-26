@@ -316,21 +316,51 @@ function LineChart({ params }) {
   }
 
   const getRateforDrug = (drug, currentState, val) => {
+
     var rate;
-    if (currentState == 'US')
-    {
-      for (var i=0;i<Object.keys(inp.filteredData['US']).length;i++) {
-        if (inp.filteredData['US'][i]['year'] === val) {
-         rate = inp.filteredData['US'][i][drug]
-        break;
+    if (currentTimeframe === 'Annual' && !isPeriod) {
+      if (currentState === 'US')
+      {
+        for (var i=0;i<Object.keys(inp.filteredData['US']).length;i++) {
+          if (inp.filteredData['US'][i]['year'] === val) {
+          rate = inp.filteredData['US'][i][drug]
+          break;
+          }
         }
       }
+      else
+      {
+          let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === val);
+          if (stateValue)
+              rate = stateValue[drug];
+      }
     }
-    else
+    else if (currentTimeframe === 'Monthly' && !isPeriod)
     {
-        let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === val);
-        if (stateValue)
-            rate = stateValue[drug];
+      if (currentState === 'US') {
+            rate = inp.filteredData['US'][val-1][drug]
+      }
+      else
+      {
+          let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === val);
+          if (stateValue)
+              rate = stateValue[drug];
+      }
+    }
+    else if (isPeriod)
+    {
+      let arr = val.split(' ');
+      let mon = UtilityFunctions.getMonthNumber(arr[0]);
+      let yr = arr[1];
+      if (currentState === 'US') {
+        rate = inp.filteredData['US'][mon -1][drug]
+      }
+      else
+      {
+          let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === mon);
+          if (stateValue)
+              rate = stateValue[drug];
+      }
     }
 
     return rate;
@@ -338,12 +368,73 @@ function LineChart({ params }) {
 
   const getCountforDrug = (drug, currentState, val) => {
     var cnt = 0;
-    for (var i=0;i<Object.keys(countsDataYearly).length;i++) {
-      if (countsDataYearly[i]['year'] === val && countsDataYearly[i]['drug'] === drug) {
-        cnt = countsDataYearly[i]['count'];
-        break;
+    if (currentTimeframe === 'Annual' && !isPeriod) {
+      if (currentState === 'US')
+      {
+        for (var i=0;i<Object.keys(countsDataYearly).length;i++) {
+          if (countsDataYearly[i]['year'] === val && countsDataYearly[i]['drug'] === drug) {
+            cnt = countsDataYearly[i]['count'];
+            break;
+          }
+        }
+      }
+      else
+      {
+        for (var i=0;i<Object.keys(data.state[currentDataSource][drug]['all']).length;i++) {
+          if (data.state[currentDataSource][drug]['all'][i]['state'] == currentState)
+          {
+            cnt = data.state[currentDataSource][drug]['all'][i][val];
+            break;
+          }
+        }
       }
     }
+    else if (currentTimeframe === 'Monthly' && !isPeriod) {
+      if (currentState === 'US')
+        {
+          for (var i=0;i<Object.keys(countsDataMonthly).length;i++) {
+            if (countsDataMonthly[i].year == currentYear && countsDataMonthly[i].month == val && countsDataMonthly[i].drug == drug) {
+              cnt = countsDataMonthly[i].count;
+              break;
+            }
+          }
+        }
+        else
+        {
+          for (var i=0;i<Object.keys(data.state[currentDataSource][drug][val]).length;i++) {
+            if (data.state[currentDataSource][drug][val][i]['state'] == currentState)
+            {
+              cnt = data.state[currentDataSource][drug][val][i][currentYear];
+              break;
+            }
+          }
+        }
+    }
+    else if (isPeriod) {
+      let arr = val.split(' ');
+      let mon = UtilityFunctions.getMonthNumber(arr[0]);
+      let yr = arr[1];
+      if (currentState === 'US')
+        {
+          for (var i=0;i<Object.keys(countsDataMonthly).length;i++) {
+            if (countsDataMonthly[i].year == yr && countsDataMonthly[i].month == mon && countsDataMonthly[i].drug == drug) {
+              cnt = countsDataMonthly[i].count;
+              break;
+            }
+          }
+        }
+        else
+        {
+          for (var i=0;i<Object.keys(data.state[currentDataSource][drug][mon]).length;i++) {
+            if (data.state[currentDataSource][drug][mon][i]['state'] == currentState)
+            {
+              cnt = data.state[currentDataSource][drug][mon][i][yr];
+              break;
+            }
+          }
+        }
+    }
+
     return cnt;
   }
 
@@ -375,7 +466,7 @@ function LineChart({ params }) {
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br></br>' + val + ' </br>') : ('Month </br>' + val + ' </br>') )+ '</strong></h3></div>';
+    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br></br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') )+ '</strong></h3></div>';
 
     return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
@@ -458,7 +549,7 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={inp.currentState !== 'US' ? getTooltipFragment(inp, d[specs.xKey]) : `<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
+              data-tip={inp.currentState !== 'US' ? (isPeriod ? getTooltipFragment(inp, inp.monthNamesPeriod[d[specs.xKey]]) : getTooltipFragment(inp, d[specs.xKey])) : `<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
           })
         }
       </Fragment>
