@@ -1,11 +1,11 @@
 import {React, Fragment, useState, useEffect} from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
-import { Text } from '@visx/text';
 import { Circle } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { UtilityFunctions } from '../utility'
 import QuickStat from './quickStat';
+import Select from './Select';
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
@@ -181,10 +181,28 @@ const overrideSuppMessage = (year, drug) => {
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showPeriod, showOverAll, selectedDrugs } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, supportedYears, supportedYearsLatest, dataSourceOptions } = params;
 
+  const [percentChgDrug, setPercentChgDrug] = useState(['']);
+  const [percentChgYear, setPercentChgYear] = useState(['']);
+  const [percentChgValue, setPercentChgValue] = useState(['']);
+  const [percentState, setPercentState] = useState(['']);
+  const [yearMon, setYearMon] = useState(['']);
+  const [lookupPeriodStartYear, setLookupPeriodStartYear] = useState(supportedYearsLatest);
+  const [lookupPeriodStartMonth, setLookupPeriodStartMonth] = useState('1');
+  const [lookupPeriodEndYear, setLookupPeriodEndYear] = useState(supportedYearsLatest);
+  const [lookupPeriodEndMonth, setLookupPeriodEndMonth] = useState('12');
+  const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
+  const [showLabels, setLabelToggle] = useState(false);
+  const [showPercent, setPercentToggle] = useState(false);
+  
   const currentYear = parseInt(currentYearUntyped);
-  const isPeriod = showPeriod;
+  const showPeriod = true; //TODO SKV
+  const isPeriod = showPeriod; 
+  const showPercentN = true;
+  const showOverAll = true;
+
+  const drugColor = drugOptions[currentDrug].color;
 
   const filteredData = {
     [currentState]: isPeriod ? getFilteredDataPeriod(data, currentDataSource, currentState, currentYear, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, currentState, currentYear)
@@ -198,26 +216,22 @@ function LineChart({ params }) {
 
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverAll) * 1.2);
 
-  const [percentChgDrug, setPercentChgDrug] = useState(['']);
-  const [percentChgYear, setPercentChgYear] = useState(['']);
-  const [percentChgValue, setPercentChgValue] = useState(['']);
-  const [percentState, setPercentState] = useState(['']);
-  const [yearMon, setYearMon] = useState(['']);
+
 
   useEffect(() => {
     markYearsForTicks()
   });
 
   const specs = [];
-  specs['width'] = showPercent ? width - 500 : width;
+  specs['width'] = showPercentN ? (width - 500) : width;
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
   specs['height'] = 400;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
-  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;;
-  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;;
+  specs['margin'] = isPeriod ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 0 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 0 };
+  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right + 75;
+  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
   specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
 
@@ -246,6 +260,150 @@ function LineChart({ params }) {
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
   inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
+
+  const resetDates = () => {
+    setLookupPeriodEndYear(currentYear);
+    setLookupPeriodEndMonth('12');
+    setLookupPeriodStartYear(currentYear);
+    setLookupPeriodStartMonth('1');
+  }
+
+  const getSubBannerText = () => {
+    var txt = '';    
+    if (currentDataSource == 'ED') {
+      if (!showPeriod) {
+        if (currentTimeframe === 'Monthly') 
+          txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+        else
+          txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+      }
+      else
+      {
+        txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+      }
+    }
+    else if (currentDataSource == 'HOSP') {
+      if (currentTimeframe === 'Monthly') 
+        txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+      else
+        txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+    }
+    return txt;
+  }
+
+  const handleDrugSelectionsChange = (event) => {
+    const checkedId = event.target.value;
+    if (checkedId != currentDrug){
+      if(event.target.checked){
+        setselectedDrugs([...selectedDrugs,checkedId])
+      }else{
+        setselectedDrugs(selectedDrugs.filter(id=>id !== checkedId))
+      }
+   }
+  }
+
+  const getPeriodControls = () => {
+
+    return (
+      <Fragment>
+        <div style={{ display: (showPeriod ? 'block' : 'none'), textAlign: 'center'}}>
+          <Select params={{
+            key: 'year',
+            label: 'Start Period: ',
+            value: lookupPeriodStartYear,
+            onChange: (val) => {
+              if(!UtilityFunctions.areValidSelections(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth))
+                resetDates()
+              else
+                setLookupPeriodStartYear(val)
+            },
+            options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+            optionLabel: (key) => key,
+            noSelectPrefix: true
+          }}/>
+          <Select params={{
+              key: 'month',
+              label: '',
+              value: lookupPeriodStartMonth,
+              onChange: setLookupPeriodStartMonth,
+              onChange: (val) => {
+                if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth))
+                  resetDates();
+                else
+                  setLookupPeriodStartMonth(val)
+              },
+              options: Object.keys(monthNames).filter(key => key !== 'all'),
+              optionLabel: (key) => monthNames[key],
+              noSelectPrefix: true
+            }} />
+          <Select params={{
+              key: 'year',
+              label: 'End Period: ',
+              value: lookupPeriodEndYear,
+              onChange: (val) => {
+                if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth))
+                  resetDates();
+                else
+                  setLookupPeriodEndYear(val)
+              },
+              options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+              optionLabel: (key) => key,
+              noSelectPrefix: true
+            }}/>
+          <Select params={{
+            key: 'month',
+            label: '',
+            value: lookupPeriodEndMonth,
+            onChange: (val) => {
+              if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val))
+                resetDates(); 
+              else
+                setLookupPeriodEndMonth(val)
+            },
+            options: Object.keys(monthNames).filter(key => key !== 'all'),
+            optionLabel: (key) => monthNames[key],
+            noSelectPrefix: true
+          }} />
+        </div>
+      </Fragment>
+      )
+  }
+
+  const getDrugControls = () => {
+    return (
+      <Fragment>
+        {
+          Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
+              <tr><td><label key={drug[0]}>
+                        <input type="checkbox" class="drugSelections" value={drug[0]} 
+                        checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
+                        onChange={(event) => { handleDrugSelectionsChange(event) }}
+                        />
+                        <span class={drug[0]}></span>{drug[1]}
+                      </label></td></tr>
+                  ))
+        }
+      </Fragment>
+    )
+  }
+
+  const getSidePanelControls = () => {
+
+    return (
+      <Fragment>
+        <table>
+            <tr><td><table><tr><td><div><label className="drugsPanelLabel">Select Drugs:</label></div></td></tr></table></td></tr>
+            <tr>
+              <td>
+                <table style={{border: 'solid 1px lightgray'}}>
+                {getDrugControls()}
+                </table>
+              </td>
+            </tr>
+          </table>
+      </Fragment>
+  )
+}
 
   const percentfunc = (drug, yr, value, yrPrev, valuePrev, state, yearmon) => {
 
@@ -607,7 +765,7 @@ function LineChart({ params }) {
     }
   }
 
-  const buildLineForDrug = (specs, data, inp, currentDrug, showLabels, showPercent, isPeriod) => {
+  const buildLineForDrug = (specs, data, inp, currentDrug, showLabels, showPercentN, isPeriod) => {
 
     const sectionWidth = specs.xMax / specs.xValues.length;
     const sectionWidthHalf = sectionWidth / 2;
@@ -674,7 +832,7 @@ function LineChart({ params }) {
                     }
                   </Group>)}
                   {
-                    (!showPercent) && 
+                    (!showPercentN) && 
                       buildMultiToolTipValues(data, inp, specs, isPeriod, sectionWidth, sectionWidthHalf)
                   }
                 </Group>
@@ -684,20 +842,43 @@ function LineChart({ params }) {
 
   return (
     <>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText()}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
       <table style={{width: '100%'}}>
         <tr>
-        <td style={showPercent ? {width: specs.width + 150} : {width: '100%'}}>
-        <svg style={showPercent ? {height: specs.height, width: specs.width + 50} : {height: specs.height}}>
+        <td style={showPercentN ? {width: specs.width + 225} : {width: '100%'}}>
+          {getPeriodControls()}
+        </td>
+        <td>
+        <div className="floatLeft">
+                        <label class="toggle">
+                            <input id="toggleLabel" class="toggle-input" type="checkbox" 
+                            onChange={(e) => {
+                              if(e.target.checked) 
+                                setLabelToggle(true)
+                              else
+                                setLabelToggle(false)
+                            }}/>
+                            <span class="toggle-label" data-off="Labels Off" 
+                                  data-on="Labels On">
+                            </span>
+                            <span class="toggle-handle"></span>
+                        </label>
+                      </div>
+        </td>
+        </tr>
+        <tr>
+        <td style={showPercentN ? {width: specs.width + 225} : {width: '100%'}}>
+        <svg style={showPercentN ? {height: specs.height, width: specs.width + 175} : {height: specs.height}}>
         <Group top={specs.margin.top} left={specs.margin.left}>
-          {buildLineForDrug(specs, data, inp, currentDrug, showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('alldrug') && currentDrug != 'alldrug' && buildLineForDrug(specs, data, inp, 'alldrug', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('opioid') && currentDrug != 'opioid' && buildLineForDrug(specs, data, inp, 'opioid', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('heroin') && currentDrug != 'heroin' && buildLineForDrug(specs, data, inp, 'heroin', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('stimulant') && currentDrug != 'stimulant' && buildLineForDrug(specs, data, inp, 'stimulant', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('benzo') && currentDrug != 'benzo' && buildLineForDrug(specs, data, inp, 'benzo', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && buildLineForDrug(specs, data, inp, 'fentanyl', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && buildLineForDrug(specs, data, inp, 'cocaine', showLabels, showPercent, isPeriod)}
-          {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && buildLineForDrug(specs, data, inp, 'methamphetamine', showLabels, showPercent, isPeriod)}
+          {buildLineForDrug(specs, data, inp, currentDrug, showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('alldrug') && currentDrug != 'alldrug' && buildLineForDrug(specs, data, inp, 'alldrug', showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('opioid') && currentDrug != 'opioid' && buildLineForDrug(specs, data, inp, 'opioid', showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('heroin') && currentDrug != 'heroin' && buildLineForDrug(specs, data, inp, 'heroin', showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('stimulant') && currentDrug != 'stimulant' && buildLineForDrug(specs, data, inp, 'stimulant', showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('benzo') && currentDrug != 'benzo' && buildLineForDrug(specs, data, inp, 'benzo', showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && buildLineForDrug(specs, data, inp, 'fentanyl', showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && buildLineForDrug(specs, data, inp, 'cocaine', showLabels, showPercentN, isPeriod)}
+          {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && buildLineForDrug(specs, data, inp, 'methamphetamine', showLabels, showPercentN, isPeriod)}
           <AxisLeft
             scale={specs.yScale}
             tickLabelProps={() => ({
@@ -746,8 +927,11 @@ function LineChart({ params }) {
       </table>
       }
         </td>
-        <td style={showPercent ? {width: '100px!important', verticalAlign: 'top', paddingTop: '50px'} : {}}>
-          {showPercent && buildPercentChartInd(percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon)}
+        {/* <td style={showPercentN ? {width: '100px!important', verticalAlign: 'top', paddingTop: '50px'} : {}}>
+          {showPercentN && buildPercentChartInd(percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon)}
+        </td> */}
+        <td style={showPercentN ? {width: '100px!important', verticalAlign: 'top', paddingTop: '50px'} : {}}>
+          {getSidePanelControls()}
         </td>
         </tr>
       </table>
