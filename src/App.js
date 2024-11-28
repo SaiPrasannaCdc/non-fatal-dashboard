@@ -181,7 +181,7 @@ export default function App({ dataUrl }) {
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
   const [isPeriod, setPeriodToggle] = useState(false);
-  const [currentDrugOnly, setOnlyCurrentDrug] = useState(true);
+  const [currentDrugOnly, setOnlyCurrentDrug] = useState(false);
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
@@ -639,7 +639,7 @@ export default function App({ dataUrl }) {
       //set data
       setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedJurisdictions });
 
-      setOnlyCurrentDrug(true);
+      setOnlyCurrentDrug(false);
       
     }
 

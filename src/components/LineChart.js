@@ -188,7 +188,7 @@ function LineChart({ params }) {
   const countsDataYearly = getCountsYearly(data.sex, currentDataSource, drugOptions);
   const countsDataMonthly = getCountsMonthly(data.sex, currentDataSource, drugOptions);
 
-  const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, currentDrugOnly) * 1.2);
+  const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
 
   const [percentChgDrug, setPercentChgDrug] = useState(['']);
   const [percentChgYear, setPercentChgYear] = useState(['']);
@@ -342,18 +342,25 @@ function LineChart({ params }) {
     }
     else if (isPeriod)
     {
-      debugger;
       let arr = val.split(' ');
-      let mon = UtilityFunctions.getMonthNumber(arr[0]);
+      let mon = String(UtilityFunctions.getMonthNumber(arr[0])).padStart(2, '0');;
       let yr = arr[1];
       if (currentState === 'US') {
-        rate = inp.filteredData['US'][mon -1][drug]
+        for (var i=0; i<inp.filteredData['US'].length;i++) {
+          if (inp.filteredData['US'][i].year == String(yr) + String(mon)) {
+            rate = inp.filteredData['US'][i][drug];
+            break;
+          }
+        }
       }
       else
       {
-          let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === mon);
-          if (stateValue)
-              rate = stateValue[drug];
+        for (var i=0; i<inp.filteredData[currentState].length;i++) {
+          if (inp.filteredData[currentState][i].year == String(yr) + String(mon)) {
+            rate = inp.filteredData[currentState][i][drug];
+            break;
+          }
+        }
       }
     }
 
@@ -515,7 +522,7 @@ function LineChart({ params }) {
         {
           inp.filteredData['US'].map(d => {
 
-            var tooltipValues = currentDrugOnly ? [`<p><strong class=${currentDrug + 'ToolTip'}>Overall Rate</strong>: ${d[currentDrug]} (${stateDropdownOptions.length - 1} states)</p>`] : [];
+            var tooltipValues = !currentDrugOnly ? [`<p><strong class=${currentDrug + 'ToolTip'}>Overall Rate</strong>: ${d[currentDrug]} (${stateDropdownOptions.length - 1} states)</p>`] : [];
             if(inp.currentState !== 'US'){
               let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
               if(stateValue){
@@ -527,7 +534,7 @@ function LineChart({ params }) {
             }
 
             if (inp.selectedDrugs.length > 0) {
-                tooltipValues = currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>Overall Rate</strong>: ${d[inp.selectedDrugs[0]]} (${stateDropdownOptions.length - 1} states)</p>`] : [];
+                tooltipValues = !currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>Overall Rate</strong>: ${d[inp.selectedDrugs[0]]} (${stateDropdownOptions.length - 1} states)</p>`] : [];
                 if(inp.currentState !== 'US'){
                   let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
                   if(stateValue){
@@ -539,7 +546,7 @@ function LineChart({ params }) {
                 }
                 for (var i in inp.selectedDrugs) {
                   if (i > 0){
-                    tooltipValues.push(currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${stateDropdownOptions.length - 1} states)</p>`] : null);
+                    tooltipValues.push(!currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${stateDropdownOptions.length - 1} states)</p>`] : null);
                     if(inp.currentState !== 'US'){
                       let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
                       if(stateValue){
@@ -637,16 +644,16 @@ function LineChart({ params }) {
     
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key == 'US' && currentDrugOnly) && 
-                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key, currentDrugOnly)} strokeWidth={3} />
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key == 'US') && 
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key != 'US') && 
-                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key, currentDrugOnly)} strokeWidth={3} />
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} strokeWidth={3} />
                           }
-                          {(!isNaN(d[currentDrug]) && key == 'US' && currentDrugOnly) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && currentDrugOnly) && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key, currentDrugOnly)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key, currentDrugOnly)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
                         </Group>
                       )
                     })}
@@ -677,8 +684,8 @@ function LineChart({ params }) {
                           y={yPos}
                           alignmentBaseline="middle" 
                           fontSize={specs.fontSize} 
-                          fill={UtilityFunctions.getSeriesColor(currentDrug, key, currentDrugOnly)}>
-                            {key != 'US' ? inp.stateNames[key] : currentDrugOnly ? inp.stateNames[key] : ''}
+                          fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
+                            {key != 'US' ? inp.stateNames[key] : 'Overall'}
                         </text>
                       })()
                     }
@@ -770,7 +777,7 @@ function LineChart({ params }) {
           <div id="line-chart-legend">
             {Object.keys(filteredData).map((key, i) =>
               <div key={`line-series-${key}`}>
-                <span fontSize={specs.fontSize} style={{color: UtilityFunctions.getSeriesColor(currentDrug, key, currentDrugOnly)}}>- {stateNames[key]}</span>
+                <span fontSize={specs.fontSize} style={{color: UtilityFunctions.getSeriesColor(currentDrug, key, !currentDrugOnly)}}>- {stateNames[key]}</span>
               </div>
             )}
           </div>
