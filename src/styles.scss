@@ -1299,19 +1299,33 @@ rect:hover
     text-align: center;
   }
 
-  .drugsPanelLabel {
-    font-size: 15px;
-    font-weight: bold;
-    margin-bottom: 0;
-}
+  .containerLC {
+    display: flex;
+    width: 100%;
+  }
 
-.filtersPanelLabel {
-    font-size: 15px;
-    font-weight: bold;
-    margin-bottom: 0;
-}
+  .tdChgPercent {
+    vertical-align: top!important;
+  }
 
-.floatLeft {
-    float:left; 
-}
+  .containerChgPercent {
+    display: flex;
+    width: 350px!important;
+    float: right;
+  }
+
+  .chartDiv {
+    width: 85%;
+  }
+
+  .chartDivAll {
+    width: 100%;
+  }
+
+  .drugsDiv {
+    padding-top: 60px;
+    width: 15%;
+    min-width: 250px;
+  }
+
 
