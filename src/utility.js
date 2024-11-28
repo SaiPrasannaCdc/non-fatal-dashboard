@@ -39,7 +39,7 @@ export const UtilityFunctions = {
     var usNums = [];
     var stateNums = [];
 
-    if (selectedDrugs?.length == 0) {
+    if (selectedDrugs?.length == 0 || currentState != 'US') {
       for (var rec in filteredData["US"])
         usNums.push(filteredData["US"][rec][currentDrug])
 
