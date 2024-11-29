@@ -589,7 +589,8 @@ export default function App({ dataUrl }) {
           fips: getValue('fips', i),
           county: getValue('county', i),
           state: getValue('state', i),
-          rate: formatNumber(getValue('rate_alldrug', i)) 
+          rate: formatNumber(getValue('rate_alldrug', i)),
+          count: formatNumber(getValue('count_alldrug', i))  
         };
       }
 

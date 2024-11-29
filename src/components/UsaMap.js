@@ -72,6 +72,73 @@ const UsaMap = ({ params }) => {
     return colorScale(filteredData[id].rate);
   }
 
+  const getRateforState = (presentState, currentYear) => {
+    var rate;
+    if (presentState !== 'US') {
+      for (var i=0;i<Object.keys(data.year['ED'][presentState]['all']).length;i++) {
+        if (data.year['ED'][presentState]['all'][i].year === currentYear) {
+          rate = data.year['ED'][presentState]['all'][i].alldrug;
+          break;
+        }
+      }
+    }
+    return rate;
+  }
+
+  const getCountforState = (presentState, currentYear) => {
+    var cnt;
+    if (presentState !== 'US') {
+      for (var i=0;i<Object.keys(data.state['ED']['alldrug']['all']).length;i++) {
+        if (data.state['ED']['alldrug']['all'][i]['state'] === presentState) {
+          cnt = data.state['ED']['alldrug']['all'][i][currentYear];
+          break;
+        }
+      }
+    }
+    return cnt;
+  }
+
+  const getRateforED = (geoId, presentState, flag) => {
+    var rate = flag == 'C' ? filteredData[geoId].rate : getRateforState(presentState, currentYear);
+    return rate;
+  }
+
+  const getCountforED = (geoId, presentState, flag) => {
+    var cnt = flag == 'C' ? filteredData[geoId].count : getCountforState(presentState, currentYear);
+    return cnt;
+  }
+
+  const getRateHTMLforED = (geoId, presentState, flag) => {
+    var leftRateStr = '';
+    let rate = getRateforED(geoId, presentState, flag);
+    leftRateStr = leftRateStr + '<span>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+    return leftRateStr;
+  }
+
+  const getCountHTMLforED = (geoId, presentState, flag) => {
+    var leftCntStr = ''
+    let cnt = getCountforED(geoId, presentState, flag);
+    leftCntStr = leftCntStr + '<span>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
+    return leftCntStr;
+  }
+
+  const getTooltipFragment = (geoId) => {
+
+    var presentState = stateFipsMapping[geoId.substring(0, 2)];
+
+    var leftComStr = '<table><tr><td><p><strong>' + `${filteredData[geoId].county}` + '</strong></p></td></tr>';
+    var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforED(geoId, presentState, 'C') + '</p></td></tr>';
+    var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforED(geoId, presentState, 'C') + '</p></td></tr></table>';
+    var leftStr = leftComStr + leftRateStr + leftCountStr;
+    var rightComStr = `<table><tr><td><p><strong>` + 'State' + '</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</strong></p></td></tr>';
+    var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforED(geoId, presentState, 'S') + '</p></td></tr>';
+    var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforED(geoId, presentState, 'S') + '</p></td></tr></table>';
+    var rightStr = rightComStr + rightRateStr + rightCountStr;
+    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + 'State' + '</br>' + `${stateNames[presentState]}` + '</br></strong></h3></div>';
+
+    return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+  }
+
   const constructGeoJsx = (geographies, projection, state = false) => {
     //Not sure why this fixes box outlines around islands
     geographies.splice(914, 1);
@@ -97,7 +164,7 @@ const UsaMap = ({ params }) => {
             fill={getColor(geo.id)}
             d={path}
             style={{ pointerEvents: geo.id.length <= 2 ? 'none' : 'default' }}
-            data-tip={geo.id.length > 2 && filteredData[geo.id] ? `<h3><strong>${filteredData[geo.id].county}, ${stateNames[stateFipsMapping[geo.id.substring(0, 2)]]}</strong></h3><p><strong>Rate:</strong> ${filteredData[geo.id].rate}</p>` : undefined}
+            data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : undefined}
           />
         </g>
       )
