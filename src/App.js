@@ -379,12 +379,6 @@ export default function App({ dataUrl }) {
       </Fragment>
       )
   }
-
-  const deSelectOtherDrugs = () => {
-    setCurrentDrug(currentDrug);
-    setselectedDrugs([currentDrug])
-  }
-
   
   const getInputControls = () => {
       return (
@@ -398,13 +392,12 @@ export default function App({ dataUrl }) {
               </td>
              
               <td style={{width: '10%'}}>
-                {(currentTimeframe === 'Annual' &&  currentState == 'US') &&
+                {(currentTimeframe === 'Annual') &&
                   <label class="toggleA">
                       <input id="togglePercent" class="toggleA-input" type="checkbox" 
                       onChange={(e) => {
                         if(e.target.checked) {
                           setPercentToggle(true)
-                          deSelectOtherDrugs();
                         }
                         else {
                           setPercentToggle(false)
@@ -449,7 +442,6 @@ export default function App({ dataUrl }) {
               <tr><td><label key={drug[0]}>
                         <input type="checkbox" class="drugSelections" value={drug[0]} 
                         checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
-                        disabled={showPercent}
                         onChange={(event) => { handleDrugSelectionsChange(event) }}
                         />
                         <span class={drug[0]}></span>{drug[1]}
@@ -735,7 +727,7 @@ export default function App({ dataUrl }) {
           <td>
             <div class="containerLC">
               <div class={currentState === 'US' ? "chartDiv" : "chartDivAll"}>
-                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, selectedDrugs }} />
+                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs }} />
               </div>
               {currentState === 'US' &&
               <div class="drugsDiv">
@@ -750,7 +742,7 @@ export default function App({ dataUrl }) {
       </table>
       
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, selectedDrugs]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>

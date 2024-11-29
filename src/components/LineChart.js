@@ -85,20 +85,20 @@ const getCountsMonthly = (data, currentDataSource, drugOptions) => {
   return arr;
 }
 
-const getChangePrecValues = (filteredData, currentDrug, xValues, xKey, stateNames) => {
+const getChangePrecValues = (filteredData, selectedDrugs, xValues, xKey, stateNames) => {
 
   var changePrecValues = [];
-  Object.keys(filteredData).map(key => {
-    xValues.map((xVal, i) => {
-      const d = filteredData[key].find(d => d[xKey] === xVal) || {};
-      const dPrev = i > 0  ? filteredData[key].find(d => d[xKey] === xValues[i - 1]) || {} : {}
-      changePrecValues.push({drug: currentDrug, yr: d[xKey], value: d[currentDrug], yrPrev: dPrev[xKey], valPrev: dPrev[currentDrug], state: stateNames[key], yearmon: d['year']})
+    Object.keys(filteredData).map(key => {
+      xValues.map((xVal, i) => {
+        for (var j in selectedDrugs) {
+          const d = filteredData[key].find(d => d[xKey] === xVal) || {};
+          const dPrev = i > 0  ? filteredData[key].find(d => d[xKey] === xValues[i - 1]) || {} : {}
+          changePrecValues.push({drug: selectedDrugs[j], yr: d[xKey], value: d[selectedDrugs[j]], yrPrev: dPrev[xKey], valPrev: dPrev[selectedDrugs[j]], state: stateNames[key], yearmon: d['year']})
+        }
     })
   })
   return changePrecValues;
 }
-
-
 
 const getFilteredData = (data, currentTimeframe, currentDataSource, currentState, currentYear) => {
 
@@ -190,7 +190,7 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, selectedDrugs } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -233,7 +233,7 @@ function LineChart({ params }) {
     range: [specs.yMax, 0],
   });
 
-  const changePrecValues = (currentTimeframe == 'Annual' && !isPeriod) ? getChangePrecValues(filteredData, currentDrug, specs.xValues, specs.xKey, stateNames) : [];
+  const changePrecValues = (currentTimeframe == 'Annual' && !isPeriod) ? getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey, stateNames) : [];
 
   const inp = [];
   inp['filteredData'] = filteredData;
@@ -451,7 +451,7 @@ function LineChart({ params }) {
     return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
-  const getTooltipFragmentPerc = (yr) => {
+  const getTooltipFragmentPerc = (drug, yr) => {
 
     var rec;
     var perc = 0;
@@ -459,7 +459,7 @@ function LineChart({ params }) {
     var tooltipHtml;
 
     for (var i=0; i<changePrecValues?.length; i++) {
-      if (changePrecValues[i].yr == yr) {
+      if (changePrecValues[i].yr == yr && changePrecValues[i].drug == drug) {
         rec = changePrecValues[i];
         break
       }
@@ -524,6 +524,7 @@ function LineChart({ params }) {
 
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
+              className={'rectHover'}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
               width={sectionWidth}
@@ -537,29 +538,32 @@ function LineChart({ params }) {
     )
   }
   
-  const buildToolTipValuesPerc = (sectionWidth, sectionWidthHalf) => {
+  const buildToolTipValuesPerc = (drug) => {
     return (
       <Fragment>
         {
           inp.filteredData['US'].map(d => {
-            return <rect
-              key={`tooltip-section-${d[specs.xKey]}`}
-              x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
-              y={0}
-              width={sectionWidth}
-              height={specs.yMax}
-              style={{outline: 'none'}}
-              fill='transparent'
-              data-tip={getTooltipFragmentPerc(d.year)}></rect>
-          })
-        }
+            if (d.year != supportedYears[0]) {
+              return <rect
+                key={`tooltip-section-${d[specs.xKey]}`}
+                x={Math.max(0, specs.xScale(d[specs.xKey]) - 5 - 15)}
+                y={specs.yScale(d[drug]) - 20}
+                width={40}
+                height={40}
+                style={{outline: 'none'}}
+                fill='transparent'
+                data-tip={getTooltipFragmentPerc(drug, d.year)}></rect>
+              }
+            })
+          }
       </Fragment>
     )
   }
+
   const buildPercentChartInd = (percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon) => {
 
     if (currentTimeframe === 'Annual' && !isPeriod) {
-      if (percentChgYear != '2018') {
+      if (percentChgYear != supportedYears[0]) {
       return (
         <QuickStat
             colorScale={colorScale}
@@ -645,7 +649,10 @@ function LineChart({ params }) {
                     !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf)
                   }
                   {
-                    showPercent && buildToolTipValuesPerc(sectionWidth, sectionWidthHalf)
+                    showPercent && 
+                    inp.selectedDrugs.map(drug => {
+                      return buildToolTipValuesPerc(drug)
+                    })
                   }
                 </Group>
       </Fragment>
