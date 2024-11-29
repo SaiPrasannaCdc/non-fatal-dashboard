@@ -380,6 +380,12 @@ export default function App({ dataUrl }) {
       )
   }
 
+  const deSelectOtherDrugs = () => {
+    setCurrentDrug(currentDrug);
+    setselectedDrugs([currentDrug])
+  }
+
+  
   const getInputControls = () => {
       return (
         <Fragment>
@@ -392,14 +398,17 @@ export default function App({ dataUrl }) {
               </td>
              
               <td style={{width: '10%'}}>
-                {currentTimeframe === 'Annual' &&
+                {(currentTimeframe === 'Annual' &&  currentState == 'US') &&
                   <label class="toggleA">
                       <input id="togglePercent" class="toggleA-input" type="checkbox" 
                       onChange={(e) => {
-                        if(e.target.checked) 
+                        if(e.target.checked) {
                           setPercentToggle(true)
-                        else
+                          deSelectOtherDrugs();
+                        }
+                        else {
                           setPercentToggle(false)
+                        }
                       }}/>
                       <span class="toggleA-label" data-off="% Chg Off" 
                             data-on="% Chg On">
@@ -440,6 +449,7 @@ export default function App({ dataUrl }) {
               <tr><td><label key={drug[0]}>
                         <input type="checkbox" class="drugSelections" value={drug[0]} 
                         checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
+                        disabled={showPercent}
                         onChange={(event) => { handleDrugSelectionsChange(event) }}
                         />
                         <span class={drug[0]}></span>{drug[1]}

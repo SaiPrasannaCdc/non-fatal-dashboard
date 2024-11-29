@@ -6,6 +6,7 @@ import { Circle } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { UtilityFunctions } from '../utility'
 import QuickStat from './quickStat';
+import ReactDOMServer from 'react-dom/server';
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
@@ -83,6 +84,21 @@ const getCountsMonthly = (data, currentDataSource, drugOptions) => {
   })
   return arr;
 }
+
+const getChangePrecValues = (filteredData, currentDrug, xValues, xKey, stateNames) => {
+
+  var changePrecValues = [];
+  Object.keys(filteredData).map(key => {
+    xValues.map((xVal, i) => {
+      const d = filteredData[key].find(d => d[xKey] === xVal) || {};
+      const dPrev = i > 0  ? filteredData[key].find(d => d[xKey] === xValues[i - 1]) || {} : {}
+      changePrecValues.push({drug: currentDrug, yr: d[xKey], value: d[currentDrug], yrPrev: dPrev[xKey], valPrev: dPrev[currentDrug], state: stateNames[key], yearmon: d['year']})
+    })
+  })
+  return changePrecValues;
+}
+
+
 
 const getFilteredData = (data, currentTimeframe, currentDataSource, currentState, currentYear) => {
 
@@ -187,14 +203,8 @@ function LineChart({ params }) {
 
   const countsDataYearly = getCountsYearly(data.sex, currentDataSource, drugOptions);
   const countsDataMonthly = getCountsMonthly(data.sex, currentDataSource, drugOptions);
-
+  
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
-
-  const [percentChgDrug, setPercentChgDrug] = useState(['']);
-  const [percentChgYear, setPercentChgYear] = useState(['']);
-  const [percentChgValue, setPercentChgValue] = useState(['']);
-  const [percentState, setPercentState] = useState(['']);
-  const [yearMon, setYearMon] = useState(['']);
 
   useEffect(() => {
     markYearsForTicks()
@@ -202,7 +212,7 @@ function LineChart({ params }) {
 
   const specs = [];
   specs['width'] = currentState === 'US' ? (width - 250) : width;
-  specs['width'] = showPercent ?  specs['width'] - 350 :  specs['width'];
+  specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
   specs['height'] = 400;
@@ -223,6 +233,8 @@ function LineChart({ params }) {
     range: [specs.yMax, 0],
   });
 
+  const changePrecValues = (currentTimeframe == 'Annual' && !isPeriod) ? getChangePrecValues(filteredData, currentDrug, specs.xValues, specs.xKey, stateNames) : [];
+
   const inp = [];
   inp['filteredData'] = filteredData;
   inp['stateNames'] = stateNames;
@@ -239,27 +251,6 @@ function LineChart({ params }) {
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
   inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
-
-  const percentfunc = (drug, yr, value, yrPrev, valuePrev, state, yearmon) => {
-
-    var perc = 0;
-    var diff, rounded;
-
-    setPercentChgDrug(drug);
-    setPercentChgYear(yr);
-    setPercentState(state === 'US' ? 'overall' : state);
-    setYearMon(yearmon)
-  
-    if (value != valuePrev) {
-        diff =  value - valuePrev;
-        perc = ((diff * 100) / value)
-        rounded = Math.round(perc * 10) / 10
-        setPercentChgValue(perc);
-    }
-    else if (value === valuePrev) {
-      setPercentChgValue(perc);
-    }
-  }
 
   const generateYearLabels = () => {
     return (
@@ -460,6 +451,33 @@ function LineChart({ params }) {
     return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
+  const getTooltipFragmentPerc = (yr) => {
+
+    var rec;
+    var perc = 0;
+    var diff;
+    var tooltipHtml;
+
+    for (var i=0; i<changePrecValues?.length; i++) {
+      if (changePrecValues[i].yr == yr) {
+        rec = changePrecValues[i];
+        break
+      }
+    }
+
+    if (rec != null) {
+      if (rec.value != rec.valuePrev) {
+          diff =  rec.value - rec.valPrev;
+          perc = ((diff * 100) / rec.value)
+      }
+
+      tooltipHtml = ReactDOMServer.renderToString(buildPercentChartInd(rec.drug, rec.yr, perc, rec.state, rec.yearmon))
+
+      return '<table><tr><td><div class="toolTipChgPerc">' + tooltipHtml + '</div></td></tr></table>'
+    }
+    return '';
+  }
+
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
       <Fragment>
@@ -519,10 +537,29 @@ function LineChart({ params }) {
     )
   }
   
+  const buildToolTipValuesPerc = (sectionWidth, sectionWidthHalf) => {
+    return (
+      <Fragment>
+        {
+          inp.filteredData['US'].map(d => {
+            return <rect
+              key={`tooltip-section-${d[specs.xKey]}`}
+              x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
+              y={0}
+              width={sectionWidth}
+              height={specs.yMax}
+              style={{outline: 'none'}}
+              fill='transparent'
+              data-tip={getTooltipFragmentPerc(d.year)}></rect>
+          })
+        }
+      </Fragment>
+    )
+  }
   const buildPercentChartInd = (percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon) => {
 
     if (currentTimeframe === 'Annual' && !isPeriod) {
-      if (selectedDrugs?.length > 0 && percentChgYear != '2018') {
+      if (percentChgYear != '2018') {
       return (
         <QuickStat
             colorScale={colorScale}
@@ -534,37 +571,6 @@ function LineChart({ params }) {
         ></QuickStat>
         ); 
       }
-    }
-    else if (currentTimeframe === 'Monthly' && !isPeriod){
-      if (selectedDrugs?.length > 0 && percentChgYear != '1') {
-        return (
-          <QuickStat
-              colorScale={colorScale}
-              defaultValueIfEmpty={defaultValueIfEmpty}
-              value={percentChgValue}
-              text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + inp.monthNames[percentChgYear] + ' ' + currentYear + ' vs. ' + inp.monthNames[String((parseInt(percentChgYear) - 1))] + ' ' + currentYear}
-              label={percentChgDrug}
-              timeframe={'month'}
-          ></QuickStat>
-          ); 
-        }
-    }
-    else if (isPeriod){
-      if (selectedDrugs?.length > 0) {
-        var year = String(yearMon)?.substring(0,4);
-        var cmon = String(yearMon)?.substring(4).replace(/^0+/, '');
-        var pmon = Number(cmon) - 1;
-        return (
-          <QuickStat
-              colorScale={colorScale}
-              defaultValueIfEmpty={defaultValueIfEmpty}
-              value={percentChgValue}
-              text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + inp.monthNames[cmon] + ' ' + year + ' vs. ' + inp.monthNames[pmon] + ' ' + year}
-              label={percentChgDrug}
-              timeframe={'month'}
-          ></QuickStat>
-          ); 
-        }
     }
   }
 
@@ -585,7 +591,7 @@ function LineChart({ params }) {
                       const d = inp.filteredData[key].find(d => d[specs.xKey] === xVal) || {};
                       const dNext = i === specs.xValues.length - 1 ? {} : inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i + 1]) || {}
                       const dPrev = i > 0  ? inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i - 1]) || {} : {}
-    
+
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key == 'US') && 
@@ -596,8 +602,8 @@ function LineChart({ params }) {
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle onMouseEnter={(event) => {percentfunc(currentDrug, d[specs.xKey], d[currentDrug], dPrev[specs.xKey], dPrev[currentDrug], inp.stateNames[key], d['year'])}} cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
                         </Group>
                       )
                     })}
@@ -633,10 +639,13 @@ function LineChart({ params }) {
                         </text>
                       })()
                     }
-                  </Group>)}
+                  </Group>)
+                  }
                   {
-                    (!showPercent) && 
-                    buildToolTipValues(sectionWidth, sectionWidthHalf)
+                    !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf)
+                  }
+                  {
+                    showPercent && buildToolTipValuesPerc(sectionWidth, sectionWidthHalf)
                   }
                 </Group>
       </Fragment>
@@ -648,7 +657,7 @@ function LineChart({ params }) {
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '85%'}}>
-            <svg style={{height: specs.height, width: showPercent ? specs.width : '100%'}}>
+            <svg style={{height: specs.height, width: '100%'}}>
               <Group top={specs.margin.top} left={specs.margin.left}>
                 {buildLineForDrug(currentDrug)}
                 {inp.selectedDrugs.includes('alldrug') && currentDrug != 'alldrug' && currentState === 'US' && buildLineForDrug('alldrug')}
@@ -707,13 +716,6 @@ function LineChart({ params }) {
           </table>
           }
         </td>
-        {showPercent &&
-        <td class="tdChgPercent">
-          <div class="containerChgPercent" style={{verticalAlign: 'top!important', paddingTop: '50px'}}>
-            {buildPercentChartInd(percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon)}
-          </div>
-        </td>
-        }
       </tr>
       </table>
       {specs.isSmallViewport && (

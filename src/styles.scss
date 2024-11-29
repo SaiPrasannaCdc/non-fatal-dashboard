@@ -1304,6 +1304,13 @@ rect:hover
     width: 100%;
   }
 
+  .toolTipChgPerc
+  {
+    display: flex;
+    width: 350px;
+    height: 200px;
+  }
+
   .tdChgPercent {
     vertical-align: top!important;
   }
