@@ -4,7 +4,7 @@ function QuickStat(params) {
 
   const { colorScale, defaultValueIfEmpty, value, text, label, timeframe } = params;
 
-  const msg = 'Hover on a circle on the Line chart to view statistics for the selected ' + timeframe + ' compared to the previous ' + timeframe + ' for a specific drug.'
+  const msg = 'Hover near a circle on the Line chart to view statistics for the selected ' + timeframe + ' compared to the previous ' + timeframe + ' for a specific drug.'
   return (
     <div className="stats-sections-container col-12 col-sm-6 col-md-4 grid-item">
                         <div className="stats-section first">

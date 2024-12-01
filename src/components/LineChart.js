@@ -85,7 +85,7 @@ const getCountsMonthly = (data, currentDataSource, drugOptions) => {
   return arr;
 }
 
-const getChangePrecValues = (filteredData, selectedDrugs, xValues, xKey, stateNames) => {
+const getChangePrecValues = (filteredData, selectedDrugs, xValues, xKey) => {
 
   var changePrecValues = [];
     Object.keys(filteredData).map(key => {
@@ -93,7 +93,7 @@ const getChangePrecValues = (filteredData, selectedDrugs, xValues, xKey, stateNa
         for (var j in selectedDrugs) {
           const d = filteredData[key].find(d => d[xKey] === xVal) || {};
           const dPrev = i > 0  ? filteredData[key].find(d => d[xKey] === xValues[i - 1]) || {} : {}
-          changePrecValues.push({drug: selectedDrugs[j], yr: d[xKey], value: d[selectedDrugs[j]], yrPrev: dPrev[xKey], valPrev: dPrev[selectedDrugs[j]], state: stateNames[key], yearmon: d['year']})
+          changePrecValues.push({drug: selectedDrugs[j], yr: d[xKey], value: d[selectedDrugs[j]], yrPrev: dPrev[xKey], valPrev: dPrev[selectedDrugs[j]], state: key, yearmon: d['year']})
         }
     })
   })
@@ -233,7 +233,7 @@ function LineChart({ params }) {
     range: [specs.yMax, 0],
   });
 
-  const changePrecValues = (currentTimeframe == 'Annual' && !isPeriod) ? getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey, stateNames) : [];
+  const changePrecValues = (currentTimeframe == 'Annual' && !isPeriod) ? getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey) : [];
 
   const inp = [];
   inp['filteredData'] = filteredData;
@@ -451,7 +451,7 @@ function LineChart({ params }) {
     return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
-  const getTooltipFragmentPerc = (drug, yr) => {
+  const getTooltipFragmentPerc = (drug, yr, st) => {
 
     var rec;
     var perc = 0;
@@ -459,7 +459,7 @@ function LineChart({ params }) {
     var tooltipHtml;
 
     for (var i=0; i<changePrecValues?.length; i++) {
-      if (changePrecValues[i].yr == yr && changePrecValues[i].drug == drug) {
+      if (changePrecValues[i].yr == yr && changePrecValues[i].drug == drug && changePrecValues[i].state == st) {
         rec = changePrecValues[i];
         break
       }
@@ -468,10 +468,10 @@ function LineChart({ params }) {
     if (rec != null) {
       if (rec.value != rec.valuePrev) {
           diff =  rec.value - rec.valPrev;
-          perc = ((diff * 100) / rec.value)
+          perc = ((diff / rec.valPrev) * 100)
       }
 
-      tooltipHtml = ReactDOMServer.renderToString(buildPercentChartInd(rec.drug, rec.yr, perc, rec.state, rec.yearmon))
+      tooltipHtml = ReactDOMServer.renderToString(buildPercentChartInd(rec.drug, rec.yr, perc, stateNames[rec.state], rec.yearmon))
 
       return '<table><tr><td><div class="toolTipChgPerc">' + tooltipHtml + '</div></td></tr></table>'
     }
@@ -537,25 +537,34 @@ function LineChart({ params }) {
       </Fragment>
     )
   }
-  
+
   const buildToolTipValuesPerc = (drug) => {
     return (
       <Fragment>
         {
-          inp.filteredData['US'].map(d => {
-            if (d.year != supportedYears[0]) {
-              return <rect
-                key={`tooltip-section-${d[specs.xKey]}`}
-                x={Math.max(0, specs.xScale(d[specs.xKey]) - 5 - 15)}
-                y={specs.yScale(d[drug]) - 20}
-                width={40}
-                height={40}
-                style={{outline: 'none'}}
-                fill='transparent'
-                data-tip={getTooltipFragmentPerc(drug, d.year)}></rect>
+          Object.keys(inp.filteredData).map(key => {
+            return (
+              <Fragment>
+                {
+                  specs.xValues.map((xVal, i) => {
+                    const d = inp.filteredData[key].find(d => d[specs.xKey] === xVal) || {};
+                    if (d.year != supportedYears[0]) {
+                      return <rect
+                        key={`tooltip-section-${d[specs.xKey]}`}
+                        x={Math.max(0, specs.xScale(d[specs.xKey]) - 5 - 15)}
+                        y={specs.yScale(d[drug]) - 20}
+                        width={40}
+                        height={40}
+                        style={{outline: 'none'}}
+                        fill='transparent'
+                        data-tip={getTooltipFragmentPerc(drug, d.year, key)}></rect>
+                    }
+                })
               }
-            })
-          }
+              </Fragment>
+            )
+        })
+      }
       </Fragment>
     )
   }
