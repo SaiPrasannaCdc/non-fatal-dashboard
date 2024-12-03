@@ -6,7 +6,7 @@ function QuickStat(params) {
 
   const msg = 'Hover near a circle on the Line chart to view statistics for the selected ' + timeframe + ' compared to the previous ' + timeframe + ' for a specific drug.'
   return (
-    <div className="stats-sections-container col-12 col-sm-6 col-md-4 grid-item">
+    <div className="stats-sections-container grid-item">
                         <div className="stats-section first">
                           <div id="stats-section-icon" className="stats-section-icon" >
                             <ChangeIndicator
