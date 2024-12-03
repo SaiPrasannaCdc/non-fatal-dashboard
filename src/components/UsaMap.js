@@ -136,7 +136,7 @@ const UsaMap = ({ params }) => {
     var rightStr = rightComStr + rightRateStr + rightCountStr;
     var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + 'State' + '</br>' + `${stateNames[presentState]}` + '</br></strong></h3></div>';
 
-    return heading + '<table><tr><td><div class="container"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+    return heading + '<table><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
   const constructGeoJsx = (geographies, projection, state = false) => {
