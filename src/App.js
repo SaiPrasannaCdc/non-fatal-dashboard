@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
 import "babel-polyfill";
 import debounce from 'lodash.debounce';
 import ReactTooltip from 'react-tooltip';
@@ -11,6 +11,8 @@ import SexAgeCharts from './components/SexAgeCharts';
 import UsaMap from './components/UsaMap';
 import Select from './components/Select';
 import Datatable from './components/Datatable';
+
+import { UtilityFunctions } from './utility'
 
 import './styles.scss';
 
@@ -168,10 +170,19 @@ export default function App({ dataUrl }) {
   const [currentYear, setCurrentYear] = useState(supportedYearsLatest);
   const [currentYearGroup, setCurrentYearGroup] = useState('one');
   const [currentYearCompare, setCurrentYearCompare] = useState(supportedYears[0]);
+  const [lookupPeriodStartYear, setLookupPeriodStartYear] = useState(supportedYearsLatest);
+  const [lookupPeriodStartMonth, setLookupPeriodStartMonth] = useState('1');
+  const [lookupPeriodEndYear, setLookupPeriodEndYear] = useState(supportedYearsLatest);
+  const [lookupPeriodEndMonth, setLookupPeriodEndMonth] = useState('12');
   const [currentDataType, setCurrentDataType] = useState('count');
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
   const [showFootnotes, setFootnotes] = useState(false);
+  const [showLabels, setLabelToggle] = useState(false);
+  const [showPercent, setPercentToggle] = useState(false);
+  const [isPeriod, setPeriodToggle] = useState(false);
+  const [currentDrugOnly, setOnlyCurrentDrug] = useState(false);
+  const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
 
@@ -197,6 +208,24 @@ export default function App({ dataUrl }) {
     }
   });
 
+  const handleDrugSelectionsChange = (event) => {
+    const checkedId = event.target.value;
+    if (checkedId != currentDrug){
+      if(event.target.checked){
+        setselectedDrugs([...selectedDrugs,checkedId])
+      }else{
+        setselectedDrugs(selectedDrugs.filter(id=>id !== checkedId))
+      }
+   }
+  }
+
+   const resetDates = () => {
+    setLookupPeriodEndYear(currentYear);
+    setLookupPeriodEndMonth('12');
+    setLookupPeriodStartYear(currentYear);
+    setLookupPeriodStartMonth('1');
+  }
+
   const outerContainerRef = useCallback(node => {
     if (node !== null) {
       resizeObserver.observe(node);
@@ -218,10 +247,16 @@ export default function App({ dataUrl }) {
       case 'lineChart':
         
         if (currentDataSource == 'ED') {
-          if (currentTimeframe === 'Monthly') 
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+          if (!isPeriod) {
+            if (currentTimeframe === 'Monthly') 
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+            else
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          }
           else
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          {
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+          }
         }
         else if (currentDataSource == 'HOSP') {
           if (currentTimeframe === 'Monthly') 
@@ -269,6 +304,154 @@ export default function App({ dataUrl }) {
       return txt;
 
   }
+
+  const getPeriodControls = () => {
+
+    return (
+      <Fragment>
+        <div style={{ display: 'block' }}>
+          <Select params={{
+            key: 'year',
+            label: 'Start Period: ',
+            value: lookupPeriodStartYear,
+            onChange: (val) => {
+              if(!UtilityFunctions.areValidSelections(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth))
+                resetDates()
+              else
+                setLookupPeriodStartYear(val)
+
+              checkForPeriod(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth);
+            },
+            options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+            optionLabel: (key) => key,
+            noSelectPrefix: true
+          }}/>
+          <Select params={{
+              key: 'month',
+              label: '',
+              value: lookupPeriodStartMonth,
+              onChange: setLookupPeriodStartMonth,
+              onChange: (val) => {
+                if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth))
+                  resetDates();
+                else
+                  setLookupPeriodStartMonth(val)
+              
+                checkForPeriod(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth);
+              },
+              options: Object.keys(monthNames).filter(key => key !== 'all'),
+              optionLabel: (key) => monthNames[key],
+              noSelectPrefix: true
+            }} />
+          <Select params={{
+              key: 'year',
+              label: 'End Period: ',
+              value: lookupPeriodEndYear,
+              onChange: (val) => {
+                if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth))
+                  resetDates();
+                else
+                  setLookupPeriodEndYear(val)
+
+                  checkForPeriod(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth)
+              },
+              options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+              optionLabel: (key) => key,
+              noSelectPrefix: true
+            }}/>
+          <Select params={{
+            key: 'month',
+            label: '',
+            value: lookupPeriodEndMonth,
+            onChange: (val) => {
+              if(!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val))
+                resetDates(); 
+              else
+                setLookupPeriodEndMonth(val)
+
+                checkForPeriod(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val)
+            },
+            options: Object.keys(monthNames).filter(key => key !== 'all'),
+            optionLabel: (key) => monthNames[key],
+            noSelectPrefix: true
+          }} />
+        </div>
+      </Fragment>
+      )
+  }
+  
+  const getInputControls = () => {
+      return (
+        <Fragment>
+          <table>
+            <tr>
+              <td style={{width: '80%!important', textAlign: 'center'}}>
+                {currentTimeframe === 'Monthly' && 
+                  getPeriodControls()
+                }
+              </td>
+             
+              <td style={{width: '10%'}}>
+                {(currentTimeframe === 'Annual') &&
+                  <label class="toggleA">
+                      <input id="togglePercent" class="toggleA-input" type="checkbox" 
+                      onChange={(e) => {
+                        if(e.target.checked) {
+                          setPercentToggle(true)
+                        }
+                        else {
+                          setPercentToggle(false)
+                        }
+                      }}/>
+                      <span class="toggleA-label" data-off="% Chg Off" 
+                            data-on="% Chg On">
+                      </span>
+                      <span class="toggleA-handle"></span>
+                  </label>
+                }
+              </td>
+              <td style={{width: '10%'}}>
+                <label class="toggle">
+                    <input id="toggleLabel" class="toggle-input" type="checkbox" 
+                    onChange={(e) => {
+                      if(e.target.checked) 
+                        setLabelToggle(true)
+                      else
+                        setLabelToggle(false)
+                    }}/>
+                    <span class="toggle-label" data-off="Labels Off" 
+                          data-on="Labels On">
+                    </span>
+                    <span class="toggle-handle"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td style={{width: '100%', height: '40px'}}></td>
+            </tr>
+          </table>
+        </Fragment>
+    )
+  }
+
+  const getDrugControls = () => {
+    return (
+      <Fragment>
+        {
+          Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
+              <tr><td><label key={drug[0]}>
+                        <input type="checkbox" class="drugSelections" value={drug[0]} 
+                        checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
+                        onChange={(event) => { handleDrugSelectionsChange(event) }}
+                        />
+                        <span class={drug[0]}></span>{drug[1]}
+                      </label></td></tr>
+                  ))
+        }
+      </Fragment>
+    )
+  }
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -408,7 +591,8 @@ export default function App({ dataUrl }) {
           fips: getValue('fips', i),
           county: getValue('county', i),
           state: getValue('state', i),
-          rate: formatNumber(getValue('rate_alldrug', i)) 
+          rate: formatNumber(getValue('rate_alldrug', i)),
+          count: formatNumber(getValue('count_alldrug', i))  
         };
       }
 
@@ -457,6 +641,8 @@ export default function App({ dataUrl }) {
 
       //set data
       setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedJurisdictions });
+
+      setOnlyCurrentDrug(false);
       
     }
 
@@ -473,7 +659,31 @@ export default function App({ dataUrl }) {
           </div>
     )
   }
-  
+
+  const drugTab = (drugName, drugLabel) => (
+    <button
+      className={`drug-tab${drugName === currentDrug ? ' active' : ''}`}
+      onClick={() => {
+        setCurrentDrug(drugName);
+        setselectedDrugs([drugName])
+      }}
+    >{drugLabel || drugName}</button>
+  );
+
+  const resetPeriodDates = (yr) => { 
+    setLookupPeriodStartYear(yr);
+    setLookupPeriodStartMonth('1');
+    setLookupPeriodEndYear(yr);
+    setLookupPeriodEndMonth('12');
+  }
+
+  const checkForPeriod = (startYear, startMon, endYear, endMon) => { 
+    if (startYear == currentYear && endYear == currentYear && startMon == '1' && endMon == '12')
+      setPeriodToggle(false);
+    else
+      setPeriodToggle(true);
+  }
+    
   function getSupportedStates(ds, yr, mon, tframe) {
     let supportedStates = {};
     let monMain = tframe != 'Monthly' ? '00' : String(mon).padStart(2, '0');
@@ -511,9 +721,28 @@ export default function App({ dataUrl }) {
   const lineChartMemo = useMemo(() =>
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
-      <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions }} />
+      {getInputControls()}
+      <table style={{width: '100%'}}>
+        <tr>
+          <td>
+            <div class="containerLC">
+              <div class={currentState === 'US' ? "chartDiv" : "chartDivAll"}>
+                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs }} />
+              </div>
+              {currentState === 'US' &&
+              <div class="drugsDiv">
+                <table style={{border: 'solid 1px lightgray'}}>
+                  {getDrugControls()}
+                </table>
+              </div>
+              }       
+            </div>
+          </td>
+        </tr>
+      </table>
+      
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
@@ -584,18 +813,18 @@ export default function App({ dataUrl }) {
                     optionLabel: (key) => dataSourceOptions[key]['title']
                   }}/>
                   <Select params={{
-                    key: 'drug',
-                    label: 'a Drug',
-                    value: currentDrug,
-                    onChange: setCurrentDrug,
-                    options: Object.keys(drugOptions),
-                    optionLabel: (key) => drugOptions[key]['titleForDropDown']
-                  }}/>
-                  <Select params={{
                     key: 'jurisdiction',
                     label: 'a State',
                     value: currentState,
-                    onChange: setCurrentState,
+                    onChange: (param) => {
+                      setCurrentState(param);
+                      if (param !== 'US')
+                        setOnlyCurrentDrug(true);
+                      else
+                        setOnlyCurrentDrug(false);
+                    },
+
+                    
                     options: stateDropdownOptions?.sort((a, b) => {
                       if(a === 'US') return -1;
                       if(b === 'US') return 1;
@@ -603,6 +832,7 @@ export default function App({ dataUrl }) {
                     }),
                     optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
                   }}/>
+                  <br></br>
                   <Select params={{
                     key: 'timeframe',
                     label: 'Time Frame',
@@ -613,6 +843,12 @@ export default function App({ dataUrl }) {
                       }
                       setCurrentTimeframe(val)
                       getSupportedStates(currentDataSource, currentYear, currentMonth, val);
+                      if (val === 'Monthly') {
+                        setPercentToggle(false)
+                        resetPeriodDates(currentYear)
+                      }
+
+                      setPeriodToggle(false);
                     },
                     options: ['Monthly', 'Annual'],
                     optionLabel: (key) => key
@@ -632,6 +868,11 @@ export default function App({ dataUrl }) {
                       }
                       setCurrentYear(param);
                       getSupportedStates(currentDataSource, param, currentMonth, currentTimeframe);
+                      setPeriodToggle(false);
+
+                      if (currentTimeframe === 'Monthly') {
+                        resetPeriodDates(param)
+                      }
                     },
                     options: supportedYears,
                     optionLabel: (key) => key
@@ -659,8 +900,27 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
+                <div>
+                  <div className="drug-tab-section">
+                    {drugTab('alldrug', <span>All Drugs</span>)}
+                    {drugTab('benzo', <span>Benzodiazepine</span>)}
+                  </div>
+                  <div className="drug-tab-section">
+                    {drugTab('opioid', <span>All Opioids</span>)}
+                    {drugTab('fentanyl', <span>Fentanyl</span>)}
+                  </div>
+                  <div className="drug-tab-section">
+                    {drugTab('heroin', <span>Heroin</span>)}
+                    {drugTab('stimulant', <span>All Stimulants</span>)}
+                  </div>
+                  <div className="drug-tab-section">
+                    {drugTab('cocaine',<span>Cocaine</span>)}
+                    {drugTab('methamphetamine', <span>Methamphetamine</span>)}
+                  </div>
+                </div>
               </div>
             </div>
+            
 
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>
@@ -761,14 +1021,6 @@ export default function App({ dataUrl }) {
             </div>}
         </div>
       </div>
-      {/* <a
-        href={dataUrl}
-        aria-label="Download this data in a Excel file format."
-        className={`btn btn-download no-border`}
-        style={{ 'backgroundColor': drugColor }}
-      >
-        Download Data (XLSX)
-      </a> */}
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
     </>
   );

@@ -702,3 +702,636 @@ html {
 .App.accessible .individual-header {
     margin-left: 1em;
 }
+
+//dec release
+.alldrug {
+    height: 20px;
+    width: 20px;
+    background-color: #2B2D73;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .opioid {
+    height: 20px;
+    width: 20px;
+    background-color: #4A2866;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .heroin {
+    height: 20px;
+    width: 20px;
+    background-color: #353535;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .stimulant {
+    height: 20px;
+    width: 20px;
+    background-color: #24574E;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .benzo {
+    height: 20px;
+    width: 20px;
+    background-color: #573325;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .fentanyl {
+    height: 20px;
+    width: 20px;
+    background-color: #8C5EA7;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .cocaine {
+    height: 20px;
+    width: 20px;
+    background-color: #357F70;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .methamphetamine {
+    height: 20px;
+    width: 20px;
+    background-color: #357F70;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .alldrugToolTip {
+    color: #2B2D73;
+  }
+
+  .opioidToolTip {
+    color: #4A2866;
+  }
+
+  .heroinToolTip {
+    color: #353535;
+  }
+
+  .stimulantToolTip {
+    color: #24574E;
+  }
+
+  .benzoToolTip {
+    color: #573325;
+  }
+
+ .fentanylToolTip {
+    color: #8C5EA7;
+  }
+
+  .cocaineToolTip {
+    color: #357F70;
+  }
+
+.methamphetamineToolTip {
+    color: #357F70;
+ }
+
+  .drugSelections
+  {
+    margin-top: 6px;
+    margin-left: 30px;
+    width: 20px;
+    height: 20px;
+    text-align: top;
+  }
+
+  .drugSelectionsLabels {
+    font-size: 12px;
+  }
+
+  .tableBorder {
+    border: none;
+    margin-bottom: 10px;
+  }
+
+  .middleAlign {
+    vertical-align: top;
+  }
+
+  .toggle {
+    position: relative;
+    display: block;
+    width: 125px;
+    height: 30px;
+    padding: 3px;
+    margin: auto;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.toggle-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+.toggle-label {
+    position: relative;
+    display: block;
+    height: inherit;
+    font-size: 14px;
+    background: #3c024a;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
+                inset 0 0 3px rgba(0, 0, 0, 0.15);
+}
+.toggle-label:before, .toggle-label:after {
+    position: absolute;
+    top: 50%;
+    color: black;
+    margin-top: -.5em;
+    line-height: 1;
+}
+.toggle-label:before {
+    content: attr(data-off);
+    right: 10px;
+    color: #fff;
+}
+.toggle-label:after {
+    content: attr(data-on);
+    left: 12px;
+    color: #fff;
+    opacity: 0;
+}
+.toggle-input:checked~.toggle-label {
+    background: green;
+}
+.toggle-input:checked~.toggle-label:before {
+    opacity: 0;
+}
+.toggle-input:checked~.toggle-label:after {
+    opacity: 1;
+}
+.toggle-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(to bottom, 
+              #FFFFFF 40%, #f0f0f0);
+    border-radius: 50%;
+}
+.toggle-handle:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -6px 0 0 -6px;
+    width: 16px;
+    height: 16px;
+}
+.toggle-input:checked~.toggle-handle {
+    left: 92.5px;
+    box-shadow: -1px 1px 5px 
+              rgba(0, 0, 0, 0.2);
+}
+.toggle-label,
+.toggle-handle {
+    transition: All 0.3s ease;
+    -webkit-transition: All 0.3s ease;
+    -moz-transition: All 0.3s ease;
+    -o-transition: All 0.3s ease;
+}
+
+.toggleA {
+    position: relative;
+    display: block;
+    width: 125px;
+    height: 30px;
+    padding: 3px;
+    margin: auto;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.toggleA-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+.toggleA-label {
+    position: relative;
+    display: block;
+    height: inherit;
+    font-size: 14px;
+    background: #3c024a;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
+                inset 0 0 3px rgba(0, 0, 0, 0.15);
+}
+.toggleA-label:before, .toggleA-label:after {
+    position: absolute;
+    top: 50%;
+    color: black;
+    margin-top: -.5em;
+    line-height: 1;
+}
+.toggleA-label:before {
+    content: attr(data-off);
+    right: 10px;
+    color: #fff;
+}
+.toggleA-label:after {
+    content: attr(data-on);
+    left: 12px;
+    color: #fff;
+    opacity: 0;
+}
+.toggleA-input:checked~.toggleA-label {
+    background: green;
+}
+.toggleA-input:checked~.toggleA-label:before {
+    opacity: 0;
+}
+.toggleA-input:checked~.toggleA-label:after {
+    opacity: 1;
+}
+.toggleA-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(to bottom, 
+              #FFFFFF 40%, #f0f0f0);
+    border-radius: 50%;
+}
+.toggleA-handle:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -6px 0 0 -6px;
+    width: 16px;
+    height: 16px;
+}
+.toggleA-input:checked~.toggleA-handle {
+    left: 92.5px;
+    box-shadow: -1px 1px 5px 
+              rgba(0, 0, 0, 0.2);
+}
+.toggleA-label,
+.toggleA-handle {
+    transition: All 0.3s ease;
+    -webkit-transition: All 0.3s ease;
+    -moz-transition: All 0.3s ease;
+    -o-transition: All 0.3s ease;
+}
+
+.toggleB {
+    position: relative;
+    display: block;
+    width: 125px;
+    height: 30px;
+    padding: 3px;
+    margin: auto;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.toggleB-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+.toggleB-label {
+    position: relative;
+    display: block;
+    height: inherit;
+    font-size: 14px;
+    background: #3c024a;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
+                inset 0 0 3px rgba(0, 0, 0, 0.15);
+}
+.toggleB-label:before, .toggleB-label:after {
+    position: absolute;
+    top: 50%;
+    color: black;
+    margin-top: -.5em;
+    line-height: 1;
+}
+.toggleB-label:before {
+    content: attr(data-off);
+    right: 10px;
+    color: #fff;
+}
+.toggleB-label:after {
+    content: attr(data-on);
+    left: 12px;
+    color: #fff;
+    opacity: 0;
+}
+.toggleB-input:checked~.toggleB-label {
+    background: green;
+}
+.toggleB-input:checked~.toggleB-label:before {
+    opacity: 0;
+}
+.toggleB-input:checked~.toggleB-label:after {
+    opacity: 1;
+}
+.toggleB-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(to bottom, 
+              #FFFFFF 40%, #f0f0f0);
+    border-radius: 50%;
+}
+.toggleB-handle:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -6px 0 0 -6px;
+    width: 16px;
+    height: 16px;
+}
+.toggleB-input:checked~.toggleB-handle {
+    left: 92.5px;
+    box-shadow: -1px 1px 5px 
+              rgba(0, 0, 0, 0.2);
+}
+.toggleB-label,
+.toggleB-handle {
+    transition: All 0.3s ease;
+    -webkit-transition: All 0.3s ease;
+    -moz-transition: All 0.3s ease;
+    -o-transition: All 0.3s ease;
+}
+
+.toggleC {
+    position: relative;
+    display: block;
+    width: 125px;
+    height: 30px;
+    padding: 3px;
+    margin: auto;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.toggleC-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+.toggleC-label {
+    position: relative;
+    display: block;
+    height: inherit;
+    font-size: 14px;
+    background: #3c024a;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
+                inset 0 0 3px rgba(0, 0, 0, 0.15);
+}
+.toggleC-label:before, .toggleC-label:after {
+    position: absolute;
+    top: 50%;
+    color: black;
+    margin-top: -.5em;
+    line-height: 1;
+}
+.toggleC-label:before {
+    content: attr(data-off);
+    right: 10px;
+    color: #fff;
+}
+.toggleC-label:after {
+    content: attr(data-on);
+    left: 12px;
+    color: #fff;
+    opacity: 0;
+}
+.toggleC-input:checked~.toggleC-label {
+    background: green;
+}
+.toggleC-input:checked~.toggleC-label:before {
+    opacity: 0;
+}
+.toggleC-input:checked~.toggleC-label:after {
+    opacity: 1;
+}
+.toggleC-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(to bottom, 
+              #FFFFFF 40%, #f0f0f0);
+    border-radius: 50%;
+}
+.toggleC-handle:before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -6px 0 0 -6px;
+    width: 16px;
+    height: 16px;
+}
+.toggleC-input:checked~.toggleC-handle {
+    left: 92.5px;
+    box-shadow: -1px 1px 5px 
+              rgba(0, 0, 0, 0.2);
+}
+.toggleC-label,
+.toggleC-handle {
+    transition: All 0.3s ease;
+    -webkit-transition: All 0.3s ease;
+    -moz-transition: All 0.3s ease;
+    -o-transition: All 0.3s ease;
+}
+
+.select-input
+{
+    display: inline-block;
+    padding-right: 10px;
+}
+
+.stats-sections-container {
+    flex-direction: column;
+}
+
+.grid-item select
+{
+   margin: 0em;
+   padding-top: 0em;
+}
+
+.grid-item
+{
+  height: 2.5em;
+  padding-top: 0.5em;
+}
+
+.stats-section {
+    border: 1px solid rgba(0,0,0,.125);
+    border-left: 5px solid #b890bb;
+    border-radius: .25rem;
+    transition: .25s box-shadow;
+    margin-bottom: 0.5em;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .stats-section-icon
+  {
+    /* height: calc(100px - 1em - 2px); */
+    width: 30%;
+    height: 100%;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 10px;
+  }
+  
+  .stats-section .stats-text {
+    width: 70%;
+    display: inline-block;
+    padding: 0.25em;
+  }
+  
+  .stats-section .stat-number
+  {
+    width: 100%;
+    text-align: center;
+    /* color: #00698e; */
+  }
+  
+  .stats-section .stat-number-text
+  {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    /* color: #00698e; */
+  }
+  
+  .stats-note
+{
+  font-size: 14px
+}
+
+.stat-number, .stat-number
+{
+  font-size: 2em;
+  font-weight: 500;
+  padding: 0em 0.1em;
+  display: inline-block;
+
+}
+
+.rectHover:hover
+{
+    outline: .1rem dashed!important;
+}
+
+.containerTT {
+    display: flex;
+    height: auto;
+    width: 200px;
+  }
+  
+  .col {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .left {
+    box-shadow: .5px 0 0 #000;
+  }
+  
+  .right {
+    box-shadow: -.5px 0 0 #000;
+  }
+
+  .drug-tab-section {
+    display: inline-block;
+    width: 50%;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+  }
+  
+  .drug-tab {
+    border: none !important;
+    width: 46%;
+    height: 60px;
+    padding: 0.25em 0;
+    margin: 0 2%;
+    background-color: #B4C7E7 !important;
+    color: white!important;
+    border-radius: 30px!important;
+    box-shadow: 0px 2px 5px lightgrey!important;
+    vertical-align: middle;
+  }
+  
+  .drug-tab:hover {
+    box-shadow: 0px 2px 7px blue;
+  }
+  
+  .drug-tab.active {
+    background-color: rgb(0, 112, 192)!important;
+    color: white!important;
+  }
+  
+  .drug-tab:focus {
+    outline: 3px solid lightblue!important;
+  }
+
+  .alignCenter{
+    text-align: center;
+  }
+
+  .containerLC {
+    display: flex;
+    width: 100%;
+  }
+
+  .toolTipChgPerc
+  {
+    display: flex;
+    width: 350px;
+    height: 200px;
+  }
+
+  .tdChgPercent {
+    vertical-align: top!important;
+  }
+
+  .containerChgPercent {
+    display: flex;
+    width: 350px!important;
+    float: right;
+  }
+
+  .chartDiv {
+    width: 85%;
+  }
+
+  .chartDivAll {
+    width: 100%;
+  }
+
+  .drugsDiv {
+    padding-top: 60px;
+    width: 15%;
+    min-width: 250px;
+  }
