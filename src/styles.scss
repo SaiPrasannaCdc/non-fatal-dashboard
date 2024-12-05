@@ -1240,6 +1240,7 @@ html {
 .rectHover:hover
 {
     outline: .1rem dashed!important;
+    fill: #F1E8F8
 }
 
 .containerTT {
@@ -1334,4 +1335,9 @@ html {
     padding-top: 60px;
     width: 15%;
     min-width: 250px;
+  }
+
+  .tooltipTableLC
+  {
+    background-color: #F1E8F8;
   }

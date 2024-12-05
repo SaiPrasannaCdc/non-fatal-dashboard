@@ -251,8 +251,10 @@ function LineChart({ params }) {
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
   inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
+  inp['numOfTicks'] = specs['xMax']/inp['tickWidth'];
 
   const generateYearLabels = () => {
+
     return (
       <Fragment>
         <Fragment>
@@ -261,7 +263,13 @@ function LineChart({ params }) {
         <Fragment>
           {inp['tickIndexes'].map((yearIdx, idx) => {
             if(yearIdx > 1) {
-              return <text y={specs.yMax + 80} x={((inp['tickWidth'] * (inp['tickIndexes'][idx] - 2)) + (inp['tickWidth'] * 6 )  + 5)} textAnchor="middle" style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
+              if (idx < (inp['tickIndexes'].length) - 1) {
+                return <text y={specs.yMax + 80} x={((inp['tickWidth'] * (inp['tickIndexes'][idx] - 2)) + (inp['tickWidth'] * 6 )  + 5)} textAnchor="middle" style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
+              }
+              else
+              {
+                return <text y={specs.yMax + 80} x={((inp['tickWidth'] * inp['tickIndexes'][idx] - 2) + (((inp['numOfTicks'] - inp['tickIndexes'][idx] - 2) * inp['tickWidth'])/2))  + 5} textAnchor="middle" style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
+              }
             }
             })}
         </Fragment>
@@ -446,9 +454,9 @@ function LineChart({ params }) {
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') )+ '</strong></h3></div>';
+    var heading = '<div class="tooltipTableLC alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') )+ '</strong></h3></div>';
 
-    return heading + '<table><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+    return heading + '<table class="tooltipTableLC"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
   const getTooltipFragmentPerc = (drug, yr, st) => {
@@ -531,7 +539,7 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={inp.currentState !== 'US' ? (isPeriod ? getTooltipFragment(inp, inp.monthNamesPeriod[d[specs.xKey]]) : getTooltipFragment(inp, d[specs.xKey])) : `<h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
+              data-tip={inp.currentState !== 'US' ? (isPeriod ? getTooltipFragment(inp, inp.monthNamesPeriod[d[specs.xKey]]) : getTooltipFragment(inp, d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td><h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}</td></tr></table>`}></rect>
           })
         }
       </Fragment>

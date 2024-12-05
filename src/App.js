@@ -765,9 +765,9 @@ export default function App({ dataUrl }) {
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
       5 Year Rate
-      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, currentDrug, width }} />
+      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width }} />
     </> : <></>,
-    [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, currentDrug, width]);
+    [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width]);
 
   const loading = <div className="loading-container">
     <div className="loading-spinner"></div>

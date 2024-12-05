@@ -17,7 +17,7 @@ const statePositions = { 'US': { scale: 1, x: 0, y: 0 }, 'CA': { scale: 2.2, x: 
 
 const UsaMap = ({ params }) => {
 
-  const { data, stateNames, currentState, currentYear, currentYearGroup, width } = params;
+  const { data, stateNames, currentState, currentYear, currentYearGroup, supportedYears, width } = params;
 
   if (width === 0) return <></>;
 
@@ -103,21 +103,59 @@ const UsaMap = ({ params }) => {
     return rate;
   }
 
+  const getRateAllYearsForED = (presentState) => {
+    var finalRate = 0;
+    var rate = 0;
+    var noDataCnt = 0
+    for (var i=0; i<supportedYears.length;i++) {
+      if (getRateforState(presentState, supportedYears[i]) === undefined)
+        noDataCnt++;
+      else
+        rate = rate + Number(getRateforState(presentState, supportedYears[i]));
+    }
+    if (rate > 0)
+      finalRate =  rate / (supportedYears.length - noDataCnt);
+
+    return finalRate.toFixed(1);
+  }
+
   const getCountforED = (geoId, presentState, flag) => {
     var cnt = flag == 'C' ? filteredData[geoId].count : getCountforState(presentState, currentYear);
-    return cnt;
+    return Math.trunc(cnt);
+  }
+
+  const getCountAllYearsForED = (presentState) => {
+    var cnt = 0;
+    for (var i=0; i<supportedYears.length;i++) {
+      cnt = cnt + (getCountforState(presentState, supportedYears[i]) === undefined ? 0 : Number(getCountforState(presentState, supportedYears[i])))
+    }
+    return Math.trunc(cnt);
   }
 
   const getRateHTMLforED = (geoId, presentState, flag) => {
     var leftRateStr = '';
-    let rate = getRateforED(geoId, presentState, flag);
+    let rate;
+    if (currentYearGroup === 'all' && flag == 'S') {
+      rate = getRateAllYearsForED(presentState);
+    }
+    else
+    {
+      rate = getRateforED(geoId, presentState, flag);
+    }
     leftRateStr = leftRateStr + '<span>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
     return leftRateStr;
   }
 
   const getCountHTMLforED = (geoId, presentState, flag) => {
     var leftCntStr = ''
-    let cnt = getCountforED(geoId, presentState, flag);
+    let cnt;
+    if (currentYearGroup === 'all' && flag == 'S') {
+      cnt = getCountAllYearsForED(presentState);
+    }
+    else
+    {
+      cnt = getCountforED(geoId, presentState, flag);
+    }
     leftCntStr = leftCntStr + '<span>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
     return leftCntStr;
   }
@@ -134,9 +172,9 @@ const UsaMap = ({ params }) => {
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforED(geoId, presentState, 'S') + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforED(geoId, presentState, 'S') + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + 'State' + '</br>' + `${stateNames[presentState]}` + '</br></strong></h3></div>';
+    var heading = '<div class="tooltipTableLC alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + 'State' + '</br>' + `${stateNames[presentState]}` + '</br></strong></h3></div>';
 
-    return heading + '<table><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+    return heading + '<table class="tooltipTableLC"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
   const constructGeoJsx = (geographies, projection, state = false) => {
