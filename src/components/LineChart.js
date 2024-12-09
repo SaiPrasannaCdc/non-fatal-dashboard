@@ -532,7 +532,7 @@ function LineChart({ params }) {
 
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
-              className={'rectHover'}
+              className={''}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
               width={sectionWidth}
@@ -651,12 +651,12 @@ function LineChart({ params }) {
                         }
     
                         return <text 
-                          x={specs.xMax + 30} 
+                          x={specs.xMax + 15} 
                           y={yPos}
                           alignmentBaseline="middle" 
                           fontSize={specs.fontSize} 
                           fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
-                            {key != 'US' ? inp.stateNames[key] : 'Overall'}
+                            {key != 'US' ? inp.stateNames[key] : 'Overall (' + (stateDropdownOptions.length - 1) + ' States)'}
                         </text>
                       })()
                     }
