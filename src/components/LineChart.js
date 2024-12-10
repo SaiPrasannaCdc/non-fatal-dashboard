@@ -301,7 +301,7 @@ function LineChart({ params }) {
     if (currentTimeframe === 'Annual' && !isPeriod) {
       if (currentState === 'US') {
         for (var i=0;i<Object.keys(inp.filteredData['US']).length;i++) {
-          if (inp.filteredData['US'][i]['year'] === val) {
+          if (inp.filteredData['US'][i]['year'] == val) {
             rate = inp.filteredData['US'][i][drug]
             break;
           }
@@ -353,7 +353,7 @@ function LineChart({ params }) {
     if (currentTimeframe === 'Annual' && !isPeriod) {
       if (currentState === 'US') {
         for (var i=0;i<Object.keys(countsDataYearly).length;i++) {
-          if (countsDataYearly[i]['year'] === val && countsDataYearly[i]['drug'] === drug) {
+          if (countsDataYearly[i]['year'] == val && countsDataYearly[i]['drug'] === drug) {
             cnt = countsDataYearly[i]['count'];
             break;
           }
