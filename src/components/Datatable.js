@@ -4,7 +4,7 @@ const getFilteredTimeData = (data, currentTimeframe, currentDataSource, currentS
   if(data.year[currentDataSource][currentState]){
     if(currentTimeframe === 'Monthly'){
       return Object.keys(data.year[currentDataSource][currentState]).map(month => {
-        let d = data.year[currentDataSource][currentState][month].find(d => d.year === currentYear);
+        let d = data.year[currentDataSource][currentState][month].find(d => d.year == currentYear);
         if (d) {
           d.month = parseInt(month);
           return d;

@@ -15,7 +15,7 @@ export const colorScale = {
   'opioid': '#4A2866',
   'heroin': '#353535',
   'stimulant': '#24574E',
-  'benzo': '#573325',
+  'benzodiazepine': '#573325',
   'fentanyl': '#8C5EA7',
   'cocaine': '#357F70',
   'methamphetamine': '#357F70'
@@ -137,7 +137,7 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
               opioid: element[index1].opioid,
               heroin: element[index1].heroin,
               stimulant: element[index1].stimulant,
-              benzo: element[index1].benzo,
+              benzodiazepine: element[index1].benzodiazepine,
               fentanyl: element[index1].fentanyl,
               cocaine: element[index1].cocaine,
               methamphetamine: element[index1].methamphetamine
@@ -172,7 +172,7 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
           opioid: arr[i].opioid,
           heroin: arr[i].heroin,
           stimulant: arr[i].stimulant,
-          benzo: arr[i].benzo,
+          benzodiazepine: arr[i].benzodiazepine,
           fentanyl: arr[i].fentanyl,
           cocaine: arr[i].cocaine,
           methamphetamine: arr[i].methamphetamine
@@ -688,7 +688,7 @@ function LineChart({ params }) {
                 {inp.selectedDrugs.includes('opioid') && currentDrug != 'opioid' && currentState === 'US' && buildLineForDrug('opioid')}
                 {inp.selectedDrugs.includes('heroin') && currentDrug != 'heroin' && currentState === 'US' && buildLineForDrug('heroin')}
                 {inp.selectedDrugs.includes('stimulant') && currentDrug != 'stimulant' && currentState === 'US' && buildLineForDrug('stimulant')}
-                {inp.selectedDrugs.includes('benzo') && currentDrug != 'benzo' && currentState === 'US' && buildLineForDrug('benzo')}
+                {inp.selectedDrugs.includes('benzodiazepine') && currentDrug != 'benzodiazepine' && currentState === 'US' && buildLineForDrug('benzodiazepine')}
                 {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && currentState === 'US' && buildLineForDrug('fentanyl')}
                 {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && currentState === 'US' && buildLineForDrug('cocaine')}
                 {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && currentState === 'US' && buildLineForDrug('methamphetamine')}

@@ -17,7 +17,7 @@ export const UtilityFunctions = {
       case 'stimulant':
         seriesColor = (key === 'US') ? 'rgb(36, 87, 78)' : 'lightblue';
         break;
-      case 'benzo':
+      case 'benzodiazepine':
         seriesColor = (key === 'US') ? 'rgb(87, 51, 37)' : 'lightblue';
         break;
       case 'fentanyl':

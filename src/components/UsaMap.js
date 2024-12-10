@@ -76,7 +76,7 @@ const UsaMap = ({ params }) => {
     var rate;
     if (presentState !== 'US') {
       for (var i=0;i<Object.keys(data.year['ED'][presentState]['all']).length;i++) {
-        if (data.year['ED'][presentState]['all'][i].year === currentYear) {
+        if (data.year['ED'][presentState]['all'][i].year == currentYear) {
           rate = data.year['ED'][presentState]['all'][i].alldrug;
           break;
         }

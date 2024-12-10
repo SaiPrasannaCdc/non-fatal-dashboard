@@ -41,13 +41,13 @@ const drugOptions = {
     'rateColumn': 'rate_alldrug',
     'color': '#2B2D73',
   },
-  'benzo': {
+  'benzodiazepine': {
     'titleSingular': 'Benzodiazepine',
     'titlePlural': 'Benzodiazepine',
     'titleAll': 'Benzodiazepine',
     'titleForDropDown': 'Benzodiazepine',
     'titleHeader': 'Benzodiazepine',
-    'rateColumn': 'rate_benzo',
+    'rateColumn': 'rate_benzodiazepine',
     'color': '#573325',
   },
   'opioid': {
@@ -461,7 +461,7 @@ export default function App({ dataUrl }) {
       let supportedStates = {};
       let supportedJurisdictions = {};
 
-      const stateSheet = wb.Sheets['State Counts & Rates'];
+      const stateSheet = wb.Sheets['Jurisdiction Counts & Rates'];
       let columnInfo = getColumnsInfo(stateSheet);
       let columnHeaders = columnInfo.columnHeaders;
       let columns = columnInfo.columns;
@@ -480,9 +480,9 @@ export default function App({ dataUrl }) {
           //Drug rate
           let monthNode = createIfUndefined(datasetNode[drugOptions[drug].rateColumn], getValue('month', i), []);
           let monthDatum;
-          monthNode.forEach(node => { if (node.state === getValue('state', i)) monthDatum = node; });
+          monthNode.forEach(node => { if (node.state === getValue('jurisdiction', i)) monthDatum = node; });
           if (!monthDatum) {
-            let state = getValue('state', i);
+            let state = getValue('jurisdiction', i);
             monthDatum = { state };
             monthNode.push(monthDatum);
           }
@@ -492,9 +492,9 @@ export default function App({ dataUrl }) {
           datasetNode = stateData[getValue('dataset', i)];
           monthNode = createIfUndefined(datasetNode[drug], getValue('month', i), []);
           monthDatum = undefined;
-          monthNode.forEach(node => { if (node.state === getValue('state', i)) monthDatum = node; });
+          monthNode.forEach(node => { if (node.state === getValue('jurisdiction', i)) monthDatum = node; });
           if (!monthDatum) {
-            monthDatum = { state: getValue('state', i) };
+            monthDatum = { state: getValue('jurisdiction', i) };
             monthNode.push(monthDatum);
           }
           monthDatum[getValue('year', i)] = formatNumber(getValue('count_' + drug, i), false);
@@ -502,7 +502,7 @@ export default function App({ dataUrl }) {
 
         //Populate year data
         datasetNode = createIfUndefined(yearData, getValue('dataset', i), {});
-        datasetNode = createIfUndefined(datasetNode, getValue('state', i), {});
+        datasetNode = createIfUndefined(datasetNode, getValue('jurisdiction', i), {});
         datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
         let yearDatum = { year: getValue('year', i) };
         Object.keys(drugOptions).forEach(drug => {
@@ -514,7 +514,7 @@ export default function App({ dataUrl }) {
         let ds = getValue('dataset', i);
         let yr = getValue('year', i);
         let tmp = getValue('month', i);
-        let st = getValue('state', i);
+        let st = getValue('jurisdiction', i);
         let mon = tmp == 'all' ? '00' : String(tmp).padStart(2, '0');
         let key = ds + '_' + yr + mon;
         if(supportedJurisdictions[key])
@@ -590,7 +590,7 @@ export default function App({ dataUrl }) {
         countyData[year][getValue('fips', i)] = {
           fips: getValue('fips', i),
           county: getValue('county', i),
-          state: getValue('state', i),
+          state: getValue('jurisdiction', i),
           rate: formatNumber(getValue('rate_alldrug', i)),
           count: formatNumber(getValue('count_alldrug', i))  
         };
@@ -903,7 +903,7 @@ export default function App({ dataUrl }) {
                 <div>
                   <div className="drug-tab-section">
                     {drugTab('alldrug', <span>All Drugs</span>)}
-                    {drugTab('benzo', <span>Benzodiazepine</span>)}
+                    {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
                   </div>
                   <div className="drug-tab-section">
                     {drugTab('opioid', <span>All Opioids</span>)}
