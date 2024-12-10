@@ -141,8 +141,8 @@ function StateChart(params) {
                           setCurrentState(stateKey);
                         }
                       }}
-                      data-tip={`<strong>${name}</strong><br/><br/>
-                      Rate: ${rate < 0 ? toolTip : Number(rate).toLocaleString()}`}
+                      data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
+                      Rate: ${rate < 0 ? toolTip : Number(rate).toLocaleString()}</div>`}
                     ></path>
                     <text 
                       className="bar-label"
