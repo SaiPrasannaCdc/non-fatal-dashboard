@@ -48,8 +48,8 @@ function SexAgeCharts({ params }) {
     const x1Pos = isNaN(d[x1Key]) ? xMaxHalf - 15 : x1Scale(d[x1Key]);
     const x2Pos = isNaN(d[x2Key]) ? xMaxHalf + 15 : x2Scale(d[x2Key]);
 
-    const x1Tip = `<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x1Key].toLocaleString()}</p>`;
-    const x2Tip = `<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x2Key].toLocaleString()}</p>`;
+    const x1Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x1Key].toLocaleString()}</p></div>`;
+    const x2Tip = `<div class="tooltipTableLC"<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x2Key].toLocaleString()}</p></div>`;
 
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;

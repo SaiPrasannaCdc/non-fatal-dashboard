@@ -211,7 +211,7 @@ function LineChart({ params }) {
   });
 
   const specs = [];
-  specs['width'] = currentState === 'US' ? (width - 250) : width;
+  specs['width'] = currentState === 'US' ? (width - 250) : width - 20;
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
@@ -473,8 +473,8 @@ function LineChart({ params }) {
       }
     }
 
-    if (rec != null) {
-      if (rec.value != rec.valuePrev) {
+    if (rec != null && !isNaN(rec.valPrev)) {
+      if (rec.value != rec.valPrev) {
           diff =  rec.value - rec.valPrev;
           perc = ((diff / rec.valPrev) * 100)
       }
@@ -559,10 +559,10 @@ function LineChart({ params }) {
                     if (d.year != supportedYears[0]) {
                       return <rect
                         key={`tooltip-section-${d[specs.xKey]}`}
-                        x={Math.max(0, specs.xScale(d[specs.xKey]) - 5 - 15)}
-                        y={specs.yScale(d[drug]) - 20}
-                        width={40}
-                        height={40}
+                        x={Math.max(0, specs.xScale(d[specs.xKey]) -10)}
+                        y={specs.yScale(d[drug]) - 10}
+                        width={20}
+                        height={20}
                         style={{outline: 'none'}}
                         fill='transparent'
                         data-tip={getTooltipFragmentPerc(drug, d.year, key)}></rect>
@@ -623,8 +623,8 @@ function LineChart({ params }) {
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
                         </Group>
                       )
                     })}

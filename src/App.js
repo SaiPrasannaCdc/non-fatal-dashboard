@@ -660,7 +660,8 @@ export default function App({ dataUrl }) {
     )
   }
 
-  const drugTab = (drugName, drugLabel) => (
+  {/* Future Work */}
+  /* const drugTab = (drugName, drugLabel) => (
     <button
       className={`drug-tab${drugName === currentDrug ? ' active' : ''}`}
       onClick={() => {
@@ -668,7 +669,7 @@ export default function App({ dataUrl }) {
         setselectedDrugs([drugName])
       }}
     >{drugLabel || drugName}</button>
-  );
+  ); */
 
   const resetPeriodDates = (yr) => { 
     setLookupPeriodStartYear(yr);
@@ -813,6 +814,17 @@ export default function App({ dataUrl }) {
                     optionLabel: (key) => dataSourceOptions[key]['title']
                   }}/>
                   <Select params={{
+                    key: 'drug',
+                    label: 'a Drug',
+                    value: currentDrug,
+                    onChange: (param) => {
+                      setCurrentDrug(param);
+                      setselectedDrugs([param])
+                    },
+                    options: Object.keys(drugOptions),
+                    optionLabel: (key) => drugOptions[key]['titleForDropDown']
+                  }}/>
+                  <Select params={{
                     key: 'jurisdiction',
                     label: 'a State',
                     value: currentState,
@@ -832,7 +844,8 @@ export default function App({ dataUrl }) {
                     }),
                     optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
                   }}/>
-                  <br></br>
+                  {/* Future Work */}
+                  {/*                   <br></br> */} 
                   <Select params={{
                     key: 'timeframe',
                     label: 'Time Frame',
@@ -900,7 +913,8 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
-                <div>
+                {/* Future Work */}
+                {/* <div>
                   <div className="drug-tab-section">
                     {drugTab('alldrug', <span>All Drugs</span>)}
                     {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
@@ -917,7 +931,7 @@ export default function App({ dataUrl }) {
                     {drugTab('cocaine',<span>Cocaine</span>)}
                     {drugTab('methamphetamine', <span>Methamphetamine</span>)}
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
             
