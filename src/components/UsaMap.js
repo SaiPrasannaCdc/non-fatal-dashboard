@@ -202,7 +202,8 @@ const UsaMap = ({ params }) => {
             fill={getColor(geo.id)}
             d={path}
             style={{ pointerEvents: geo.id.length <= 2 ? 'none' : 'default' }}
-            data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : undefined}
+            /* FUTURE RELEASE WORK data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : undefined} */
+            data-tip={geo.id.length > 2 && filteredData[geo.id] ? `<h3><strong>${filteredData[geo.id].county}, ${stateNames[stateFipsMapping[geo.id.substring(0, 2)]]}</strong></h3><p><strong>Rate:</strong> ${filteredData[geo.id].rate}</p>` : undefined}
           />
         </g>
       )
