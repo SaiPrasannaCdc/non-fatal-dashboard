@@ -653,7 +653,7 @@ function LineChart({ params }) {
             colorScale={colorScale}
             defaultValueIfEmpty={defaultValueIfEmpty}
             value={percentChgValue}
-            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
+            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the rate of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
             label={percentChgDrug}
             timeframe={'year'}
         ></QuickStat>
