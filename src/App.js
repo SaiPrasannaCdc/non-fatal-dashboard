@@ -439,13 +439,13 @@ export default function App({ dataUrl }) {
       <Fragment>
         {
           Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
-              <tr><td><label key={drug[0]}>
+             <label key={drug[0]}>
                         <input type="checkbox" class="drugSelections" value={drug[0]} 
                         checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
                         onChange={(event) => { handleDrugSelectionsChange(event) }}
                         />
                         <span class={drug[0]}></span>{drug[1]}
-                      </label></td></tr>
+                      </label>
                   ))
         }
       </Fragment>
@@ -647,6 +647,8 @@ export default function App({ dataUrl }) {
     }
 
     fetchData();
+
+    setLabelToggle(true); //TEMP FIX TBD
   }, []);
 
   const getFootNotesForData = () => {
@@ -660,8 +662,7 @@ export default function App({ dataUrl }) {
     )
   }
 
-  {/* Future Work */}
-  /* const drugTab = (drugName, drugLabel) => (
+  /* FUTURE RELEASE WORK const drugTab = (drugName, drugLabel) => (
     <button
       className={`drug-tab${drugName === currentDrug ? ' active' : ''}`}
       onClick={() => {
@@ -722,26 +723,25 @@ export default function App({ dataUrl }) {
   const lineChartMemo = useMemo(() =>
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
-      {getInputControls()}
+      {/* FUTURE RELEASE WORK {getInputControls()} */}
       <table style={{width: '100%'}}>
+        {/* FUTURE RELEASE WORK {currentState == 'US' &&
+          <tr> 
+            <td class="drugsDivTop">
+              {getDrugControls()}
+            </td>
+          </tr>
+        } */}
         <tr>
           <td>
             <div class="containerLC">
-              <div class={currentState === 'US' ? "chartDiv" : "chartDivAll"}>
+              <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"}>
                 <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs }} />
               </div>
-              {currentState === 'US' &&
-              <div class="drugsDiv">
-                <table style={{border: 'solid 1px lightgray'}}>
-                  {getDrugControls()}
-                </table>
-              </div>
-              }       
             </div>
           </td>
         </tr>
       </table>
-      
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
@@ -844,8 +844,7 @@ export default function App({ dataUrl }) {
                     }),
                     optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
                   }}/>
-                  {/* Future Work */}
-                  {/*                   <br></br> */} 
+                  {/*   FUTURE RELEASE WORK                <br></br> */} 
                   <Select params={{
                     key: 'timeframe',
                     label: 'Time Frame',
@@ -913,8 +912,7 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
-                {/* Future Work */}
-                {/* <div>
+                {/* FUTURE RELEASE WORK <div>
                   <div className="drug-tab-section">
                     {drugTab('alldrug', <span>All Drugs</span>)}
                     {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}

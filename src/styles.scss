@@ -803,7 +803,7 @@ html {
   .drugSelections
   {
     margin-top: 6px;
-    margin-left: 10px;
+    margin-left: 20px;
     width: 20px;
     height: 20px;
     text-align: top;
@@ -1337,8 +1337,15 @@ html {
     min-width: 220px;
   }
 
+  .drugsDivTop {
+    text-align: center!important;
+    padding-bottom: 75px;
+  }
+
+
   .tooltipTableLC
   {
-    background-color: #F1E8F8;
+    background-color: white;
     padding: 5px;
+    text-align: left!important;
   }

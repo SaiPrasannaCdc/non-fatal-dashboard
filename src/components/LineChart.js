@@ -211,7 +211,7 @@ function LineChart({ params }) {
   });
 
   const specs = [];
-  specs['width'] = currentState === 'US' ? (width - 250) : width - 20;
+  specs['width'] = width - 20; 
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
@@ -275,6 +275,40 @@ function LineChart({ params }) {
         </Fragment>
       </Fragment>
     )
+  }
+
+ const getNumberOfStates = (dkey) => {
+
+    var mon, yr;
+
+    let str = isPeriod ? inp.monthNamesPeriod[dkey] : dkey;
+    
+    if (currentTimeframe === 'Monthly' && isPeriod) {
+      var monYr = String(str)?.split(' ');
+      mon = UtilityFunctions.getMonthNumber(monYr[0]);
+      yr = monYr[1];
+    }
+    if (currentTimeframe === 'Monthly' && !isPeriod) {
+      mon = str;
+      yr = currentYear;
+    }
+    else if (currentTimeframe === 'Annual')
+    {
+      yr = dkey;
+    }
+
+    let monMain = currentTimeframe != 'Monthly' ? '00' : String(mon).padStart(2, '0');
+    let key = currentDataSource + '_' + yr + monMain;
+    let supportedStates = {};
+    let strStates = data.supportedJurisdictions[key]?.split(',');
+    if (strStates !== undefined) {
+      for (const st of strStates) {
+        if (!supportedStates[st]) 
+          supportedStates[st] = stateNames[st]; 
+      }
+    }
+
+    return Object.keys(supportedStates).length - 1;
   }
 
  const markYearsForTicks = () => {
@@ -444,17 +478,19 @@ function LineChart({ params }) {
     return leftCntStr;
   }
 
-  const getTooltipFragment = (inp, val) => {
+  const getTooltipFragment = (param) => {
 
-    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>(' + (stateDropdownOptions.length - 1) + ' States)</p></td></tr>';
+    let val = isPeriod ? inp.monthNamesPeriod[param] : param;
+    let numStates = getNumberOfStates(param)
+    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</p></td></tr>';
     var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
     var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
     var leftStr = leftComStr + leftRateStr + leftCountStr;
-    var rightComStr = `<table><tr><td><p><strong>` + inp.stateNames[inp.currentState] + '</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</strong></p></td></tr>';
+    var rightComStr = `<table><tr><td><p><strong>` + inp.stateNames[inp.currentState] + '</strong></p></td></tr>';
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="tooltipTableLC alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') )+ '</strong></h3></div>';
+    var heading = '<div class="tooltipTableLC alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') ) + '</strong></h3><span>' + '(' + numStates + ' States)' + '</span></div>';
 
     return heading + '<table class="tooltipTableLC"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
@@ -491,8 +527,8 @@ function LineChart({ params }) {
       <Fragment>
         {
           inp.filteredData['US'].map(d => {
-
-            var tooltipValues = !currentDrugOnly ? [`<p><strong class=${currentDrug + 'ToolTip'}>Overall Rate</strong>: ${d[currentDrug]} (${stateDropdownOptions.length - 1} states)</p>`] : [];
+            let numStates = getNumberOfStates(d[specs.xKey])
+            var tooltipValues = !currentDrugOnly ? [`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleSingular + ` Rate</strong>: ${d[currentDrug]}</p>`] : [];
             if (inp.currentState !== 'US') {
               let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
               if(stateValue) {
@@ -504,7 +540,7 @@ function LineChart({ params }) {
             }
 
             if (inp.selectedDrugs.length > 0) {
-                tooltipValues = !currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>Overall Rate</strong>: ${d[inp.selectedDrugs[0]]} (${stateDropdownOptions.length - 1} states)</p>`] : [];
+                tooltipValues = !currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleSingular + ` Rate</strong>: ${d[inp.selectedDrugs[0]]}</p>`] : [];
                 if (inp.currentState !== 'US') {
                   let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
                   if(stateValue){
@@ -516,7 +552,7 @@ function LineChart({ params }) {
                 }
                 for (var i in inp.selectedDrugs) {
                   if (i > 0){
-                    tooltipValues.push(!currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${stateDropdownOptions.length - 1} states)</p>`] : null);
+                    tooltipValues.push(!currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleSingular + ` Rate</strong>: ${d[inp.selectedDrugs[i]]}</p>`] : null);
                     if (inp.currentState !== 'US') {
                       let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
                       if (stateValue) {
@@ -539,9 +575,40 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={inp.currentState !== 'US' ? (isPeriod ? getTooltipFragment(inp, inp.monthNamesPeriod[d[specs.xKey]]) : getTooltipFragment(inp, d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td><h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}</td></tr></table>`}></rect>
+              data-tip={inp.currentState !== 'US' ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><h3><strong>${isPeriod ? ` Month </br>${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `Month </br>${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : `Year</br>` + d[specs.xKey]}</strong></h3><span>Overall (` + numStates + ` States)</span></br></br>${tooltipValues.join('')}</td></tr></table>`}></rect>
           })
         }
+      </Fragment>
+    )
+  }
+
+  //Temp Fix TBD
+  const buildToolTipValuesOld = (sectionWidth, sectionWidthHalf) => {
+    return (
+      <Fragment>
+          {filteredData['US'].map(d => {
+            let numStates = getNumberOfStates(d[specs.xKey])
+            const tooltipValues = [`<p><strong>Overall Rate</strong>: ${d[currentDrug]} (${numStates} states)</p>`];
+            if(currentState !== 'US'){
+              let stateValue = filteredData[currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
+              if(stateValue){
+                stateValue = stateValue[currentDrug];
+              } else {
+                stateValue = 'Data not available/not reported'
+              }
+              tooltipValues.push(`<p><strong>${stateNames[currentState]} Rate</strong>: ${stateValue}</p>`);
+            }
+
+            return <rect
+              key={`tooltip-section-${d[specs.xKey]}`}
+              x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
+              y={0}
+              width={sectionWidth}
+              height={specs.yMax}
+              style={{outline: 'none'}}
+              fill='transparent'
+              data-tip={`<h3><strong>${currentTimeframe === 'Monthly' ? `${monthNames[d[specs.xKey]]} ${currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
+            })}
       </Fragment>
     )
   }
@@ -650,20 +717,32 @@ function LineChart({ params }) {
                           }
                         }
     
-                        return <text 
-                          x={specs.xMax + 15} 
-                          y={yPos}
-                          alignmentBaseline="middle" 
-                          fontSize={specs.fontSize} 
-                          fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
-                            {key != 'US' ? inp.stateNames[key] : 'Overall (' + (stateDropdownOptions.length - 1) + ' States)'}
-                        </text>
+                        /* FUTURE RELEASE WORK if (currentState != 'US') { */
+                          return <text 
+                            x={specs.xMax + 15} 
+                            y={yPos}
+                            alignmentBaseline="middle" 
+                            fontSize={specs.fontSize} 
+                            fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
+                              {key != 'US' ? inp.stateNames[key] : 'Overall'}
+                          </text>
+                        // FUTURE RELEASE WORK }
+                        /* FUTURE RELEASE WORK else{
+                          return <text 
+                            x={specs.xMax + 15} 
+                            y={yPos}
+                            alignmentBaseline="middle" 
+                            fontSize={specs.fontSize} 
+                            fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
+                              {drugOptions[currentDrug].titleSingular}
+                          </text>
+                        } */
                       })()
                     }
                   </Group>)
                   }
                   {
-                    !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf)
+                    !showPercent && buildToolTipValuesOld(sectionWidth, sectionWidthHalf) //TEMP FIX TBD
                   }
                   {
                     showPercent && 
