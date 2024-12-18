@@ -1414,13 +1414,15 @@ padding: 10px;
 margin-right: 2px;
 border: 1px solid #ddd;
 border-bottom: none;
-background-color: white;
+background-color: #B4C7E7;
+color: white!important;
+font-weight: bold;
 border-top-right-radius: 10px!important;
 border-top-left-radius: 10px!important;
 }
 
 .tab.active {
-background-color: lightgray;
+background-color: #006CAD!important;
 }
 
 .tab-content {

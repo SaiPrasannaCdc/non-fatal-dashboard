@@ -421,7 +421,7 @@ export default function App({ dataUrl }) {
                 </table>
                 }
               </td>
-              <td style={{width: '10%'}}>
+              <td style={{width: '10%', verticalAlign: 'top'}}>
                 {(currentTimeframe === 'Annual') &&
                   <label class="toggleA">
                       <input id="togglePercent" class="toggleA-input" type="checkbox" 
@@ -440,7 +440,7 @@ export default function App({ dataUrl }) {
                   </label>
                 }
               </td>
-              <td style={{width: '10%'}}>
+              <td style={{width: '10%', verticalAlign: 'top'}}>
                 <label class="toggle">
                     <input id="toggleLabel" class="toggle-input" type="checkbox" 
                     onChange={(e) => {
