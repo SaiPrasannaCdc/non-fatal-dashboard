@@ -262,10 +262,16 @@ export default function App({ dataUrl }) {
           }
         }
         else if (currentDataSource == 'HOSP') {
-          if (currentTimeframe === 'Monthly') 
-            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+          if (!isPeriod) {
+            if (currentTimeframe === 'Monthly') 
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+            else
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          }
           else
-            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          {
+            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+          }
         }
         break;
       
@@ -405,6 +411,15 @@ export default function App({ dataUrl }) {
           <table>
             <tr>
               <td style={{width: '80%!important', textAlign: 'center'}}>
+                {currentState == 'US' && 
+                <table>
+                  <tr>
+                    <td class="drugsDivTop">
+                      {getDrugControls()}
+                    </td>
+                  </tr>
+                </table>
+                }
               </td>
               <td style={{width: '10%'}}>
                 {(currentTimeframe === 'Annual') &&
@@ -440,9 +455,6 @@ export default function App({ dataUrl }) {
                     <span class="toggle-handle"></span>
                 </label>
               </td>
-            </tr>
-            <tr>
-              <td style={{width: '100%', height: '40px'}}></td>
             </tr>
           </table>
         </Fragment>
@@ -663,7 +675,6 @@ export default function App({ dataUrl }) {
 
     fetchData();
 
-    setLabelToggle(true); //TEMP FIX TBD
   }, []);
 
   const getFootNotesForData = () => {
@@ -748,13 +759,6 @@ export default function App({ dataUrl }) {
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
       {getToggleControls()}
       <table style={{width: '100%'}}>
-        {/* FUTURE RELEASE WORK {currentState == 'US' &&
-          <tr> 
-            <td class="drugsDivTop">
-              {getDrugControls()}
-            </td>
-          </tr>
-        } */}
         <tr>
           <td>
             <div class="containerLC">
@@ -899,6 +903,8 @@ export default function App({ dataUrl }) {
                     onChange: (param) => {
                       setCurrentMonth(param);
                       getSupportedStates(currentDataSource, currentYear, param, currentTimeframe);
+                      resetPeriodDates(currentYear);
+                      setPeriodToggle(false);
                     },
                     options: Object.keys(monthNames).filter(key => key !== 'all'),
                     optionLabel: (key) => monthNames[key],

@@ -172,9 +172,9 @@ const UsaMap = ({ params }) => {
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforED(geoId, presentState, 'S') + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforED(geoId, presentState, 'S') + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="tooltipTableLC alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + 'State' + '</br>' + `${stateNames[presentState]}` + '</br></strong></h3></div>';
+    var heading = '<div class="tooltipTableUS alignCenter"><h2 style="margin: 0; padding: 0;"><strong>' + `${stateNames[presentState]}` + '</br></strong></h2></div>';
 
-    return heading + '<table class="tooltipTableLC"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+    return heading + '<table class="tooltipTableUS"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
   const constructGeoJsx = (geographies, projection, state = false) => {
@@ -202,8 +202,7 @@ const UsaMap = ({ params }) => {
             fill={getColor(geo.id)}
             d={path}
             style={{ pointerEvents: geo.id.length <= 2 ? 'none' : 'default' }}
-            /* FUTURE RELEASE WORK data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : undefined} */
-            data-tip={geo.id.length > 2 && filteredData[geo.id] ? `<h3><strong>${filteredData[geo.id].county}, ${stateNames[stateFipsMapping[geo.id.substring(0, 2)]]}</strong></h3><p><strong>Rate:</strong> ${filteredData[geo.id].rate}</p>` : undefined}
+            data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : undefined}
           />
         </g>
       )
