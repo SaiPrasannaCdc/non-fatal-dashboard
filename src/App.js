@@ -831,26 +831,26 @@ export default function App({ dataUrl }) {
           <>
             <div className="filter-wrapper">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
-             
               <div className="filters">
-              <div className="tabs-container">
-            <div className="tabs">
-                {tabData.map((tab, index) => (
-                    <Tab
-                        key={index}
-                        label={tab.label}
-                        onClick={() =>
-                            handleTabClick(index)
-                        }
-                        isActive={index === activeTab}
-                    />
-                ))}
-            </div>
-            <div className="tab-content">
-                {activeTab == 0 && <span><strong>ED Visits:</strong> Emergency department visit discharge data captures information about patients who seek care at emergency departments.</span>}
-                {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Inpatient hospitalization discharge data refers to hospital records generated when patients are released from a hospital after receiving inpatient care.</span>}
-            </div>
-        </div>
+                  <div><label>Select Data Source:</label></div>
+                  <div className="tabs-container">
+                    <div className="tabs">
+                      {tabData.map((tab, index) => (
+                          <Tab
+                              key={index}
+                              label={tab.label}
+                              onClick={() =>
+                                  handleTabClick(index)
+                              }
+                              isActive={index === activeTab}
+                          />
+                      ))}
+                  </div>
+                  <div className="tab-content">
+                      {activeTab == 0 && <span><strong>ED Visits:</strong> Emergency department visit discharge data captures information about patients who seek care at emergency departments.</span>}
+                      {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Inpatient hospitalization discharge data refers to hospital records generated when patients are released from a hospital after receiving inpatient care.</span>}
+                  </div>
+                </div>
                 <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                   <Select params={{
                     key: 'timeframe',
