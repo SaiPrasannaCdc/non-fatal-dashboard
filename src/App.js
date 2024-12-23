@@ -266,7 +266,7 @@ export default function App({ dataUrl }) {
             if (currentTimeframe === 'Monthly') 
               txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
             else
-              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
           else
           {
@@ -466,7 +466,7 @@ export default function App({ dataUrl }) {
       <Fragment>
         {
           Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
-             <label key={drug[0]}>
+             <label key={drug[0]} class="drugLabel">
                         <input type="checkbox" class="drugSelections" value={drug[0]} 
                         checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
                         onChange={(event) => { handleDrugSelectionsChange(event) }}

@@ -218,7 +218,7 @@ function LineChart({ params }) {
   specs['height'] = 400;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = (isPeriod && filteredData['US'].length > 12) ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
@@ -329,6 +329,41 @@ function LineChart({ params }) {
     } 
   }
 
+  const getFormattedValue = (val) => {
+    if (isPeriod)
+    {
+      if (inp['numOfTicks'] > 12) {
+        if (inp.monthNamesShortPeriod[val].length == 4)
+          return monthNamesShort[parseInt('1')]
+        else
+          return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])]
+      }
+      else
+      {
+        if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
+        {
+          if (inp.monthNamesShortPeriod[val].length == 4)
+            return monthNamesShort[parseInt('1')] + ' ' + currentYear;
+          else
+            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + currentYear;
+        }
+        else
+          return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])];
+      }
+    }
+    else
+    {
+      if (currentTimeframe === 'Monthly') {
+        if (val == 1 || val == 12)
+          return monthNamesShort[val] + ' ' + currentYear;
+        else
+          return monthNamesShort[val];
+      }
+      else
+        return Number(val)?.toFixed(0);
+    }
+  } 
+  
   const getRateforDrug = (drug, currentState, val) => {
 
     var rate;
@@ -774,11 +809,13 @@ function LineChart({ params }) {
                   top={specs.yMax}
                   scale={specs.xScale}
                   tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
-                  tickFormat={value => isPeriod ? monthNamesShort[parseInt(inp.monthNamesShortPeriod[value].length == 4 ? '1' : inp.monthNamesShortPeriod[value])]  : (currentTimeframe === 'Monthly' ? ((value == 1 || value == 12) ? monthNamesShort[value] + ' ' + currentYear : monthNamesShort[value]) : Number(value)?.toFixed(0))}
+                  tickFormat={value => 
+                      getFormattedValue(value)
+                  }
                   tickLabelProps={(value) => ({
                     fontSize: specs.fontSize,
-                    textAnchor: isPeriod ? 'end' : 'middle',
-                    angle: isPeriod ? -90 : 0
+                    textAnchor: (isPeriod ? (inp['numOfTicks'] < 12 ? 'middle' : 'end') : 'middle'),
+                    angle: (isPeriod ? (inp['numOfTicks'] < 12 ? 0 : -90) : 0)
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
@@ -786,7 +823,7 @@ function LineChart({ params }) {
                   }}
                 >
                 </AxisBottom>
-                {generateYearLabels()}
+                {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
               </Group>
             </svg>
           {currentDrug == 'fentanyl' &&
