@@ -832,7 +832,7 @@ export default function App({ dataUrl }) {
             <div className="filter-wrapper">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
               <div className="filters">
-                  <div><label>Select Data Source:</label></div>
+                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label></div>
                   <div className="tabs-container">
                     <div className="tabs">
                       {tabData.map((tab, index) => (

@@ -579,7 +579,7 @@ function LineChart({ params }) {
             let numStates = getNumberOfStates(d[specs.xKey])
             var tooltipValues = [];
             if (!currentDrugOnly)
-              tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleSingular + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
+              tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
 
             if (inp.currentState !== 'US') {
               let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
@@ -604,7 +604,7 @@ function LineChart({ params }) {
                 }
                 for (var i in inp.selectedDrugs) {
                   if (i > 0){
-                    tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleSingular + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
+                    tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
                     if (inp.currentState !== 'US') {
                       let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
                       if (stateValue) {
@@ -758,7 +758,7 @@ function LineChart({ params }) {
                             alignmentBaseline="middle" 
                             fontSize={specs.fontSize} 
                             fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
-                              {drugOptions[currentDrug].titleSingular + ' Overall'}
+                              {drugOptions[currentDrug].titleForDropDown + ' Overall'}
                           </text>
                         }
                       })()
