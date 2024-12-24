@@ -11,6 +11,7 @@ import SexAgeCharts from './components/SexAgeCharts';
 import UsaMap from './components/UsaMap';
 import Select from './components/Select';
 import Datatable from './components/Datatable';
+import Tab from "./components/tab";
 
 import { UtilityFunctions } from './utility'
 
@@ -75,7 +76,7 @@ const drugOptions = {
     'titleForDropDown': 'Heroin',
     'titleHeader': 'Heroin',
     'rateColumn': 'rate_heroin',
-    'color': '#8C5EA7',
+    'color': '#353535',
   },
   'stimulant': {
     'titleSingular': 'Stimulant',
@@ -107,6 +108,7 @@ const drugOptions = {
 };
 
 const supportedYears = ['2018', '2019', '2020', '2021', '2022', '2023'];
+const tabData = [{ label: "ED Visits" },{ label: "Inpatient Hospitalizations"}];
 const supportedYearsLatest = supportedYears[supportedYears.length - 1];
 const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
 let stateNames = { 'US': 'Overall', 'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming' };
@@ -185,6 +187,7 @@ export default function App({ dataUrl }) {
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
 
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
@@ -259,10 +262,16 @@ export default function App({ dataUrl }) {
           }
         }
         else if (currentDataSource == 'HOSP') {
-          if (currentTimeframe === 'Monthly') 
-            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+          if (!isPeriod) {
+            if (currentTimeframe === 'Monthly') 
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+            else
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          }
           else
-            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+          {
+            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+          }
         }
         break;
       
@@ -379,19 +388,40 @@ export default function App({ dataUrl }) {
       </Fragment>
       )
   }
+
+  const getPeriodControlsWrapper = () => {
+    return (
+      <Fragment>
+        <table>
+          <tr>
+            <td style={{width: '100%!important', textAlign: 'center'}}>
+              {currentTimeframe === 'Monthly' && 
+                getPeriodControls()
+              }
+            </td>
+           </tr>
+        </table>
+      </Fragment>
+  )
+}
   
-  const getInputControls = () => {
+  const getToggleControls = () => {
       return (
         <Fragment>
           <table>
             <tr>
               <td style={{width: '80%!important', textAlign: 'center'}}>
-                {currentTimeframe === 'Monthly' && 
-                  getPeriodControls()
+                {currentState == 'US' && 
+                <table>
+                  <tr>
+                    <td class="drugsDivTop">
+                      {getDrugControls()}
+                    </td>
+                  </tr>
+                </table>
                 }
               </td>
-             
-              <td style={{width: '10%'}}>
+              <td style={{width: '10%', verticalAlign: 'top'}}>
                 {(currentTimeframe === 'Annual') &&
                   <label class="toggleA">
                       <input id="togglePercent" class="toggleA-input" type="checkbox" 
@@ -410,7 +440,7 @@ export default function App({ dataUrl }) {
                   </label>
                 }
               </td>
-              <td style={{width: '10%'}}>
+              <td style={{width: '10%', verticalAlign: 'top'}}>
                 <label class="toggle">
                     <input id="toggleLabel" class="toggle-input" type="checkbox" 
                     onChange={(e) => {
@@ -426,9 +456,6 @@ export default function App({ dataUrl }) {
                 </label>
               </td>
             </tr>
-            <tr>
-              <td style={{width: '100%', height: '40px'}}></td>
-            </tr>
           </table>
         </Fragment>
     )
@@ -439,7 +466,7 @@ export default function App({ dataUrl }) {
       <Fragment>
         {
           Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
-             <label key={drug[0]}>
+             <label key={drug[0]} class="drugLabel">
                         <input type="checkbox" class="drugSelections" value={drug[0]} 
                         checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
                         onChange={(event) => { handleDrugSelectionsChange(event) }}
@@ -648,7 +675,6 @@ export default function App({ dataUrl }) {
 
     fetchData();
 
-    setLabelToggle(true); //TEMP FIX TBD
   }, []);
 
   const getFootNotesForData = () => {
@@ -662,15 +688,15 @@ export default function App({ dataUrl }) {
     )
   }
 
-  /* FUTURE RELEASE WORK const drugTab = (drugName, drugLabel) => (
+  const drugTab = (drugName, drugLabel) => (
     <button
-      className={`drug-tab${drugName === currentDrug ? ' active' : ''}`}
+      className={`drug-tab${drugName === currentDrug ? (' ' + drugName) : ''}`}
       onClick={() => {
         setCurrentDrug(drugName);
         setselectedDrugs([drugName])
       }}
     >{drugLabel || drugName}</button>
-  ); */
+  );
 
   const resetPeriodDates = (yr) => { 
     setLookupPeriodStartYear(yr);
@@ -699,6 +725,14 @@ export default function App({ dataUrl }) {
     setStateDropdownOptions(Object.keys(supportedStates))
   }
 
+  const handleTabClick = (index) => {
+      let ds;
+      setActiveTab(index);
+      ds = index == 0 ? 'ED' : 'HOSP'; 
+      setCurrentDataSource(ds)
+      getSupportedStates(ds, currentYear, currentMonth, currentTimeframe);
+  };
+
   const stateBarChartMemo = useMemo(() =>
     <>
     <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
@@ -723,15 +757,8 @@ export default function App({ dataUrl }) {
   const lineChartMemo = useMemo(() =>
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
-      {/* FUTURE RELEASE WORK {getInputControls()} */}
+      {getToggleControls()}
       <table style={{width: '100%'}}>
-        {/* FUTURE RELEASE WORK {currentState == 'US' &&
-          <tr> 
-            <td class="drugsDivTop">
-              {getDrugControls()}
-            </td>
-          </tr>
-        } */}
         <tr>
           <td>
             <div class="containerLC">
@@ -741,6 +768,10 @@ export default function App({ dataUrl }) {
             </div>
           </td>
         </tr>
+        <tr>
+          <td>{getPeriodControlsWrapper()}</td>
+        </tr>
+        
       </table>
     </>,
     [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
@@ -801,50 +832,26 @@ export default function App({ dataUrl }) {
             <div className="filter-wrapper">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
               <div className="filters">
+                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label></div>
+                  <div className="tabs-container">
+                    <div className="tabs">
+                      {tabData.map((tab, index) => (
+                          <Tab
+                              key={index}
+                              label={tab.label}
+                              onClick={() =>
+                                  handleTabClick(index)
+                              }
+                              isActive={index === activeTab}
+                          />
+                      ))}
+                  </div>
+                  <div className="tab-content">
+                      {activeTab == 0 && <span><strong>ED Visits:</strong> Emergency department visit discharge data captures information about patients who seek care at emergency departments.</span>}
+                      {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Inpatient hospitalization discharge data refers to hospital records generated when patients are released from a hospital after receiving inpatient care.</span>}
+                  </div>
+                </div>
                 <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
-                  <Select params={{
-                    key: 'data-source',
-                    label: 'Data Source',
-                    value: currentDataSource,
-                    onChange: (param) => {
-                      setCurrentDataSource(param);
-                      getSupportedStates(param, currentYear, currentMonth, currentTimeframe);
-                    },
-                    options: Object.keys(dataSourceOptions),
-                    optionLabel: (key) => dataSourceOptions[key]['title']
-                  }}/>
-                  <Select params={{
-                    key: 'drug',
-                    label: 'a Drug',
-                    value: currentDrug,
-                    onChange: (param) => {
-                      setCurrentDrug(param);
-                      setselectedDrugs([param])
-                    },
-                    options: Object.keys(drugOptions),
-                    optionLabel: (key) => drugOptions[key]['titleForDropDown']
-                  }}/>
-                  <Select params={{
-                    key: 'jurisdiction',
-                    label: 'a State',
-                    value: currentState,
-                    onChange: (param) => {
-                      setCurrentState(param);
-                      if (param !== 'US')
-                        setOnlyCurrentDrug(true);
-                      else
-                        setOnlyCurrentDrug(false);
-                    },
-
-                    
-                    options: stateDropdownOptions?.sort((a, b) => {
-                      if(a === 'US') return -1;
-                      if(b === 'US') return 1;
-                      return a < b;
-                    }),
-                    optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
-                  }}/>
-                  {/*   FUTURE RELEASE WORK                <br></br> */} 
                   <Select params={{
                     key: 'timeframe',
                     label: 'Time Frame',
@@ -896,15 +903,39 @@ export default function App({ dataUrl }) {
                     onChange: (param) => {
                       setCurrentMonth(param);
                       getSupportedStates(currentDataSource, currentYear, param, currentTimeframe);
+                      resetPeriodDates(currentYear);
+                      setPeriodToggle(false);
                     },
                     options: Object.keys(monthNames).filter(key => key !== 'all'),
                     optionLabel: (key) => monthNames[key],
                     disabled: currentTimeframe === 'Monthly' ? undefined : 'disabled'
                   }} />}
+                   <Select params={{
+                    key: 'jurisdiction',
+                    label: 'a State',
+                    value: currentState,
+                    onChange: (param) => {
+                      setCurrentState(param);
+                      if (param !== 'US')
+                        setOnlyCurrentDrug(true);
+                      else
+                        setOnlyCurrentDrug(false);
+                    },
+
+                    
+                    options: stateDropdownOptions?.sort((a, b) => {
+                      if(a === 'US') return -1;
+                      if(b === 'US') return 1;
+                      return a < b;
+                    }),
+                    optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
+                  }}/>
                   <div>
                     <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
+                      setActiveTab(0);
                       setCurrentDataSource('ED');
                       setCurrentDrug('alldrug');
+                      setselectedDrugs(['alldrug'])
                       setCurrentState('US');
                       setCurrentTimeframe('Annual');
                       setCurrentMonth('1');
@@ -912,7 +943,7 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
-                {/* FUTURE RELEASE WORK <div>
+                <div>
                   <div className="drug-tab-section">
                     {drugTab('alldrug', <span>All Drugs</span>)}
                     {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
@@ -929,7 +960,7 @@ export default function App({ dataUrl }) {
                     {drugTab('cocaine',<span>Cocaine</span>)}
                     {drugTab('methamphetamine', <span>Methamphetamine</span>)}
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
             

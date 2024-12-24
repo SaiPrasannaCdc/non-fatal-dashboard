@@ -211,14 +211,14 @@ function LineChart({ params }) {
   });
 
   const specs = [];
-  specs['width'] = width - 20; 
+  specs['width'] = width - 80; 
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
   specs['height'] = 400;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = (isPeriod && filteredData['US'].length > 12) ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
@@ -329,6 +329,41 @@ function LineChart({ params }) {
     } 
   }
 
+  const getFormattedValue = (val) => {
+    if (isPeriod)
+    {
+      if (inp['numOfTicks'] > 12) {
+        if (inp.monthNamesShortPeriod[val].length == 4)
+          return monthNamesShort[parseInt('1')]
+        else
+          return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])]
+      }
+      else
+      {
+        if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
+        {
+          if (inp.monthNamesShortPeriod[val].length == 4)
+            return monthNamesShort[parseInt('1')] + ' ' + currentYear;
+          else
+            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + currentYear;
+        }
+        else
+          return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])];
+      }
+    }
+    else
+    {
+      if (currentTimeframe === 'Monthly') {
+        if (val == 1 || val == 12)
+          return monthNamesShort[val] + ' ' + currentYear;
+        else
+          return monthNamesShort[val];
+      }
+      else
+        return Number(val)?.toFixed(0);
+    }
+  } 
+  
   const getRateforDrug = (drug, currentState, val) => {
 
     var rate;
@@ -522,13 +557,30 @@ function LineChart({ params }) {
     return '';
   }
 
+  const sortToolTipValues = (vals) => {
+    let sortedToolTips = [];
+    if (vals !== undefined) {
+      Object.keys(drugOptions).forEach(drug => {
+        for (var i=0;i<vals.length;i++)
+        {
+          if (vals[i]?.includes(drug))
+            sortedToolTips.push(vals[i]);
+        }
+      })
+    }
+    return sortedToolTips;
+  }
+  
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
       <Fragment>
         {
           inp.filteredData['US'].map(d => {
             let numStates = getNumberOfStates(d[specs.xKey])
-            var tooltipValues = !currentDrugOnly ? [`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleSingular + ` Rate</strong>: ${d[currentDrug]}</p>`] : [];
+            var tooltipValues = [];
+            if (!currentDrugOnly)
+              tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
+
             if (inp.currentState !== 'US') {
               let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
               if(stateValue) {
@@ -540,7 +592,7 @@ function LineChart({ params }) {
             }
 
             if (inp.selectedDrugs.length > 0) {
-                tooltipValues = !currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleSingular + ` Rate</strong>: ${d[inp.selectedDrugs[0]]}</p>`] : [];
+
                 if (inp.currentState !== 'US') {
                   let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
                   if(stateValue){
@@ -552,7 +604,7 @@ function LineChart({ params }) {
                 }
                 for (var i in inp.selectedDrugs) {
                   if (i > 0){
-                    tooltipValues.push(!currentDrugOnly ? [`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleSingular + ` Rate</strong>: ${d[inp.selectedDrugs[i]]}</p>`] : null);
+                    tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
                     if (inp.currentState !== 'US') {
                       let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
                       if (stateValue) {
@@ -566,6 +618,9 @@ function LineChart({ params }) {
                 }
             }
 
+            let tooltipValuesSorted = sortToolTipValues(tooltipValues)
+
+
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
               className={''}
@@ -575,40 +630,9 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={inp.currentState !== 'US' ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><h3><strong>${isPeriod ? ` Month </br>${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `Month </br>${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : `Year</br>` + d[specs.xKey]}</strong></h3><span>Overall (` + numStates + ` States)</span></br></br>${tooltipValues.join('')}</td></tr></table>`}></rect>
+              data-tip={inp.currentState !== 'US' ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><h3><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
           })
         }
-      </Fragment>
-    )
-  }
-
-  //Temp Fix TBD
-  const buildToolTipValuesOld = (sectionWidth, sectionWidthHalf) => {
-    return (
-      <Fragment>
-          {filteredData['US'].map(d => {
-            let numStates = getNumberOfStates(d[specs.xKey])
-            const tooltipValues = [`<p><strong>Overall Rate</strong>: ${d[currentDrug]} (${numStates} states)</p>`];
-            if(currentState !== 'US'){
-              let stateValue = filteredData[currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
-              if(stateValue){
-                stateValue = stateValue[currentDrug];
-              } else {
-                stateValue = 'Data not available/not reported'
-              }
-              tooltipValues.push(`<p><strong>${stateNames[currentState]} Rate</strong>: ${stateValue}</p>`);
-            }
-
-            return <rect
-              key={`tooltip-section-${d[specs.xKey]}`}
-              x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
-              y={0}
-              width={sectionWidth}
-              height={specs.yMax}
-              style={{outline: 'none'}}
-              fill='transparent'
-              data-tip={`<h3><strong>${currentTimeframe === 'Monthly' ? `${monthNames[d[specs.xKey]]} ${currentYear}` : d[specs.xKey]}</strong></h3>${tooltipValues.join('')}`}></rect>
-            })}
       </Fragment>
     )
   }
@@ -653,7 +677,7 @@ function LineChart({ params }) {
             colorScale={colorScale}
             defaultValueIfEmpty={defaultValueIfEmpty}
             value={percentChgValue}
-            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the number of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
+            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the rate of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
             label={percentChgDrug}
             timeframe={'year'}
         ></QuickStat>
@@ -717,7 +741,7 @@ function LineChart({ params }) {
                           }
                         }
     
-                        /* FUTURE RELEASE WORK if (currentState != 'US') { */
+                        if (currentState != 'US') {
                           return <text 
                             x={specs.xMax + 15} 
                             y={yPos}
@@ -726,23 +750,23 @@ function LineChart({ params }) {
                             fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
                               {key != 'US' ? inp.stateNames[key] : 'Overall'}
                           </text>
-                        // FUTURE RELEASE WORK }
-                        /* FUTURE RELEASE WORK else{
+                        }
+                        else{
                           return <text 
                             x={specs.xMax + 15} 
                             y={yPos}
                             alignmentBaseline="middle" 
                             fontSize={specs.fontSize} 
                             fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
-                              {drugOptions[currentDrug].titleSingular}
+                              {drugOptions[currentDrug].titleForDropDown + ' Overall'}
                           </text>
-                        } */
+                        }
                       })()
                     }
                   </Group>)
                   }
                   {
-                    !showPercent && buildToolTipValuesOld(sectionWidth, sectionWidthHalf) //TEMP FIX TBD
+                    !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf)
                   }
                   {
                     showPercent && 
@@ -785,11 +809,13 @@ function LineChart({ params }) {
                   top={specs.yMax}
                   scale={specs.xScale}
                   tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
-                  tickFormat={value => isPeriod ? monthNamesShort[parseInt(inp.monthNamesShortPeriod[value].length == 4 ? '1' : inp.monthNamesShortPeriod[value])]  : (currentTimeframe === 'Monthly' ? ((value == 1 || value == 12) ? monthNamesShort[value] + ' ' + currentYear : monthNamesShort[value]) : Number(value)?.toFixed(0))}
+                  tickFormat={value => 
+                      getFormattedValue(value)
+                  }
                   tickLabelProps={(value) => ({
                     fontSize: specs.fontSize,
-                    textAnchor: isPeriod ? 'end' : 'middle',
-                    angle: isPeriod ? -90 : 0
+                    textAnchor: (isPeriod ? (inp['numOfTicks'] < 12 ? 'middle' : 'end') : 'middle'),
+                    angle: (isPeriod ? (inp['numOfTicks'] < 12 ? 0 : -90) : 0)
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
@@ -797,7 +823,7 @@ function LineChart({ params }) {
                   }}
                 >
                 </AxisBottom>
-                {generateYearLabels()}
+                {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
               </Group>
             </svg>
           {currentDrug == 'fentanyl' &&
