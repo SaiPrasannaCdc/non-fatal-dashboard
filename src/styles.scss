@@ -708,7 +708,7 @@ margin-left: 1em;
 .alldrug {
 height: 20px;
 width: 20px;
-background-color: #2B2D73;
+background-color: #325D7D;
 border-radius: 50%;
 display: inline-block;
 }
@@ -716,7 +716,7 @@ display: inline-block;
 .opioid {
 height: 20px;
 width: 20px;
-background-color: #4A2866;
+background-color: #000C77;
 border-radius: 50%;
 display: inline-block;
 }
@@ -724,7 +724,7 @@ display: inline-block;
 .heroin {
 height: 20px;
 width: 20px;
-background-color: #353535;
+background-color: #0C6F96;
 border-radius: 50%;
 display: inline-block;
 }
@@ -732,7 +732,7 @@ display: inline-block;
 .stimulant {
 height: 20px;
 width: 20px;
-background-color: #24574E;
+background-color: #411B6D;
 border-radius: 50%;
 display: inline-block;
 }
@@ -740,7 +740,7 @@ display: inline-block;
 .benzodiazepine {
 height: 20px;
 width: 20px;
-background-color: #573325;
+background-color: #B83A5E;
 border-radius: 50%;
 display: inline-block;
 }
@@ -748,7 +748,7 @@ display: inline-block;
 .fentanyl {
 height: 20px;
 width: 20px;
-background-color: #8C5EA7;
+background-color: #294891;
 border-radius: 50%;
 display: inline-block;
 }
@@ -756,7 +756,7 @@ display: inline-block;
 .cocaine {
 height: 20px;
 width: 20px;
-background-color: #357F70;
+background-color: #671AAA;
 border-radius: 50%;
 display: inline-block;
 }
@@ -764,41 +764,41 @@ display: inline-block;
 .methamphetamine {
 height: 20px;
 width: 20px;
-background-color: #357F70;
+background-color: #A378E8;
 border-radius: 50%;
 display: inline-block;
 }
 
 .alldrugToolTip {
-color: #2B2D73;
+color: #325D7D;
 }
 
 .opioidToolTip {
-color: #4A2866;
+color: #000C77;
 }
 
 .heroinToolTip {
-color: #353535;
+color: #0C6F96;
 }
 
 .stimulantToolTip {
-color: #24574E;
+color: #411B6D;
 }
 
-.benzoToolTip {
-color: #573325;
+.benzodiazepineToolTip {
+color: #B83A5E;
 }
 
 .fentanylToolTip {
-color: #8C5EA7;
+color: #294891;
 }
 
 .cocaineToolTip {
-color: #357F70;
+color: #671AAA;
 }
 
 .methamphetamineToolTip {
-color: #357F70;
+color: #A378E8;
 }
 
 .drugSelections
@@ -844,7 +844,7 @@ position: relative;
 display: block;
 height: inherit;
 font-size: 14px;
-background: #712177;
+background: #B4C7E7;
 border-radius: inherit;
 box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
 inset 0 0 3px rgba(0, 0, 0, 0.15);
@@ -868,7 +868,7 @@ color: #fff;
 opacity: 0;
 }
 .toggle-input:checked~.toggle-label {
-background: green;
+background: #010679;
 }
 .toggle-input:checked~.toggle-label:before {
 opacity: 0;
@@ -928,7 +928,7 @@ position: relative;
 display: block;
 height: inherit;
 font-size: 14px;
-background: #712177;
+background: #B4C7E7;
 border-radius: inherit;
 box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
 inset 0 0 3px rgba(0, 0, 0, 0.15);
@@ -952,7 +952,7 @@ color: #fff;
 opacity: 0;
 }
 .toggleA-input:checked~.toggleA-label {
-background: green;
+background: #010679;
 }
 .toggleA-input:checked~.toggleA-label:before {
 opacity: 0;
@@ -1012,7 +1012,7 @@ position: relative;
 display: block;
 height: inherit;
 font-size: 14px;
-background: #712177;
+background: #B4C7E7;
 border-radius: inherit;
 box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
 inset 0 0 3px rgba(0, 0, 0, 0.15);
@@ -1036,7 +1036,7 @@ color: #fff;
 opacity: 0;
 }
 .toggleB-input:checked~.toggleB-label {
-background: green;
+background: #010679;
 }
 .toggleB-input:checked~.toggleB-label:before {
 opacity: 0;
@@ -1096,7 +1096,7 @@ position: relative;
 display: block;
 height: inherit;
 font-size: 14px;
-background: #712177;
+background: #B4C7E7;
 border-radius: inherit;
 box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), 
 inset 0 0 3px rgba(0, 0, 0, 0.15);
@@ -1120,7 +1120,7 @@ color: #fff;
 opacity: 0;
 }
 .toggleC-input:checked~.toggleC-label {
-background: green;
+background: #010679;
 }
 .toggleC-input:checked~.toggleC-label:before {
 opacity: 0;
@@ -1290,42 +1290,42 @@ box-shadow: 2px 2px 7px 2px darkgray;
 }
 
 .drug-tab.alldrug {
-background-color: #2B2D73!important;
+background-color: #325D7D!important;
 color: white!important;
 }
 
 .drug-tab.opioid {
-background-color: #4A2866!important;
+background-color: #000C77!important;
 color: white!important;
 }
 
 .drug-tab.heroin {
-background-color: #353535!important;
+background-color: #0C6F96!important;
 color: white!important;
 }
 
 .drug-tab.stimulant {
-background-color: #24574E!important;
+background-color: #411B6D!important;
 color: white!important;
 }
 
 .drug-tab.benzodiazepine {
-background-color: #573325!important;
+background-color: #B83A5E!important;
 color: white!important;
 }
 
 .drug-tab.fentanyl {
-background-color: #8C5EA7!important;
+background-color: #294891!important;
 color: white!important;
 }
 
 .drug-tab.cocaine {
-background-color: #357F70!important;
+background-color: #671AAA!important;
 color: white!important;
 }
 
 .drug-tab.methamphetamine {
-background-color: #357F70!important;
+background-color: #A378E8!important;
 color: white!important;
 }
 
@@ -1412,7 +1412,7 @@ border-top-left-radius: 10px!important;
 }
 
 .tab.active {
-background-color: #712177!important;
+background-color: #010679!important;
 }
 
 .tab-content {
@@ -1422,8 +1422,8 @@ padding: 10px;
 }
 
 .drugLabel {
-  display: inline-block;
-  padding-right: 10px;
+display: inline-block;
+padding-right: 10px;
 }
 
 .notSelected {
@@ -1432,4 +1432,11 @@ width: 20px;
 background-color: lightgray;
 border-radius: 50%;
 display: inline-block;
+}
+
+.subTitle
+{
+  font-style: italic!important;
+  font-weight: normal!important;
+  font-size: 14px!important;
 }

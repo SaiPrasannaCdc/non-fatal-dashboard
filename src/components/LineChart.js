@@ -11,14 +11,14 @@ import ReactDOMServer from 'react-dom/server';
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
 export const colorScale = {
-  'alldrug': '#2B2D73',
-  'opioid': '#4A2866',
-  'heroin': '#353535',
-  'stimulant': '#24574E',
-  'benzodiazepine': '#573325',
-  'fentanyl': '#8C5EA7',
-  'cocaine': '#357F70',
-  'methamphetamine': '#357F70'
+  'alldrug': '#325D7D',
+  'opioid': '#000C77',
+  'heroin': '#0C6F96',
+  'stimulant': '#411B6D',
+  'benzodiazepine': '#B83A5E',
+  'fentanyl': '#294891',
+  'cocaine': '#671AAA',
+  'methamphetamine': '#A378E8'
 };
 
 const defaultValueIfEmpty = (v, df) => {

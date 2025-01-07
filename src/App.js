@@ -40,7 +40,7 @@ const drugOptions = {
     'titleForDropDown': 'All Drugs',
     'titleHeader': 'All Drug',
     'rateColumn': 'rate_alldrug',
-    'color': '#2B2D73',
+    'color': '#325D7D',
   },
   'benzodiazepine': {
     'titleSingular': 'Benzodiazepine',
@@ -49,7 +49,7 @@ const drugOptions = {
     'titleForDropDown': 'Benzodiazepine',
     'titleHeader': 'Benzodiazepine',
     'rateColumn': 'rate_benzodiazepine',
-    'color': '#573325',
+    'color': '#B83A5E',
   },
   'opioid': {
     'titleSingular': 'Opioid',
@@ -58,7 +58,7 @@ const drugOptions = {
     'titleForDropDown': 'All Opioids',
     'titleHeader': 'All Opioid',
     'rateColumn': 'rate_opioid',
-    'color': '#4A2866',
+    'color': '#000C77',
   },
   'fentanyl': {
     'titleSingular': 'Fentanyl',
@@ -67,7 +67,7 @@ const drugOptions = {
     'titleForDropDown': 'Fentanyl',
     'titleHeader': 'Fentanyl',
     'rateColumn': 'rate_fentanyl',
-    'color': '#8C5EA7',
+    'color': '#294891',
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -76,7 +76,7 @@ const drugOptions = {
     'titleForDropDown': 'Heroin',
     'titleHeader': 'Heroin',
     'rateColumn': 'rate_heroin',
-    'color': '#353535',
+    'color': '#0C6F96',
   },
   'stimulant': {
     'titleSingular': 'Stimulant',
@@ -85,7 +85,7 @@ const drugOptions = {
     'titleForDropDown': 'All Stimulants',
     'titleHeader': 'All Stimulant',
     'rateColumn': 'rate_stimulant',
-    'color': '#24574E',
+    'color': '#411B6D',
   },
   'cocaine': {
     'titleSingular': 'Cocaine',
@@ -94,7 +94,7 @@ const drugOptions = {
     'titleForDropDown': 'Cocaine',
     'titleHeader': 'Cocaine',
     'rateColumn': 'rate_cocaine',
-    'color': '#357F70',
+    'color': '#671AAA',
   },
   'methamphetamine': {
     'titleSingular': 'Methamphetamine',
@@ -103,7 +103,7 @@ const drugOptions = {
     'titleForDropDown': 'Methamphetamine',
     'titleHeader': 'Methamphetamine',
     'rateColumn': 'rate_methamphetamine',
-    'color': '#357F70',
+    'color': '#A378E8',
   },
 };
 
@@ -291,18 +291,21 @@ export default function App({ dataUrl }) {
 
       case 'sexChart':
 
+        let key = currentDataSource + '_' + currentYear + '00';
+        let numStates = data?.supportedJurisdictions[key]?.split(',').length;
+
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED') 
-              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
           else if (currentDataSource == 'HOSP')
-              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
         }
         else
         {
           if (currentDataSource == 'ED') 
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + currentYear;
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
         else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + currentYear;
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
         }
 
         break;
@@ -832,7 +835,7 @@ export default function App({ dataUrl }) {
             <div className="filter-wrapper">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
               <div className="filters">
-                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label></div>
+                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label><br></br><label className="subTitle">This dashboard contains two datasets</label></div>
                   <div className="tabs-container">
                     <div className="tabs">
                       {tabData.map((tab, index) => (
@@ -912,7 +915,8 @@ export default function App({ dataUrl }) {
                   }} />}
                    <Select params={{
                     key: 'jurisdiction',
-                    label: 'a State',
+                    label: 'View Data For: ',
+                    noSelectPrefix: true,
                     value: currentState,
                     onChange: (param) => {
                       setCurrentState(param);
@@ -943,24 +947,24 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
-                <div>
-                  <div className="drug-tab-section">
-                    {drugTab('alldrug', <span>All Drugs</span>)}
-                    {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
-                    {drugTab('heroin', <span>Heroin</span>)}
-                    {drugTab('stimulant', <span>All Stimulants</span>)}
-                  </div>
-                  <div className="drug-tab-section">
-                    {drugTab('opioid', <span>All Opioids</span>)}
-                    {drugTab('fentanyl', <span>Fentanyl</span>)}
-                    {drugTab('cocaine',<span>Cocaine</span>)}
-                    {drugTab('methamphetamine', <span>Methamphetamine</span>)}
-                    </div>
-                </div>
               </div>
             </div>
-            
-
+            &nbsp;
+            <div>
+              <div className="drug-tab-section">
+                {drugTab('alldrug', <span>All Drugs</span>)}
+                {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
+                {drugTab('heroin', <span>Heroin</span>)}
+                {drugTab('stimulant', <span>All Stimulants</span>)}
+              </div>
+              <div className="drug-tab-section">
+                {drugTab('opioid', <span>All Opioids</span>)}
+                {drugTab('fentanyl', <span>Fentanyl</span>)}
+                {drugTab('cocaine',<span>Cocaine</span>)}
+                {drugTab('methamphetamine', <span>Methamphetamine</span>)}
+              </div>
+            </div>
+            &nbsp;
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>
               <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
