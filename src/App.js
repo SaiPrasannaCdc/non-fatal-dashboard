@@ -211,15 +211,19 @@ export default function App({ dataUrl }) {
     }
   });
 
-  const handleDrugSelectionsChange = (event) => {
-    const checkedId = event.target.value;
-    if (checkedId != currentDrug){
-      if(event.target.checked){
-        setselectedDrugs([...selectedDrugs,checkedId])
-      }else{
-        setselectedDrugs(selectedDrugs.filter(id=>id !== checkedId))
-      }
-   }
+  const handleDrugSelectionsChange = (event, drug) => {
+    if(!event.currentTarget.className.includes('notSelected')) {
+      event.currentTarget.classList.remove(drug);
+      event.currentTarget.classList.add('notSelected');
+      setselectedDrugs(selectedDrugs.filter(dr=>dr !== drug))
+    }
+    else
+    {
+      event.currentTarget.classList.remove('notSelected');
+      event.currentTarget.classList.add(drug);
+      setselectedDrugs([...selectedDrugs, drug])
+      
+    }
   }
 
    const resetDates = () => {
@@ -318,7 +322,7 @@ export default function App({ dataUrl }) {
 
     return (
       <Fragment>
-        <div style={{ display: 'block' }}>
+        <div style={{ display: 'block', whiteSpace: 'pre' }}>
           <Select params={{
             key: 'year',
             label: 'Start Period: ',
@@ -467,11 +471,7 @@ export default function App({ dataUrl }) {
         {
           Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
              <label key={drug[0]} class="drugLabel">
-                        <input type="checkbox" class="drugSelections" value={drug[0]} 
-                        checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
-                        onChange={(event) => { handleDrugSelectionsChange(event) }}
-                        />
-                        <span class={drug[0]}></span>{drug[1]}
+                        <span class={(selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])) ? drug[0] : 'notSelected'} onClick={(event) => { handleDrugSelectionsChange(event, drug[0]) }}></span>{drug[1]}
                       </label>
                   ))
         }
@@ -947,19 +947,15 @@ export default function App({ dataUrl }) {
                   <div className="drug-tab-section">
                     {drugTab('alldrug', <span>All Drugs</span>)}
                     {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
-                  </div>
-                  <div className="drug-tab-section">
-                    {drugTab('opioid', <span>All Opioids</span>)}
-                    {drugTab('fentanyl', <span>Fentanyl</span>)}
-                  </div>
-                  <div className="drug-tab-section">
                     {drugTab('heroin', <span>Heroin</span>)}
                     {drugTab('stimulant', <span>All Stimulants</span>)}
                   </div>
                   <div className="drug-tab-section">
+                    {drugTab('opioid', <span>All Opioids</span>)}
+                    {drugTab('fentanyl', <span>Fentanyl</span>)}
                     {drugTab('cocaine',<span>Cocaine</span>)}
                     {drugTab('methamphetamine', <span>Methamphetamine</span>)}
-                  </div>
+                    </div>
                 </div>
               </div>
             </div>

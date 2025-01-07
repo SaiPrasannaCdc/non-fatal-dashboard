@@ -1268,32 +1268,25 @@ box-shadow: -.5px 0 0 #000;
 
 .drug-tab-section {
 display: inline-block;
-width: 25%;
-margin-bottom: 0.5em;
-font-weight: bold;
+width: 50%;
+font-weight: normal;
 }
 
 .drug-tab {
-border: none !important;
+border: none!important;
 width: 46%;
-height: 65px;
+height: 45px;
 padding: 0.25em 0;
 margin: 0 2%;
-background-color: #B4C7E7 !important;
-color: white!important;
+margin-bottom: 5px!important;
+background-color: none;
 border-radius: 30px!important;
-box-shadow: 0px 2px 5px lightgrey!important;
+box-shadow: 0px 2px 5px #d3d3d3;
 vertical-align: middle;
-overflow-wrap: break-word;
 }
 
 .drug-tab:hover {
-box-shadow: 0px 2px 7px blue;
-}
-
-.drug-tab.active {
-background-color: rgb(0, 112, 192)!important;
-color: black;
+box-shadow: 2px 2px 7px 2px darkgray;
 }
 
 .drug-tab.alldrug {
@@ -1334,10 +1327,6 @@ color: white!important;
 .drug-tab.methamphetamine {
 background-color: #357F70!important;
 color: white!important;
-}
-
-.drug-tab:focus {
-outline: 3px solid lightblue!important;
 }
 
 .alignCenter{
@@ -1433,5 +1422,14 @@ padding: 10px;
 }
 
 .drugLabel {
-    display: inline-block;
-  }
+  display: inline-block;
+  padding-right: 10px;
+}
+
+.notSelected {
+height: 20px;
+width: 20px;
+background-color: lightgray;
+border-radius: 50%;
+display: inline-block;
+}
