@@ -213,15 +213,19 @@ export default function App({ dataUrl }) {
 
   const handleDrugSelectionsChange = (event, drug) => {
     if(!event.currentTarget.className.includes('notSelected')) {
-      event.currentTarget.classList.remove(drug);
-      event.currentTarget.classList.add('notSelected');
-      setselectedDrugs(selectedDrugs.filter(dr=>dr !== drug))
+      if (drug != currentDrug) {
+        event.currentTarget.classList.remove(drug);
+        event.currentTarget.classList.add('notSelected');
+        setselectedDrugs(selectedDrugs.filter(dr=>dr !== drug))
+      }
     }
     else
     {
-      event.currentTarget.classList.remove('notSelected');
-      event.currentTarget.classList.add(drug);
-      setselectedDrugs([...selectedDrugs, drug])
+      if (drug != currentDrug) {
+        event.currentTarget.classList.remove('notSelected');
+        event.currentTarget.classList.add(drug);
+        setselectedDrugs([...selectedDrugs, drug])
+      }
       
     }
   }
