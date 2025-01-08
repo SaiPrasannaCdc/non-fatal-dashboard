@@ -517,17 +517,17 @@ function LineChart({ params }) {
 
     let val = isPeriod ? inp.monthNamesPeriod[param] : param;
     let numStates = getNumberOfStates(param)
-    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</p></td></tr>';
+    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' States)' + '</p></td></tr>';
     var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
     var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
     var leftStr = leftComStr + leftRateStr + leftCountStr;
-    var rightComStr = `<table><tr><td><p><strong>` + inp.stateNames[inp.currentState] + '</strong></p></td></tr>';
+    var rightComStr = `<table><tr><td><p class='whSpace'><strong>` + inp.stateNames[inp.currentState] + '</strong></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</p></td></tr>';
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="tooltipTableLC alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') ) + '</strong></h3><span>' + '(' + numStates + ' States)' + '</span></div>';
+    var heading = '<div class="tooltipTableLCCenter alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? (val + ' </br>') : ((isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') ) + '</strong></h3><span>' + '</span></div>';
 
-    return heading + '<table class="tooltipTableLC"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+    return heading + '<table class="tooltipTableLCCenter"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
   const getTooltipFragmentPerc = (drug, yr, st) => {

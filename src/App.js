@@ -858,7 +858,11 @@ export default function App({ dataUrl }) {
                       {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Inpatient hospitalization discharge data refers to hospital records generated when patients are released from a hospital after receiving inpatient care.</span>}
                   </div>
                 </div>
-                <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
+              </div>
+            </div>
+            &nbsp;
+            <div className="filters">
+            <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                   <Select params={{
                     key: 'timeframe',
                     label: 'Time Frame',
@@ -951,8 +955,8 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
-              </div>
-            </div>
+            &nbsp;
+            <div><label>Select a Drug:</label></div>
             &nbsp;
             <div>
               <div className="drug-tab-section">
@@ -967,6 +971,7 @@ export default function App({ dataUrl }) {
                 {drugTab('cocaine',<span>Cocaine</span>)}
                 {drugTab('methamphetamine', <span>Methamphetamine</span>)}
               </div>
+            </div>
             </div>
             &nbsp;
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
