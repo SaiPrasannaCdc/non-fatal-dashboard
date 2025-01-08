@@ -6,28 +6,28 @@ export const UtilityFunctions = {
   
     switch (currentDrug) {
       case 'alldrug':
-        seriesColor = (key === 'US') ? 'rgb(43, 45, 115)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(56, 71, 102)' : 'lightblue';
         break;
       case 'opioid':
-        seriesColor = (key === 'US') ? 'rgb(74, 40, 102)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(0, 12, 119)' : 'lightblue';
         break;
       case 'heroin':
-        seriesColor = (key === 'US') ? 'rgb(53, 53, 53)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(12, 111, 150)' : 'lightblue';
         break;
       case 'stimulant':
-        seriesColor = (key === 'US') ? 'rgb(36, 87, 78)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(65, 27, 109)' : 'lightblue';
         break;
       case 'benzodiazepine':
-        seriesColor = (key === 'US') ? 'rgb(87, 51, 37)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(184, 58, 94)' : 'lightblue';
         break;
       case 'fentanyl':
-        seriesColor = (key === 'US') ? 'rgb(140, 94, 167)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(41, 72, 145)' : 'lightblue';
         break;
       case 'cocaine':
-        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(103, 26, 170)' : 'lightblue';
         break;
       case 'methamphetamine':
-        seriesColor = (key === 'US') ? 'rgb(53, 127, 112)' : 'lightblue';
+        seriesColor = (key === 'US') ? 'rgb(163, 120, 232)' : 'lightblue';
         break;
       }
   

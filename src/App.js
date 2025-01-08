@@ -40,7 +40,7 @@ const drugOptions = {
     'titleForDropDown': 'All Drugs',
     'titleHeader': 'All Drug',
     'rateColumn': 'rate_alldrug',
-    'color': '#2B2D73',
+    'color': '#325D7D',
   },
   'benzodiazepine': {
     'titleSingular': 'Benzodiazepine',
@@ -49,7 +49,7 @@ const drugOptions = {
     'titleForDropDown': 'Benzodiazepine',
     'titleHeader': 'Benzodiazepine',
     'rateColumn': 'rate_benzodiazepine',
-    'color': '#573325',
+    'color': '#B83A5E',
   },
   'opioid': {
     'titleSingular': 'Opioid',
@@ -58,7 +58,7 @@ const drugOptions = {
     'titleForDropDown': 'All Opioids',
     'titleHeader': 'All Opioid',
     'rateColumn': 'rate_opioid',
-    'color': '#4A2866',
+    'color': '#000C77',
   },
   'fentanyl': {
     'titleSingular': 'Fentanyl',
@@ -67,7 +67,7 @@ const drugOptions = {
     'titleForDropDown': 'Fentanyl',
     'titleHeader': 'Fentanyl',
     'rateColumn': 'rate_fentanyl',
-    'color': '#8C5EA7',
+    'color': '#294891',
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -76,7 +76,7 @@ const drugOptions = {
     'titleForDropDown': 'Heroin',
     'titleHeader': 'Heroin',
     'rateColumn': 'rate_heroin',
-    'color': '#353535',
+    'color': '#0C6F96',
   },
   'stimulant': {
     'titleSingular': 'Stimulant',
@@ -85,7 +85,7 @@ const drugOptions = {
     'titleForDropDown': 'All Stimulants',
     'titleHeader': 'All Stimulant',
     'rateColumn': 'rate_stimulant',
-    'color': '#24574E',
+    'color': '#411B6D',
   },
   'cocaine': {
     'titleSingular': 'Cocaine',
@@ -94,7 +94,7 @@ const drugOptions = {
     'titleForDropDown': 'Cocaine',
     'titleHeader': 'Cocaine',
     'rateColumn': 'rate_cocaine',
-    'color': '#357F70',
+    'color': '#671AAA',
   },
   'methamphetamine': {
     'titleSingular': 'Methamphetamine',
@@ -103,7 +103,7 @@ const drugOptions = {
     'titleForDropDown': 'Methamphetamine',
     'titleHeader': 'Methamphetamine',
     'rateColumn': 'rate_methamphetamine',
-    'color': '#357F70',
+    'color': '#A378E8',
   },
 };
 
@@ -211,15 +211,23 @@ export default function App({ dataUrl }) {
     }
   });
 
-  const handleDrugSelectionsChange = (event) => {
-    const checkedId = event.target.value;
-    if (checkedId != currentDrug){
-      if(event.target.checked){
-        setselectedDrugs([...selectedDrugs,checkedId])
-      }else{
-        setselectedDrugs(selectedDrugs.filter(id=>id !== checkedId))
+  const handleDrugSelectionsChange = (event, drug) => {
+    if(!event.currentTarget.className.includes('notSelected')) {
+      if (drug != currentDrug) {
+        event.currentTarget.classList.remove(drug);
+        event.currentTarget.classList.add('notSelected');
+        setselectedDrugs(selectedDrugs.filter(dr=>dr !== drug))
       }
-   }
+    }
+    else
+    {
+      if (drug != currentDrug) {
+        event.currentTarget.classList.remove('notSelected');
+        event.currentTarget.classList.add(drug);
+        setselectedDrugs([...selectedDrugs, drug])
+      }
+      
+    }
   }
 
    const resetDates = () => {
@@ -252,25 +260,25 @@ export default function App({ dataUrl }) {
         if (currentDataSource == 'ED') {
           if (!isPeriod) {
             if (currentTimeframe === 'Monthly') 
-              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
             else
-              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
           else
           {
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
           }
         }
         else if (currentDataSource == 'HOSP') {
           if (!isPeriod) {
             if (currentTimeframe === 'Monthly') 
-              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
             else
-              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
           else
           {
-            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ', and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
           }
         }
         break;
@@ -287,18 +295,21 @@ export default function App({ dataUrl }) {
 
       case 'sexChart':
 
+        let key = currentDataSource + '_' + currentYear + '00';
+        let numStates = data?.supportedJurisdictions[key]?.split(',').length;
+
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED') 
-              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
           else if (currentDataSource == 'HOSP')
-              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
         }
         else
         {
           if (currentDataSource == 'ED') 
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + currentYear;
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
         else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in the U.S. in ' + currentYear;
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
         }
 
         break;
@@ -318,7 +329,7 @@ export default function App({ dataUrl }) {
 
     return (
       <Fragment>
-        <div style={{ display: 'block' }}>
+        <div style={{ display: 'block', whiteSpace: 'pre' }}>
           <Select params={{
             key: 'year',
             label: 'Start Period: ',
@@ -467,11 +478,7 @@ export default function App({ dataUrl }) {
         {
           Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
              <label key={drug[0]} class="drugLabel">
-                        <input type="checkbox" class="drugSelections" value={drug[0]} 
-                        checked={selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])}
-                        onChange={(event) => { handleDrugSelectionsChange(event) }}
-                        />
-                        <span class={drug[0]}></span>{drug[1]}
+                        <span class={(selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])) ? drug[0] : 'notSelected'} onClick={(event) => { handleDrugSelectionsChange(event, drug[0]) }}></span>{drug[1]}
                       </label>
                   ))
         }
@@ -832,7 +839,7 @@ export default function App({ dataUrl }) {
             <div className="filter-wrapper">
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
               <div className="filters">
-                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label></div>
+                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label><br></br><label className="subTitle">This dashboard contains two datasets</label></div>
                   <div className="tabs-container">
                     <div className="tabs">
                       {tabData.map((tab, index) => (
@@ -851,7 +858,11 @@ export default function App({ dataUrl }) {
                       {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Inpatient hospitalization discharge data refers to hospital records generated when patients are released from a hospital after receiving inpatient care.</span>}
                   </div>
                 </div>
-                <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
+              </div>
+            </div>
+            &nbsp;
+            <div className="filters">
+            <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                   <Select params={{
                     key: 'timeframe',
                     label: 'Time Frame',
@@ -912,7 +923,8 @@ export default function App({ dataUrl }) {
                   }} />}
                    <Select params={{
                     key: 'jurisdiction',
-                    label: 'a State',
+                    label: 'View Data For: ',
+                    noSelectPrefix: true,
                     value: currentState,
                     onChange: (param) => {
                       setCurrentState(param);
@@ -943,28 +955,25 @@ export default function App({ dataUrl }) {
                     }}>Reset</button>
                   </div>
                 </div>
-                <div>
-                  <div className="drug-tab-section">
-                    {drugTab('alldrug', <span>All Drugs</span>)}
-                    {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
-                  </div>
-                  <div className="drug-tab-section">
-                    {drugTab('opioid', <span>All Opioids</span>)}
-                    {drugTab('fentanyl', <span>Fentanyl</span>)}
-                  </div>
-                  <div className="drug-tab-section">
-                    {drugTab('heroin', <span>Heroin</span>)}
-                    {drugTab('stimulant', <span>All Stimulants</span>)}
-                  </div>
-                  <div className="drug-tab-section">
-                    {drugTab('cocaine',<span>Cocaine</span>)}
-                    {drugTab('methamphetamine', <span>Methamphetamine</span>)}
-                  </div>
-                </div>
+            &nbsp;
+            <div><label>Select a Drug:</label></div>
+            &nbsp;
+            <div>
+              <div className="drug-tab-section">
+                {drugTab('alldrug', <span>All Drugs</span>)}
+                {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
+                {drugTab('heroin', <span>Heroin</span>)}
+                {drugTab('stimulant', <span>All Stimulants</span>)}
+              </div>
+              <div className="drug-tab-section">
+                {drugTab('opioid', <span>All Opioids</span>)}
+                {drugTab('fentanyl', <span>Fentanyl</span>)}
+                {drugTab('cocaine',<span>Cocaine</span>)}
+                {drugTab('methamphetamine', <span>Methamphetamine</span>)}
               </div>
             </div>
-            
-
+            </div>
+            &nbsp;
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>
               <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>

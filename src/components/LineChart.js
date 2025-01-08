@@ -11,14 +11,14 @@ import ReactDOMServer from 'react-dom/server';
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
 export const colorScale = {
-  'alldrug': '#2B2D73',
-  'opioid': '#4A2866',
-  'heroin': '#353535',
-  'stimulant': '#24574E',
-  'benzodiazepine': '#573325',
-  'fentanyl': '#8C5EA7',
-  'cocaine': '#357F70',
-  'methamphetamine': '#357F70'
+  'alldrug': '#325D7D',
+  'opioid': '#000C77',
+  'heroin': '#0C6F96',
+  'stimulant': '#411B6D',
+  'benzodiazepine': '#B83A5E',
+  'fentanyl': '#294891',
+  'cocaine': '#671AAA',
+  'methamphetamine': '#A378E8'
 };
 
 const defaultValueIfEmpty = (v, df) => {
@@ -517,17 +517,17 @@ function LineChart({ params }) {
 
     let val = isPeriod ? inp.monthNamesPeriod[param] : param;
     let numStates = getNumberOfStates(param)
-    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</p></td></tr>';
+    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' States)' + '</p></td></tr>';
     var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
     var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
     var leftStr = leftComStr + leftRateStr + leftCountStr;
-    var rightComStr = `<table><tr><td><p><strong>` + inp.stateNames[inp.currentState] + '</strong></p></td></tr>';
+    var rightComStr = `<table><tr><td><p class='whSpace'><strong>` + inp.stateNames[inp.currentState] + '</strong></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</p></td></tr>';
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
     var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
     var rightStr = rightComStr + rightRateStr + rightCountStr;
-    var heading = '<div class="tooltipTableLC alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? ('Year <br>' + val + ' </br>') : ('Month </br>' + (isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') ) + '</strong></h3><span>' + '(' + numStates + ' States)' + '</span></div>';
+    var heading = '<div class="tooltipTableLCCenter alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? (val + ' </br>') : ((isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') ) + '</strong></h3><span>' + '</span></div>';
 
-    return heading + '<table class="tooltipTableLC"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+    return heading + '<table class="tooltipTableLCCenter"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
   }
 
   const getTooltipFragmentPerc = (drug, yr, st) => {
@@ -677,7 +677,7 @@ function LineChart({ params }) {
             colorScale={colorScale}
             defaultValueIfEmpty={defaultValueIfEmpty}
             value={percentChgValue}
-            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the rate of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
+            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the rate of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug.replace('alldrug', 'all drug') + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
             label={percentChgDrug}
             timeframe={'year'}
         ></QuickStat>
