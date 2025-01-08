@@ -1404,8 +1404,8 @@ padding: 10px;
 margin-right: 2px;
 border: 1px solid #ddd;
 border-bottom: none;
-background-color: #B4C7E7;
-color: white!important;
+background-color: white;
+color: black!important;
 font-weight: bold;
 border-top-right-radius: 10px!important;
 border-top-left-radius: 10px!important;
@@ -1413,6 +1413,7 @@ border-top-left-radius: 10px!important;
 
 .tab.active {
 background-color: #010679!important;
+color: white!important;
 }
 
 .tab-content {
