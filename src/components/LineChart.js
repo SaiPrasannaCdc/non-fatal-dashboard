@@ -207,8 +207,9 @@ function LineChart({ params }) {
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
 
   useEffect(() => {
-    markYearsForTicks()
-    adjustCrowdedLabels()
+    markYearsForTicks();
+    adjustCrowdedLabels();
+    adjustLinesForLabels();
   });
 
   const specs = [];
@@ -220,8 +221,8 @@ function LineChart({ params }) {
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
   specs['margin'] = (isPeriod && filteredData['US'].length > 12) ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
-  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;;
-  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;;
+  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right - 20;
+  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
   specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
 
@@ -330,7 +331,6 @@ function LineChart({ params }) {
     } 
   }
 
-
  const adjustCrowdedLabels = () => {
 
     var positionsVar = [];
@@ -356,11 +356,13 @@ function LineChart({ params }) {
           positionsVar[i].yposNew = Number(positionsVar[i].ypos);
         }
         else{
-          positionsVar[i].yposNew = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 30) ? (Number(positionsVar[i-1].yposNew) - 30) : Number(positionsVar[i].ypos);
-          positionsVar[i].adjusted = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 30) ? true : false;
+          positionsVar[i].yposNew = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? (Number(positionsVar[i-1].yposNew) - 20) : Number(positionsVar[i].ypos);
+          positionsVar[i].adjusted = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? true : false;
         }
       }
     }
+
+    specs['positionsVar'] = positionsVar;
 
     for (var i=0; i<allLabels?.length; i++) {
       for (var j=0; j<positionsVar?.length; j++) {
@@ -371,20 +373,47 @@ function LineChart({ params }) {
         }
       }
 
-/*       return (
-      <Fragment>
-                return <line
-                k1={`line-leading`}
-                x1={40}
-                y1={40}
-                x2={200 + 18} // Same x position as the text
-                y2={100}
-                stroke={colorScale[currentDrug]}
-                strokeWidth={0.5}
-            />
-      </Fragment>
-    ) */
-      
+      debugger;
+  }
+
+  const adjustLinesForLabels = () => {
+
+    if (selectedDrugs !== undefined && selectedDrugs != null) {
+      for (var i=0; i<selectedDrugs?.length; i++) {
+        var lineElm = document?.getElementById(`line-leading-${selectedDrugs[i]}`);
+
+        for (var j=0; j<specs['positionsVar']?.length; j++) {
+          var drug = specs['positionsVar'][j].label.replace(' Overall', '');
+          var drugLbl;
+          switch (drug) {
+            case 'All Drugs':
+              drugLbl = "alldrug";
+              break;
+            case 'All Stimulants':
+              drugLbl = "stimulant";
+              break;
+            case 'All Opioids':
+              drugLbl = "opioid";
+              break;
+            default:
+              drugLbl = drug;
+              break;
+          }
+          if (lineElm.id.includes(drugLbl?.toLowerCase())) {
+            lineElm.style.visibility = "visible"
+            if (specs['positionsVar'][j].adjusted === true) {
+              lineElm.setAttribute("y1", String(specs['positionsVar'][j].ypos));
+              lineElm.setAttribute("y2", String(specs['positionsVar'][j].yposNew));
+            }
+            else
+            {
+              lineElm.style.visibility = "hidden";
+            }
+            break;
+          }
+        }
+       }
+    }
   }
 
   const getFormattedValue = (val) => {
@@ -801,7 +830,7 @@ function LineChart({ params }) {
     
                         if (currentState != 'US') {
                           return <text 
-                            x={specs.xMax + 15} 
+                            x={specs.xMax + 25} 
                             y={yPos}
                             alignmentBaseline="middle" 
                             fontSize={specs.fontSize} 
@@ -810,15 +839,27 @@ function LineChart({ params }) {
                           </text>
                         }
                         else{
-                          return <text
-                            class='adjustCrowded'
-                            x={specs.xMax + 18} 
-                            y={yPos}
-                            alignmentBaseline="middle" 
-                            fontSize={specs.fontSize} 
-                            fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
-                              {drugOptions[currentDrug].titleForDropDown + ' Overall'}
-                          </text>
+                          return (
+                            <Group>
+                              <line
+                                id={`line-leading-${currentDrug}`}
+                                x1={specs.xMax + 4}
+                                y1={yPos}
+                                x2={specs.xMax + 25} 
+                                y2={yPos}
+                                stroke={colorScale[currentDrug]}
+                                strokeWidth={0.5}/>
+                              <text
+                                class='adjustCrowded'
+                                x={specs.xMax + 28} 
+                                y={yPos}
+                                alignmentBaseline="middle" 
+                                fontSize={specs.fontSize} 
+                                fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
+                                  {drugOptions[currentDrug].titleForDropDown + ' Overall'}
+                              </text>
+                            </Group>
+                            )
                         }
                       })()
                     }
