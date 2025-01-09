@@ -333,6 +333,9 @@ function LineChart({ params }) {
 
  const adjustCrowdedLabels = () => {
 
+  if (currentState != 'US')
+    return;
+
     var positionsVar = [];
     const allLabels = document?.getElementsByClassName("adjustCrowded");
     if (selectedDrugs !== undefined && selectedDrugs != null) {
@@ -372,11 +375,12 @@ function LineChart({ params }) {
           }
         }
       }
-
-      debugger;
   }
 
   const adjustLinesForLabels = () => {
+
+    if (currentState != 'US')
+      return;
 
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
