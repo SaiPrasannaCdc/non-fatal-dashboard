@@ -208,6 +208,7 @@ function LineChart({ params }) {
 
   useEffect(() => {
     markYearsForTicks()
+    adjustCrowdedLabels()
   });
 
   const specs = [];
@@ -311,7 +312,7 @@ function LineChart({ params }) {
     return Object.keys(supportedStates).length - 1;
   }
 
- const markYearsForTicks = () => {
+  const markYearsForTicks = () => {
 
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[0];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
@@ -327,6 +328,63 @@ function LineChart({ params }) {
         }
       }
     } 
+  }
+
+
+ const adjustCrowdedLabels = () => {
+
+    var positionsVar = [];
+    const allLabels = document?.getElementsByClassName("adjustCrowded");
+    if (selectedDrugs !== undefined && selectedDrugs != null) {
+      for (var i=0; i<selectedDrugs?.length; i++) {
+        positionsVar.push({
+            label: drugOptions[selectedDrugs[i]].titleForDropDown + ' Overall', 
+            xpos: specs.xMax + 18,
+            ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+            yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+            adjusted: false
+          }
+        )
+      }
+    }
+    
+    positionsVar.sort((a, b) => b.ypos - a.ypos);
+
+    if (positionsVar !== undefined && positionsVar != null) {
+      for (var i=0; i<positionsVar?.length; i++) {
+        if (i == 0) {
+          positionsVar[i].yposNew = Number(positionsVar[i].ypos);
+        }
+        else{
+          positionsVar[i].yposNew = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 30) ? (Number(positionsVar[i-1].yposNew) - 30) : Number(positionsVar[i].ypos);
+          positionsVar[i].adjusted = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 30) ? true : false;
+        }
+      }
+    }
+
+    for (var i=0; i<allLabels?.length; i++) {
+      for (var j=0; j<positionsVar?.length; j++) {
+          if (allLabels[i].innerHTML == positionsVar[j].label) {
+            allLabels[i].setAttribute("y", String(positionsVar[j].yposNew));
+            break;
+          }
+        }
+      }
+
+/*       return (
+      <Fragment>
+                return <line
+                k1={`line-leading`}
+                x1={40}
+                y1={40}
+                x2={200 + 18} // Same x position as the text
+                y2={100}
+                stroke={colorScale[currentDrug]}
+                strokeWidth={0.5}
+            />
+      </Fragment>
+    ) */
+      
   }
 
   const getFormattedValue = (val) => {
@@ -752,8 +810,9 @@ function LineChart({ params }) {
                           </text>
                         }
                         else{
-                          return <text 
-                            x={specs.xMax + 15} 
+                          return <text
+                            class='adjustCrowded'
+                            x={specs.xMax + 18} 
                             y={yPos}
                             alignmentBaseline="middle" 
                             fontSize={specs.fontSize} 
@@ -795,6 +854,7 @@ function LineChart({ params }) {
                 {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && currentState === 'US' && buildLineForDrug('fentanyl')}
                 {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && currentState === 'US' && buildLineForDrug('cocaine')}
                 {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && currentState === 'US' && buildLineForDrug('methamphetamine')}
+                
                 <AxisLeft
                   scale={specs.yScale}
                   tickLabelProps={() => ({
