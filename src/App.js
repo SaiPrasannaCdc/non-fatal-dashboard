@@ -296,7 +296,7 @@ export default function App({ dataUrl }) {
       case 'sexChart':
 
         let key = currentDataSource + '_' + currentYear + '00';
-        let numStates = data?.supportedJurisdictions[key]?.split(',').length;
+        let numStates = data?.supportedJurisdictions[key]?.split(',').length - 1;
 
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED') 

@@ -207,11 +207,13 @@ function LineChart({ params }) {
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
 
   useEffect(() => {
-    markYearsForTicks()
+    markYearsForTicks();
+    adjustCrowdedLabels();
+    adjustLinesForLabels();
   });
 
   const specs = [];
-  specs['width'] = width - 80; 
+  specs['width'] = width - 75; 
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
@@ -219,8 +221,8 @@ function LineChart({ params }) {
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
   specs['margin'] = (isPeriod && filteredData['US'].length > 12) ? { top: 15, bottom: 85, left: 65, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: 65, right: specs.isSmallViewport ? 10 : 150 };
-  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;;
-  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;;
+  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
+  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
   specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
 
@@ -311,7 +313,7 @@ function LineChart({ params }) {
     return Object.keys(supportedStates).length - 1;
   }
 
- const markYearsForTicks = () => {
+  const markYearsForTicks = () => {
 
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[0];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
@@ -327,6 +329,132 @@ function LineChart({ params }) {
         }
       }
     } 
+  }
+
+ const adjustCrowdedLabels = () => {
+
+  if (currentState != 'US')
+    return;
+
+    var positionsVar = [];
+    const allLabels = document?.getElementsByClassName("adjustCrowded");
+    if (selectedDrugs !== undefined && selectedDrugs != null) {
+      for (var i=0; i<selectedDrugs?.length; i++) {
+        positionsVar.push({
+            label: drugOptions[selectedDrugs[i]].titleForDropDown + ' Overall', 
+            xpos: specs.xMax + 18,
+            ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+            yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+            adjusted: false
+          }
+        )
+      }
+    }
+    
+    var avg = 0; var order = 'topdown'; var upcnt = 0; var downcnt = 0;
+
+    for (var i=0; i<positionsVar?.length; i++) 
+      avg = avg + positionsVar[i].ypos;
+    
+    avg = avg/positionsVar?.length;
+
+    for (var i=0; i<positionsVar?.length; i++) {
+      if (positionsVar[i].ypos > avg)
+        downcnt++;
+      else
+        upcnt++;
+    }
+
+    if (downcnt > upcnt)
+      order = 'bottomup';
+
+    if (order == 'bottomup') {
+      
+      positionsVar.sort((a, b) => b.ypos - a.ypos);
+
+      if (positionsVar !== undefined && positionsVar != null) {
+        for (var i=0; i<positionsVar?.length; i++) {
+          if (i == 0) {
+            positionsVar[i].yposNew = Number(positionsVar[i].ypos);
+          }
+          else{
+            positionsVar[i].yposNew = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? (Number(positionsVar[i-1].yposNew) - 20) : Number(positionsVar[i].ypos);
+            positionsVar[i].adjusted = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? true : false;
+          }
+        }
+      }
+    }
+    else
+    {
+      positionsVar.sort((a, b) => a.ypos - b.ypos);
+
+      if (positionsVar !== undefined && positionsVar != null) {
+        for (var i=0; i<positionsVar?.length; i++) {
+          if (i == 0) {
+            positionsVar[i].yposNew = Number(positionsVar[i].ypos);
+          }
+          else{
+              positionsVar[i].yposNew = ((Number(positionsVar[i].ypos) - Number(positionsVar[i-1].yposNew)) < 20) ? (Number(positionsVar[i-1].yposNew) + 20) : Number(positionsVar[i].ypos);
+              positionsVar[i].adjusted = ((Number(positionsVar[i].ypos) - Number(positionsVar[i-1].yposNew)) < 20) ? true : false;
+          }
+        }
+      }
+    }
+    
+
+    specs['positionsVar'] = positionsVar;
+
+    for (var i=0; i<allLabels?.length; i++) {
+      for (var j=0; j<positionsVar?.length; j++) {
+          if (allLabels[i].innerHTML == positionsVar[j].label) {
+            allLabels[i].setAttribute("y", String(positionsVar[j].yposNew));
+            break;
+          }
+        }
+      }
+  }
+
+  const adjustLinesForLabels = () => {
+
+    if (currentState != 'US')
+      return;
+
+    if (selectedDrugs !== undefined && selectedDrugs != null) {
+      for (var i=0; i<selectedDrugs?.length; i++) {
+        var lineElm = document?.getElementById(`line-leading-${selectedDrugs[i]}`);
+
+        for (var j=0; j<specs['positionsVar']?.length; j++) {
+          var drug = specs['positionsVar'][j].label.replace(' Overall', '');
+          var drugLbl;
+          switch (drug) {
+            case 'All Drugs':
+              drugLbl = "alldrug";
+              break;
+            case 'All Stimulants':
+              drugLbl = "stimulant";
+              break;
+            case 'All Opioids':
+              drugLbl = "opioid";
+              break;
+            default:
+              drugLbl = drug;
+              break;
+          }
+          if (lineElm?.id.includes(drugLbl?.toLowerCase())) {
+            lineElm.style.visibility = "visible"
+            if (specs['positionsVar'][j].adjusted === true) {
+              lineElm.setAttribute("y1", String(specs['positionsVar'][j].ypos));
+              lineElm.setAttribute("y2", String(specs['positionsVar'][j].yposNew));
+            }
+            else
+            {
+              lineElm.style.visibility = "hidden";
+            }
+            break;
+          }
+        }
+       }
+    }
   }
 
   const getFormattedValue = (val) => {
@@ -743,7 +871,7 @@ function LineChart({ params }) {
     
                         if (currentState != 'US') {
                           return <text 
-                            x={specs.xMax + 15} 
+                            x={specs.xMax + 25} 
                             y={yPos}
                             alignmentBaseline="middle" 
                             fontSize={specs.fontSize} 
@@ -752,14 +880,27 @@ function LineChart({ params }) {
                           </text>
                         }
                         else{
-                          return <text 
-                            x={specs.xMax + 15} 
-                            y={yPos}
-                            alignmentBaseline="middle" 
-                            fontSize={specs.fontSize} 
-                            fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
-                              {drugOptions[currentDrug].titleForDropDown + ' Overall'}
-                          </text>
+                          return (
+                            <Group>
+                              <line
+                                id={`line-leading-${currentDrug}`}
+                                x1={specs.xMax + 4}
+                                y1={yPos}
+                                x2={specs.xMax + 25} 
+                                y2={yPos}
+                                stroke={colorScale[currentDrug]}
+                                strokeWidth={0.5}/>
+                              <text
+                                class='adjustCrowded'
+                                x={specs.xMax + 28} 
+                                y={yPos}
+                                alignmentBaseline="middle" 
+                                fontSize={specs.fontSize} 
+                                fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
+                                  {drugOptions[currentDrug].titleForDropDown + ' Overall'}
+                              </text>
+                            </Group>
+                            )
                         }
                       })()
                     }
@@ -795,6 +936,7 @@ function LineChart({ params }) {
                 {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && currentState === 'US' && buildLineForDrug('fentanyl')}
                 {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && currentState === 'US' && buildLineForDrug('cocaine')}
                 {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && currentState === 'US' && buildLineForDrug('methamphetamine')}
+                
                 <AxisLeft
                   scale={specs.yScale}
                   tickLabelProps={() => ({
