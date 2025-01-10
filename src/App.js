@@ -876,6 +876,14 @@ export default function App({ dataUrl }) {
                       if (val === 'Monthly') {
                         setPercentToggle(false)
                         resetPeriodDates(currentYear)
+                        var monthElm = document?.getElementById('select-input-month');
+                        monthElm.style.display = "inline";
+                        setCurrentMonth(1);
+                      }
+                      else
+                      {
+                        var monthElm = document?.getElementById('select-input-month');
+                        monthElm.style.display = "none";
                       }
 
                       setPeriodToggle(false);
