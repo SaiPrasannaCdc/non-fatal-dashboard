@@ -907,7 +907,7 @@ export default function App({ dataUrl }) {
                     options: supportedYears,
                     optionLabel: (key) => key
                   }}/>
-                  {timeframeChanged && <Select params={{
+                  {(timeframeChanged && currentTimeframe == 'Monthly') && <Select params={{
                     key: 'month',
                     label: 'a Month',
                     value: currentMonth,
