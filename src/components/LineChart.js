@@ -351,19 +351,56 @@ function LineChart({ params }) {
       }
     }
     
-    positionsVar.sort((a, b) => b.ypos - a.ypos);
+    var avg = 0; var order = 'topdown'; var upcnt = 0; var downcnt = 0;
 
-    if (positionsVar !== undefined && positionsVar != null) {
-      for (var i=0; i<positionsVar?.length; i++) {
-        if (i == 0) {
-          positionsVar[i].yposNew = Number(positionsVar[i].ypos);
-        }
-        else{
-          positionsVar[i].yposNew = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? (Number(positionsVar[i-1].yposNew) - 20) : Number(positionsVar[i].ypos);
-          positionsVar[i].adjusted = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? true : false;
+    for (var i=0; i<positionsVar?.length; i++) 
+      avg = avg + positionsVar[i].ypos;
+    
+    avg = avg/positionsVar?.length;
+
+    for (var i=0; i<positionsVar?.length; i++) {
+      if (positionsVar[i].ypos > avg)
+        downcnt++;
+      else
+        upcnt++;
+    }
+
+    if (downcnt > upcnt)
+      order = 'bottomup';
+
+    if (order == 'bottomup') {
+      
+      positionsVar.sort((a, b) => b.ypos - a.ypos);
+
+      if (positionsVar !== undefined && positionsVar != null) {
+        for (var i=0; i<positionsVar?.length; i++) {
+          if (i == 0) {
+            positionsVar[i].yposNew = Number(positionsVar[i].ypos);
+          }
+          else{
+            positionsVar[i].yposNew = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? (Number(positionsVar[i-1].yposNew) - 20) : Number(positionsVar[i].ypos);
+            positionsVar[i].adjusted = ((Number(positionsVar[i-1].yposNew) - Number(positionsVar[i].ypos)) < 20) ? true : false;
+          }
         }
       }
     }
+    else
+    {
+      positionsVar.sort((a, b) => a.ypos - b.ypos);
+
+      if (positionsVar !== undefined && positionsVar != null) {
+        for (var i=0; i<positionsVar?.length; i++) {
+          if (i == 0) {
+            positionsVar[i].yposNew = Number(positionsVar[i].ypos);
+          }
+          else{
+              positionsVar[i].yposNew = ((Number(positionsVar[i].ypos) - Number(positionsVar[i-1].yposNew)) < 20) ? (Number(positionsVar[i-1].yposNew) + 20) : Number(positionsVar[i].ypos);
+              positionsVar[i].adjusted = ((Number(positionsVar[i].ypos) - Number(positionsVar[i-1].yposNew)) < 20) ? true : false;
+          }
+        }
+      }
+    }
+    
 
     specs['positionsVar'] = positionsVar;
 
@@ -403,7 +440,7 @@ function LineChart({ params }) {
               drugLbl = drug;
               break;
           }
-          if (lineElm.id.includes(drugLbl?.toLowerCase())) {
+          if (lineElm?.id.includes(drugLbl?.toLowerCase())) {
             lineElm.style.visibility = "visible"
             if (specs['positionsVar'][j].adjusted === true) {
               lineElm.setAttribute("y1", String(specs['positionsVar'][j].ypos));
