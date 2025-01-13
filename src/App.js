@@ -854,8 +854,8 @@ export default function App({ dataUrl }) {
                       ))}
                   </div>
                   <div className="tab-content">
-                      {activeTab == 0 && <span><strong>ED Visits:</strong> Emergency department visit discharge data captures information about patients who seek care at emergency departments.</span>}
-                      {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Inpatient hospitalization discharge data refers to hospital records generated when patients are released from a hospital after receiving inpatient care.</span>}
+                      {activeTab == 0 && <span><strong>ED Visits:</strong> Discharge data that captures information about patients who seek care at Emergency Departments.</span>}
+                      {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Discharge data generated when patients are released from a hospital after receiving inpatient care. Inpatient hospitalizations may represent increased severity of nonfatal overdoses, as compared to ED visits.</span>}
                   </div>
                 </div>
               </div>
