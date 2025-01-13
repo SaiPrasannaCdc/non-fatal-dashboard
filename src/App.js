@@ -203,7 +203,7 @@ const drugScreenOptions = {
     'titleAll': 'All Drug',
     'significanceColumn': 'allSignificance',
     'percentageColumn': 'allPercentageChange',
-    'color': '#2B2D73',
+    'color': '#325D7D',
   },
   'benzodiazepine': {
     'titleSingular': 'Benzodiazepine',
@@ -211,7 +211,7 @@ const drugScreenOptions = {
     'titleAll': 'Benzodiazepine',
     'significanceColumn': 'benzoSignificance',
     'percentageColumn': 'benzoPercentageChange',
-    'color': '#573325',
+    'color': '#B83A5E',
   },
   'opioids': {
     'titleSingular': 'Opioid',
@@ -219,7 +219,7 @@ const drugScreenOptions = {
     'titleAll': 'All Opioids',
     'significanceColumn': 'opioidSignificance',
     'percentageColumn': 'opioidPercentageChange',
-    'color': '#4A2866',
+    'color': '#000C77',
   },
   'fentanyl': {
     'titleSingular': 'Fentanyl',
@@ -227,7 +227,7 @@ const drugScreenOptions = {
     'titleAll': 'Fentanyl',
     'significanceColumn': 'fentanylSignificance',
     'percentageColumn': 'fentanylPercentageChange',
-    'color': '#8C5EA7',
+    'color': '#294891',
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -235,7 +235,7 @@ const drugScreenOptions = {
     'titleAll': 'Heroin',
     'significanceColumn': 'heroinSignificance',
     'percentageColumn': 'heroinPercentageChange',
-    'color': '#8C5EA7',
+    'color': '#0C6F96',
   },
   'stimulants': {
     'titleSingular': 'Stimulant',
@@ -243,7 +243,7 @@ const drugScreenOptions = {
     'titleAll': 'All Stimulants',
     'significanceColumn': 'stimulantSignificance',
     'percentageColumn': 'stimulantPercentageChange',
-    'color': '#24574E',
+    'color': '#411B6D',
   },
   'cocaine': {
     'titleSingular': 'Cocaine',
@@ -251,7 +251,7 @@ const drugScreenOptions = {
     'titleAll': 'Cocaine',
     'significanceColumn': 'cocaineSignificance',
     'percentageColumn': 'cocainePercentageChange',
-    'color': '#357F70',
+    'color': '#671AAA',
   },
   'methamphetamine': {
     'titleSingular': 'Methamphetamine',
@@ -259,7 +259,7 @@ const drugScreenOptions = {
     'titleAll': 'Methamphetamine',
     'significanceColumn': 'methamphetamineSignificance',
     'percentageColumn': 'methamphetaminePercentageChange',
-    'color': '#357F70',
+    'color': '#A378E8',
   }
 }
 
