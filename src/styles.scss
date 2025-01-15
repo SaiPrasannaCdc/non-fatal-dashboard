@@ -916,6 +916,7 @@ padding: 3px;
 margin: auto;
 border-radius: 50px;
 cursor: pointer;
+margin-bottom: 5px!important;
 }
 .toggleA-input {
 position: absolute;
@@ -994,7 +995,7 @@ transition: All 0.3s ease;
 .toggleB {
 position: relative;
 display: block;
-width: 125px;
+width: 140px;
 height: 30px;
 padding: 3px;
 margin: auto;
@@ -1063,7 +1064,7 @@ width: 16px;
 height: 16px;
 }
 .toggleB-input:checked~.toggleB-handle {
-left: 92.5px;
+left: 107.5px;
 box-shadow: -1px 1px 5px 
 rgba(0, 0, 0, 0.2);
 }
@@ -1342,7 +1343,7 @@ width: 100%;
 {
 display: flex;
 width: 350px;
-height: 200px;
+height: 140px;
 }
 
 .tdChgPercent {
@@ -1369,9 +1370,16 @@ width: 10%;
 min-width: 220px;
 }
 
+.drugsDivTop2 {
+text-align: left!important;
+padding-bottom: 25px!important;
+padding-top: 5px!important;;
+vertical-align: bottom!important;
+}
+
 .drugsDivTop {
-text-align: center!important;
-padding-bottom: 35px!important;
+  text-align: center!important;
+  padding-bottom: 25px!important;
 }
 
 
@@ -1453,4 +1461,10 @@ display: inline-block;
 {
   white-space: pre;
   padding-left: 5px;
+}
+
+.subLabel
+{
+  font-size: 15px;
+  font-weight: bold;
 }

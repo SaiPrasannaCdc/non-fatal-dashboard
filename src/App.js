@@ -183,6 +183,8 @@ export default function App({ dataUrl }) {
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
   const [isPeriod, setPeriodToggle] = useState(false);
+  const [selectAllFlag, setSelectAllFlag] = useState(false);
+  const [deselectAllFlag, setDeselectAllFlag] = useState(false);
   const [currentDrugOnly, setOnlyCurrentDrug] = useState(false);
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
@@ -230,7 +232,15 @@ export default function App({ dataUrl }) {
     }
   }
 
-   const resetDates = () => {
+  const selectAllDrugs = () => {
+    var selDrugs = []
+    Object.keys(drugOptions).forEach(drug => {
+        selDrugs.push(drug)
+    })
+    setselectedDrugs(selDrugs)
+  }
+  
+  const resetDates = () => {
     setLookupPeriodEndYear(currentYear);
     setLookupPeriodEndMonth('12');
     setLookupPeriodStartYear(currentYear);
@@ -260,25 +270,25 @@ export default function App({ dataUrl }) {
         if (currentDataSource == 'ED') {
           if (!isPeriod) {
             if (currentTimeframe === 'Monthly') 
-              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
             else
-              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
           else
           {
-            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+            txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
           }
         }
         else if (currentDataSource == 'HOSP') {
           if (!isPeriod) {
             if (currentTimeframe === 'Monthly') 
-              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
             else
-              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US')? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
           else
           {
-            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + (selectedDrugs.length > 1 ? ' and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
+            txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses from ' + monthNames[lookupPeriodStartMonth] + ' ' + lookupPeriodStartYear + ' to ' + monthNames[lookupPeriodEndMonth] + ' ' + lookupPeriodEndYear;
           }
         }
         break;
@@ -416,25 +426,194 @@ export default function App({ dataUrl }) {
   )
 }
   
-  const getToggleControls = () => {
+const getToggleControls2 = () => {
+  return (
+    <Fragment>
+      <table style={{tableLayout: 'fixed', display: 'block', width: '100%'}}>
+        <tr>
+          <td style={{width:'35%'}}>
+            <table style={{ width: '100%', tableLayout: 'fixed'}}>
+              <tr>
+                <td style={{width: '40%', verticalAlign: 'top'}}>
+                  { (currentState === 'US') &&
+                  <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>
+                  }
+                  </td>
+                <td style={{width: '14%', verticalAlign: 'top'}}>
+                  <div>
+                    {(currentState === 'US') &&
+                        <label title="Check to select all drugs">
+                            <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
+                            onChange={(e) => {
+                              if(e.target.checked) {
+                                 setCurrentDrug(currentDrug);
+                                selectAllDrugs();
+                                setDeselectAllFlag(false);
+                                setSelectAllFlag(true);
+                              }
+                              else {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug])
+                                setSelectAllFlag(false);
+                              }
+                            }}/> Select All
+                        </label>
+                        
+                      }
+                  </div>
+                </td>
+                <td style={{width: '20%', verticalAlign: 'top'}}>
+                  <div>
+                    {(currentState === 'US') &&
+                        <label title="Check to clear all drugs, except current drug ">
+                            <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
+                            onChange={(e) => {
+                              if(e.target.checked) {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug])
+                                setDeselectAllFlag(true);
+                                setSelectAllFlag(false);
+                              }
+                              else {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug]);
+                                setDeselectAllFlag(false);
+                              }
+                            }}/> Clear All
+                        </label>
+                        
+                      }
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td style={{width:'30%'}}>
+            <table>
+              <tr>
+                <td style={{width: '72%', textAlign: 'right'}}>
+                {(currentTimeframe === 'Annual') &&
+                  <div style={{float: 'right'}}>
+                      <label class="toggleA" title={'Toggle to view statistics for a data point compared to its previous data point, by hovering near circle.'}>
+                          <input id="togglePercent" class="toggleA-input" type="checkbox" 
+                          onChange={(e) => {
+                            if(e.target.checked) {
+                              setPercentToggle(true)
+                            }
+                            else {
+                              setPercentToggle(false)
+                            }
+                          }}/>
+                          <span class="toggleA-label" data-off="% Chg Off" 
+                                data-on="% Chg On">
+                          </span>
+                          <span class="toggleA-handle"></span>
+                      </label>
+                  </div>
+                  }
+                </td>
+                <td style={{width: '28%', textAlign: 'right'}}>
+                  <div style={{float: 'right'}}>
+                  <label class="toggle" title={'Toggle to see values of a data point.'}>
+                      <input id="toggleLabel" class="toggle-input" type="checkbox" 
+                      onChange={(e) => {
+                        if(e.target.checked) 
+                          setLabelToggle(true)
+                        else
+                          setLabelToggle(false)
+                      }}/>
+                      <span class="toggle-label" data-off="Labels Off" 
+                            data-on="Labels On">
+                      </span>
+                      <span class="toggle-handle"></span>
+                  </label>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td colspan='3' class="drugsDivTop2" style={{textAlign: 'left', verticalAlign: 'top'}}>
+          {(currentState === 'US') &&
+              getDrugControls()
+          }
+          </td>
+        </tr>
+      </table>
+    </Fragment>
+)
+}
+  
+  const getToggleControls1 = () => {
       return (
         <Fragment>
-          <table>
+          <table style={{tableLayout: 'fixed', display: 'block', width: '100%'}}>
             <tr>
-              <td style={{width: '80%!important', textAlign: 'center'}}>
-                {currentState == 'US' && 
+              <td style={{width: '10%', verticalAlign: 'top'}}>
+              <div>
+                    {(currentState === 'US') &&
+                        <label title="Check to select all drugs">
+                            <input id="toggleSelectAll" type="checkbox" 
+                            onChange={(e) => {
+                              if(e.target.checked) {
+                                setCurrentDrug(currentDrug);
+                                selectAllDrugs();
+                                var elm = document?.getElementById('toggleClearAll');
+                                elm.checked = false;
+                              }
+                              else {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug])
+                              }
+                            }}/> Select All
+                        </label>
+                        
+                      }
+                  </div>
+                  <div>
+                    {(currentState === 'US') &&
+                        <label title="Check to clear all drugs, except current drug ">
+                            <input id="toggleClearAll" type="checkbox" 
+                            onChange={(e) => {
+                              if(e.target.checked) {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug])
+                                var elm = document?.getElementById('toggleSelectAll');
+                                elm.checked = false;
+                              }
+                              else {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug])
+                              }
+                            }}/> Clear All
+                        </label>
+                        
+                      }
+                  </div>
+              </td>
+              <td style={{width: '80%'}}>
+                <table>
+                  <tr>
+                    <td>
+                    {currentState == 'US' && 
                 <table>
                   <tr>
                     <td class="drugsDivTop">
+                      <label className="subLabel">Make a selection to change the line graph</label><br></br>
                       {getDrugControls()}
                     </td>
                   </tr>
                 </table>
                 }
+                    </td>
+                  </tr>
+                </table>
               </td>
               <td style={{width: '10%', verticalAlign: 'top'}}>
-                {(currentTimeframe === 'Annual') &&
-                  <label class="toggleA">
+              <div>
+               {(currentTimeframe === 'Annual') &&
+                  <label class="toggleA" title={'Toggle to view statistics for a data point compared to its previous data point, by hovering near circle.'}>
                       <input id="togglePercent" class="toggleA-input" type="checkbox" 
                       onChange={(e) => {
                         if(e.target.checked) {
@@ -450,9 +629,7 @@ export default function App({ dataUrl }) {
                       <span class="toggleA-handle"></span>
                   </label>
                 }
-              </td>
-              <td style={{width: '10%', verticalAlign: 'top'}}>
-                <label class="toggle">
+               <label class="toggle" title={'Toggle to see values of a data point.'}>
                     <input id="toggleLabel" class="toggle-input" type="checkbox" 
                     onChange={(e) => {
                       if(e.target.checked) 
@@ -465,6 +642,7 @@ export default function App({ dataUrl }) {
                     </span>
                     <span class="toggle-handle"></span>
                 </label>
+               </div>
               </td>
             </tr>
           </table>
@@ -701,6 +879,8 @@ export default function App({ dataUrl }) {
       onClick={() => {
         setCurrentDrug(drugName);
         setselectedDrugs([drugName])
+        setDeselectAllFlag(false);
+        setSelectAllFlag(false);
       }}
     >{drugLabel || drugName}</button>
   );
@@ -764,7 +944,7 @@ export default function App({ dataUrl }) {
   const lineChartMemo = useMemo(() =>
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
-      {getToggleControls()}
+      {getToggleControls2()}
       <table style={{width: '100%'}}>
         <tr>
           <td>
@@ -855,7 +1035,7 @@ export default function App({ dataUrl }) {
                   </div>
                   <div className="tab-content">
                       {activeTab == 0 && <span><strong>ED Visits:</strong> Discharge data that captures information about patients who seek care at Emergency Departments.</span>}
-                      {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> Discharge data generated when patients are released from a hospital after receiving inpatient care. Inpatient hospitalizations may represent increased severity of nonfatal overdoses, as compared to ED visits.</span>}
+                      {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> These discharge data refer to information collected about patients’ hospital stays. Inpatient hospitalizations may represent increased severity of nonfatal overdoses, as compared to ED visits.</span>}
                   </div>
                 </div>
               </div>
