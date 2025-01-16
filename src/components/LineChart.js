@@ -213,7 +213,7 @@ function LineChart({ params }) {
   });
 
   const specs = [];
-  specs['width'] = width - 75; 
+  specs['width'] = width - 20; 
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
@@ -341,7 +341,7 @@ function LineChart({ params }) {
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
         positionsVar.push({
-            label: drugOptions[selectedDrugs[i]].titleForDropDown + ' Overall', 
+            label: drugOptions[selectedDrugs[i]].titleForDropDown, 
             xpos: specs.xMax + 18,
             ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
             yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
@@ -424,7 +424,7 @@ function LineChart({ params }) {
         var lineElm = document?.getElementById(`line-leading-${selectedDrugs[i]}`);
 
         for (var j=0; j<specs['positionsVar']?.length; j++) {
-          var drug = specs['positionsVar'][j].label.replace(' Overall', '');
+          var drug = specs['positionsVar'][j].label;
           var drugLbl;
           switch (drug) {
             case 'All Drugs':
@@ -471,9 +471,9 @@ function LineChart({ params }) {
         if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
         {
           if (inp.monthNamesShortPeriod[val].length == 4)
-            return monthNamesShort[parseInt('1')] + ' ' + currentYear;
-          else
-            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + currentYear;
+            return monthNamesShort[parseInt('1')] + ' ' + lookupPeriodEndYear;
+          else 
+            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + (val == 1 ? lookupPeriodStartYear : lookupPeriodEndYear);
         }
         else
           return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])];
@@ -897,7 +897,7 @@ function LineChart({ params }) {
                                 alignmentBaseline="middle" 
                                 fontSize={specs.fontSize} 
                                 fill={UtilityFunctions.getSeriesColor(currentDrug, key)}>
-                                  {drugOptions[currentDrug].titleForDropDown + ' Overall'}
+                                  {drugOptions[currentDrug].titleForDropDown}
                               </text>
                             </Group>
                             )
@@ -956,8 +956,8 @@ function LineChart({ params }) {
                   }
                   tickLabelProps={(value) => ({
                     fontSize: specs.fontSize,
-                    textAnchor: (isPeriod ? (inp['numOfTicks'] < 12 ? 'middle' : 'end') : 'middle'),
-                    angle: (isPeriod ? (inp['numOfTicks'] < 12 ? 0 : -90) : 0)
+                    textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
+                    angle: (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,

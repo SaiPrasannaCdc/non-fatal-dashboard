@@ -832,6 +832,7 @@ padding: 3px;
 margin: auto;
 border-radius: 50px;
 cursor: pointer;
+margin-bottom: 5px!important;
 }
 .toggle-input {
 position: absolute;
@@ -916,6 +917,7 @@ padding: 3px;
 margin: auto;
 border-radius: 50px;
 cursor: pointer;
+margin-bottom: 5px!important;
 }
 .toggleA-input {
 position: absolute;
@@ -994,12 +996,13 @@ transition: All 0.3s ease;
 .toggleB {
 position: relative;
 display: block;
-width: 125px;
+width: 140px;
 height: 30px;
 padding: 3px;
 margin: auto;
 border-radius: 50px;
 cursor: pointer;
+margin-bottom: 5px!important;
 }
 .toggleB-input {
 position: absolute;
@@ -1063,7 +1066,7 @@ width: 16px;
 height: 16px;
 }
 .toggleB-input:checked~.toggleB-handle {
-left: 92.5px;
+left: 107.5px;
 box-shadow: -1px 1px 5px 
 rgba(0, 0, 0, 0.2);
 }
@@ -1084,6 +1087,7 @@ padding: 3px;
 margin: auto;
 border-radius: 50px;
 cursor: pointer;
+margin-bottom: 5px!important;
 }
 .toggleC-input {
 position: absolute;
@@ -1341,8 +1345,8 @@ width: 100%;
 .toolTipChgPerc
 {
 display: flex;
-width: 350px;
-height: 200px;
+width: 320px;
+height: 120px;
 }
 
 .tdChgPercent {
@@ -1363,17 +1367,9 @@ width: 90%;
 width: 100%;
 }
 
-.drugsDiv {
-padding-top: 60px;
-width: 10%;
-min-width: 220px;
-}
-
 .drugsDivTop {
-text-align: center!important;
-padding-bottom: 35px!important;
+padding-bottom: 25px!important;
 }
-
 
 .tooltipTableLC
 {
@@ -1430,8 +1426,11 @@ padding: 10px;
 }
 
 .drugLabel {
-display: inline-block;
+display:inline;
 padding-right: 10px;
+
+padding-left: 15px!important;
+margin-left: 15px!important;
 }
 
 .notSelected {
@@ -1444,13 +1443,68 @@ display: inline-block;
 
 .subTitle
 {
-  font-style: italic!important;
-  font-weight: normal!important;
-  font-size: 14px!important;
+font-style: italic!important;
+font-weight: normal!important;
+font-size: 14px!important;
 }
 
 .whSpace
 {
-  white-space: pre;
-  padding-left: 5px;
+white-space: pre;
+padding-left: 5px;
 }
+
+.subLabel
+{
+font-size: 15px;
+font-weight: bold;
+}
+
+.drugDiv-alldrug {
+width: 120px!important;
+display: inline-block;
+vertical-align:top!important;
+}
+
+.drugDiv-opioid {
+width: 120px!important;
+display: inline-block;
+}
+
+.drugDiv-heroin {
+width: 100px!important;
+display: inline-block;
+}
+
+.drugDiv-stimulant {
+width: 150px!important;
+display: inline-block;
+}
+
+.drugDiv-benzodiazepine {
+width: 200px!important;
+display: inline-block;
+}
+
+.drugDiv-fentanyl {
+width: 150px!important;
+display: inline-block;
+}
+
+.drugDiv-cocaine {
+width: 100px!important;
+display: inline-block;
+}
+
+.drugDiv-methamphetamine {
+width: 200px!important;
+display: inline-block;
+}
+
+.lblDrug {
+display: inline-block;
+vertical-align: top!important;
+line-height: 1.3!important;
+padding-left: 2px!important;
+}
+
