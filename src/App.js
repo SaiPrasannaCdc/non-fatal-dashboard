@@ -452,7 +452,7 @@ const getToggleControls = () => {
                 <td style={{width: '18%', verticalAlign: 'top'}}>
                   <div>
                     {(currentState === 'US') &&
-                        <label title="Check to select all drugs">
+                        <label title="Check to select all drugs.">
                             <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
                             onChange={(e) => {
                               if(e.target.checked) {
@@ -475,7 +475,7 @@ const getToggleControls = () => {
                 <td style={{width: '20%', verticalAlign: 'top'}}>
                   <div>
                     {(currentState === 'US') &&
-                        <label title="Check to clear all drugs, except current drug ">
+                        <label title="Check to clear all drugs, except current drug.">
                             <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
                             onChange={(e) => {
                               if(e.target.checked) {
