@@ -504,7 +504,7 @@ const getToggleControls = () => {
                 {(currentTimeframe === 'Annual') &&
                   <div style={{float: 'right'}}>
                       <label class="toggleA" title={'Toggle to view statistics for a data point compared to its previous data point, by hovering near circle.'}>
-                          <input id="togglePercent" class="toggleA-input" type="checkbox" 
+                          <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent}
                           onChange={(e) => {
                             if(e.target.checked) {
                               setPercentToggle(true)
@@ -524,7 +524,7 @@ const getToggleControls = () => {
                 <td style={{width: '28%', textAlign: 'right'}}>
                   <div style={{float: 'right'}}>
                   <label class="toggle" title={'Toggle to see values of a data point.'}>
-                      <input id="toggleLabel" class="toggle-input" type="checkbox" 
+                      <input id="toggleLabel" class="toggle-input" type="checkbox" checked={showLabels}
                       onChange={(e) => {
                         if(e.target.checked) 
                           setLabelToggle(true)
@@ -1060,6 +1060,10 @@ const getToggleControls = () => {
                       setCurrentMonth('1');
                       setCurrentYear(supportedYearsLatest);
                       setPeriodToggle(false);
+                      setLabelToggle(false);
+                      setPercentToggle(false);
+                      setSelectAllFlag(false);
+                      setDeselectAllFlag(false);
                     }}>Reset</button>
                   </div>
                 </div>

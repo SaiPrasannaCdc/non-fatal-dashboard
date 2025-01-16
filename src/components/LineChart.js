@@ -471,9 +471,9 @@ function LineChart({ params }) {
         if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
         {
           if (inp.monthNamesShortPeriod[val].length == 4)
-            return monthNamesShort[parseInt('1')] + ' ' + currentYear;
+            return monthNamesShort[parseInt('1')] + ' ' + lookupPeriodEndYear;
           else 
-            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + (val == 1 ? lookupPeriodStartYear : currentYear);
+            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + (val == 1 ? lookupPeriodStartYear : lookupPeriodEndYear);
         }
         else
           return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])];
