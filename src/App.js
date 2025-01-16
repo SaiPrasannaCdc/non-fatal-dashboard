@@ -280,7 +280,7 @@ export default function App({ dataUrl }) {
         if (currentDataSource == 'ED') {
           if (!isPeriod) {
             if (currentTimeframe === 'Monthly') 
-              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses monthly in ' + currentYear;
             else
               txt = 'How often did people visit the ' + dataSourceOptions[currentDataSource]['titleLong'] + ' for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
@@ -292,7 +292,7 @@ export default function App({ dataUrl }) {
         else if (currentDataSource == 'HOSP') {
           if (!isPeriod) {
             if (currentTimeframe === 'Monthly') 
-              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses monthly in ' + monthNames[currentMonth] + ' ' + currentYear;
+              txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US') ? ' and other drug ' : '') + ' overdoses monthly in ' + currentYear;
             else
               txt = 'How often were people hospitalized for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ((selectedDrugs.length > 1 && currentState == 'US')? ' and other drug ' : '') + ' overdoses from ' + supportedYears[0] + ' to ' + supportedYearsLatest;
           }
