@@ -41,6 +41,7 @@ const drugOptions = {
     'titleHeader': 'All Drug',
     'rateColumn': 'rate_alldrug',
     'color': '#325D7D',
+    'lineChartOrder': '1'
   },
   'benzodiazepine': {
     'titleSingular': 'Benzodiazepine',
@@ -50,6 +51,7 @@ const drugOptions = {
     'titleHeader': 'Benzodiazepine',
     'rateColumn': 'rate_benzodiazepine',
     'color': '#B83A5E',
+    'lineChartOrder': '8'
   },
   'opioid': {
     'titleSingular': 'Opioid',
@@ -59,6 +61,7 @@ const drugOptions = {
     'titleHeader': 'All Opioid',
     'rateColumn': 'rate_opioid',
     'color': '#000C77',
+    'lineChartOrder': '5'
   },
   'fentanyl': {
     'titleSingular': 'Fentanyl',
@@ -68,6 +71,7 @@ const drugOptions = {
     'titleHeader': 'Fentanyl',
     'rateColumn': 'rate_fentanyl',
     'color': '#294891',
+    'lineChartOrder': '6'
   },
   'heroin': {
     'titleSingular': 'Heroin',
@@ -77,6 +81,7 @@ const drugOptions = {
     'titleHeader': 'Heroin',
     'rateColumn': 'rate_heroin',
     'color': '#0C6F96',
+    'lineChartOrder': '7'
   },
   'stimulant': {
     'titleSingular': 'Stimulant',
@@ -86,6 +91,7 @@ const drugOptions = {
     'titleHeader': 'All Stimulant',
     'rateColumn': 'rate_stimulant',
     'color': '#411B6D',
+    'lineChartOrder': '2'
   },
   'cocaine': {
     'titleSingular': 'Cocaine',
@@ -95,6 +101,7 @@ const drugOptions = {
     'titleHeader': 'Cocaine',
     'rateColumn': 'rate_cocaine',
     'color': '#671AAA',
+    'lineChartOrder': '3'
   },
   'methamphetamine': {
     'titleSingular': 'Methamphetamine',
@@ -104,6 +111,7 @@ const drugOptions = {
     'titleHeader': 'Methamphetamine',
     'rateColumn': 'rate_methamphetamine',
     'color': '#A378E8',
+    'lineChartOrder': '4'
   },
 };
 
@@ -219,6 +227,7 @@ export default function App({ dataUrl }) {
         event.currentTarget.classList.remove(drug);
         event.currentTarget.classList.add('notSelected');
         setselectedDrugs(selectedDrugs.filter(dr=>dr !== drug))
+        setSelectAllFlag(false);
       }
     }
     else
@@ -227,6 +236,7 @@ export default function App({ dataUrl }) {
         event.currentTarget.classList.remove('notSelected');
         event.currentTarget.classList.add(drug);
         setselectedDrugs([...selectedDrugs, drug])
+        setDeselectAllFlag(false);
       }
       
     }
@@ -425,21 +435,21 @@ export default function App({ dataUrl }) {
       </Fragment>
   )
 }
-  
-const getToggleControls2 = () => {
+
+const getToggleControls = () => {
   return (
     <Fragment>
       <table style={{tableLayout: 'fixed', display: 'block', width: '100%'}}>
         <tr>
-          <td style={{width:'35%'}}>
+          <td style={{width:'35%', paddingLeft: '65px'}}>
             <table style={{ width: '100%', tableLayout: 'fixed'}}>
               <tr>
-                <td style={{width: '40%', verticalAlign: 'top'}}>
+                <td style={{width: '50%', verticalAlign: 'top'}}>
                   { (currentState === 'US') &&
                   <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>
                   }
                   </td>
-                <td style={{width: '14%', verticalAlign: 'top'}}>
+                <td style={{width: '18%', verticalAlign: 'top'}}>
                   <div>
                     {(currentState === 'US') &&
                         <label title="Check to select all drugs">
@@ -481,7 +491,6 @@ const getToggleControls2 = () => {
                               }
                             }}/> Clear All
                         </label>
-                        
                       }
                   </div>
                 </td>
@@ -491,7 +500,7 @@ const getToggleControls2 = () => {
           <td style={{width:'30%'}}>
             <table>
               <tr>
-                <td style={{width: '72%', textAlign: 'right'}}>
+                <td style={{width: '76%', textAlign: 'right'}}>
                 {(currentTimeframe === 'Annual') &&
                   <div style={{float: 'right'}}>
                       <label class="toggleA" title={'Toggle to view statistics for a data point compared to its previous data point, by hovering near circle.'}>
@@ -534,132 +543,50 @@ const getToggleControls2 = () => {
           </td>
         </tr>
         <tr>
-          <td colspan='3' class="drugsDivTop2" style={{textAlign: 'left', verticalAlign: 'top'}}>
-          {(currentState === 'US') &&
-              getDrugControls()
-          }
+          <td colSpan='3' class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
+            {(currentState === 'US') &&
+                getDrugControls()
+            }
           </td>
         </tr>
       </table>
     </Fragment>
-)
-}
-  
-  const getToggleControls1 = () => {
-      return (
-        <Fragment>
-          <table style={{tableLayout: 'fixed', display: 'block', width: '100%'}}>
-            <tr>
-              <td style={{width: '10%', verticalAlign: 'top'}}>
-              <div>
-                    {(currentState === 'US') &&
-                        <label title="Check to select all drugs">
-                            <input id="toggleSelectAll" type="checkbox" 
-                            onChange={(e) => {
-                              if(e.target.checked) {
-                                setCurrentDrug(currentDrug);
-                                selectAllDrugs();
-                                var elm = document?.getElementById('toggleClearAll');
-                                elm.checked = false;
-                              }
-                              else {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug])
-                              }
-                            }}/> Select All
-                        </label>
-                        
-                      }
-                  </div>
-                  <div>
-                    {(currentState === 'US') &&
-                        <label title="Check to clear all drugs, except current drug ">
-                            <input id="toggleClearAll" type="checkbox" 
-                            onChange={(e) => {
-                              if(e.target.checked) {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug])
-                                var elm = document?.getElementById('toggleSelectAll');
-                                elm.checked = false;
-                              }
-                              else {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug])
-                              }
-                            }}/> Clear All
-                        </label>
-                        
-                      }
-                  </div>
-              </td>
-              <td style={{width: '80%'}}>
-                <table>
-                  <tr>
-                    <td>
-                    {currentState == 'US' && 
-                <table>
-                  <tr>
-                    <td class="drugsDivTop">
-                      <label className="subLabel">Make a selection to change the line graph</label><br></br>
-                      {getDrugControls()}
-                    </td>
-                  </tr>
-                </table>
-                }
-                    </td>
-                  </tr>
-                </table>
-              </td>
-              <td style={{width: '10%', verticalAlign: 'top'}}>
-              <div>
-               {(currentTimeframe === 'Annual') &&
-                  <label class="toggleA" title={'Toggle to view statistics for a data point compared to its previous data point, by hovering near circle.'}>
-                      <input id="togglePercent" class="toggleA-input" type="checkbox" 
-                      onChange={(e) => {
-                        if(e.target.checked) {
-                          setPercentToggle(true)
-                        }
-                        else {
-                          setPercentToggle(false)
-                        }
-                      }}/>
-                      <span class="toggleA-label" data-off="% Chg Off" 
-                            data-on="% Chg On">
-                      </span>
-                      <span class="toggleA-handle"></span>
-                  </label>
-                }
-               <label class="toggle" title={'Toggle to see values of a data point.'}>
-                    <input id="toggleLabel" class="toggle-input" type="checkbox" 
-                    onChange={(e) => {
-                      if(e.target.checked) 
-                        setLabelToggle(true)
-                      else
-                        setLabelToggle(false)
-                    }}/>
-                    <span class="toggle-label" data-off="Labels Off" 
-                          data-on="Labels On">
-                    </span>
-                    <span class="toggle-handle"></span>
-                </label>
-               </div>
-              </td>
-            </tr>
-          </table>
-        </Fragment>
     )
   }
-
+  
   const getDrugControls = () => {
+    const entries = Object.entries(drugOptions);
+    entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
+
     return (
       <Fragment>
-        {
-          Object.keys(drugOptions).map((key) => [key, drugOptions[key].titleForDropDown]).map((drug, index) => (
-             <label key={drug[0]} class="drugLabel">
-                        <span class={(selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])) ? drug[0] : 'notSelected'} onClick={(event) => { handleDrugSelectionsChange(event, drug[0]) }}></span>{drug[1]}
-                      </label>
-                  ))
-        }
+        <Fragment>
+          <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index < 4 &&
+                <div class={`drugDiv-${drug[0]}`}>
+                  <span class={(selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])) ? drug[0] : 'notSelected'} onClick={(event) => { handleDrugSelectionsChange(event, drug[0]) }}></span>
+                  <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                </div>
+                
+            ))
+          }
+          </div>
+        </Fragment>
+        <Fragment>
+        <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index >= 4 &&
+              <div class={`drugDiv-${drug[0]}`}>
+                      <span class={(selectedDrugs.includes(drug[0]) || currentDrug.includes(drug[0])) ? drug[0] : 'notSelected'} onClick={(event) => { handleDrugSelectionsChange(event, drug[0]) }}></span>
+                      <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                    </div>
+            ))
+          }
+          </div>
+        </Fragment>
       </Fragment>
     )
   }
@@ -944,7 +871,7 @@ const getToggleControls2 = () => {
   const lineChartMemo = useMemo(() =>
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
-      {getToggleControls2()}
+      {getToggleControls()}
       <table style={{width: '100%'}}>
         <tr>
           <td>

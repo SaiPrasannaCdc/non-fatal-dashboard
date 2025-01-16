@@ -472,8 +472,8 @@ function LineChart({ params }) {
         {
           if (inp.monthNamesShortPeriod[val].length == 4)
             return monthNamesShort[parseInt('1')] + ' ' + currentYear;
-          else
-            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + currentYear;
+          else 
+            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + (val == 1 ? lookupPeriodStartYear : currentYear);
         }
         else
           return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])];
@@ -956,8 +956,8 @@ function LineChart({ params }) {
                   }
                   tickLabelProps={(value) => ({
                     fontSize: specs.fontSize,
-                    textAnchor: (isPeriod ? (inp['numOfTicks'] < 12 ? 'middle' : 'end') : 'middle'),
-                    angle: (isPeriod ? (inp['numOfTicks'] < 12 ? 0 : -90) : 0)
+                    textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
+                    angle: (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
