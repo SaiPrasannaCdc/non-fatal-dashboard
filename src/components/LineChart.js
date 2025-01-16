@@ -340,14 +340,16 @@ function LineChart({ params }) {
     const allLabels = document?.getElementsByClassName("adjustCrowded");
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
-        positionsVar.push({
-            label: drugOptions[selectedDrugs[i]].titleForDropDown, 
-            xpos: specs.xMax + 18,
-            ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
-            yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
-            adjusted: false
-          }
-        )
+        var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]);
+        if (pos !== undefined) {
+          positionsVar.push({
+              label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+              xpos: specs.xMax + 18,
+              ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+              yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+              adjusted: false
+            })
+        }
       }
     }
     
@@ -822,7 +824,10 @@ function LineChart({ params }) {
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
     const seriesLabelPositionState = valueState === 'Data suppressed*' ? specs.yScale(0) - 30 : specs.yScale(valueState);
-                        
+    
+    if (seriesLabelPositionUS === undefined)
+      return;
+    
     return (
       <Fragment>
           <Group>
