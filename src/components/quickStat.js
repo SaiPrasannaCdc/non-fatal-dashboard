@@ -5,9 +5,9 @@ function QuickStat(params) {
   const { colorScale, defaultValueIfEmpty, value, text, label, timeframe } = params;
 
   return (
-    <div className="stats-sections-container grid-item">
+
                         <div className="stats-section first">
-                          <div id="stats-section-icon" className="stats-section-icon" >
+                          <div id="stats-section-icon" className="" >
                             <ChangeIndicator
                               width={110}
                               height={100}
@@ -22,7 +22,7 @@ function QuickStat(params) {
                             { text }
                           </span>
                         </div>
-                      </div>
+
   );
 }
 
