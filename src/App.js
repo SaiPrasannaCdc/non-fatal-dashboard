@@ -1059,6 +1059,7 @@ const getToggleControls = () => {
                       setCurrentTimeframe('Annual');
                       setCurrentMonth('1');
                       setCurrentYear(supportedYearsLatest);
+                      setPeriodToggle(false);
                     }}>Reset</button>
                   </div>
                 </div>
