@@ -1,9 +1,9 @@
 import React from 'react';
-import { Bar, Circle } from '@visx/shape';
 import { Text } from '@visx/text';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom,AxisLeft } from '@visx/axis';
+import Utils from '../shared/Utils';
 
 function SexAgeCharts({ params }) {
 
@@ -56,7 +56,7 @@ function SexAgeCharts({ params }) {
 
     return (
       <g key={d[yKey]}>
-        {!isNaN(d[x1Key]) && <Bar x={x1Pos} y={yScale(d[yKey])} width={xMaxHalf - x1Pos} height={yScale.bandwidth()} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x1Tip} />}
+        {!isNaN(d[x1Key]) && <path d={Utils.horizontalBarPath(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x1Tip} />}
         {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x1Tip}>{d[x1Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
         <Text 
           x={(x1Pos) + (isNaN(d[x1Key]) ? -25 : alignEndFirst ? -10 : 10)} 
@@ -65,7 +65,7 @@ function SexAgeCharts({ params }) {
           fill="black" 
           fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x1Key]?.toLocaleString()}</Text>
 
-        {!isNaN(d[x2Key]) && <Bar x={xMaxHalf} y={yScale(d[yKey])} width={x2Pos - xMaxHalf} height={yScale.bandwidth()} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x2Tip} />}
+        {!isNaN(d[x1Key]) && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
         {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
         <Text 
           x={(x2Pos) + (isNaN(d[x2Key]) ? 25 : alignEndSecond ? -10 : 10)} 

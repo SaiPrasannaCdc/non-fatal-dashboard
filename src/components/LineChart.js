@@ -614,7 +614,7 @@ function LineChart({ params }) {
 
   const getRateHTMLforDrug = (selectedDrugs, currentState, val) => {
     var leftRateStr = '';
-    if (!currentDrugOnly) {
+    if (!currentDrugOnly && currentState == 'US') {
       for (var i in selectedDrugs) {
         let rate = getRateforDrug(selectedDrugs[i], currentState, val);
         leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
@@ -630,7 +630,7 @@ function LineChart({ params }) {
   const getCountHTMLforDrug = (selectedDrugs, currentState, val) => {
 
     var leftCntStr = ''
-    if (!currentDrugOnly) {
+    if (!currentDrugOnly && currentState == 'US') {
       for (var i in selectedDrugs) {
         let cnt = getCountforDrug(selectedDrugs[i], currentState, val);
         leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
@@ -706,50 +706,23 @@ function LineChart({ params }) {
       <Fragment>
         {
           inp.filteredData['US'].map(d => {
-            let numStates = getNumberOfStates(d[specs.xKey])
-            var tooltipValues = [];
-            if (!currentDrugOnly)
-              tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
 
-            if (inp.currentState !== 'US') {
-              let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
-              if(stateValue) {
-                stateValue = stateValue[currentDrug];
-              } else {
-                stateValue = 'Data not available/not reported'
-              }
-              tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>${inp.stateNames[inp.currentState]} Rate</strong>: ${stateValue}</p>`);
-            }
+            if (inp.currentState === 'US') {
+              let numStates = getNumberOfStates(d[specs.xKey])
+              var tooltipValues = [];
+              if (!currentDrugOnly)
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
 
-            if (inp.selectedDrugs.length > 0) {
-
-                if (inp.currentState !== 'US') {
-                  let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
-                  if(stateValue){
-                    stateValue = stateValue[inp.selectedDrugs[0]];
-                  } else {
-                    stateValue = 'Data not available/not reported'
-                  }
-                  tooltipValues.push(`<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>${inp.stateNames[inp.currentState]} Rate</strong>: ${stateValue}</p>`);
-                }
-                for (var i in inp.selectedDrugs) {
-                  if (i > 0){
-                    tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
-                    if (inp.currentState !== 'US') {
-                      let stateValue = inp.filteredData[inp.currentState].find(d2 => d2[specs.xKey] === d[specs.xKey]);
-                      if (stateValue) {
-                        stateValue = stateValue[inp.selectedDrugs[i]];
-                      } else {
-                        stateValue = 'Data not available/not reported'
-                      }
-                      tooltipValues.push(`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>${inp.stateNames[inp.currentState]} Rate</strong>: ${stateValue}</p>`);
+              if (inp.selectedDrugs.length > 0) {
+                  for (var i in inp.selectedDrugs) {
+                    if (!inp.selectedDrugs[i].includes(currentDrug)){
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
                     }
                   }
-                }
+              }
             }
-
+            
             let tooltipValuesSorted = sortToolTipValues(tooltipValues)
-
 
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}

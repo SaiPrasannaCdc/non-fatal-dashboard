@@ -320,16 +320,16 @@ export default function App({ dataUrl }) {
 
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED') 
-              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
+              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
           else if (currentDataSource == 'HOSP')
-              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
+              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
         }
         else
         {
           if (currentDataSource == 'ED') 
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
         else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall [' + numStates + ' States]';
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
         }
 
         break;
@@ -943,7 +943,7 @@ const getToggleControls = () => {
         {width === 0 && loading}
         {width > 0 && (
           <>
-            <div className="filter-wrapper">
+            <div>
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
               <div className="filters">
                   <div><label title="This dashboard contains 2 data sets">Select Data Source:</label><br></br><label className="subTitle">This dashboard contains two datasets</label></div>
