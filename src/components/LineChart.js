@@ -494,11 +494,11 @@ function LineChart({ params }) {
     }
   } 
   
-  const getRateforDrug = (drug, currentState, val) => {
+  const getRateforDrug = (drug, parmState, val) => {
 
     var rate;
     if (currentTimeframe === 'Annual' && !isPeriod) {
-      if (currentState === 'US') {
+      if (parmState === 'US') {
         for (var i=0;i<Object.keys(inp.filteredData['US']).length;i++) {
           if (inp.filteredData['US'][i]['year'] == val) {
             rate = inp.filteredData['US'][i][drug]
@@ -507,17 +507,17 @@ function LineChart({ params }) {
         }
       }
       else {
-          let stateValue = inp.filteredData[currentState].find(d2 => d2[specs.xKey] === val);
+          let stateValue = inp.filteredData[parmState].find(d2 => d2[specs.xKey] === val);
           if (stateValue)
               rate = stateValue[drug];
       }
     }
     else if (currentTimeframe === 'Monthly' && !isPeriod) {
-      if (currentState === 'US') {
+      if (parmState === 'US') {
             rate = inp.filteredData['US'][val-1][drug]
       }
       else {
-          let stateValue = inp.filteredData[currentState].find(d2 => d2[specs.xKey] === val);
+          let stateValue = inp.filteredData[parmState].find(d2 => d2[specs.xKey] === val);
           if (stateValue)
               rate = stateValue[drug];
       }
@@ -526,7 +526,7 @@ function LineChart({ params }) {
       let arr = val.split(' ');
       let mon = String(UtilityFunctions.getMonthNumber(arr[0])).padStart(2, '0');;
       let yr = arr[1];
-      if (currentState === 'US') {
+      if (parmState === 'US') {
         for (var i=0; i<inp.filteredData['US'].length;i++) {
           if (inp.filteredData['US'][i].year == String(yr) + String(mon)) {
             rate = inp.filteredData['US'][i][drug];
@@ -535,9 +535,9 @@ function LineChart({ params }) {
         }
       }
       else {
-        for (var i=0; i<inp.filteredData[currentState].length;i++) {
-          if (inp.filteredData[currentState][i].year == String(yr) + String(mon)) {
-            rate = inp.filteredData[currentState][i][drug];
+        for (var i=0; i<inp.filteredData[parmState].length;i++) {
+          if (inp.filteredData[parmState][i].year == String(yr) + String(mon)) {
+            rate = inp.filteredData[parmState][i][drug];
             break;
           }
         }
@@ -547,10 +547,10 @@ function LineChart({ params }) {
     return rate;
   }
 
-  const getCountforDrug = (drug, currentState, val) => {
+  const getCountforDrug = (drug, parmState, val) => {
     var cnt = 0;
     if (currentTimeframe === 'Annual' && !isPeriod) {
-      if (currentState === 'US') {
+      if (parmState === 'US') {
         for (var i=0;i<Object.keys(countsDataYearly).length;i++) {
           if (countsDataYearly[i]['year'] == val && countsDataYearly[i]['drug'] === drug) {
             cnt = countsDataYearly[i]['count'];
@@ -560,7 +560,7 @@ function LineChart({ params }) {
       }
       else {
         for (var i=0;i<Object.keys(data.state[currentDataSource][drug]['all']).length;i++) {
-          if (data.state[currentDataSource][drug]['all'][i]['state'] == currentState) {
+          if (data.state[currentDataSource][drug]['all'][i]['state'] == parmState) {
             cnt = data.state[currentDataSource][drug]['all'][i][val];
             break;
           }
@@ -568,7 +568,7 @@ function LineChart({ params }) {
       }
     }
     else if (currentTimeframe === 'Monthly' && !isPeriod) {
-      if (currentState === 'US') {
+      if (parmState === 'US') {
           for (var i=0;i<Object.keys(countsDataMonthly).length;i++) {
             if (countsDataMonthly[i].year == currentYear && countsDataMonthly[i].month == val && countsDataMonthly[i].drug == drug) {
               cnt = countsDataMonthly[i].count;
@@ -578,7 +578,7 @@ function LineChart({ params }) {
         }
         else {
           for (var i=0;i<Object.keys(data.state[currentDataSource][drug][val]).length;i++) {
-            if (data.state[currentDataSource][drug][val][i]['state'] == currentState)
+            if (data.state[currentDataSource][drug][val][i]['state'] == parmState)
             {
               cnt = data.state[currentDataSource][drug][val][i][currentYear];
               break;
@@ -590,7 +590,7 @@ function LineChart({ params }) {
       let arr = val.split(' ');
       let mon = UtilityFunctions.getMonthNumber(arr[0]);
       let yr = arr[1];
-      if (currentState === 'US') {
+      if (parmState === 'US') {
           for (var i=0;i<Object.keys(countsDataMonthly).length;i++) {
             if (countsDataMonthly[i].year == yr && countsDataMonthly[i].month == mon && countsDataMonthly[i].drug == drug) {
               cnt = countsDataMonthly[i].count;
@@ -600,7 +600,7 @@ function LineChart({ params }) {
         }
         else {
           for (var i=0;i<Object.keys(data.state[currentDataSource][drug][mon]).length;i++) {
-            if (data.state[currentDataSource][drug][mon][i]['state'] == currentState)
+            if (data.state[currentDataSource][drug][mon][i]['state'] == parmState)
             {
               cnt = data.state[currentDataSource][drug][mon][i][yr];
               break;
@@ -612,32 +612,36 @@ function LineChart({ params }) {
     return cnt;
   }
 
-  const getRateHTMLforDrug = (selectedDrugs, currentState, val) => {
+  const getRateHTMLforDrug = (selectedDrugs, parmState, val) => {
     var leftRateStr = '';
-    if (!currentDrugOnly && currentState == 'US') {
+    if (parmState == 'US') {
       for (var i in selectedDrugs) {
-        let rate = getRateforDrug(selectedDrugs[i], currentState, val);
-        leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+        if (selectedDrugs[i].includes(currentDrug)) {
+          let rate = getRateforDrug(selectedDrugs[i], parmState, val);
+          leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+        }
       }
     }
     else {
-      let rate = getRateforDrug(currentDrug, currentState, val);
+      let rate = getRateforDrug(currentDrug, parmState, val);
         leftRateStr = leftRateStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
     }
     return leftRateStr;
   }
 
-  const getCountHTMLforDrug = (selectedDrugs, currentState, val) => {
+  const getCountHTMLforDrug = (selectedDrugs, parmState, val) => {
 
     var leftCntStr = ''
-    if (!currentDrugOnly && currentState == 'US') {
+    if (parmState == 'US') {
       for (var i in selectedDrugs) {
-        let cnt = getCountforDrug(selectedDrugs[i], currentState, val);
-        leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
+        if (selectedDrugs[i].includes(currentDrug)) {
+          let cnt = getCountforDrug(selectedDrugs[i], parmState, val);
+          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
+        }
       }
     }
     else {
-      let cnt = getCountforDrug(currentDrug, currentState, val);
+      let cnt = getCountforDrug(currentDrug, parmState, val);
       leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
     }
     return leftCntStr;
