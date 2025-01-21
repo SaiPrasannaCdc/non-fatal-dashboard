@@ -876,7 +876,7 @@ export default function App({ dataUrl }) {
       <>
         <section className="comparison-section">
           <div className="bar-chart-container">
-            <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{timeline} percent change in US ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
+            <h2 className='data-bite-header sub' style={{ color: drugColor }}>{timeline} percent change in US ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
 
             <span className="toggle-wrap" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}>
               <span>Sex Comparison</span><div className="toggle-container"><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
