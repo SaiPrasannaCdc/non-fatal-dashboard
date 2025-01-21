@@ -1314,7 +1314,7 @@ export default function App({ dataUrl }) {
         <div className="map-container">
           <div className="map-inner-container">
             <div className="now-viewing">
-              <h2 className="h3" style={{ backgroundColor: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
+              <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
               {!selected && <div><em>Click on a state to see more.</em></div>}
               {selected && <div>Now viewing {getStateName(selected)} <button className="btn btn-reset" onClick={resetFilters}>Reset</button></div>}
             </div>
@@ -1324,7 +1324,7 @@ export default function App({ dataUrl }) {
 
         <section className="sub-drawer dumbbell">
           <a id="stateInfo">state info</a>
-          <h2 className="h3" style={{ backgroundColor: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
+          <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
           {selected && (
             <>
               <div>
