@@ -1508,3 +1508,14 @@ line-height: 1.3!important;
 padding-left: 2px!important;
 }
 
+.__react_component_tooltip:after {
+    background-color: white!important;
+    z-index: 10000!important;
+    border: rgba(0, 0, 0, 0.3) 1px solid!important;
+    border-left: none!important;
+    border-bottom: none!important;
+}
+
+.toolTipSpanLC {
+    font-size: 20px!important;
+}
