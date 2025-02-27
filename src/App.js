@@ -907,7 +907,7 @@ const getToggleControls = () => {
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
       <h2 className="data-bite-header sub"  style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
-      <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. The heat map tabulates ED visits occurring within each state to in-state residents (people who visit an ED in another state are not represented in this heat map).</i></small></div>
+      <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true"/>
       5 Year Rate
@@ -961,7 +961,7 @@ const getToggleControls = () => {
                       ))}
                   </div>
                   <div className="tab-content">
-                      {activeTab == 0 && <span><strong>ED Visits:</strong> Discharge data that captures information about patients who seek care at Emergency Departments.</span>}
+                      {activeTab == 0 && <span><strong>ED Visits:</strong> Discharge data that captures information about patients who sought care at Emergency Department (ED) and were discharged from the ED.</span>}
                       {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> These discharge data refer to information collected about patients’ hospital stays. Inpatient hospitalizations may represent increased severity of nonfatal overdoses, as compared to ED visits.</span>}
                   </div>
                 </div>
