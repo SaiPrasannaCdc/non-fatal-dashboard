@@ -441,7 +441,7 @@ const getToggleControls = () => {
     <Fragment>
       <table style={{tableLayout: 'fixed', display: 'block', width: '100%'}}>
         <tr>
-          <td style={{width:'35%', paddingLeft: '65px'}}>
+          <td style={{width:'55%', paddingLeft: '65px'}}>
             <table style={{ width: '100%', tableLayout: 'fixed'}}>
               <tr>
                 <td style={{width: '50%', verticalAlign: 'top'}}>
@@ -497,13 +497,14 @@ const getToggleControls = () => {
               </tr>
             </table>
           </td>
+          <td style={{width:'15%'}}></td>
           <td style={{width:'30%'}}>
             <table>
               <tr>
                 <td style={{width: '76%', textAlign: 'right'}}>
                 {(currentTimeframe === 'Annual') &&
                   <div style={{float: 'right'}}>
-                      <label class="toggleA" title={'Toggle to view statistics for a data point compared to its previous data point, by hovering near circle.'}>
+                      <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
                           <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent}
                           onChange={(e) => {
                             if(e.target.checked) {
@@ -541,14 +542,21 @@ const getToggleControls = () => {
               </tr>
             </table>
           </td>
+          
         </tr>
         <tr>
-          <td colSpan='3' class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
+          <td colSpan='2' class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
             {(currentState === 'US') &&
                 getDrugControls()
             }
           </td>
+          {(currentTimeframe === 'Annual') &&
+          <td>
+            <label className="subLabel">When "% Chg" is on, hover over a data point on the line chart to view percent change for the selected year compared to the previous year.&nbsp;&nbsp;</label>
+          </td>
+          }
         </tr>
+        
       </table>
     </Fragment>
     )
