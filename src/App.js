@@ -954,7 +954,7 @@ const getToggleControls = () => {
             <div>
               <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
               <div className="filters">
-                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label><br></br><label className="subTitle">This dashboard contains two datasets</label></div>
+                  <div><label title="This dashboard contains 2 data sets">Select Data Source:</label><br></br><label className="subTitle">This dashboard contains two datasets</label><sup>6</sup></div>
                   <div className="tabs-container">
                     <div className="tabs">
                       {tabData.map((tab, index) => (
@@ -1168,6 +1168,7 @@ const getToggleControls = () => {
               <li><strong><sup>3</sup></strong>Counts based on 1-9 overdoses and rates when based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> for the calculations of rates.</li>
               <li><strong><sup>4</sup></strong>A total of 31 jurisdictions submit DOSE ED discharge data and 34 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because of different jurisdictions may be included in different years based on data availability.</li>
               <li><strong><sup>5</sup></strong>The term "rate" in the context of ED or inpatient hospitalization visits for nonfatal drug overdoses refers to the number of visits per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED or inpatient hospitalization visit frequencies across different population sizes and demographics.</li>
+              <li><strong><sup>6</sup></strong>The Emergency Department (ED) and inpatient hospitalization datasets are intended to be mutually exclusive. The ED dataset captures individuals who sought care and were discharged from the ED, while the inpatient hospitalization data include patients admitted through the ED or other sources. It is important to note that some overlap may exist between these datasets..</li>
               </ul>
           </div>}
         </div>
