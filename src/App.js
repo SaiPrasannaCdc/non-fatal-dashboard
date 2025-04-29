@@ -200,7 +200,8 @@ const drugScreenOptions = {
   'all': {
     'titleSingular': 'Drug',
     'titlePlural': 'All Drugs',
-    'titleAll': 'All Drug',
+    'titleAll': 'All Drugs',
+    'titleAllGram': 'All Drug',
     'significanceColumn': 'allSignificance',
     'percentageColumn': 'allPercentageChange',
     'color': '#325D7D',
@@ -209,6 +210,7 @@ const drugScreenOptions = {
     'titleSingular': 'Benzodiazepine',
     'titlePlural': 'Benzodiazepine',
     'titleAll': 'Benzodiazepine',
+    'titleAllGram': 'Benzodiazepine',
     'significanceColumn': 'benzoSignificance',
     'percentageColumn': 'benzoPercentageChange',
     'color': '#B83A5E',
@@ -217,6 +219,7 @@ const drugScreenOptions = {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
     'titleAll': 'All Opioids',
+    'titleAllGram': 'All Opioid',
     'significanceColumn': 'opioidSignificance',
     'percentageColumn': 'opioidPercentageChange',
     'color': '#000C77',
@@ -225,6 +228,7 @@ const drugScreenOptions = {
     'titleSingular': 'Fentanyl',
     'titlePlural': 'Fentanyl',
     'titleAll': 'Fentanyl',
+    'titleAllGram': 'Fentanyl',
     'significanceColumn': 'fentanylSignificance',
     'percentageColumn': 'fentanylPercentageChange',
     'color': '#294891',
@@ -233,6 +237,7 @@ const drugScreenOptions = {
     'titleSingular': 'Heroin',
     'titlePlural': 'Heroin',
     'titleAll': 'Heroin',
+    'titleAllGram': 'Heroin',
     'significanceColumn': 'heroinSignificance',
     'percentageColumn': 'heroinPercentageChange',
     'color': '#0C6F96',
@@ -241,6 +246,7 @@ const drugScreenOptions = {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
     'titleAll': 'All Stimulants',
+    'titleAllGram': 'All Stimulant',
     'significanceColumn': 'stimulantSignificance',
     'percentageColumn': 'stimulantPercentageChange',
     'color': '#411B6D',
@@ -249,6 +255,7 @@ const drugScreenOptions = {
     'titleSingular': 'Cocaine',
     'titlePlural': 'Cocaine',
     'titleAll': 'Cocaine',
+    'titleAllGram': 'Cocaine',
     'significanceColumn': 'cocaineSignificance',
     'percentageColumn': 'cocainePercentageChange',
     'color': '#671AAA',
@@ -257,6 +264,7 @@ const drugScreenOptions = {
     'titleSingular': 'Methamphetamine',
     'titlePlural': 'Methamphetamine',
     'titleAll': 'Methamphetamine',
+    'titleAllGram': 'Methamphetamine',
     'significanceColumn': 'methamphetamineSignificance',
     'percentageColumn': 'methamphetaminePercentageChange',
     'color': '#A378E8',
@@ -876,7 +884,7 @@ export default function App({ dataUrl }) {
       <>
         <section className="comparison-section">
           <div className="bar-chart-container">
-            <h2 className='h3' style={{ color: drugColor }}>{timeline} percent change in US ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
+            <h2 className='h3' style={{ color: drugColor }}>{timeline} percent change in US ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAllGram']} overdoses</h2>
 
             <span className="toggle-wrap" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}>
               <span>Sex Comparison</span><div className="toggle-container"><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
@@ -1021,7 +1029,7 @@ export default function App({ dataUrl }) {
           <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change<sup>†</sup>  in {getStateName(selected)}</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdose</p>
           </div>
         </div>
       )
@@ -1220,7 +1228,7 @@ export default function App({ dataUrl }) {
 
       <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.75em 18px', marginBottom: '1em'}}>
         <span style={{  fontSize: '.8em', fontWeight: 'bold' }}>Trends in Emergency Department (ED) Visits</span>
-        <h2 style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: 'bold', fontFamily: '"Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif'  }}>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdoses</h2>
+        <h2 style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: 'bold', fontFamily: '"Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif'  }}>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdoses</h2>
       </header>
       <div className="callouts">
         <div style={{'borderLeft': '5px solid' + drugColor}}>
@@ -1230,7 +1238,7 @@ export default function App({ dataUrl }) {
             <span className='data-bite-title' style={{ color: drugColor }}>
 
               {timeline}  Percent Change<sup>†</sup> in US</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAll']} Overdose</p>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdose</p>
           </div>
         </div>
         {selected && constructStateDataBite()}
@@ -1314,7 +1322,7 @@ export default function App({ dataUrl }) {
         <div className="map-container">
           <div className="map-inner-container">
             <div className="now-viewing">
-              <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
+              <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAllGram']} overdoses</h2>
               {!selected && <div><em>Click on a state to see more.</em></div>}
               {selected && <div>Now viewing {getStateName(selected)} <button className="btn btn-reset" onClick={resetFilters}>Reset</button></div>}
             </div>
@@ -1324,7 +1332,7 @@ export default function App({ dataUrl }) {
 
         <section className="sub-drawer dumbbell">
           <a id="stateInfo">state info</a>
-          <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAll']} overdoses</h2>
+          <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAllGram']} overdoses</h2>
           {selected && (
             <>
               <div>
@@ -1363,7 +1371,7 @@ export default function App({ dataUrl }) {
           </button>
           {showDatatable &&
             <div className="datatable-body">
-              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} drugName={drugScreenOptions[currentDrug]['titleAll']} />
+              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} drugName={drugScreenOptions[currentDrug]['titleAllGram']} />
               <small>
                 <MapFootnotes />
                 <p>{ footnote1[0] } { footnote1[1] }</p>
