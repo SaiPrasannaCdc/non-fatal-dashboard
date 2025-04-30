@@ -1029,7 +1029,7 @@ export default function App({ dataUrl }) {
           <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change<sup>†</sup>  in {getStateName(selected)}</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdose</p>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdoses</p>
           </div>
         </div>
       )
@@ -1238,7 +1238,7 @@ export default function App({ dataUrl }) {
             <span className='data-bite-title' style={{ color: drugColor }}>
 
               {timeline}  Percent Change<sup>†</sup> in US</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdose</p>
+            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdoses</p>
           </div>
         </div>
         {selected && constructStateDataBite()}
