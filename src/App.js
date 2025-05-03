@@ -184,7 +184,7 @@ const fundedStates = {
 };
 
 const getStateName = (geo) => {
-  return supportedStates[geo][0];
+   return geo == 'US' ? 'US' : supportedStates[geo][0];
 }
 
 const legendOrder = [
@@ -303,8 +303,9 @@ const months = [
 
 export default function AppNew({ dataUrl }) {
   const [runtime, setRuntime] = useState({})
-  const [selected, setSelected] = useState(null)
-  const [selectedYr, setSelectedYr] = useState(null)
+  const [selected, setSelected] = useState('US')
+  const [selectedSec, setSelectedSec] = useState('US')
+  const [selectedYr, setSelectedYr] = useState('2024')
   const [currentState, setCurrentState] = useState('US');
   const [keyedRawData, setKeyedRawdata] = useState([]);
   const [rawData, setRawData] = useState([]);
@@ -365,6 +366,14 @@ export default function AppNew({ dataUrl }) {
     }
   };
 
+  const setStateSelectedSec = (geo) => {
+    if (selectedSec === geo) {
+      setSelectedSec(null);
+    } else {
+      setSelectedSec(geo);
+    }
+  };
+
   const setYearSelected = (st) => {
     if (selectedYr === st) {
       setSelectedYr(null);
@@ -373,25 +382,50 @@ export default function AppNew({ dataUrl }) {
     }
   };
 
-  const GetYears = () => { //SKV TODO
-    let years = [];
-    years['2018'] = '2018';
-    years['2019'] = '2019';
-    years['2020'] = '2020';
-    years['2021'] = '2021';
-    years['2022'] = '2022';
+  function sortObjectByKeyDescending(obj) {
+    
+    let sortedKeys = Object.keys(obj).sort((a, b) => b - a);
+    let sortedObject = [];
+  
+    for (let key of sortedKeys) {
+      sortedObject.push(String(obj[key]));
+    }
 
-    return years;
+    return sortedObject;
+  }
+
+  const GetYears = () => {
+
+    let years = [];
+
+    for (let i=0;i<Object.keys(yearTimeframes).length;i++)
+    {
+      if ((yearTimeframes[i].year in years) === false)
+        years[yearTimeframes[i].year] = yearTimeframes[i].year
+    }
+
+    const sortedObject = sortObjectByKeyDescending(years);
+
+    return sortedObject;
   }; 
 
   const drugTab = (drugName, drugLabel) => (
     <button
-      className={`drug-tab${drugName === currentDrug ? (' ' + drugName) : ''}`}
+      className={`drug-tab${selectedDrugs.includes(drugName) ? (' ' + drugName) : ''}`}
       onClick={() => {
-        setCurrentDrug(drugName);
-        setselectedDrugs([drugName])
-        setDeselectAllFlag(false);
-        setSelectAllFlag(false);
+        if (selectedDrugs.includes(drugName) && drugName != 'all') {
+          setCurrentDrug(drugName);
+          setselectedDrugs(selectedDrugs.filter(dr=>dr !== drugName))
+          setDeselectAllFlag(false);
+          setSelectAllFlag(false);
+        }
+        else
+        {
+          setCurrentDrug(drugName);
+          setselectedDrugs([...selectedDrugs, drugName])
+          setDeselectAllFlag(false);
+          setSelectAllFlag(false);
+        }
       }}
     >{drugLabel || drugName}</button>
   );
@@ -919,192 +953,9 @@ export default function AppNew({ dataUrl }) {
     ReactTooltip.rebuild();
   });
 
- /*  const StateInfo = () => {
-
-    return (
-      <div className="bar-chart-container">
-        <div className="bar-chart">
-          <span className='chart-title'>{supportedStates[selected][0]}</span>
-          <BarChartVertical width={600} height={350} data={runtimePastMonthsState} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
-        </div>
-      </div>
-    )
-  } */
-
-  /* const GenderAgeSection = () => {
-
-    return (
-      <>
-        <section className="comparison-section">
-          <div className="bar-chart-container">
-            <h2 className='h3' style={{ color: drugColor }}>{timeline} percent change in US ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAllGram']} overdoses</h2>
-
-            <span className="toggle-wrap" onClick={() => {setDemographicsToggle(demographicsToggle === 'sex' ? 'age' : 'sex')}}>
-              <span>Sex Comparison</span><div className="toggle-container"><span className="toggle-background"></span><span className={`toggle-indicator${demographicsToggle === 'age' ? ' age' : ''}`}></span></div><span>Age Comparison</span>
-            </span>
-
-            {demographicsToggle === 'sex' && <div className="sex-chart">
-              <div className="chart-grid">
-                <div>
-                  <span className='chart-title'>Male</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['M']} range={[runtimeRanges.gender.max, runtimeRanges.gender.min]} chartType={'Male'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Female</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsGender['F']} range={[runtimeRanges.gender.max, runtimeRanges.gender.min]} chartType={'Female'} />
-                </div>
-              </div>
-            </div>}
-
-            {demographicsToggle === 'age' && <div className="age-chart">
-              <div className="chart-grid">
-                <div>
-                  <span className='chart-title'>Ages 0 - 14</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['0-14']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 0-14'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 15 - 24</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['15-24']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 15-24'}/>
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 25 - 34</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['25-34']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 25-34'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 35 - 54</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['35-54']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 35-54'} />
-                </div>
-                <div>
-                  <span className='chart-title'>Ages 55+</span>
-                  <BarChartVertical width={600} height={300} data={runtimePastMonthsAge['55+']} range={[runtimeRanges.age.max, runtimeRanges.age.min]} chartType={'Age 55+'} />
-                </div>
-              </div>
-            </div>}
-          </div>
-        </section>
-      </>
-    )
-  } */
-
-  /* const tooltipFormatterMonth = (data) => {
-    let tip  = monthTimeframes[data]['label'].substring(0,3) + '. ' + monthTimeframes[data]['year'];
-        tip += " compared to ";
-        // tip += " - ";
-
-    if ( ( data - 1 ) >= 0 ) { // make sure we have a previous month to compare
-      tip += monthTimeframes[data - 1]['label'].substring(0,3) + '. ' + monthTimeframes[data - 1]['year'];
-    } else {
-      const selectedMonth = monthTimeframes[data]['month'];
-
-      // select previous month in the months array and December if we are on January
-      const prevMonth = selectedMonth - 2 >= 0 ? selectedMonth - 2 : 11;
-
-      // select previous year and subtract a year if we are on January
-      const prevYear  = selectedMonth - 2 >= 0 ? monthTimeframes[data]['year'] : monthTimeframes[data]['year'] - 1;
-      tip += months[prevMonth].substring(0,3) + '. ' + prevYear;
-    }
-    return tip;
-  } */
-
-  /* const tooltipFormatterYear = (data) => {
-    let year = yearTimeframes[data]['label'].split(' ');
-    let tip  = yearTimeframes[data]['label'].substring(0,3) + '. ' + year[1];
-        tip += " compared to ";
-        tip += yearTimeframes[data]['label'].substring(0,3) + '. ' + ( year[1] - 1 );
-    return tip;
-  } */
-
   if (!runtimeData || Object.keys(runtimeData).length === 0 || !monthTimeframes) {
     return <h3>Loading</h3>;
   }
-
-  /* const getSliderMarks = (type) => {
-    let marks = {};
-    
-    //Get year marks in between beginning and end
-    let indexOffset = 0;
-
-    let tempTimeframes;
-    if ('month' === type) {
-      tempTimeframes = [...monthTimeframes];
-    } else {
-      tempTimeframes = [...yearTimeframes];
-    }
-
-    let tempYear = tempTimeframes[0].year;
-    const lastIndex = tempTimeframes.length - 1;
-
-    tempTimeframes.forEach((element, index, array) => {
-
-      if (0 === index) {
-        marks[index] = element.label;
-        return;
-      }
-
-      if (tempYear !== element.year) {
-        marks[index] = element.year;
-        tempYear = element.year;
-        return;
-      }
-
-      if (lastIndex === index) {
-        marks[index] = element.label;
-        return;
-      }
-    });
-
-    return marks;
-  } */
-
-/*   const constructStateDataBite = () => {
-    const selectedPercentageRaw = selected ? runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]] : false;
-    let selectedPercentage = false;
-    
-    if ('missing' === selectedPercentageRaw) {
-      return (
-        <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-          <span className="callout" style={{ 'color': drugColor }}>N/A</span>
-          <div>
-            <h3 style={{ color: drugColor }}>{getStateName(selected)}</h3>
-            <p>Data not available/reported for this state and time range.</p>
-          </div>
-        </div>
-      )
-    } else {
-      selectedPercentage = Math.round(runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]]);
-      if(isNaN(selectedPercentage)){
-        selectedPercentage = 'N/A';
-      } else {
-        selectedPercentage += '%';
-      }
-      return (
-        <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-          <span className="callout" style={{ 'color': drugColor }}>{selectedPercentage}</span>
-          <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>{timeline} Percent Change<sup>†</sup>  in {getStateName(selected)}</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdoses</p>
-          </div>
-        </div>
-      )
-    }
-  } */
-
-/*   const constructUSSignificantIncreaseDataBite = (significanceColumn) => {
-    
-    const numStatesWithSignificantIncrease = Object.values(runtimeData).filter((obj) => {
-      return obj[significanceColumn] === 'Significant Increase';
-    }).length;
-
-    return (
-      <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-        <span className="callout" style={{ 'color': drugColor }}>{numStatesWithSignificantIncrease}</span>
-        <div>
-          <span className='data-bite-title' style={{ 'color': drugColor }}>States </span>
-          <p>Number with a Significant Increase</p>
-        </div>
-      </div>
-    );
-  } */
 
   const getPostiveSign = (number) => {
     if (number > 0) {
@@ -1121,19 +972,20 @@ export default function AppNew({ dataUrl }) {
   };
 
   const drugColor = drugScreenOptions[currentDrug].color;
-  const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
+  const usPercent = Math.round(runtimeUSData[drugScreenOptions['all']['percentageColumn']]); //SKV TODO
+  const usRate = 100; //SKV TODO
 
   return (
-    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, setYearSelected, applyTooltipsToGeo, Hexagon, supportedStates, getSignificanceForGeo }}>
+    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, setStateSelectedSec, setYearSelected, applyTooltipsToGeo, Hexagon, supportedStates, getSignificanceForGeo }}>
 
       <div className="filters-container">
         <div className="twoSections">
           <div className="fill-space" style={{'color':'#fff', 'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'padding-left': '12px', 'padding-top': '6px', 'padding-bottom': '6px', 'padding-right': '12px', 'font-weight' : '600'}}>
-          {allTimeframes[Object.keys(allTimeframes).length - 1].label} Suspected Nonfatal Overdose Visits for All Drugs,  Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;<sup>[4]</sup>
+          {allTimeframes[Object.keys(allTimeframes).length - 1].label} Suspected Nonfatal Overdose Visits for All Drugs, {selected == 'US' ? 'Overall (' + Object.keys(fundedStates).length + ' Jurisdictions)' : getStateName(selected)}<sup>[4]</sup>
           </div>
           <div style={{'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'width' : '230px'}}>
           <select id="jurisdiction-select1" value={selected || ''} onChange={(e) => { setStateSelected(e.target.value) }}>
-              <option value="">Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;</option>
+              <option value="US">Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;</option>
               {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
             </select>
           </div>
@@ -1143,7 +995,7 @@ export default function AppNew({ dataUrl }) {
 
         <div className="callouts">
           <div style={{'borderLeft': '5px solid' + '#000066'}}>
-            <span className="callout" style={{ 'color': '#000066' }}>{getPostiveSign(usPercent)}{isNaN(usPercent) ? 'N/A' : `${usPercent}%`}</span> {/* SKV TBD*/}
+            <span className="callout" style={{ 'color': '#000066' }}>{getPostiveSign(usRate)}{isNaN(usRate) ? 'N/A' : `${usRate}`}</span> {/* SKV TBD*/}
             <div>
               <span className='data-bite-title' style={{ color: '#000066' }}>
                 {timeline} Suspected Nonfatal Overdose Visits for All Drugs</span>
@@ -1169,11 +1021,11 @@ export default function AppNew({ dataUrl }) {
 
         <div className="twoSections">
           <div className="fill-space" style={{'color':'#fff', 'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'padding-left': '12px', 'padding-top': '6px', 'padding-bottom': '6px', 'padding-right': '12px', 'font-weight' : '600'}}>
-          What were the trends in Suspected Nonfatal Overdose Visits in {allTimeframes[Object.keys(allTimeframes).length - 1].year} for All Drugs, Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;<sup>[4]</sup>
+          What were the trends in Suspected Nonfatal Overdose Visits in {selectedYr}, {selectedSec == 'US' ? 'Overall (' + Object.keys(fundedStates).length + ' Jurisdictions)' : getStateName(selectedSec)}<sup>[4]</sup>
           </div>
           <div style={{'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'width' : '90px'}}>
             <select id="year-select" value={selectedYr || ''} onChange={(e) => { setYearSelected(e.target.value) }}>
-              {Object.keys(GetYears()).map((key) => <option key={key} value={key}>{key}</option>)}
+              {GetYears().map((key) => <option key={key} value={key}>{key}</option>)}
             </select>
           </div>
         </div>
@@ -1184,8 +1036,8 @@ export default function AppNew({ dataUrl }) {
             <tr>
               <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">View Data For:</div></td>
               <td style={{'width': '25%'}}>
-                <select id="jurisdiction-select2" value={selected || ''} onChange={(e) => { setStateSelected(e.target.value) }}>
-                <option value="">Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;</option>
+                <select id="jurisdiction-select2" value={selectedSec || ''} onChange={(e) => { setStateSelectedSec(e.target.value) }}>
+                <option value="US">Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;</option>
                 {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
               </select>
               </td>
@@ -1239,7 +1091,14 @@ export default function AppNew({ dataUrl }) {
             <tr>
               <td colspan='4'>
                 <div style={{'float': 'right', 'margin-right' : '20px'}}>
-                  <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
+                  <button id="reset-button" style={{ 'backgroundColor': '#000066' }} onClick={() => {
+                    setCurrentDrug('all');
+                    setselectedDrugs(['all'])
+                    setMonthlyToggle(false);
+                    setStateSelected('US');
+                    setStateSelectedSec('US');
+                    setYearSelected(GetYears()[0])
+
                               }}>Reset</button>
                 </div>
               </td>
