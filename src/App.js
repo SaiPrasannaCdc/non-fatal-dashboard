@@ -7,7 +7,6 @@ import BarChartVertical from './components/BarChartVertical';
 import Datatable from './components/Datatable';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
-import { Base64 } from 'js-base64';
 
 import Caret from './assets/caret-down.svg';
 import Context from './context';
@@ -202,72 +201,88 @@ const drugScreenOptions = {
     'titlePlural': 'All Drugs',
     'titleAll': 'All Drugs',
     'titleAllGram': 'All Drug',
+    'titleForDropDown': 'All Drugs',
     'significanceColumn': 'allSignificance',
     'percentageColumn': 'allPercentageChange',
     'color': '#325D7D',
+    'lineChartOrder': '1',
   },
   'benzodiazepine': {
     'titleSingular': 'Benzodiazepine',
     'titlePlural': 'Benzodiazepine',
     'titleAll': 'Benzodiazepine',
     'titleAllGram': 'Benzodiazepine',
+    'titleForDropDown': 'Benzodiazepine',
     'significanceColumn': 'benzoSignificance',
     'percentageColumn': 'benzoPercentageChange',
     'color': '#B83A5E',
+    'lineChartOrder': '8',
   },
   'opioids': {
     'titleSingular': 'Opioid',
     'titlePlural': 'Opioids',
     'titleAll': 'All Opioids',
     'titleAllGram': 'All Opioid',
+    'titleForDropDown': 'All Opioids',
     'significanceColumn': 'opioidSignificance',
     'percentageColumn': 'opioidPercentageChange',
     'color': '#000C77',
+    'lineChartOrder': '5',
   },
   'fentanyl': {
     'titleSingular': 'Fentanyl',
     'titlePlural': 'Fentanyl',
     'titleAll': 'Fentanyl',
     'titleAllGram': 'Fentanyl',
+    'titleForDropDown': 'Fentanyl',
     'significanceColumn': 'fentanylSignificance',
     'percentageColumn': 'fentanylPercentageChange',
     'color': '#294891',
+    'lineChartOrder': '6',
   },
   'heroin': {
     'titleSingular': 'Heroin',
     'titlePlural': 'Heroin',
     'titleAll': 'Heroin',
     'titleAllGram': 'Heroin',
+    'titleForDropDown': 'Heroin',
     'significanceColumn': 'heroinSignificance',
     'percentageColumn': 'heroinPercentageChange',
     'color': '#0C6F96',
+    'lineChartOrder': '7',
   },
   'stimulants': {
     'titleSingular': 'Stimulant',
     'titlePlural': 'Stimulants',
     'titleAll': 'All Stimulants',
     'titleAllGram': 'All Stimulant',
+    'titleForDropDown': 'All Stimulants',
     'significanceColumn': 'stimulantSignificance',
     'percentageColumn': 'stimulantPercentageChange',
     'color': '#411B6D',
+    'lineChartOrder': '2',
   },
   'cocaine': {
     'titleSingular': 'Cocaine',
     'titlePlural': 'Cocaine',
     'titleAll': 'Cocaine',
     'titleAllGram': 'Cocaine',
+    'titleForDropDown': 'Cocaine',
     'significanceColumn': 'cocaineSignificance',
     'percentageColumn': 'cocainePercentageChange',
     'color': '#671AAA',
+    'lineChartOrder': '3',
   },
   'methamphetamine': {
     'titleSingular': 'Methamphetamine',
     'titlePlural': 'Methamphetamine',
     'titleAll': 'Methamphetamine',
     'titleAllGram': 'Methamphetamine',
+    'titleForDropDown': 'Methamphetamine',
     'significanceColumn': 'methamphetamineSignificance',
     'percentageColumn': 'methamphetaminePercentageChange',
     'color': '#A378E8',
+    'lineChartOrder': '4',
   }
 }
 
@@ -286,9 +301,11 @@ const months = [
   'December'
 ];
 
-export default function App({ dataUrl }) {
+export default function AppNew({ dataUrl }) {
   const [runtime, setRuntime] = useState({})
   const [selected, setSelected] = useState(null)
+  const [selectedYr, setSelectedYr] = useState(null)
+  const [currentState, setCurrentState] = useState('US');
   const [keyedRawData, setKeyedRawdata] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [keyedRawUSData, setKeyedRawUSdata] = useState([]); 
@@ -297,6 +314,10 @@ export default function App({ dataUrl }) {
   const [yearTimeframes, setYearTimeframes] = useState([]);
   const [monthTimeframes, setMonthTimeframes] = useState([]);
   const [allTimeframes, setAllTimeframes] = useState([]);
+  const [selectedDrugs, setselectedDrugs] = useState(['all']);
+  const [selectAllFlag, setSelectAllFlag] = useState(false);
+  const [deselectAllFlag, setDeselectAllFlag] = useState(false);
+  const [showMonthly, setMonthlyToggle] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState('month');
   const [sliderPointMonth, setSliderPointMonth] = useState(0);
   const [sliderPointYear, setSliderPointYear] = useState(0);
@@ -309,6 +330,7 @@ export default function App({ dataUrl }) {
   const [showLegendHelp, setShowLegendHelp] = useState(true);
   const [timeline, setTimeline] = useState('Monthly');
   const [showConsiderations, setShowConsiderations] = useState(false);
+  const [showFootNotes, setShowFootNotes] = useState(false);
   const [demographicsToggle, setDemographicsToggle] = useState('sex');
   
   const {runtimeLegend, runtimeData, runtimeUSData, runtimePastMonths, runtimePastMonthsState, runtimePastMonthsGender, runtimePastMonthsAge, runtimeRanges } = runtime;
@@ -342,6 +364,37 @@ export default function App({ dataUrl }) {
       setSelected(geo);
     }
   };
+
+  const setYearSelected = (st) => {
+    if (selectedYr === st) {
+      setSelectedYr(null);
+    } else {
+      setSelectedYr(st);
+    }
+  };
+
+  const GetYears = () => { //SKV TODO
+    let years = [];
+    years['2018'] = '2018';
+    years['2019'] = '2019';
+    years['2020'] = '2020';
+    years['2021'] = '2021';
+    years['2022'] = '2022';
+
+    return years;
+  }; 
+
+  const drugTab = (drugName, drugLabel) => (
+    <button
+      className={`drug-tab${drugName === currentDrug ? (' ' + drugName) : ''}`}
+      onClick={() => {
+        setCurrentDrug(drugName);
+        setselectedDrugs([drugName])
+        setDeselectAllFlag(false);
+        setSelectAllFlag(false);
+      }}
+    >{drugLabel || drugName}</button>
+  );
 
   let first = true;
   let keyCounts = {};
@@ -866,7 +919,7 @@ export default function App({ dataUrl }) {
     ReactTooltip.rebuild();
   });
 
-  const StateInfo = () => {
+ /*  const StateInfo = () => {
 
     return (
       <div className="bar-chart-container">
@@ -876,9 +929,9 @@ export default function App({ dataUrl }) {
         </div>
       </div>
     )
-  }
+  } */
 
-  const GenderAgeSection = () => {
+  /* const GenderAgeSection = () => {
 
     return (
       <>
@@ -931,9 +984,9 @@ export default function App({ dataUrl }) {
         </section>
       </>
     )
-  }
+  } */
 
-  const tooltipFormatterMonth = (data) => {
+  /* const tooltipFormatterMonth = (data) => {
     let tip  = monthTimeframes[data]['label'].substring(0,3) + '. ' + monthTimeframes[data]['year'];
         tip += " compared to ";
         // tip += " - ";
@@ -951,21 +1004,21 @@ export default function App({ dataUrl }) {
       tip += months[prevMonth].substring(0,3) + '. ' + prevYear;
     }
     return tip;
-  }
+  } */
 
-  const tooltipFormatterYear = (data) => {
+  /* const tooltipFormatterYear = (data) => {
     let year = yearTimeframes[data]['label'].split(' ');
     let tip  = yearTimeframes[data]['label'].substring(0,3) + '. ' + year[1];
         tip += " compared to ";
         tip += yearTimeframes[data]['label'].substring(0,3) + '. ' + ( year[1] - 1 );
     return tip;
-  }
+  } */
 
   if (!runtimeData || Object.keys(runtimeData).length === 0 || !monthTimeframes) {
     return <h3>Loading</h3>;
   }
 
-  const getSliderMarks = (type) => {
+  /* const getSliderMarks = (type) => {
     let marks = {};
     
     //Get year marks in between beginning and end
@@ -1001,9 +1054,9 @@ export default function App({ dataUrl }) {
     });
 
     return marks;
-  }
+  } */
 
-  const constructStateDataBite = () => {
+/*   const constructStateDataBite = () => {
     const selectedPercentageRaw = selected ? runtimeData[selected][keyIndex[drugScreenOptions[currentDrug]['percentageColumn']]] : false;
     let selectedPercentage = false;
     
@@ -1034,9 +1087,9 @@ export default function App({ dataUrl }) {
         </div>
       )
     }
-  }
+  } */
 
-  const constructUSSignificantIncreaseDataBite = (significanceColumn) => {
+/*   const constructUSSignificantIncreaseDataBite = (significanceColumn) => {
     
     const numStatesWithSignificantIncrease = Object.values(runtimeData).filter((obj) => {
       return obj[significanceColumn] === 'Significant Increase';
@@ -1051,7 +1104,7 @@ export default function App({ dataUrl }) {
         </div>
       </div>
     );
-  }
+  } */
 
   const getPostiveSign = (number) => {
     if (number > 0) {
@@ -1059,330 +1112,175 @@ export default function App({ dataUrl }) {
     }
   }
 
-  let footnote1 = ["§", "State does not currently share data from syndromic surveillance systems with DOSE." ];
-  // let footnote2 = ["¶", "The funded state did not provide CDC enough months of data to calculate all percent change cells." ];
-  let footnote3 = ["¶", "State does not participate in DOSE syndromic surveillance system." ];
-  let footnote4 = ["**", "Certain comparisons include data from two syndromic surveillance systems; some differences between the systems exist, such as the percent of missing discharge diagnosis codes." ];
-
-  const DownloadButton = () => {
-    return (
-      <a
-        download
-        href="/drugoverdose/nonfatal/dashboard/data/DOSE_dashboard_output-download.xlsx"
-        aria-label="Download this data in an Excel file format."
-        className={`btn btn-download no-border`}
-        style={{'backgroundColor':drugColor}}
-      >
-        Download Data (XLSX)
-      </a>
-    )
-  };
-
-  const toggleDatatable = () => {
-    setShowDatatable(!showDatatable);
-  };
-
   const toggleConsiderations = () => {
     setShowConsiderations(!showConsiderations);
   };
 
-  const toggleLegend = () => {
-    setShowTimeline(false);
-    setShowShare(false);
-    setShowLegend(!showLegend);
-  };
-
-  const toggleTimeline = () => {
-    setShowLegend(false);
-    setShowShare(false);
-    setShowTimeline(!showTimeline);
-  };
-
-  const toggleShare = () => {
-    setShowLegend(false);
-    setShowTimeline(false);
-    showShare ? document.body.classList.remove('show-sharing') : document.body.classList.add('show-sharing');
-    setShowShare(!showShare);
-  };
-
-  const toggleLegendHelp = () => {
-    setShowLegendHelp(!showLegendHelp);
-  };
-
-  const resetFilters = () => {
-    setSelected("");
+  const toggleFootNotes = () => {
+    setShowFootNotes(!showFootNotes);
   };
 
   const drugColor = drugScreenOptions[currentDrug].color;
-  const drugColorLight = chroma(drugScreenOptions[currentDrug].color).darken(-1).hex();
   const usPercent = Math.round(runtimeUSData[drugScreenOptions[currentDrug]['percentageColumn']]);
-  const significanceColumn = keyIndex[drugScreenOptions[currentDrug]['significanceColumn']];
-  const percentageColumn = keyIndex[drugScreenOptions[currentDrug]['percentageColumn']];
-  const jurisdictionColumn = keyIndex[drugScreenOptions[currentDrug]['state']];
-  let runtimeTableData = Object.values(runtimeData);
-
-  let fromLabel, toLabel, mapFromLabel;
-  if ('month' === selectedTimeframe) {
-    mapFromLabel = allTimeframes[sliderPointMonth]['label'];
-    toLabel = allTimeframes[sliderPointMonth+1]['label'];
-    fromLabel = sliderPointMonth-6 >= 0 ? allTimeframes[sliderPointMonth-6]['label'] : allTimeframes[0]['label'];
-  } else {
-    toLabel = allTimeframes[sliderPointYear + 12]['label'];
-    fromLabel = allTimeframes[sliderPointYear]['label'];
-  }
-
-  const MapFootnotes = () => {
-    return (
-        <>
-          <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
-          <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests.</p>
-        </>
-    );
-  }
 
   return (
-    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, applyTooltipsToGeo, Hexagon, supportedStates, getSignificanceForGeo }}>
+    <Context.Provider value={{ fill, applyLegendToRow, drugScreenOptions, currentDrug, data: runtimeData, selected, setStateSelected, setYearSelected, applyTooltipsToGeo, Hexagon, supportedStates, getSignificanceForGeo }}>
+
       <div className="filters-container">
+        <div className="twoSections">
+          <div className="fill-space" style={{'color':'#fff', 'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'padding-left': '12px', 'padding-top': '6px', 'padding-bottom': '6px', 'padding-right': '12px', 'font-weight' : '600'}}>
+          {allTimeframes[Object.keys(allTimeframes).length - 1].label} Suspected Nonfatal Overdose Visits for All Drugs,  Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;<sup>[4]</sup>
+          </div>
+          <div style={{'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'width' : '230px'}}>
+          <select id="jurisdiction-select1" value={selected || ''} onChange={(e) => { setStateSelected(e.target.value) }}>
+              <option value="">Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;</option>
+              {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
+            </select>
+          </div>
+        </div>
 
-        <div className={ `filter-wrapper ${ showTimeline ? 'show-timeline' : '' }`}>
-          <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Filters</div>
-          <div className="filters">
-            <div className="dropdowns">
-              <div>
-                <label htmlFor="drug-select">Select a drug syndrome: </label>
-                <select id="drug-select" value={currentDrug} onChange={(e) => { setCurrentDrug(e.target.value) }}>
-                  {Object.keys(drugScreenOptions).map((key) => <option key={key} value={key}>{drugScreenOptions[key]['titleAll']}</option>)}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="jurisdiction-select">Select a State: </label>
-                <select id="jurisdiction-select" value={selected || ''} onChange={(e) => { setStateSelected(e.target.value) }}>
-                  <option value="">United States</option>
-                  {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
-                </select>
-              </div>
-              <div className="compare">
-                <label htmlFor="month-year">Compare {toLabel} with the previous: </label>
-                <span className='legend-help' data-tip='<div className=" tooltip-body">
-                  <small>This panel allows you to view the percent change in nonfatal drug overdoses between adjacent months and annually for a select time period.</small></div>
-                  <small>You can select either monthly percent change or annual percent change. To select a different month/year, drag the slider below.</div>
-                  </div>'>?</span>
-                <select id="month-year"  value={selectedTimeframe} onChange={(e) => {handleTimeframeChange(e.target.value)}}>
-                  <option value="month" name="time-selector">Month</option>
-                  <option value="year" name="time-selector">Year</option>
-                </select>
-              </div>
+        &nbsp;
+
+        <div className="callouts">
+          <div style={{'borderLeft': '5px solid' + '#000066'}}>
+            <span className="callout" style={{ 'color': '#000066' }}>{getPostiveSign(usPercent)}{isNaN(usPercent) ? 'N/A' : `${usPercent}%`}</span> {/* SKV TBD*/}
+            <div>
+              <span className='data-bite-title' style={{ color: '#000066' }}>
+                {timeline} Suspected Nonfatal Overdose Visits for All Drugs</span>
+                <p>Per 10,000 total ED visits</p>
             </div>
-
-            <div className="timeline">
-              <div className="range-aside-container" style={{ color: drugColor }}>
-                {'month' === selectedTimeframe &&
-                    <SliderWithTooltip
-                        tipFormatter={tooltipFormatterMonth}
-                        html={true}
-                        onChange={(e) => { handleMonthSliderChange(e) }}
-                        min={0}
-                        step={1}
-                        value={sliderPointMonth}
-                        align={{
-                          offset: [0, -5],
-                        }}
-                        max={monthTimeframes.length - 1}
-                        marks={getSliderMarks('month')}
-                        handleStyle={{
-                          borderColor: drugColor,
-                          backgroundColor: drugColor,
-                        }}
-                        tipProps={{visible:true}}
-                        ariaLabelForHandle="Select a month to compare in the map"
-                        role="slider"
-                        // tab-index={0}
-                        // ariaValueMin={0}
-                        // ariaValueMax={monthTimeframes.length - 1}
-                    />
-                }
-                {'year' === selectedTimeframe &&
-                    <SliderWithTooltip
-                        tipFormatter={tooltipFormatterYear}
-                        onChange={(e) => { handleYearSliderChange(e) }}
-                        min={0}
-                        step={1}
-                        value={sliderPointYear}
-                        align={{
-                          offset: [0, -5],
-                        }}
-                        max={yearTimeframes.length - 1}
-                        marks={getSliderMarks('year')}
-                        handleStyle={{
-                          borderColor: drugColor,
-                          backgroundColor: drugColor,
-                        }}
-                        tipProps={{visible:true}}
-                        ariaLabelForHandle="Select a year to compare in the map"
-                    />
-                }
-              </div>
+          </div>
+          <div style={{'borderLeft': '5px solid' + '#000066'}}>
+            <span className="callout" style={{ 'color': '#000066' }}>{getPostiveSign(usPercent)}{isNaN(usPercent) ? 'N/A' : `${usPercent}%`}</span> {/* SKV TBD*/}
+            <div>
+              <span className='data-bite-title' style={{ color: '#000066' }}>
+                Decrease in Suspected Nonfatal Overdose Visits for All Drugs</span>
+                <p>Per 10,000 total ED visits from the prior month</p>
+            </div>
+          </div>
+          <div style={{'borderLeft': '5px solid' + '#000066'}}>
+            <span className="callout" style={{'color': '#000066'}}>{statesParticipating.length}</span>
+            <div>
+              <span className='data-bite-title' style={{ color: '#000066' }}>Jurisdictions Participating</span>
+              <p>Funded states with reported Data</p>
             </div>
           </div>
         </div>
 
-      <header style={{backgroundColor: drugColor, color: '#fff', fontFamily: 'sans-serif', padding: '.75em 18px', marginBottom: '1em'}}>
-        <span style={{  fontSize: '.8em', fontWeight: 'bold' }}>Trends in Emergency Department (ED) Visits</span>
-        <h2 style={{ fontSize: '1.4em', margin: 0, padding: '0', display: 'block', fontWeight: 'bold', fontFamily: '"Open Sans",apple-system,blinkmacsystemfont,"Segoe UI","Helvetica Neue",arial,sans-serif'  }}>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdoses</h2>
-      </header>
-      <div className="callouts">
-        <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{ 'color': drugColor }}>{getPostiveSign(usPercent)}{isNaN(usPercent) ? 'N/A' : `${usPercent}%`}</span>
-          <div>
-
-            <span className='data-bite-title' style={{ color: drugColor }}>
-
-              {timeline}  Percent Change<sup>†</sup> in US</span>
-            <p>Suspected {drugScreenOptions[currentDrug]['titleAllGram']} Overdoses</p>
+        <div className="twoSections">
+          <div className="fill-space" style={{'color':'#fff', 'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'padding-left': '12px', 'padding-top': '6px', 'padding-bottom': '6px', 'padding-right': '12px', 'font-weight' : '600'}}>
+          What were the trends in Suspected Nonfatal Overdose Visits in {allTimeframes[Object.keys(allTimeframes).length - 1].year} for All Drugs, Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;<sup>[4]</sup>
           </div>
-        </div>
-        {selected && constructStateDataBite()}
-        {!selected && constructUSSignificantIncreaseDataBite(significanceColumn)}
-        <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{'color': drugColor}}>{statesParticipating.length}</span>
-          <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>States Participating</span>
-            <p>Funded States with Reported Data</p>
-          </div>
-        </div>
-      </div>
-      {/*<div style={{ 'marginBottom': '25px' }}><strong>{toLabel}</strong> compared to <strong>{ mapFromLabel ? mapFromLabel : fromLabel }</strong></div>*/}
-      {/*<div className={'drug-selection ' + currentDrug} style={{ borderTopColor: drugColor }}>*/}
-      {/*  {Object.keys(drugScreenOptions).map((key) => {*/}
-      {/*    return <button key={key} style={key === currentDrug ? { background: drugColor } : {}} className={key===currentDrug ? 'active' : ''} onClick={() => setCurrentDrug(key)}>{drugScreenOptions[key]['titleAll']}</button>*/}
-      {/*  })}*/}
-      {/*</div>*/}
-
-      <div className="toggle-area-wrap">
-        <div className="toggle-area">
-          <div id="toggleLegend" className={`${ showLegend ? 'open' : '' }` } onClick={toggleLegend}>
-            Show Legend <Caret />
-          </div>
-          <div id="toggleTimeline" className={`${ showTimeline ? 'open' : '' }`} onClick={toggleTimeline}>
-            <span className="hide-on-mobile">Edit</span> Filters <Caret />
-          </div>
-          {/* <div id="toggleShare" className={`${ showShare ? 'open' : '' }`} onClick={toggleShare}>
-            Share <Caret />
-          </div> */}
-        </div>
-      </div>
-      <div id="closeShare" onClick={toggleShare}>
-        <svg width="14px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style={{'margin':'auto'}}><path fill="#fff" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
-      </div>
-      <div className='sticky-container'>
-        <aside className={
-          `${ showLegend ? 'show-legend' : '' }` +
-          `${ showTimeline ? 'show-timeline' : '' }` +
-          `${ showShare ? 'show-share' : '' }`
-        }>
-          <div className="legend">
-            <div className="legend-title" style={{ 'backgroundColor': drugColor }}>Color Legend</div>
-            <ul className="legend" style={{paddingLeft: '0.5em'}}>
-              {runtimeLegend.map(({color, value}) => <li key={color}>
-
-                <svg viewBox="-5 -5 110 110" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="50" cy="50" r="50" fill={color} stroke='#555' strokeWidth={4} />
-                </svg>
-                {value}
-                </li>)}
-
-              <li>
-                <Hexagon patternn={'url(#pattern_KJD3DK2)'}></Hexagon>
-                <svg
-                    // y={-15}
-                    // x={barX - 10}
-                    aria-hidden="true"
-                    data-prefix="fas"
-                    data-icon="asterisk"
-                    className="svg-inline--fa fa-asterisk fa-w-16"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 18 18"
-                    // width="30"
-                    // fill={fill(d[significanceColumn])}
-                    stroke="#999"
-
-                    style={{ 'marginLeft': '2px'}}
-                >
-                  <path d="M6.7 6.5 6 .6h2.9l-.6 5.9 6-1.6.4 2.7-5.8.5 3.8 4.9-2.6 1.4-2.7-5.5L5 14.4 2.4 13 6 8.1.3 7.6l.5-2.7z"/>
-                </svg>
-                <a href="#suppressed">Suppressed Data</a>
-              </li>
-            </ul>
-
-            <p>CDC's Drug Overdose Surveillance and Epidemiology (DOSE) System</p>
-            <p><a href="#impdataconsiderations">Data Considerations</a></p>
-          </div>
-        </aside>
-
-        <div className="map-container">
-          <div className="map-inner-container">
-            <div className="now-viewing">
-              <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAllGram']} overdoses</h2>
-              {!selected && <div><em>Click on a state to see more.</em></div>}
-              {selected && <div>Now viewing {getStateName(selected)} <button className="btn btn-reset" onClick={resetFilters}>Reset</button></div>}
-            </div>
-            <UsaMap/>
+          <div style={{'backgroundColor': '#000066', 'font-size': '1.6em', 'font-family': 'var(--fonts-nunito)', 'width' : '90px'}}>
+            <select id="year-select" value={selectedYr || ''} onChange={(e) => { setYearSelected(e.target.value) }}>
+              {Object.keys(GetYears()).map((key) => <option key={key} value={key}>{key}</option>)}
+            </select>
           </div>
         </div>
 
-        <section className="sub-drawer dumbbell">
-          <a id="stateInfo">state info</a>
-          <h2 className="h3" style={{ color: drugColor }}>{timeline} percent change in ED visit rates<sup>†</sup> of suspected {drugScreenOptions[currentDrug]['titleAllGram']} overdoses</h2>
-          {selected && (
-            <>
-              <div>
-                Compare United States against:
-                <select style={{ "marginBottom": "20px", "marginLeft": "10px" }} value={selected} onChange={(e) => { setStateSelected(e.target.value) }}>
-                  <option value="">Select State</option>
-                  {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
-
-                </select>
-              </div>
-              <StateInfo />
-            </>
-          )}
-          <div className="bar-chart-container">
-            <div className="bar-chart">
-              <span className='chart-title'>US</span>
-              <BarChartVertical width={600} height={350} data={runtimePastMonths} range={[runtimeRanges.state.max, runtimeRanges.state.min]} />
-            </div>
-          </div>
-        </section>
-
-        {GenderAgeSection()}
-
-        <div className="footnotes comparison-section">
-          <a id="suppressed">suppressed data note</a>
-          <MapFootnotes />
+        &nbsp;
+        <div>
+          <table style={{'width': '100%'}}>
+            <tr>
+              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">View Data For:</div></td>
+              <td style={{'width': '25%'}}>
+                <select id="jurisdiction-select2" value={selected || ''} onChange={(e) => { setStateSelected(e.target.value) }}>
+                <option value="">Overall &#40;{Object.keys(fundedStates).length} Jurisdictions&#41;</option>
+                {Object.keys(fundedStates).map((key) => <option key={key} value={key}>{fundedStates[key][0]}</option>)}
+              </select>
+              </td>
+              <td style={{'width': '12%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Time:</div></td>
+              <td style={{'width': '38%'}}>
+                <div style={{float: 'left'}}>
+                        <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
+                            <input id="toggleMonthly" class="toggleA-input" type="checkbox" checked={showMonthly}
+                            onChange={(e) => {
+                              if(e.target.checked) {
+                                setMonthlyToggle(true)
+                              }
+                              else {
+                                setMonthlyToggle(false)
+                              }
+                            }}/>
+                            <span class="toggleA-label" data-off="Monthly Off" 
+                                  data-on="Monthly On">
+                            </span>
+                            <span class="toggleA-handle"></span>
+                        </label>
+                    </div>
+              </td>
+            </tr>
+            <br></br>
+            <tr>
+              <td colspan='4' style={{'textAlign': 'left'}}>
+                <div className="select-input" style={{'textAlign': 'left', 'fontWeight': 'bold'}}>Select Drug Syndrome:</div>
+                <div style={{'textAlign': 'left', 'fontSize': '14px'}}>Select one or more drug syndrome and time period to see updated trends in the graphs and tables below</div>
+            </td>
+            </tr>
+            <br></br>
+            <tr>
+              <td colspan='4'>
+                <div>
+                  <div className="drug-tab-section">
+                    {drugTab('all', <span>All Drugs</span>)}
+                    {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
+                    {drugTab('heroin', <span>Heroin</span>)}
+                    {drugTab('stimulants', <span>All Stimulants</span>)}
+                  </div>
+                  <div className="drug-tab-section">
+                    {drugTab('opioids', <span>All Opioids</span>)}
+                    {drugTab('fentanyl', <span>Fentanyl</span>)}
+                    {drugTab('cocaine',<span>Cocaine</span>)}
+                    {drugTab('methamphetamine', <span>Methamphetamine</span>)}
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan='4'>
+                <div style={{'float': 'right', 'margin-right' : '20px'}}>
+                  <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
+                              }}>Reset</button>
+                </div>
+              </td>
+            </tr>
+            <br></br>
+            <tr>
+              <td colspan='4'>
+                <div className="centerAlign"> Work in Progress</div>
+              </td>
+            </tr>
+          </table>
         </div>
-      </div>
+        
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+
+        <div style={{'width':'100%', 'backgroundColor': '#000066'}}>
+          <h2 className="data-bite-header1 sub">Monthly Suspected Nonfatal Overdose ED visits across Jurisdictions per 10,000 Total ED Visits<sup>†</sup></h2>
+        </div>
+        <div className="centerAlign"> Place Holder (To be Done)</div>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        &nbsp;
+
+        <div style={{'width':'100%', 'backgroundColor': '#000066'}}>
+          <h2 className="data-bite-header1 sub">How do Suspected Nonfatal Overdose ED visits vary by Age and Sex?</h2>
+        </div>
+        <div className="centerAlign">Place Holder (To be Done)</div>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
       </div>
       <div className='data-tables'>
-        <div className="datatable-container">
-          <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
-            Trends by State, {timeline} - {drugScreenOptions[currentDrug]['titleAll']}
-            {showDatatable && <span>{String.fromCharCode(8722)}</span>}
-            {!showDatatable && <span>{String.fromCharCode(43)}</span>}
-          </button>
-          {showDatatable &&
-            <div className="datatable-body">
-              <Datatable runtimeUSData={Object.values(runtimeUSData)} applyLegendToRow={applyLegendToRow} runtimeData={runtimeTableData} Hexagon={Hexagon} keyIndex={keyIndex} jurisdictionColumn={jurisdictionColumn} significanceColumn={significanceColumn} percentageColumn={percentageColumn} supportedStates={supportedStates} drugColor={drugColorLight} drugName={drugScreenOptions[currentDrug]['titleAllGram']} />
-              <small>
-                <MapFootnotes />
-                <p>{ footnote1[0] } { footnote1[1] }</p>
-                <p>{ footnote3[0] } { footnote3[1] }</p>
-                <p>{ footnote4[0] } { footnote4[1] }</p>
-                {/*§ The state/territory does not share data from syndromic surveillance systems with DOSE.<br/>*/}
-                {/*¶ The funded jurisdiction did not provide CDC enough months of data to calculate all percent change cells.<br/>*/}
-                {/*** State does not participate in OD2A DOSE ED data sharing.<br/>*/}
-              </small>
-            </div>}
-        </div>
         <div className="datatable-container" id="impdataconsiderations">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
           Important Data Considerations
@@ -1393,25 +1291,36 @@ export default function App({ dataUrl }) {
             <div className="datatable-body">
              <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ol>
-                <li><strong>Some data may be missing.</strong> Data sent from EDs to health departments may be delayed or may stop for a period of time. When EDs begin sharing data again, information about visits during the lapse may never be shared.</li>
-                <li><strong>Reporting facilities and the data they report can change.</strong> Several states continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions or a cessation of syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, numbers and rates reported could change over time as more facilities began sharing data or sharing higher quality data as well as facilities that may stop sharing data for a period of time. Some EDs also had increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitate the identification of overdose-related visits.</li>
-                <li><strong>Data are updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in syndromic surveillance systems within 48 hours for ~70% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be updated over the course of several weeks, and relevant overdose discharge diagnosis codes or revised chief complaint text may be received during this time. However, DOSE data are reported with a one-month time lag and not typically updated each month.</li>
-                <li><strong>These are suspected overdoses.</strong> Because these data are not determined by toxicological testing, they are not considered confirmed cases, but “suspected” overdoses.</li>
-                <li><strong>Data likely represent an undercount,</strong> given inaccuracies in coding and missing chief complaint information.</li>
-                <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and discharge diagnosis fields to identify suspected cases.  ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
-                <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories (depicted in the figure below) and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).
-                  {/* https://wcms-wp.cdc.gov/ */}
-                  <img src="/overdose-prevention/data-dashboards/dose-surveillance-dashboard/img/24_Lyons_DOSEDash_Chart-03.png" alt="drug categories" />
-                </li>
+                <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
+                <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values<strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
+                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [6] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits.</li>
+                <li><strong>Syndromic data are frequently updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in NSSP often within 24 hours for ~80% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be progressively updated over the course of several weeks, and relevant drug overdose discharge diagnosis codes or revised chief complaint text may be received during this time. DOSE-SYS data are reported with a two-month time lag and not typically updated each month.</li>
+                <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [7] and therefore may underreport specific drug types involved.</li>
+                <li><strong>Data likely represent an undercount,</strong> given potential inaccuracies in preliminary coding and potentially incomplete clinical descriptions captured in chief complaint information.</li>
+                <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine poisonings during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and diagnosis codes to identify drug overdose cases. ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes, suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the drug-specific syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
+                <li><strong>Drug overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories (depicted in the figure below) and some drug overdose visits involved multiple substances (e.g., a given drug overdose ED visit could have involved both opioids and stimulants).</li>
               </ol>
             </div>}
         </div>
+        <div className="datatable-container">
+          <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleFootNotes}>
+            Footnotes 
+            {showFootNotes && <span>{String.fromCharCode(8722)}</span>}
+            {!showFootNotes && <span>{String.fromCharCode(43)}</span>}
+          </button>
+          {showFootNotes &&
+            <div className="datatable-body">
+            <ul id='noBullets'>
+              <li><strong><sup>1</sup></strong>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions. For more information on the definitions used to identify drug overdose visits in syndromic surveillance data, including how these definitions have changed, visit <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">About DOSE</a>.</li>
+              <li><strong><sup>2</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
+              <li><strong><sup>3</sup></strong>Data were collected for the time period beginning January 2018 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded jurisdiction did not provide CDC enough months of data, which had to be suppressed when based on &lt;20 drug overdose visits; thus, no drug overdose visit estimates are available. For more information, please see: <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression.</a></li>
+              <li><strong><sup>4</sup></strong>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a></li>
+              <li><strong><sup>5</sup></strong>Holland KM, Jones C, Vivolo-Kantor AM, et al. Trends in US Emergency Department Visits for Mental Health, Overdose, and Violence Outcomes Before and During the COVID-19 Pandemic. JAMA Psychiatry. 2021;78(4):372–379. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/33533876/">doi:10.1001/jamapsychiatry.2020.4402</a>.</li>
+              <li><strong><sup>6</sup></strong>Morrow JB, Ropero-Miller JD, Catlin ML, et al. The Opioid Epidemic: Moving Toward an Integrated, Holistic Analytical Response. Journal of Analytical Toxicology. 2019; 43(1); 1–9. <a target="_blank" href="https://doi.org/10.1093/jat/bky049">https://doi.org/10.1093/jat/bky049</a>.</li>
+              </ul>
+          </div>}
+        </div>
       </div>
-      {/* <a id="dataDownload" data={csvData}>data download</a> */}
-      {/* <p>
-        <DownloadButton data={csvData} />
-      </p> */}
-      <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
     </Context.Provider>
   );
 }
