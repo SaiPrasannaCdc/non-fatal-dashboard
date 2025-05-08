@@ -193,7 +193,7 @@ animation: spin 1s infinite;
 
 .tempPadding
 {
-    padding: .2em 0.5em; 
+padding: .2em 0.5em; 
 }
 
 .data-bite-header {
@@ -227,43 +227,43 @@ font-size: '1em';
 }
 
 .data-bite-header1 {
-    color: #fff;
-    font-family: var(--fonts-nunito);
-    padding: .75em 18px;
-    margin-bottom: 1em;
-    
-    &.sub {
-        padding: .2em 0.5em;
-        }
-    span {
-    font-size: 1.2em;
-    font-weight: bold;
-    }
-    
-    div {
-    font-size: 1.6em;
-    margin: 0;
-    padding: '0';
-    /* display: 'block'; */
-    font-weight: 'bold';
-    
-    &.sub {
-    font-size: '1em';
-    }
-    // font-family: "Open Sans", apple-system, blinkmacsystemfont, "Segoe UI", "Helvetica Neue", arial, sans-serif;
-    }
-    }
+color: #fff;
+font-family: var(--fonts-nunito);
+padding: .75em 18px;
+margin-bottom: 1em;
+
+&.sub {
+padding: .2em 0.5em;
+}
+span {
+font-size: 1.2em;
+font-weight: bold;
+}
+
+div {
+font-size: 1.6em;
+margin: 0;
+padding: '0';
+/* display: 'block'; */
+font-weight: 'bold';
+
+&.sub {
+font-size: '1em';
+}
+// font-family: "Open Sans", apple-system, blinkmacsystemfont, "Segoe UI", "Helvetica Neue", arial, sans-serif;
+}
+}
 
 .data-bite-header2 {
-    font-family: var(--fonts-nunito);
-    padding-top: .25em;
-    padding-bottom: .25em;
-    padding-left: 0px;
-    padding-right: 0px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-    font-weight: 600;
+font-family: var(--fonts-nunito);
+padding-top: .25em;
+padding-bottom: .25em;
+padding-left: 0px;
+padding-right: 0px;
+margin-top: 15px;
+margin-bottom: 15px;
+font-size: 1.2em;
+font-weight: 600;
 // font-family: "Open Sans", apple-system, blinkmacsystemfont, "Segoe UI", "Helvetica Neue", arial, sans-serif;
 }
 
@@ -739,9 +739,9 @@ background-color: #999999;
 padding: 0;
 }
 
-.AppNew.accessible .subsection {
-    padding: 0;
-    }
+.App.accessible .subsection {
+padding: 0;
+}
 
 .individual-header {
 font-weight: bold;
@@ -755,12 +755,12 @@ margin-left: 1em;
 margin-left: 1em;
 }
 
-.AppNew.accessible .individual-header {
-    margin-left: 1em;
-    }
+.App.accessible .individual-header {
+margin-left: 1em;
+}
 
 //dec release
-.alldrug {
+.all {
 height: 20px;
 width: 20px;
 background-color: #325D7D;
@@ -768,7 +768,7 @@ border-radius: 50%;
 display: inline-block;
 }
 
-.opioid {
+.opioids {
 height: 20px;
 width: 20px;
 background-color: #000C77;
@@ -784,7 +784,7 @@ border-radius: 50%;
 display: inline-block;
 }
 
-.stimulant {
+.stimulants {
 height: 20px;
 width: 20px;
 background-color: #411B6D;
@@ -824,11 +824,11 @@ border-radius: 50%;
 display: inline-block;
 }
 
-.alldrugToolTip {
+.allToolTip {
 color: #325D7D;
 }
 
-.opioidToolTip {
+.opioidsToolTip {
 color: #000C77;
 }
 
@@ -836,7 +836,7 @@ color: #000C77;
 color: #0C6F96;
 }
 
-.stimulantToolTip {
+.stimulantsToolTip {
 color: #411B6D;
 }
 
@@ -966,7 +966,7 @@ transition: All 0.3s ease;
 .toggleA {
 position: relative;
 display: block;
-width: 135px;
+width: 110px;
 height: 30px;
 padding: 3px;
 margin: auto;
@@ -1036,7 +1036,7 @@ width: 16px;
 height: 16px;
 }
 .toggleA-input:checked~.toggleA-handle {
-left: 102.5px;
+left: 78.5px;
 box-shadow: -1px 1px 5px 
 rgba(0, 0, 0, 0.2);
 }
@@ -1307,7 +1307,7 @@ fill: #F1E8F8
 .containerTT {
 display: flex;
 height: auto;
-width: 250px;
+width: 200px;
 }
 
 .col {
@@ -1326,70 +1326,76 @@ box-shadow: -.5px 0 0 #000;
 }
 
 .drug-tab-section {
-    display: inline-block;
-    width: 50%;
-    font-weight: normal;
-    }
+display: inline-block;
+width: 50%;
+font-weight: normal;
+}
 
-    .drug-tab {
-        border: none!important;
-        width: 46%;
-        height: 45px;
-        padding: 0.25em 0;
-        margin: 0 2%;
-        margin-bottom: 5px!important;
-        background-color: none;
-        border-radius: 30px!important;
-        box-shadow: 0px 2px 5px #d3d3d3;
-        vertical-align: middle;
-        }
-        
-        .drug-tab:hover {
-        box-shadow: 2px 2px 7px 2px darkgray;
-        }
-        
-        .drug-tab.all {
-        background-color: #325D7D!important;
-        color: white!important;
-        }
-        
-        .drug-tab.opioids {
-        background-color: #000C77!important;
-        color: white!important;
-        }
-        
-        .drug-tab.heroin {
-        background-color: #0C6F96!important;
-        color: white!important;
-        }
-        
-        .drug-tab.stimulants {
-        background-color: #411B6D!important;
-        color: white!important;
-        }
-        
-        .drug-tab.benzodiazepine {
-        background-color: #B83A5E!important;
-        color: white!important;
-        }
-        
-        .drug-tab.fentanyl {
-        background-color: #294891!important;
-        color: white!important;
-        }
-        
-        .drug-tab.cocaine {
-        background-color: #671AAA!important;
-        color: white!important;
-        }
-        
-        .drug-tab.methamphetamine {
-        background-color: #A378E8!important;
-        color: white!important;
-        }
+.drug-tab {
+border: none!important;
+width: 46%;
+height: 45px;
+padding: 0.25em 0;
+margin: 0 2%;
+margin-bottom: 5px!important;
+background-color: none;
+border-radius: 30px!important;
+box-shadow: 0px 2px 5px #d3d3d3;
+vertical-align: middle;
+}
+
+.drug-tab:hover {
+box-shadow: 2px 2px 7px 2px darkgray;
+}
+
+.drug-tab.all {
+background-color: #325D7D!important;
+color: white!important;
+}
+
+.drug-tab.opioids {
+background-color: #000C77!important;
+color: white!important;
+}
+
+.drug-tab.heroin {
+background-color: #0C6F96!important;
+color: white!important;
+}
+
+.drug-tab.stimulants {
+background-color: #411B6D!important;
+color: white!important;
+}
+
+.drug-tab.benzodiazepine {
+background-color: #B83A5E!important;
+color: white!important;
+}
+
+.drug-tab.fentanyl {
+background-color: #294891!important;
+color: white!important;
+}
+
+.drug-tab.cocaine {
+background-color: #671AAA!important;
+color: white!important;
+}
+
+.drug-tab.methamphetamine {
+background-color: #A378E8!important;
+color: white!important;
+}
 
 .alignCenter{
 text-align: center;
+}
+
+.alignCenterTT {
+    text-align: center;
+    border-bottom: solid 2px;
+    background-color: #F1E9F8;
 }
 
 .containerLC {
@@ -1442,7 +1448,7 @@ text-align: center!important;
 
 .tooltipTableUS
 {
-background-color: white;
+background-color: #F1E9F8;
 padding: 5px;
 text-align: center!important;
 }
@@ -1496,6 +1502,22 @@ border-radius: 50%;
 display: inline-block;
 }
 
+.notSelectedMap {
+    height: 20px;
+    width: 20px;
+    background-color: lightgray;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.notSelectedSexAge {
+    height: 20px;
+    width: 20px;
+    background-color: lightgray;
+    border-radius: 50%;
+    display: inline-block;
+}
+
 .subTitle
 {
 font-style: italic!important;
@@ -1515,13 +1537,13 @@ font-size: 15px;
 font-weight: bold;
 }
 
-.drugDiv-alldrug {
+.drugDiv-all {
 width: 120px!important;
 display: inline-block;
 vertical-align:top!important;
 }
 
-.drugDiv-opioid {
+.drugDiv-opioids {
 width: 120px!important;
 display: inline-block;
 }
@@ -1531,7 +1553,7 @@ width: 100px!important;
 display: inline-block;
 }
 
-.drugDiv-stimulant {
+.drugDiv-stimulants {
 width: 150px!important;
 display: inline-block;
 }
@@ -1564,39 +1586,139 @@ padding-left: 2px!important;
 }
 
 .__react_component_tooltip:after {
-    background-color: white!important;
-    z-index: 10000!important;
-    border: rgba(0, 0, 0, 0.3) 1px solid!important;
-    border-left: none!important;
-    border-bottom: none!important;
+background-color: white!important;
+z-index: 10000!important;
+border: rgba(0, 0, 0, 0.3) 1px solid!important;
+border-left: none!important;
+border-bottom: none!important;
 }
 
 .toolTipSpanLC {
-    font-size: 20px!important;
+font-size: 20px!important;
 }
 
 
 
-    .twoSections {
-        width: 100%;
-        display: flex;
-        justify-content: space-between; /* This one will make them separate the maximum from each other */
-        margin-top: 15px;
-        margin-bottom: 15px;
+.twoSections {
+width: 100%;
+display: flex;
+justify-content: space-between; /* This one will make them separate the maximum from each other */
+margin-top: 15px;
+margin-bottom: 15px;
+}
+
+.fill-space {
+flex: 1;
+background-color: #000066;
+text-align: left;
+}
+
+.mainBgClr
+{
+background-color: #000066;
+}
+
+.centerAlign
+{
+text-align: center;
+}
+
+.rc-slider {
+
+.rc-slider-tooltip-placement-top {
+    top: -50px !important;
+}
+
+.rc-slider-tooltip-inner {
+    padding: 6px 7px;
+    white-space: nowrap;
+}
+
+.rc-slider-track {
+    background-color: $gray;
+}
+
+.rc-slider-rail {
+    background-color: rgba(215, 215, 215, 1);
+}
+
+/* .rc-slider-mark {
+
+    .rc-slider-mark-text {
+        max-width: 50px;
+        color: $black;
+
+        top: -35px;
+
+        &:first-child,
+        &:last-child {
+            top: 0;
+        }
     }
+} */
 
-    .fill-space {
-        flex: 1;
-        background-color: #000066;
-        text-align: left;
+.rc-slider-handle-1 {
+    width: 17px;
+    height: 17px;
+    margin-top: -6px;
+    background-color: #FEC100;
+    &:focus {
+        outline: auto 3px rgba(255,102,1,.9);
     }
+}
 
-            .mainBgClr
-            {
-                background-color: #000066;
-            }
+.rc-slider-handle-2 {
+    width: 17px;
+    height: 17px;
+    margin-top: -6px;
+    background-color: #000066;
+    &:focus {
+        outline: auto 3px rgba(255,102,1,.9);
+    }
+}
 
-            .centerAlign
-            {
-                text-align: center;
-            }
+.rc-slider-dot {
+    width: 12px;
+    height: 12px;
+    bottom: -4px;
+    border: 1px solid $gray;
+}
+
+.rc-slider-dot-active {
+    border-color: $gray;
+}
+
+.rc-slider-tooltip-inner {
+    background: $white;
+    color:  #000066;
+    border: 2px solid $dark-blue;
+    padding: 10px;
+    height: inherit;
+}
+
+.rc-slider-tooltip-arrow {
+    border-top-color: $dark-blue;
+}
+
+.metric-selectors {
+    display: flex;
+    border: 1px solid black;
+    border-left: 7px solid #712177;
+    padding: 0.75em;
+    height: 52px;
+  }
+  
+  .metric-selectors strong {
+    margin: 0 1em;
+  }
+  
+  .metric-selectors div {
+    display: flex;
+  }
+  
+  .metric-selectors label {
+    margin-bottom: 0;
+    margin-right: 1em;
+  }
+
+}
