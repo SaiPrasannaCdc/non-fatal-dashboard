@@ -1,0 +1,25 @@
+#bar-chart-container {
+    height: 900px;
+}
+
+.animated-bar {
+    transform: scale(0, 1);
+  }
+  
+  .animated-bar.vertical {
+    transform: scale(1, 0);
+  }
+  
+  .animated-bar.animated {
+    transform: scale(1);
+  }
+  
+  .fadein-initial {
+    animation: fadein-initial 1s linear;
+    opacity: 1;
+  }
+  
+  .fadein {
+    animation: fadein 1s ease;
+    opacity: 1;
+  }

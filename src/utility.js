@@ -58,4 +58,17 @@ export const UtilityFunctions = {
 
   },
   
+  calculateMax: (filteredData)=> {
+
+    var nums = [];
+
+    for (var rec in filteredData)
+        nums.push(filteredData[rec].rate)
+    
+    const numsFinal = nums?.filter(i => !isNaN(i));
+    let max = numsFinal?.length > 0 ? Math.max(...numsFinal) : 0;
+
+    return max;
+  },
+
 }
