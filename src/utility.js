@@ -57,7 +57,21 @@ export const UtilityFunctions = {
       return max;
 
   },
-  
+
+  generateYYMMArray: (startYear, startMonth, endYear, endMonth) => {
+
+    const result = [];
+    for (let year = startYear; year <= endYear; year++) {
+      const start = (year === startYear) ? startMonth : 1;
+      const end = (year === endYear) ? endMonth : 12;
+      for (let month = start; month <= end; month++) {
+        const monthString = month < 10 ? `0${month}` : `${month}`;
+        result.push(`${year}${monthString}`);
+      }
+    }
+    return result;
+  },
+
   calculateMax: (filteredData)=> {
 
     var nums = [];
@@ -70,5 +84,5 @@ export const UtilityFunctions = {
 
     return max;
   },
-
+  
 }
