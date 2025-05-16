@@ -424,11 +424,11 @@ export default function App({ dataUrl }) {
   const [startMonthYearForSlider, setStartMonthYearForSlider] = useState('');
   const [endUSMonthYearForSlider, setEndUSMonthYearForSlider] = useState('');
   const [endMonthYearForSlider, setEndMonthYearForSlider] = useState('');
-  const [startUSMonthYearFromSlider, setStartUSMonthYearFromSlider] = useState('');
+/*   const [startUSMonthYearFromSlider, setStartUSMonthYearFromSlider] = useState('');
   const [startMonthYearFromSlider, setStartMonthYearFromSlider] = useState('');
   const [endUSMonthYearFromSlider, setEndUSMonthYearFromSlider] = useState('');
-  const [endMonthYearFromSlider, setEndMonthYearFromSlider] = useState('');
-  const [showMonthly, setMonthlyToggle] = useState(false);
+  const [endMonthYearFromSlider, setEndMonthYearFromSlider] = useState(''); */
+  const [showAnnual, setMonthlyToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);  
   const [showOverall, setOverallToggle] = useState(false);
 
@@ -445,7 +445,7 @@ export default function App({ dataUrl }) {
   const [lookupPeriodEndYear, setLookupPeriodEndYear] = useState('');
   const [lookupPeriodEndMonth, setLookupPeriodEndMonth] = useState('');
 
-  const [isPeriod, setPeriodToggle] = useState(false);
+  const [isPeriod, setPeriodToggle] = useState(true);
 
   const [width, setWidth] = useState(0);
 
@@ -546,10 +546,10 @@ export default function App({ dataUrl }) {
 
 const didOnAfterChangeTrigger = (value) => {
 
-    var sliderStartYr = currentState == 'US' ? startUSMonthYearFromSlider.substring(0,4) : startMonthYearFromSlider.substring(0,4);
-    var sliderStartMon = currentState == 'US' ? String(Number(startUSMonthYearFromSlider.substring(4))) : String(Number(startMonthYearFromSlider.substring(4)));
-    var sliderEndYr = currentState == 'US' ? endUSMonthYearFromSlider.substring(0,4) : endMonthYearFromSlider.substring(0,4);
-    var sliderEndMon = currentState == 'US' ? String(Number(endUSMonthYearFromSlider.substring(4))) : String(Number(endMonthYearFromSlider.substring(4)));
+    var sliderStartYr = currentState == 'US' ? startUSMonthYearForSlider.substring(0,4) : startMonthYearForSlider.substring(0,4);
+    var sliderStartMon = currentState == 'US' ? String(Number(startUSMonthYearForSlider.substring(4))) : String(Number(startMonthYearForSlider.substring(4)));
+    var sliderEndYr = currentState == 'US' ? endUSMonthYearForSlider.substring(0,4) : endMonthYearForSlider.substring(0,4);
+    var sliderEndMon = currentState == 'US' ? String(Number(endUSMonthYearForSlider.substring(4))) : String(Number(endMonthYearForSlider.substring(4)));
 
     var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon))
 
@@ -826,12 +826,12 @@ const getYears = (startYrInp, endYrInp) => {
           setLookupPeriodEndMonth(String(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4))));
           setStartUSMonthYearForSlider(tempKeyedRawUSData[0]['YYYYMM']); 
           setEndUSMonthYearForSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
-          setStartUSMonthYearFromSlider(tempKeyedRawUSData[0]['YYYYMM']); 
-          setEndUSMonthYearFromSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
+          //setStartUSMonthYearFromSlider(tempKeyedRawUSData[0]['YYYYMM']); 
+          //setEndUSMonthYearFromSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
           setStartMonthYearForSlider(tempKeyedRawUSData[0]['YYYYMM']); 
           setEndMonthYearForSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
-          setStartMonthYearFromSlider(tempKeyedRawUSData[0]['YYYYMM']); 
-          setEndMonthYearFromSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
+          //setStartMonthYearFromSlider(tempKeyedRawUSData[0]['YYYYMM']); 
+          //setEndMonthYearFromSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
         }
 
         const shifted = [...res.data.data];
@@ -956,6 +956,7 @@ const getYears = (startYrInp, endYrInp) => {
                   selectedDrugs={selectedDrugs} 
                   supportedYears={supportedYears}
                   currentDataSource={'ED'}
+                  jurisdictionsCnt={Object.keys(jurisForDropDown).length}
                   />
                 </div>
               </div>
@@ -1148,22 +1149,22 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '12%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Time:</div></td>
               <td style={{'width': '45%'}}>
                 <div style={{float: 'left'}}>
-                        <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
-                            <input id="toggleMonthly" class="toggleA-input" type="checkbox" checked={showMonthly}
+                        <label class="toggleA" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
+                            <input id="toggleMonthly" class="toggleA-input" type="checkbox" checked={showAnnual}
                             onChange={(e) => {
                               if(e.target.checked) {
                                 setMonthlyToggle(true)
-                                setTimeline('Monthly');
-                                setPeriodToggle(true)
-                              }
-                              else {
-                                setMonthlyToggle(false)
                                 setTimeline('Annual');
                                 setPeriodToggle(false)
                               }
+                              else {
+                                setMonthlyToggle(false)
+                                setTimeline('Monthly');
+                                setPeriodToggle(true)
+                              }
                             }}/>
-                            <span class="toggleA-label" data-off="Annual" 
-                                  data-on="Monthly">
+                            <span class="toggleA-label" data-off="Monthly" 
+                                  data-on="Annual">
                             </span>
                             <span class="toggleA-handle"></span>
                         </label>
@@ -1203,7 +1204,7 @@ const getYears = (startYrInp, endYrInp) => {
                     setYearsForDropDown(getYears(startUSMonthYearForSlider, endUSMonthYearForSlider));
                     setCurrentDrug('all');
                     setselectedDrugs(['all'])
-                    setMonthlyToggle(false);
+                    setMonthlyToggle(true);
                     setCurrentState('US');
                     setYearSelected(getYears(startUSMonthYearForSlider, endUSMonthYearForSlider)[0])
 
@@ -1232,7 +1233,7 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               
               <td style={{'width': '10%'}}>
-                <select id="month-select" value={monthNames[selectedMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }} disabled={!showMonthly}>
+                <select id="month-select" value={monthNames[selectedMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }} disabled={showAnnual}>
                   {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -1277,10 +1278,10 @@ const getYears = (startYrInp, endYrInp) => {
                 <div style={wrapperStyle}>
                   <Range 
                   min={1} 
-                  max={getNumberofMonthsBetween(startUSMonthYearFromSlider, endUSMonthYearFromSlider)}
-                  defaultValue={[1,getNumberofMonthsBetween(startUSMonthYearFromSlider, endUSMonthYearFromSlider)]} 
-                  step={1} marks={getMarksForRange(startUSMonthYearFromSlider, endUSMonthYearFromSlider)} 
-                  tipFormatter={value => `${getMonthYear(Number(startUSMonthYearFromSlider.substring(0,4)), value)}`} 
+                  max={getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)}
+                  defaultValue={[1,getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)]} 
+                  step={1} marks={getMarksForRange(startUSMonthYearForSlider, endUSMonthYearForSlider)} 
+                  tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSlider.substring(0,4)), value)}`} 
                   onAfterChange={didOnAfterChangeTrigger}
                   />
                 </div>

@@ -209,10 +209,7 @@ const getFilteredDataPeriod = (dataAll, currentState, lookupPeriodStartYear, loo
 
 function LineChart(params) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, supportedYears, currentDataSource  } = params;
-
-/*   if (data.keyedRawUSData?.length > 0)
-    debugger; */
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, supportedYears, currentDataSource, jurisdictionsCnt  } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -262,7 +259,7 @@ function LineChart(params) {
     range: [specs.yMax, 0],
   });
 
-  const changePrecValues = (currentTimeframe == 'Annual' && !isPeriod) ? getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey) : [];
+  const changePrecValues = getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey);
 
   const inp = [];
   inp['filteredData'] = filteredData;
@@ -304,40 +301,6 @@ function LineChart(params) {
         </Fragment>
       </Fragment>
     )
-  }
-
- const getNumberOfStates = (dkey) => {
-
-    var mon, yr;
-
-    let str = isPeriod ? inp.monthNamesPeriod[dkey] : dkey;
-    
-    if (currentTimeframe === 'Monthly' && isPeriod) {
-      var monYr = String(str)?.split(' ');
-      mon = UtilityFunctions.getMonthNumber(monYr[0]);
-      yr = monYr[1];
-    }
-    if (currentTimeframe === 'Monthly' && !isPeriod) {
-      mon = str;
-      yr = currentYear;
-    }
-    else if (currentTimeframe === 'Annual')
-    {
-      yr = dkey;
-    }
-
-    let monMain = currentTimeframe != 'Monthly' ? '00' : String(mon).padStart(2, '0');
-    let key = currentDataSource + '_' + yr + monMain;
-    let supportedStates = {};
-    let strStates = data.supportedJurisdictions[key]?.split(',');
-    if (strStates !== undefined) {
-      for (const st of strStates) {
-        if (!supportedStates[st]) 
-          supportedStates[st] = stateNames[st]; 
-      }
-    }
-
-    return Object.keys(supportedStates).length - 1;
   }
 
   const markYearsForTicks = () => {
@@ -678,7 +641,7 @@ function LineChart(params) {
   const getTooltipFragment = (param) => {
 
     let val = isPeriod ? inp.monthNamesPeriod[param] : param;
-    let numStates =  '40'; //getNumberOfStates(param)
+    let numStates =  jurisdictionsCnt; 
     var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' States)' + '</p></td></tr>';
     var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
     var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
@@ -700,7 +663,7 @@ function LineChart(params) {
     var tooltipHtml;
 
     for (var i=0; i<changePrecValues?.length; i++) {
-      if (changePrecValues[i].yr == yr && changePrecValues[i].drug == drug && changePrecValues[i].state == st) {
+      if (changePrecValues[i].yearmon == yr && changePrecValues[i].drug == drug && changePrecValues[i].state == st) {
         rec = changePrecValues[i];
         break
       }
@@ -725,7 +688,7 @@ function LineChart(params) {
       Object.keys(drugOptions).forEach(drug => {
         for (var i=0;i<vals.length;i++)
         {
-          if (vals[i]?.includes(drug))
+          if ((drug == 'all' && vals[i]?.includes('All Drugs')) || (drug != 'all' && vals[i]?.includes(drug)))
             sortedToolTips.push(vals[i]);
         }
       })
@@ -740,19 +703,14 @@ function LineChart(params) {
           inp.filteredData['US'].map(d => {
 
             if (inp.currentState === 'US') {
-              let numStates = 40; //getNumberOfStates(d[specs.xKey])
+              let numStates = jurisdictionsCnt;
               var tooltipValues = [];
-              if (!currentDrugOnly)
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
-
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
-                    if (!inp.selectedDrugs[i].includes(currentDrug)){
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
+                      tooltipValues.push(`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>`);
                     }
                   }
               }
-            }
             
             let tooltipValuesSorted = sortToolTipValues(tooltipValues)
 
@@ -782,7 +740,6 @@ function LineChart(params) {
                 {
                   specs.xValues.map((xVal, i) => {
                     const d = inp.filteredData[key].find(d => d[specs.xKey] === xVal) || {};
-                    if (d.year != supportedYears[0]) {
                       return <rect
                         key={`tooltip-section-${d[specs.xKey]}`}
                         x={Math.max(0, specs.xScale(d[specs.xKey]) -10)}
@@ -792,7 +749,6 @@ function LineChart(params) {
                         style={{outline: 'none'}}
                         fill='transparent'
                         data-tip={getTooltipFragmentPerc(drug, d.year, key)}></rect>
-                    }
                 })
               }
               </Fragment>
@@ -805,20 +761,16 @@ function LineChart(params) {
 
   const buildPercentChartInd = (percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon) => {
 
-    if (currentTimeframe === 'Annual' && !isPeriod) {
-      if (percentChgYear != supportedYears[0]) {
-      return (
-        <QuickStat
-            colorScale={colorScale}
-            defaultValueIfEmpty={defaultValueIfEmpty}
-            value={percentChgValue}
-            text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in the rate of ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug.replace('all', 'all drug') + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
-            label={percentChgDrug}
-            timeframe={'year'}
-        ></QuickStat>
-        ); 
-      }
-    }
+    return (
+      <QuickStat
+          colorScale={colorScale}
+          defaultValueIfEmpty={defaultValueIfEmpty}
+          value={percentChgValue}
+          text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug.replace('all', 'all drug') + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
+          label={percentChgDrug}
+          timeframe={'year'}
+      ></QuickStat>
+      ); 
   }
 
   const buildLineForDrug = (currentDrug) => {
@@ -852,8 +804,8 @@ function LineChart(params) {
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == UtilityFunctions.getSeriesColor(currentDrug, key)} />}
                         </Group>
                         )
                     })}

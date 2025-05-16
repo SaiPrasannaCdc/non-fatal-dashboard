@@ -176,8 +176,8 @@ function BarChart(params) {
                       strokeWidth="3"
                       onClick={() => {
                       }}
-                      data-tip={selectedDrugs.includes(name) ? `<div class="tooltipTableLC"><strong>${drugOptions[name].titleAll}</strong><br/><br/>
-                      Rate: ${rate < 0 ? toolTip : Number(rate).toLocaleString()}</div>` : ''}
+                      /* data-tip={selectedDrugs.includes(name) ? `<div class="tooltipTableLC"><strong>${drugOptions[name].titleAll}</strong><br/><br/>
+                      Rate: ${rate < 0 ? toolTip : Number(rate).toLocaleString()}</div>` : ''} */
                     ></path>
                     <text 
                       className="bar-label"
