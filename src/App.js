@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, Fragment } from 'react';
 import "babel-polyfill";
 import chroma from 'chroma-js';
 import debounce from 'lodash.debounce';
@@ -6,8 +6,9 @@ import Papa from 'papaparse';
 import UsaMap from './components/UsaMap';
 import BarChartVertical from './components/BarChartVertical';
 import BarChart from './components/BarChart';
+import LineChart from './components/LineChart';
 import Datatable from './components/Datatable';
-import Slider, { createSliderWithTooltip } from 'rc-slider';
+import Slider from 'rc-slider';
 import ReactTooltip from 'react-tooltip';
 import { Base64 } from 'js-base64';
 
@@ -17,7 +18,26 @@ import 'rc-slider/assets/index.css';
 import './styles.scss';
 import { UtilityFunctions } from './utility'
 
-const SliderWithTooltip = createSliderWithTooltip(Slider);
+const createSliderWithTooltip = Slider.createSliderWithTooltip;
+const Range = createSliderWithTooltip(Slider.Range);
+const Handle = Slider.Handle;
+
+const wrapperStyle = { width: 830, marginBottom: 50, marginLeft: 10, marginTop: 5 };
+
+const handle = (props) => {
+  const { value, dragging, index, ...restProps } = props;
+  return (
+    <Tooltip
+      prefixCls="rc-slider-tooltip"
+      overlay={value}
+      visible={dragging}
+      placement="top"
+      key={index}
+    >
+      <Handle value={value} {...restProps} />
+    </Tooltip>
+  );
+};
 
 /**
  * Generates variations of the primary color for hover and active
@@ -189,6 +209,7 @@ const fundedStates = {
 
 const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
 let stateNames = { 'US': 'Overall', 'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming' };
+const supportedYears = ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'];
 
 const getStateName = (geo) => {
   return supportedStates[geo][0];
@@ -431,6 +452,7 @@ export default function App({ dataUrl }) {
   const isSmallViewport = width < 500;
 
   const drugsBarChartRef = useRef();
+  const lineChartRef = useRef();
 
   const debouncedSetWidth = useMemo(
     () => debounce(setWidth, 300)
@@ -522,6 +544,62 @@ export default function App({ dataUrl }) {
 
 }
 
+const didOnAfterChangeTrigger = (value) => {
+
+    var sliderStartYr = currentState == 'US' ? startUSMonthYearFromSlider.substring(0,4) : startMonthYearFromSlider.substring(0,4);
+    var sliderStartMon = currentState == 'US' ? String(Number(startUSMonthYearFromSlider.substring(4))) : String(Number(startMonthYearFromSlider.substring(4)));
+    var sliderEndYr = currentState == 'US' ? endUSMonthYearFromSlider.substring(0,4) : endMonthYearFromSlider.substring(0,4);
+    var sliderEndMon = currentState == 'US' ? String(Number(endUSMonthYearFromSlider.substring(4))) : String(Number(endMonthYearFromSlider.substring(4)));
+
+    var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon))
+
+    let stmonYr =  monthsArray[value[0] - 1];
+    let endmonYr =  monthsArray[value[1] - 1];
+
+    setLookupPeriodStartYear(stmonYr.substring(0,4));
+    setLookupPeriodStartMonth(String(Number(stmonYr.substring(4))));
+    setLookupPeriodEndYear(endmonYr.substring(0,4));
+    setLookupPeriodEndMonth(String(Number(endmonYr.substring(4))));
+  };
+
+function getMonthYear( startYear, value) {
+    if (value > 12) {
+      let mod = value % 12;
+      return  monthNames[mod] + ' ' + String((Number(startYear) + Math.round(value/12)))
+    }
+    else {
+      return monthNames[value] + ' ' + startYear;
+    }
+  }
+  
+function getNumberofMonthsBetween(startYearMonth, endYearMonth) {
+    let startMon = Number(startYearMonth.substring(4));
+    let startYr = Number(startYearMonth.substring(0,4));
+    let endMon = Number(endYearMonth.substring(4));
+    let endYr = Number(endYearMonth.substring(0,4));
+    let monsInStartYr = 13 - startMon;
+    let monsInEndYr = endMon;
+    let numOfYearBetween = endYr - startYr - 1;
+    let totalMonths = monsInStartYr + numOfYearBetween + monsInEndYr;
+
+    return totalMonths;
+  }
+
+  function getMarksForRange(startYearMonth, endYearMonth) {
+
+    let marks = {};
+    let startMon = Number(startYearMonth.substring(4));
+    let startYr = Number(startYearMonth.substring(0,4));
+    let endMon = Number(endYearMonth.substring(4));
+    let endYr = Number(endYearMonth.substring(0,4));
+    let numberOfMon = getNumberofMonthsBetween(startYearMonth, endYearMonth);
+
+    marks[1] = monthNames[startMon] + ' ' + String(startYr);
+    marks[numberOfMon] = monthNames[endMon] + ' ' + String(endYr);
+
+    return marks;
+  }
+
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
@@ -552,7 +630,6 @@ const getYears = (startYrInp, endYrInp) => {
     {
       let startYr = Number(String(startYrInp).substring(0,4));
       let endYr = Number(String(endYrInp).substring(0,4));
-      let years = [];
       for (let stYr=startYr;stYr<=endYr;stYr++)
         years.push(stYr)
     }
@@ -777,6 +854,58 @@ const getYears = (startYrInp, endYrInp) => {
     setShowFootNotes(!showFootNotes);
   };
 
+  const getToggleControls = () => {
+  
+      return (
+        <Fragment>
+                <table>
+                  <tr>
+                    <td style={{width: '88%', textAlign: 'right'}}>
+                      <div style={{float: 'right'}}>
+                              <label class="toggleB" title={'Toggle to hover over a data point on the line chart to view percent change for the selected compared to the previous.'}>
+                                  <input id="togglePercent" class="toggleB-input" type="checkbox" checked={showPercent}
+                                  onChange={(e) => {
+                                    if(e.target.checked) {
+                                      setPercentToggle(true)
+                                    }
+                                    else {
+                                      setPercentToggle(false)
+                                    }
+                                  }}/>
+                                  <span class="toggleB-label" data-off="% Chg Off" 
+                                        data-on="% Chg On">
+                                  </span>
+                                  <span class="toggleB-handle"></span>
+                              </label>
+                          </div>
+                    </td>
+                    <td style={{width: '12%', textAlign: 'right'}}>
+                      {currentState != 'US' &&
+                        <div style={{float: 'right'}}>
+                            <label class="toggleC" title={'Toggle to compare with overall.'}>
+                                <input id="toggleOverall" class="toggleC-input" type="checkbox" checked={showOverall}
+                                onChange={(e) => {
+                                  if(e.target.checked) {
+                                    setOverallToggle(true)
+                                  }
+                                  else {
+                                    setOverallToggle(false)
+                                  }
+                                }}/>
+                                <span class="toggleC-label" data-off="Overall Off" 
+                                      data-on="Overall On">
+                                </span>
+                                <span class="toggleC-handle"></span>
+                            </label>
+                        </div>
+                        }
+                    </td>
+                  </tr>
+                </table>
+        </Fragment>
+        )
+      }
+
   const drugsBarChartMemo = useMemo(() =>
     <>
    <div id="bar-chart-container" className="chart-container" ref={drugsBarChartRef}>
@@ -796,6 +925,46 @@ const getYears = (startYrInp, endYrInp) => {
     </div>
   </>,
   [currentState === 'US' ? keyedRawUSData : keyedRawData, width, currentState, selectedDrugs, selectedYr, selectedMonth, timeline]);
+
+  const lineChartMemo = useMemo(() =>
+      <>
+        {getToggleControls()}
+        <table style={{width: '100%'}}>
+          <tr>
+            <td>
+              <div class="containerLC">
+                <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={lineChartRef}>
+                  <LineChart 
+                  data={{keyedRawUSData, keyedRawData}}
+                  monthNames={monthNames}
+                  stateNames={stateNames}
+                  drugOptions={drugOptions}
+                  currentTimeframe={timeline}
+                  currentDrug={currentDrug}
+                  currentState={currentState}
+                  currentYear={selectedYr}
+                  currentMonth={selectedMonth}
+                  width={width}
+                  el={lineChartRef}
+                  lookupPeriodStartYear={lookupPeriodStartYear}
+                  lookupPeriodStartMonth={lookupPeriodStartMonth}
+                  lookupPeriodEndYear={lookupPeriodEndYear}
+                  lookupPeriodEndMonth={lookupPeriodEndMonth}
+                  showPercent={showPercent}
+                  showOverall={showOverall}
+                  isPeriod={isPeriod}
+                  selectedDrugs={selectedDrugs} 
+                  supportedYears={supportedYears}
+                  currentDataSource={'ED'}
+                  />
+                </div>
+              </div>
+            </td>
+          </tr>
+        
+        </table>
+      </>,
+      [timeline, currentDrug, currentState, selectedYr, selectedMonth, width, showPercent,showOverall, isPeriod, selectedDrugs, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -1098,7 +1267,38 @@ const getYears = (startYrInp, endYrInp) => {
       </div>
       </div>
       </div>
-      <div style={{ textAlign: 'center' }}>Work in Progress</div>
+      &nbsp;
+      {timeline == 'Monthly' &&
+          <table>
+ 
+            <tr>
+              <td style={{'width': '15%', 'textAlign': 'right', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
+              <td>
+                <div style={wrapperStyle}>
+                  <Range 
+                  min={1} 
+                  max={getNumberofMonthsBetween(startUSMonthYearFromSlider, endUSMonthYearFromSlider)}
+                  defaultValue={[1,getNumberofMonthsBetween(startUSMonthYearFromSlider, endUSMonthYearFromSlider)]} 
+                  step={1} marks={getMarksForRange(startUSMonthYearFromSlider, endUSMonthYearFromSlider)} 
+                  tipFormatter={value => `${getMonthYear(Number(startUSMonthYearFromSlider.substring(0,4)), value)}`} 
+                  onAfterChange={didOnAfterChangeTrigger}
+                  />
+                </div>
+              </td>
+            </tr>
+          </table>
+          }
+          {lineChartMemo}
+          <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '5%'}}></td>
+              <td style={{width: '80%'}}>
+                <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented. *Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter [2].</i></small></span></div>
+              </td>
+              <td style={{width: '15%'}}></td>
+            </tr>
+          </table>
+
     </section>
 
     <section>
@@ -1127,7 +1327,7 @@ const getYears = (startYrInp, endYrInp) => {
              <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ol>
                 <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
-                <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values<strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
+                <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values <strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
                 <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [6] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits.</li>
                 <li><strong>Syndromic data are frequently updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in NSSP often within 24 hours for ~80% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be progressively updated over the course of several weeks, and relevant drug overdose discharge diagnosis codes or revised chief complaint text may be received during this time. DOSE-SYS data are reported with a two-month time lag and not typically updated each month.</li>
                 <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [7] and therefore may underreport specific drug types involved.</li>
