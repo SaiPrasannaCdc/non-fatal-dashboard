@@ -259,9 +259,60 @@ export const UtilityFunctions = {
         }
       }
       return monthNamesPeriod;
-    },
+  },
+
+  getPrevMonYear : (yrmon) => {
+
+      let yr = Number(yrmon.substring(0,4));
+      let mon = String(Number(yrmon.substring(4)));
+      let prevmon = '';
+      let prevYr = yr;
+
+      switch (mon) {
+        case '1':
+          prevmon = "December";
+          prevYr = yr - 1;
+          break;
+        case '2':
+          prevmon = "January"
+          break;
+        case '3':
+          prevmon = "February"
+          break;
+        case '4':
+          prevmon = "March"
+          break;
+        case '5':
+          prevmon = "April"
+          break;
+        case '6':
+          prevmon = "May"
+          break;
+        case '7':
+          prevmon = "June"
+          break;
+        case '8':
+          prevmon = "July"
+          break;
+        case '9':
+          prevmon = "August"
+          break;
+        case '10':
+          prevmon = "September"
+          break;
+        case '11':
+          prevmon = "October"
+          break;
+        case '12':
+          prevmon = "November";
+          break;
+      }
+
+      return prevmon + ', ' + prevYr;
+
+  },
   
-    getMonthName : (month)=> {
+  getMonthName : (month)=> {
   
       var monFull = '';
   
@@ -304,9 +355,9 @@ export const UtilityFunctions = {
       }
   
       return monFull;
-    },
+  },
   
-    getMonthNumber : (month)=> {
+  getMonthNumber : (month)=> {
   
       var monNum = 0;
   
@@ -349,9 +400,9 @@ export const UtilityFunctions = {
       }
   
       return monNum;
-    },
+  },
 
-    areValidSelections: (lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) => {
+  areValidSelections: (lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) => {
   
       var lsmStr = String(lookupPeriodStartYear) + (lookupPeriodStartMonth?.length == 1 ? String(lookupPeriodStartMonth).padStart(2, '0') :  String(lookupPeriodStartMonth));
       var lsm =  parseInt(lsmStr)
@@ -363,9 +414,9 @@ export const UtilityFunctions = {
         return true
       else
         return false;
-    },
+  },
 
-    getAllIndexes(arr, val) {
+  getAllIndexes(arr, val) {
       
       var indexes = [], i;
       for(i = 1; i <= Object.keys(arr).length; i++)

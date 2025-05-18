@@ -759,6 +759,14 @@ function LineChart(params) {
     )
   }
 
+  const getTooTipPartPercent = (timeline, yearMon) => {
+    if (timeline == 'Annual')
+      return String(yearMon) + ', ' + String(yearMon - 1)
+    else
+      return UtilityFunctions.getMonthName(String(Number(yearMon.substring(4)))) + ', ' + yearMon.substring(0,4) + ' vs. ' + UtilityFunctions.getPrevMonYear(yearMon);
+
+  }
+
   const buildPercentChartInd = (percentChgDrug, percentChgYear, percentChgValue, percentState, yearMon) => {
 
     return (
@@ -766,7 +774,7 @@ function LineChart(params) {
           colorScale={colorScale}
           defaultValueIfEmpty={defaultValueIfEmpty}
           value={percentChgValue}
-          text={(percentChgValue > 0 ? 'Increase' : 'Decrease') + ' in ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug.replace('all', 'all drug') + ' overdoses, ' + percentState + ', ' + percentChgYear + ' vs. ' + String((parseInt(percentChgYear) - 1))}
+          text={(percentChgValue > 0 ? yearMon + 'Increase' : 'Decrease') + ' in ' + (currentDataSource === 'ED' ? 'ED visits' : 'inpatient hospitalizations') + ' for nonfatal ' + percentChgDrug.replace('all', 'all drug') + ' overdoses, ' + percentState + ', ' + getTooTipPartPercent(currentTimeframe, yearMon)}
           label={percentChgDrug}
           timeframe={'year'}
       ></QuickStat>
