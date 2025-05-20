@@ -3,7 +3,6 @@ import "babel-polyfill";
 import chroma from 'chroma-js';
 import debounce from 'lodash.debounce';
 import Papa from 'papaparse';
-import UsaMap from './components/UsaMap';
 import BarChartVertical from './components/BarChartVertical';
 import BarChart from './components/BarChart';
 import LineChart from './components/LineChart';
@@ -314,81 +313,6 @@ const drugOptions = {
   }
 }
 
-const drugScreenOptions = {
-  'all': {
-    'titleSingular': 'Drug',
-    'titlePlural': 'All Drugs',
-    'titleAll': 'All Drugs',
-    'titleAllGram': 'All Drug',
-    'significanceColumn': 'allSignificance',
-    'percentageColumn': 'allPercentageChange',
-    'color': '#325D7D',
-  },
-  'benzodiazepine': {
-    'titleSingular': 'Benzodiazepine',
-    'titlePlural': 'Benzodiazepine',
-    'titleAll': 'Benzodiazepine',
-    'titleAllGram': 'Benzodiazepine',
-    'significanceColumn': 'benzoSignificance',
-    'percentageColumn': 'benzoPercentageChange',
-    'color': '#B83A5E',
-  },
-  'opioids': {
-    'titleSingular': 'Opioid',
-    'titlePlural': 'Opioids',
-    'titleAll': 'All Opioids',
-    'titleAllGram': 'All Opioid',
-    'significanceColumn': 'opioidSignificance',
-    'percentageColumn': 'opioidPercentageChange',
-    'color': '#000C77',
-  },
-  'fentanyl': {
-    'titleSingular': 'Fentanyl',
-    'titlePlural': 'Fentanyl',
-    'titleAll': 'Fentanyl',
-    'titleAllGram': 'Fentanyl',
-    'significanceColumn': 'fentanylSignificance',
-    'percentageColumn': 'fentanylPercentageChange',
-    'color': '#294891',
-  },
-  'heroin': {
-    'titleSingular': 'Heroin',
-    'titlePlural': 'Heroin',
-    'titleAll': 'Heroin',
-    'titleAllGram': 'Heroin',
-    'significanceColumn': 'heroinSignificance',
-    'percentageColumn': 'heroinPercentageChange',
-    'color': '#0C6F96',
-  },
-  'stimulants': {
-    'titleSingular': 'Stimulant',
-    'titlePlural': 'Stimulants',
-    'titleAll': 'All Stimulants',
-    'titleAllGram': 'All Stimulant',
-    'significanceColumn': 'stimulantSignificance',
-    'percentageColumn': 'stimulantPercentageChange',
-    'color': '#411B6D',
-  },
-  'cocaine': {
-    'titleSingular': 'Cocaine',
-    'titlePlural': 'Cocaine',
-    'titleAll': 'Cocaine',
-    'titleAllGram': 'Cocaine',
-    'significanceColumn': 'cocaineSignificance',
-    'percentageColumn': 'cocainePercentageChange',
-    'color': '#671AAA',
-  },
-  'methamphetamine': {
-    'titleSingular': 'Methamphetamine',
-    'titlePlural': 'Methamphetamine',
-    'titleAll': 'Methamphetamine',
-    'titleAllGram': 'Methamphetamine',
-    'significanceColumn': 'methamphetamineSignificance',
-    'percentageColumn': 'methamphetaminePercentageChange',
-    'color': '#A378E8',
-  }
-}
-
 const months = [
   'January',
   'February',
@@ -405,14 +329,13 @@ const months = [
 ];
 
 export default function App({ dataUrl }) {
-  const [selected, setSelected] = useState(null)
-  const [currentDrug, setCurrentDrug] = useState(Object.keys(drugScreenOptions)[0]);
+  const [currentDrug, setCurrentDrug] = useState(Object.keys(drugOptions)[0]);
   const [timeline, setTimeline] = useState('Monthly');
   const [currentState, setCurrentState] = useState('US')
-  const [selectedYr, setSelectedYr] = useState('')
-  const [selectedYrSexAge, setSelectedYrSexAge] = useState('')
-  const [selectedMonth, setSelectedMonth] = useState('')
-  const [selectedMonthSexAge, setSelectedMonthSexAge] = useState('1')
+  const [currentYear, setCurrentYear] = useState('');
+
+  const [currentMonth, setCurrentMonth] = useState('');
+
   const [keyedRawData, setKeyedRawdata] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [keyedRawUSData, setKeyedRawUSdata] = useState([]); 
@@ -424,18 +347,13 @@ export default function App({ dataUrl }) {
   const [startMonthYearForSlider, setStartMonthYearForSlider] = useState('');
   const [endUSMonthYearForSlider, setEndUSMonthYearForSlider] = useState('');
   const [endMonthYearForSlider, setEndMonthYearForSlider] = useState('');
-/*   const [startUSMonthYearFromSlider, setStartUSMonthYearFromSlider] = useState('');
-  const [startMonthYearFromSlider, setStartMonthYearFromSlider] = useState('');
-  const [endUSMonthYearFromSlider, setEndUSMonthYearFromSlider] = useState('');
-  const [endMonthYearFromSlider, setEndMonthYearFromSlider] = useState(''); */
+
   const [showAnnual, setMonthlyToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);  
   const [showOverall, setOverallToggle] = useState(false);
 
   const [selectedDrugs, setselectedDrugs] = useState(['all']);
   const [selectedDrugsSexAge, setselectedDrugsSexAge] = useState(['all']);
-  const [selectAllFlag, setSelectAllFlag] = useState(false);
-  const [deselectAllFlag, setDeselectAllFlag] = useState(false);
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [showFootNotes, setShowFootNotes] = useState(false);
   const [keyIndex, setKeyIndex] = useState({});
@@ -494,38 +412,26 @@ export default function App({ dataUrl }) {
     }
   }
 
-  const setStateSelected = (geo) => {
-    if (selected === geo) {
-      setSelected(null);
-    } else {
-      setSelected(geo);
-    }
+  const setMonthSelected = (mon) => {
+    let monNum = getKeyByValue(monthNames, mon)
+    setCurrentMonth(monNum);
   };
 
+
    const setYearSelected = (yr) => {
-      setSelectedYr(yr);
+      setCurrentYear(yr);
 
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
         setMonthsForDropDown(getMonths(mon))
-        setSelectedMonth(String(mon));
+        setCurrentMonth(String(mon));
       }
       else {
         setMonthsForDropDown(getMonths());
-        setSelectedMonth('12');
+        setCurrentMonth('12');
       }
   };
-
-  const setMonthSelected = (mon) => {
-
-    if (monthNames[selectedMonth] === mon) {
-      setSelectedMonth(null);
-    } else {
-      let monNum = getKeyByValue(monthNames, mon)
-      setSelectedMonth(monNum);
-    }
-  };
-
+ 
   const getMonths = (mon) => {
 
   var monthsForListBox = [];
@@ -659,110 +565,6 @@ const getYears = (startYrInp, endYrInp) => {
   let first = true;
   let keyCounts = {};
 
-/*   useEffect(() => {
-    (async () => {
-      setDataLoaded(false);
-      let tempMonthTimeframes = [];
-      let addedMonthTimeframes = [];
-
-      let res = await fetchData();
-      if (res && res.success) {
-        let tempKeyedRawData = {};
-        let tempKeyedRawUSData = {};
-
-        res.data.data.map((row) => {
-          if (first) {
-            row.forEach(key => {
-              let index = row.indexOf(key);
-              if (index !== -1) {
-                keyIndex[key] = index;
-                keyCounts[key] = {};
-              } else {
-                throw ('Cannot find key ' + key);
-              }
-            });
-      
-            first = false;
-          } else {
-            let obj = {};
-            Object.keys(keyIndex).map((key) => {
-              obj[key] = row[keyIndex[key]];
-            })
-            
-            if ('US' === row[keyIndex['state']]) {
-              tempKeyedRawUSData[row[keyIndex['key']]] = obj;
-            } else {
-              tempKeyedRawData[row[keyIndex['key']]] = obj;
-            }
-
-            const startMonth = row[keyIndex['startMonth']];
-            const startYear = row[keyIndex['startYear']];
-            const endMonth = row[keyIndex['endMonth']];
-            const endYear = row[keyIndex['endYear']];
-
-            const yearMonthIndex1 = startYear + '|' + startMonth;
-            if(startYear && startMonth){
-              if (!addedMonthTimeframes.includes(yearMonthIndex1)) {
-                tempMonthTimeframes.push(
-                  {
-                    'key': yearMonthIndex1,
-                    'label': months[startMonth - 1] + ' ' + startYear,
-                    'year': Number.parseInt(startYear),
-                    'month': Number.parseInt(startMonth)
-                  }
-                );
-              }
-              addedMonthTimeframes.push(yearMonthIndex1);
-            }
-
-            const yearMonthIndex2 = endYear + '|' + endMonth;
-            if(endYear && endMonth){
-              if (!addedMonthTimeframes.includes(yearMonthIndex2)) {
-                tempMonthTimeframes.push(
-                  {
-                    'key': yearMonthIndex2,
-                    'label': months[endMonth - 1] + ' ' + endYear,
-                    'year': Number.parseInt(endYear),
-                    'month': Number.parseInt(endMonth)
-                  }
-                );
-                addedMonthTimeframes.push(yearMonthIndex2);
-              }
-            }
-          }
-        });
-
-        setKeyedRawdata(tempKeyedRawData);
-        setKeyedRawUSdata(tempKeyedRawUSData);
-
-        tempMonthTimeframes.sort((a, b) => {
-          if (a['year'] < b['year']) {
-            return -1;
-          } else if (a['year'] === b['year'] && a['month'] < b['month']) {
-            return -1;
-          } else {
-            return 1;
-          }
-        });
-
-        setYearTimeframes(tempMonthTimeframes.slice(12));
-        setMonthTimeframes(tempMonthTimeframes.slice(1)); //Remove the first month/year combo since it doesn't have a previous month
-        setAllTimeframes(tempMonthTimeframes); //Remove the first month/year combo since it doesn't have a previous month
-        
-        setSliderPointMonth(tempMonthTimeframes.slice(1).length - 1); //Default range points are the first two month
-        setSliderPointYear(tempMonthTimeframes.slice(12).length - 1); //Default range points are the first two month
-
-        const shifted = [...res.data.data];
-        shifted.shift(); //Get rid of header row
-        setRawData(shifted);
-
-        setDataLoaded(true);
-      }
-    })();
-  }, []);
-
-  const csvData = rawData; */
-
   useEffect(() => {
     (async () => {
       setDataLoaded(false);
@@ -815,10 +617,10 @@ const getYears = (startYrInp, endYrInp) => {
 
         if (tempKeyedRawUSData && tempKeyedRawUSData.length > 0) {
           let cntUS = tempKeyedRawUSData.length;
-          setYearSelected(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(0,4)))
+          setCurrentYear(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(0,4)))
+          setCurrentMonth(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4));
           setYearsForDropDown(getYears(tempKeyedRawUSData[0]['YYYYMM'], tempKeyedRawUSData[cntUS-1]['YYYYMM']));
           setMonthsForDropDown(getMonths(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4))));
-          setMonthSelected(monthNames[Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4))]);
           setJurisForDropDown(getJuris(tempKeyedRawData));
           setLookupPeriodStartYear(String(tempKeyedRawUSData[0]['YYYYMM'].substring(0,4)));
           setLookupPeriodStartMonth(String(Number(tempKeyedRawUSData[0]['YYYYMM'].substring(4))));
@@ -826,12 +628,8 @@ const getYears = (startYrInp, endYrInp) => {
           setLookupPeriodEndMonth(String(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4))));
           setStartUSMonthYearForSlider(tempKeyedRawUSData[0]['YYYYMM']); 
           setEndUSMonthYearForSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
-          //setStartUSMonthYearFromSlider(tempKeyedRawUSData[0]['YYYYMM']); 
-          //setEndUSMonthYearFromSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
           setStartMonthYearForSlider(tempKeyedRawUSData[0]['YYYYMM']); 
           setEndMonthYearForSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
-          //setStartMonthYearFromSlider(tempKeyedRawUSData[0]['YYYYMM']); 
-          //setEndMonthYearFromSlider(tempKeyedRawUSData[cntUS-1]['YYYYMM']); 
         }
 
         const shifted = [...res.data.data];
@@ -917,14 +715,14 @@ const getYears = (startYrInp, endYrInp) => {
         currentState={currentState}
         currentDrug={currentDrug}
         selectedDrugs={selectedDrugs}
-        currentYear={selectedYr}
-        currentMonth={selectedMonth}
+        currentYear={currentYear}
+        currentMonth={currentMonth} 
         timeline={timeline}
         drugOptions={drugOptions}
         />
     </div>
   </>,
-  [currentState === 'US' ? keyedRawUSData : keyedRawData, width, currentState, selectedDrugs, selectedYr, selectedMonth, timeline]);
+  [currentState === 'US' ? keyedRawUSData : keyedRawData, width, currentState, selectedDrugs, currentYear, currentMonth, timeline]);
 
   const lineChartMemo = useMemo(() =>
       <>
@@ -942,8 +740,8 @@ const getYears = (startYrInp, endYrInp) => {
                   currentTimeframe={timeline}
                   currentDrug={currentDrug}
                   currentState={currentState}
-                  currentYear={selectedYr}
-                  currentMonth={selectedMonth}
+                  currentYear={currentYear}
+                  currentMonth={currentMonth}
                   width={width}
                   el={lineChartRef}
                   lookupPeriodStartYear={lookupPeriodStartYear}
@@ -965,7 +763,7 @@ const getYears = (startYrInp, endYrInp) => {
         
         </table>
       </>,
-      [timeline, currentDrug, currentState, selectedYr, selectedMonth, width, showPercent,showOverall, isPeriod, selectedDrugs, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth]);
+      [timeline, currentDrug, currentState, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugs, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -986,15 +784,6 @@ const getYears = (startYrInp, endYrInp) => {
       }
       else
         return '';
-  }
-
-  const MapFootnotes = () => {
-    return (
-        <>
-          <p>* Data were collected for the time period beginning January 2018, but exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded state did not provide CDC enough months of data to calculate percent change. Rates are suppressed when based on &lt;20 overdoses, thus no percent change is available; for more information, please see: Healthy People 2010 Criteria for Data Suppression.</p>
-          <p><span className="merriweather">†</span> To account for changes occurring across time, monthly and annual trends for the rate of ED visits involving suspected drug overdoses (e.g., ED visits involving drug overdoses divided by total ED visits and multiplied by 10,000) were analyzed overall and by U.S. state. Annual change, controlling for seasonal effects, was estimated as the change from a month in a given year to the same month in the following year (e.g., January 2018 to January 2019). Significance testing was conducted using chi-square tests.</p>
-        </>
-    );
   }
 
   function getMonthlyValueForAllDrugs() {
@@ -1024,7 +813,7 @@ const getYears = (startYrInp, endYrInp) => {
    return geo == 'US' ? 'US' : stateNames[geo];
 }
 
-  const drugTab = (drugName, drugLabel) => (
+ const drugTab = (drugName, drugLabel) => (
     <button
       className={`drug-tab${selectedDrugs.includes(drugName) ? (' ' + drugName) : ''}`}
       onClick={() => {
@@ -1052,6 +841,16 @@ const getYears = (startYrInp, endYrInp) => {
       }}
     >{drugLabel || drugName}</button>
   )
+
+  const getFootNotesForData = () => {
+    return (
+          <div className="datatable-body">
+            <table style={{ width: '100%' }}>
+              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
+            </table>
+          </div>
+    )
+  }
 
   function getPercentFromPriorMonth() {
 
@@ -1091,7 +890,7 @@ const getYears = (startYrInp, endYrInp) => {
   const usPercent = getPercentFromPriorMonth(); 
 
   return (
-    <Context.Provider value={{ drugScreenOptions, currentDrug, selected, setStateSelected, Hexagon, supportedStates }}>
+    <Context.Provider value={{ drugOptions, currentDrug, Hexagon, supportedStates }}>
       <div className="filters-container" ref={outerContainerRef}>
 
       <div style={{'width':'100%', 'backgroundColor': '#000066'}}>
@@ -1131,7 +930,7 @@ const getYears = (startYrInp, endYrInp) => {
 
         <div style={{'width':'100%', 'backgroundColor': '#000066'}}>
           <h2 className="data-bite-header1 sub">
-            What were the trends in Suspected Nonfatal Overdose Visits in {timeline == 'Monthly' ? monthNames[selectedMonth] + ', ' + selectedYr : selectedYr}{selectedDrugs.length == 1 ? (' for ' + drugOptions[selectedDrugs[0]].titleAll + ',') : ', '} {currentState == 'US' ? 'Overall (' + Object.keys(jurisForDropDown).length + ' Jurisdictions)' : getStateName(currentState)}<sup>[4]</sup>
+            What were the trends in Suspected Nonfatal Overdose Visits in {timeline == 'Monthly' ? monthNames[Number(currentMonth)] + ', ' + currentYear : currentYear}{selectedDrugs.length == 1 ? (' for ' + drugOptions[selectedDrugs[0]].titleAll + ',') : ', '} {currentState == 'US' ? 'Overall (' + Object.keys(jurisForDropDown).length + ' Jurisdictions)' : getStateName(currentState)}<sup>[4]</sup>
           </h2>
         </div>
 
@@ -1141,7 +940,7 @@ const getYears = (startYrInp, endYrInp) => {
             <tr>
               <td style={{'width': '27%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">View Data For:</div></td>
               <td style={{'width': '18%'}}>
-                <select id="jurisdiction-select2" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugs(['all']); setCurrentDrug('all')}}>
+                <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugs(['all']); setCurrentDrug('all')}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
                 {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
               </select>
@@ -1219,7 +1018,7 @@ const getYears = (startYrInp, endYrInp) => {
         <div className="map-container">
             <div className="map-inner-container">
               <div className="now-viewing">
-                <h2 className="h3" style={{ color: '#000066' }}>{timeline} {selectedDrugs.length == 1 ? drugOptions[selectedDrugs[0]].titleAll : '' } Suspected Nonfatal Overdose Visits in {timeline == 'Monthly' ? monthNames[selectedMonth] + ', ' + selectedYr : selectedYr}<sup>†</sup></h2>
+                <h2 className="h3" style={{ color: '#000066' }}>{timeline} {selectedDrugs.length == 1 ? drugOptions[selectedDrugs[0]].titleAll : '' } Suspected Nonfatal Overdose Visits in {timeline == 'Monthly' ? monthNames[Number(currentMonth)] + ', ' + currentYear : currentYear}<sup>†</sup></h2>
                 {currentState == 'US' && <div><em>Drug Syndrome: {currentState === 'US' ? getSelectedDrugs() : drugOptions[selectedDrugs[0]].titleAll}</em></div>}
               </div>
             </div>
@@ -1233,12 +1032,12 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               
               <td style={{'width': '10%'}}>
-                <select id="month-select" value={monthNames[selectedMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }} disabled={showAnnual}>
+                <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }} disabled={showAnnual}>
                   {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
               <td style={{'width': '51%'}}>
-              <select id="year-select2" value={selectedYr || ''} onChange={(e) => { setYearSelected(e.target.value) }}>
+              <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value) }}>
                 {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
               </select>
               </td>
@@ -1247,6 +1046,7 @@ const getYears = (startYrInp, endYrInp) => {
           </table>
           <br></br>
           {drugsBarChartMemo}
+          {getFootNotesForData()}
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '15%'}}></td>
@@ -1302,11 +1102,11 @@ const getYears = (startYrInp, endYrInp) => {
 
     </section>
 
-    <section>
+      <section>
         <div style={{'width':'100%', 'backgroundColor': '#000066'}}>
           <h2 className="data-bite-header1 sub">Monthly Suspected Nonfatal Overdose ED visits across Jurisdictions per 10,000 Total ED Visits<sup>†</sup></h2>
         </div>
-        <div style={{ textAlign: 'center' }}>Place holder (To be Done)</div>
+        <div style={{ textAlign: 'center' }}>Work in Progress</div>
       </section>
 
       <section>

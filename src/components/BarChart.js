@@ -18,6 +18,7 @@ const getData = (data, currentState, currentYear, currentMonth, timeline, drugOp
   var yr_total_stimulant_OD_n = 0;
   var yr_total_Cocaine_OD_n = 0;
   var yr_total_Methamphetamine_OD_n = 0;
+  var yr_total = 0;
 
   if (data?.length > 0)
   {
@@ -28,14 +29,16 @@ const getData = (data, currentState, currentYear, currentMonth, timeline, drugOp
         {
           if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
           {
-            finalData['all'] = {rate: (data[i].total_drug_OD_n/10000), stateKey: 'all', forTooltip: 'dummy'};
-            finalData['benzodiazepine'] = {rate: (data[i].total_Benzo_OD_n/10000), stateKey: 'benzodiazepine', forTooltip: 'dummy'};
-            finalData['opioids'] = {rate: (data[i].total_opioid_OD_n/10000), stateKey: 'opioids', forTooltip: 'dummy'};
-            finalData['fentanyl'] = {rate: (data[i].total_Fentanyl_OD_n/10000), stateKey: 'fentanyl', forTooltip: 'dummy'};
-            finalData['heroin'] = {rate: (data[i].total_heroin_OD_n/10000), stateKey: 'heroin', forTooltip: 'dummy'};
-            finalData['stimulants'] = {rate: (data[i].total_stimulant_OD_n/10000), stateKey: 'stimulants', forTooltip: 'dummy'};
-            finalData['cocaine'] = {rate: (data[i].total_Cocaine_OD_n/10000), stateKey: 'cocaine', forTooltip: 'dummy'};
-            finalData['methamphetamine'] = {rate: (data[i].total_Methamphetamine_OD_n/10000), stateKey: 'methamphetamine', forTooltip: 'dummy'};
+            yr_total = data[i].total_ED_visits;
+
+            finalData['all'] = {rate: data[i].total_drug_OD_n < 20 ? 0 : ((data[i].total_drug_OD_n/yr_total)*10000), stateKey: 'all', forTooltip: data[i].total_drug_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+            finalData['benzodiazepine'] = {rate: data[i].total_Benzo_OD_n < 20 ? 0 : ((data[i].total_Benzo_OD_n/yr_total)*10000), stateKey: 'benzodiazepine', forTooltip: data[i].total_Benzo_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+            finalData['opioids'] = {rate: data[i].total_opioid_OD_n < 20 ? 0 : ((data[i].total_opioid_OD_n/yr_total)*10000), stateKey: 'opioids', forTooltip: data[i].total_opioid_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+            finalData['fentanyl'] = {rate: data[i].total_Fentanyl_OD_n < 20 ? 0 : ((data[i].total_Fentanyl_OD_n/yr_total)*10000), stateKey: 'fentanyl', forTooltip: data[i].total_Fentanyl_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+            finalData['heroin'] = {rate: data[i].total_heroin_OD_n < 20 ? 0 : ((data[i].total_heroin_OD_n/yr_total)*10000), stateKey: 'heroin', forTooltip: data[i].total_heroin_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+            finalData['stimulants'] = {rate: data[i].total_stimulant_OD_n < 20 ? 0 : ((data[i].total_stimulant_OD_n/yr_total)*10000), stateKey: 'stimulants', forTooltip: data[i].total_stimulant_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+            finalData['cocaine'] = {rate: data[i].total_Cocaine_OD_n < 20 ? 0 : ((data[i].total_Cocaine_OD_n/yr_total)*10000), stateKey: 'cocaine', forTooltip: data[i].total_Cocaine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+            finalData['methamphetamine'] = {rate: data[i].total_Methamphetamine_OD_n < 20 ? 0 : ((data[i].total_Methamphetamine_OD_n/yr_total)*100), stateKey: 'methamphetamine', forTooltip: data[i].total_Methamphetamine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
           }
         }
       }
@@ -47,6 +50,7 @@ const getData = (data, currentState, currentYear, currentMonth, timeline, drugOp
         {
           if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
           {
+            yr_total = yr_total + Number(data[i].total_ED_visits);
             yr_total_drug_OD_n = yr_total_drug_OD_n + Number(data[i].total_drug_OD_n);
             yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + Number(data[i].total_Benzo_OD_n);
             yr_total_opioid_OD_n =yr_total_opioid_OD_n + Number(data[i].total_opioid_OD_n);
@@ -59,14 +63,14 @@ const getData = (data, currentState, currentYear, currentMonth, timeline, drugOp
         }
       }
 
-      finalData['all'] = {rate: (yr_total_drug_OD_n/10000), stateKey: 'all', forTooltip: 'dummy'};
-      finalData['benzodiazepine'] = {rate: (yr_total_Benzo_OD_n/10000), stateKey: 'benzodiazepine', forTooltip: 'dummy'};
-      finalData['opioids'] = {rate: (yr_total_opioid_OD_n/10000), stateKey: 'opioids', forTooltip: 'dummy'};
-      finalData['fentanyl'] = {rate: (yr_total_Fentanyl_OD_n/10000), stateKey: 'fentanyl', forTooltip: 'dummy'};
-      finalData['heroin'] = {rate: (yr_total_heroin_OD_n/10000), stateKey: 'heroin', forTooltip: 'dummy'};
-      finalData['stimulants'] = {rate: (yr_total_stimulant_OD_n/10000), stateKey: 'stimulants', forTooltip: 'dummy'};
-      finalData['cocaine'] = {rate: (yr_total_Cocaine_OD_n/10000), stateKey: 'cocaine', forTooltip: 'dummy'};
-      finalData['methamphetamine'] = {rate: (yr_total_Methamphetamine_OD_n/10000), stateKey: 'methamphetamine', forTooltip: 'dummy'};
+      finalData['all'] = {rate: yr_total_drug_OD_n < 20 ? 0 : ((yr_total_drug_OD_n/yr_total)*10000), stateKey: 'all', forTooltip: yr_total_drug_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+      finalData['benzodiazepine'] = {rate: yr_total_Benzo_OD_n < 20 ? 0 : ((yr_total_Benzo_OD_n/yr_total)*10000), stateKey: 'benzodiazepine', forTooltip: yr_total_Benzo_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+      finalData['opioids'] = {rate: yr_total_opioid_OD_n < 20 ? 0 : ((yr_total_opioid_OD_n/yr_total)*10000), stateKey: 'opioids', forTooltip: yr_total_opioid_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+      finalData['fentanyl'] = {rate: yr_total_Fentanyl_OD_n < 20 ? 0 : ((yr_total_Fentanyl_OD_n/yr_total)*10000), stateKey: 'fentanyl', forTooltip: yr_total_Fentanyl_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+      finalData['heroin'] = {rate: yr_total_heroin_OD_n < 20 ? 0 : ((yr_total_heroin_OD_n/yr_total)*10000), stateKey: 'heroin', forTooltip: yr_total_heroin_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+      finalData['stimulants'] = {rate: yr_total_stimulant_OD_n < 20 ? 0 : ((yr_total_stimulant_OD_n/yr_total)*10000), stateKey: 'stimulants', forTooltip: yr_total_stimulant_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+      finalData['cocaine'] = {rate: yr_total_Cocaine_OD_n < 20 ? 0 : ((yr_total_Cocaine_OD_n/yr_total)*10000), stateKey: 'cocaine', forTooltip: yr_total_Cocaine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+      finalData['methamphetamine'] = {rate: yr_total_Methamphetamine_OD_n < 20 ? 0 : ((yr_total_Methamphetamine_OD_n/yr_total)*100), stateKey: 'methamphetamine', forTooltip: yr_total_Methamphetamine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
     }
   }
 
@@ -161,8 +165,9 @@ function BarChart(params) {
                 const stateKey = dataRates[name].stateKey;
                 const toolTip = dataRates[name].forTooltip;
 
-                return (
+              return (
                   <Group key={`bar-${name}`}>
+                    {rate > 0 &&
                     <path 
                       className={`animated-bar ${animated ? 'animated' : ''}`}
                       style={{
@@ -170,7 +175,7 @@ function BarChart(params) {
                         'transformOrigin': `0px 0px`,
                         outline: 'none'
                       }}
-                      d={Utils.horizontalBarPath(true, 0, yScale(name), rate < 0 ? 10 : xScale(rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
+                      d={Utils.horizontalBarPath(true, 0, yScale(name), xScale(rate < 0.25 ? 0.25: rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
                       fill={selectedDrugs.includes(stateKey) ? drugOptions[stateKey].color : 'lightgray'}
                       stroke={selectedDrugs.includes(stateKey) ? drugOptions[stateKey].color : ''}
                       strokeWidth="3"
@@ -179,14 +184,15 @@ function BarChart(params) {
                       /* data-tip={selectedDrugs.includes(name) ? `<div class="tooltipTableLC"><strong>${drugOptions[name].titleAll}</strong><br/><br/>
                       Rate: ${rate < 0 ? toolTip : Number(rate).toLocaleString()}</div>` : ''} */
                     ></path>
+                    }
                     <text 
                       className="bar-label"
                       x={rate < 0 ? 10 : xScale(rate)}
                       y={yScale(name)}
                       dy="20"
-                      dx="15"
+                      dx={rate == 0 ? "0" : "15"}
                       fill="black">
-                        {selectedDrugs.includes(stateKey) ? (rate < 0 ? (toolTip.includes('Data suppressed') ? '*' : '†') : Math.round(rate * 100) / 100) : ''}
+                        {toolTip.includes('Data suppressed') ? '*' : (selectedDrugs.includes(stateKey) ? (rate <= 0 ? (toolTip.includes('Data suppressed') ? '*' : '†') : Math.round(rate * 100) / 100) : '')}
                     </text>
                   </Group>
                 )}

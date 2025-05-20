@@ -160,6 +160,7 @@ margin: auto;
 h2 {
 margin-bottom: 15px;
 color: white;
+padding-left: 10px;
 }
 
 h3,
@@ -1264,11 +1265,11 @@ justify-content: center;
 }
 
 .left {
-box-shadow: .5px 0 0 #000;
+box-shadow: .5px 0 0 white;
 }
 
 .right {
-box-shadow: -.5px 0 0 #000;
+box-shadow: .5px 0 0 white;
 }
 
 .drug-tab-section {
@@ -1599,4 +1600,30 @@ padding-left: 2px!important;
     border-top-color: $dark-blue;
 }
 
+}
+
+.notSelectedMap {
+height: 20px;
+width: 20px;
+background-color: lightgray;
+border-radius: 50%;
+display: inline-block;
+}
+
+.notSelectedSexAge {
+height: 20px;
+width: 20px;
+background-color: lightgray;
+border-radius: 50%;
+display: inline-block;
+}
+
+.alignCenterTT {
+    text-align: center;
+    border-bottom: solid 2px;
+    background-color: #F1E9F8;
+}
+
+.blackFont {
+    color: black!important;
 }

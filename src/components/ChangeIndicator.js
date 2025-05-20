@@ -41,7 +41,7 @@ function ChangeIndicator(params) {
                 <text x={percentValue == 0 ? width/2 + 5 : width/2} y="60" textAnchor="middle" fontSize={percentValue == 0 ? 35 :15}
                     stroke={percentValue == 0 ? colorScale[defaultValueIfEmpty(label, defaultLabelIfEmpty)] :'#fff'}
                 >
-                    {Math.abs(percentValue).toFixed(1)}%
+                    {percentValue == 0 ? Math.abs(percentValue).toFixed(1) : Math.abs(percentValue).toFixed(1)}%
                 </text>
             </Group>
         </svg>
