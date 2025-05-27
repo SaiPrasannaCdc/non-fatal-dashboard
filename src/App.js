@@ -307,9 +307,9 @@ export default function App({ dataUrl }) {
         let drugName = drugOptions[currentDrug].titleAll.toLowerCase();
         let drugNameMod = ((currentDrug === 'alldrug' || currentDrug === 'opioid' || currentDrug === 'stimulant') ? drugName + 's' : drugName);
         if (currentDataSource == 'ED')  
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear; 
         else if (currentDataSource == 'HOSP') 
-          txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
+          txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear; 
 
         break;
 
@@ -320,16 +320,16 @@ export default function App({ dataUrl }) {
 
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED') 
-              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' +  (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' States)';
           else if (currentDataSource == 'HOSP')
-              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear + ', Overall (' + numStates + ' States)';
         }
         else
         {
           if (currentDataSource == 'ED') 
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear + ', Overall (' + numStates + ' States)';
         else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear + ', Overall (' + numStates + ' States)';
         }
 
         break;
@@ -867,6 +867,8 @@ const getToggleControls = () => {
         currentState={currentState}
         currentDrug={currentDrug}
         currentDataSource={currentDataSource}
+        currentTimeframe={currentTimeframe}
+        currentMonth={currentMonth}
         currentYear={currentYear}
         drugOptions={drugOptions}
         stateNames={stateNames}
@@ -874,7 +876,7 @@ const getToggleControls = () => {
         />
     </div>
   </>,
-  [data, width, currentDrug, currentDataSource, currentYear, currentState]);
+  [data, width, currentDrug, currentDataSource, currentTimeframe, currentMonth, currentYear, currentState]);
 
   const lineChartMemo = useMemo(() =>
     <>
