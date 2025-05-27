@@ -7,24 +7,76 @@ import { UtilityFunctions } from '../utility'
 import Utils from '../shared/Utils';
 import '../css/StateChart.css';
 
-const getData = (data, currentDataSource, currentYear, currentDrug, stateNames) => {
+const getData = (data, currentDataSource, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames) => {
 
   var finalData = {};
 
-  if(data && data.year[currentDataSource]){
-    for (let i = 0; i <= Object.keys(data.year[currentDataSource]).length; i++) {
-      var key = Object.keys(data.year[currentDataSource])[i];
-      if (data.year[currentDataSource][key]){
-        let rec = data.year[currentDataSource][key]['all'].find(d => d.year == String(currentYear));
-        if (rec)
-          finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug], stateKey: key, forTooltip: rec[currentDrug]};
+  if (currentTimeframe == 'Annual') {
+    if(data && data.year[currentDataSource]){
+      for (let i = 0; i <= Object.keys(data.year[currentDataSource]).length; i++) {
+        var key = Object.keys(data.year[currentDataSource])[i];
+        if (data.year[currentDataSource][key]){
+          let rec = data.year[currentDataSource][key]['all'].find(d => d.year == String(currentYear));
+          if (rec)
+            finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug], stateKey: key, forTooltip: rec[currentDrug]};
+          }
         }
-      }
-      return finalData;
+        return finalData;
+    }
+    else {
+      return [];
+    }
   }
   else {
-    return [];
+
+    if(data && data.year[currentDataSource]) {
+        for (let i = 0; i <= Object.keys(data.year[currentDataSource]).length - 1; i++) {
+          var state = Object.keys(data.year[currentDataSource])[i]
+          var val = -1
+          for (var x=0;x<=Object.keys(data.year[currentDataSource][state][currentMonth]).length - 1; x++)
+          {
+            if (data.year[currentDataSource][state][[currentMonth]][x].year === Number(currentYear))
+            {
+                switch (currentDrug) {
+                  case 'alldrug':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].alldrug;
+                    break;
+                  case 'benzodiazepine':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].benzodiazepine;
+                    break;
+                  case 'opioid':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].opioid;
+                    break;
+                  case 'fentanyl':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].fentanyl;
+                    break;
+                  case 'heroin':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].heroin;
+                    break;
+                  case 'stimulant':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].stimulant;
+                    break;
+                  case 'cocaine':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].cocaine;
+                    break;
+                  case 'methamphetamine':
+                    val = data.year[currentDataSource][state][[currentMonth]][x].methamphetamine;
+                    break;
+                }
+            }
+
+            finalData[stateNames[state]] = {rate: val, stateKey: state, forTooltip: String(val)};
+          }
+
+      }
+
+      return finalData;
+    }
+      else {
+        return [];
+    }
   }
+
 };
 
 function StateChart(params) {
@@ -33,9 +85,9 @@ function StateChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentState, currentDrug, currentDataSource, currentYear, drugOptions, stateNames, setCurrentState } = params;
+  const { data, width, height, el, currentState, currentDrug, currentDataSource, currentTimeframe, currentMonth, currentYear, drugOptions, stateNames, setCurrentState } = params;
 
-  const dataRates = getData(data, currentDataSource, currentYear, currentDrug, stateNames);
+  const dataRates = getData(data, currentDataSource, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames);
 
   const dataKeys = Object.keys(dataRates || {}).filter(name => name !== 'max' && name !== 'min');
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
@@ -150,7 +202,7 @@ function StateChart(params) {
                       y={yScale(name)}
                       dy="12"
                       dx="5">
-                        {rate < 0 ? (toolTip.includes('Data suppressed') ? '*' : '†') : rate}
+                        {rate < 0 ? (toolTip?.includes('Data suppressed') ? '*' : '†') : rate}
                     </text>
                   </Group>
                 )}

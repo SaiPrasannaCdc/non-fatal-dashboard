@@ -65,7 +65,7 @@ function SexAgeCharts({ params }) {
           fill="black" 
           fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x1Key]?.toLocaleString()}</Text>
 
-        {!isNaN(d[x1Key]) && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
+        {!isNaN(d[x2Key]) && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x2Tip} />}
         {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
         <Text 
           x={(x2Pos) + (isNaN(d[x2Key]) ? 25 : alignEndSecond ? -10 : 10)} 

@@ -307,9 +307,9 @@ export default function App({ dataUrl }) {
         let drugName = drugOptions[currentDrug].titleAll.toLowerCase();
         let drugNameMod = ((currentDrug === 'alldrug' || currentDrug === 'opioid' || currentDrug === 'stimulant') ? drugName + 's' : drugName);
         if (currentDataSource == 'ED')  
-          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
+          txt =  'What is the rate of ED visits for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear; 
         else if (currentDataSource == 'HOSP') 
-          txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + currentYear; 
+          txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear; 
 
         break;
 
@@ -320,16 +320,16 @@ export default function App({ dataUrl }) {
 
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED') 
-              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+              txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' +  (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' States)';
           else if (currentDataSource == 'HOSP')
-              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+              txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear + ', Overall (' + numStates + ' States)';
         }
         else
         {
           if (currentDataSource == 'ED') 
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear + ', Overall (' + numStates + ' States)';
         else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' +  drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '')  + currentYear + ', Overall (' + numStates + ' States)';
         }
 
         break;
@@ -867,6 +867,8 @@ const getToggleControls = () => {
         currentState={currentState}
         currentDrug={currentDrug}
         currentDataSource={currentDataSource}
+        currentTimeframe={currentTimeframe}
+        currentMonth={currentMonth}
         currentYear={currentYear}
         drugOptions={drugOptions}
         stateNames={stateNames}
@@ -874,7 +876,7 @@ const getToggleControls = () => {
         />
     </div>
   </>,
-  [data, width, currentDrug, currentDataSource, currentYear, currentState]);
+  [data, width, currentDrug, currentDataSource, currentTimeframe, currentMonth, currentYear, currentState]);
 
   const lineChartMemo = useMemo(() =>
     <>
@@ -1183,7 +1185,7 @@ const getToggleControls = () => {
               <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ul>
                 <li><strong>Some data may be missing or incomplete.</strong> Data not available by the reporting deadline may not ever be submitted or incomplete, as data are typically considered final at submission.</li>
-                <li><strong>Reporting facilities and the data they report can change over time.</strong> Jurisdictions may receive data from new facilities, and the data they report could change over time. The average percent of ED or hospital facilities currently captured from jurisdictions participating in DOSE discharge data sharing is &gt; 90%. A total of 32 jurisdictions submit DOSE ED discharge data and 35 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because of different jurisdictions may be included in different years based on data availability.</li>
+                <li><strong>Reporting facilities and the data they report can change over time.</strong> Jurisdictions may receive data from new facilities, and the data they report could change over time. The average percent of ED or hospital facilities currently captured from jurisdictions participating in DOSE discharge data sharing is &gt; 90%. A total of 32 jurisdictions submit DOSE ED discharge data and 35 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because different jurisdictions may be included in different years based on data availability.</li>
                 <li><strong>These overdoses may not be confirmed by toxicological testing.</strong> These data may not be determined by toxicological testing, which is often limited in ED or hospital settings. Additionally, ED and inpatient hospitalization discharge data are collected for administrative/billing purposes; thus, surveillance for drug overdoses using these data may not accurately reflect the true overdose trend.</li>
                 <li><strong>Data are included for overdoses of unintentional and undetermined intents.</strong> Only discharge diagnosis codes for overdoses of unintentional and undetermined intent, initial encounters are included in the data presented on this dashboard. Detailed information on case classification criteria can be found on the <a target="_blank" href="/overdose-prevention/data-research/facts-stats/about-dose-system.html">About DOSE</a> page.</li>
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of opioid-, fentanyl-, heroin-, benzodiazepine-, stimulant-, cocaine-, and methamphetamine-involved overdose visits are included in the numbers of all drug overdose visits; heroin- and fentanyl-involved overdose visits are included in the numbers of opioid-involved overdose visits; cocaine- and methamphetamine-involved overdose visits are included in the numbers of stimulant-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
