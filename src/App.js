@@ -6,6 +6,7 @@ import Papa from 'papaparse';
 import BarChart from './components/BarChart';
 import LineChart from './components/LineChart';
 import Slider from 'rc-slider';
+import UsaMap from './components/UsaMap';
 import ReactTooltip from 'react-tooltip';
 import { Base64 } from 'js-base64';
 
@@ -331,9 +332,11 @@ export default function App({ dataUrl }) {
   const [timeline, setTimeline] = useState('Monthly');
   const [currentState, setCurrentState] = useState('US')
   const [currentYear, setCurrentYear] = useState('');
-
+  const [currentYearMap, setCurrentYearMap] = useState('');
+ 
   const [currentMonth, setCurrentMonth] = useState('');
-
+  const [currentMonthMap, setCurrentMonthMap] = useState('');
+  
   const [keyedRawData, setKeyedRawdata] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [keyedRawUSData, setKeyedRawUSdata] = useState([]); 
@@ -360,6 +363,9 @@ export default function App({ dataUrl }) {
   const [lookupPeriodStartMonth, setLookupPeriodStartMonth] = useState('');
   const [lookupPeriodEndYear, setLookupPeriodEndYear] = useState('');
   const [lookupPeriodEndMonth, setLookupPeriodEndMonth] = useState('');
+
+  const [hdrInfoFromMap, setDataFromMap] = useState('all');
+  const [mapMonthly, setMapMonthly] = useState('Monthly');
 
   const [isPeriod, setPeriodToggle] = useState(true);
 
@@ -428,6 +434,30 @@ export default function App({ dataUrl }) {
         setMonthsForDropDown(getMonths());
         setCurrentMonth('12');
       }
+  };
+ 
+  const setMonthSelectedMap = (mon) => {
+    let monNum = getKeyByValue(monthNames, mon)
+    setCurrentMonthMap(monNum);
+  };
+
+  const setYearSelectedMap = (yr) => {
+
+      setCurrentYearMap(yr);
+
+      if (endUSMonthYearForSlider.includes(yr)) {
+        let mon = Number(endUSMonthYearForSlider.substring(4));
+        setMonthsForDropDown(getMonths(mon))
+        setCurrentMonthMap(String(mon));
+      }
+      else {
+        setMonthsForDropDown(getMonths());
+        setCurrentMonthMap('12');
+      }
+  };
+
+  const handleData = (forHdr) => {
+    setDataFromMap(forHdr);
   };
  
   const getMonths = (mon) => {
@@ -616,7 +646,9 @@ const getYears = (startYrInp, endYrInp) => {
         if (tempKeyedRawUSData && tempKeyedRawUSData.length > 0) {
           let cntUS = tempKeyedRawUSData.length;
           setCurrentYear(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(0,4)))
+          setCurrentYearMap(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(0,4)))
           setCurrentMonth(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4));
+          setCurrentMonthMap(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4));
           setYearsForDropDown(getYears(tempKeyedRawUSData[0]['YYYYMM'], tempKeyedRawUSData[cntUS-1]['YYYYMM']));
           setMonthsForDropDown(getMonths(Number(tempKeyedRawUSData[cntUS-1]['YYYYMM'].substring(4))));
           setJurisForDropDown(getJuris(tempKeyedRawData));
@@ -762,6 +794,24 @@ const getYears = (startYrInp, endYrInp) => {
         </table>
       </>,
       [timeline, currentDrug, currentState, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugs, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth]);
+
+       const usaMapMemo = useMemo(() =>
+          <>
+            <UsaMap 
+            data={{keyedRawUSData, keyedRawData}}
+            stateNames={stateNames}
+            currentState={currentState}
+            currentYear={currentYearMap}
+            currentMonth={currentMonthMap}
+            currentTimeLine={mapMonthly}
+            supportedYears={supportedYears}
+            width={width} 
+            drugOptions={drugOptions}
+            jurisdictions={jurisForDropDown}
+            onData={handleData}
+            />
+      </>,
+      [stateNames, currentState, currentYearMap, currentMonthMap, supportedYears, width, mapMonthly]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -1100,18 +1150,84 @@ const getYears = (startYrInp, endYrInp) => {
 
     </section>
 
-      <section>
+     <section>
         <div style={{'width':'100%', 'backgroundColor': '#000066'}}>
-          <h2 className="data-bite-header1 sub">Monthly Suspected Nonfatal Overdose ED visits across Jurisdictions per 10,000 Total ED Visits<sup>†</sup></h2>
+          <h2 className="data-bite-header1 sub">{mapMonthly} {drugOptions[hdrInfoFromMap].titleAll} Suspected Nonfatal Overdose ED visits across Jurisdictions per 10,000 Total ED Visits<sup>†</sup></h2>
         </div>
-        <div style={{ textAlign: 'center' }}>Work in Progress</div>
+
+        <table>
+            <tr>
+              <td></td>
+              <td>
+                <table>
+                  <tr>
+                    <td style={{'width': '40%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
+                    <td style={{'width': '10%', 'textAlign': 'right'}}>
+                      <div>
+                        <input
+                          id="radioUSMonthlyMap"
+                          name="radioUSMonthlyMap"
+                          type="radio"
+                          value="Monthly"
+                          checked={mapMonthly === 'Monthly'}
+                          onChange={(e) => {
+                            setMapMonthly(e.target.value);
+                          }} />
+                        <label
+                          htmlFor="radioUSMonthlyMap">Monthly</label>
+                      </div>
+                    </td>
+                    <td style={{'width': '50%', 'textAlign': 'left'}}>
+                      <div>
+                        <input
+                        id="radioUSAnnualMap"
+                        name="radioUSAnnualMap"
+                        type="radio"
+                        value="Annual"
+                        checked={mapMonthly === 'Annual'}
+                        onChange={(e) => {
+                          setMapMonthly(e.target.value);
+                        }} />
+                        <label
+                        htmlFor="emerging-percent-metric-line-chart">Annual</label>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td></td>
+
+            </tr>
+          </table>
+
+        <br></br>
+          <table style={{'width': '100%'}}>
+          <tr>
+              <td style={{'width': '14%'}}></td>
+              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+              </td>
+              <td style={{'width': '10%'}}>
+                <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }} disabled={mapMonthly === 'Monthly' ? false : true}>
+                  {monthsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+              </td>
+              <td style={{'width': '51%'}}>
+              <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value) }}>
+                {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+              </select>
+              </td>
+            </tr>
+          </table>
+          <br></br>
+        
+        {usaMapMemo}
       </section>
 
       <section>
       <div style={{'width':'100%', 'backgroundColor': '#000066'}}>
       <h2 className="data-bite-header1 sub">How do Suspected Nonfatal Overdose ED visits vary by Age and Sex?</h2>
       </div>
-      <div style={{ textAlign: 'center' }}>Place holder (To be Done)</div>
+      <div style={{ textAlign: 'center' }}>Work in Progress</div>
     </section>
 
       <div className='data-tables'>
