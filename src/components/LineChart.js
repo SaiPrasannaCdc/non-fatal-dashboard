@@ -793,6 +793,18 @@ function LineChart({ params }) {
     }
   }
 
+  function getLastKnownDataPoint() {
+    let val = 0;
+    for (var i=inp.filteredData[inp.currentState].length - 1;i>0;i--)
+    {
+      if (!isNaN(inp.filteredData[inp.currentState][i][currentDrug])) {
+        val = inp.filteredData[inp.currentState][i][currentDrug];
+        break;
+      }
+    }
+    return val;
+  }
+
   const buildLineForDrug = (currentDrug) => {
 
     const sectionWidth = specs.xMax / specs.xValues.length;
@@ -800,7 +812,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? specs.yScale(0) - 30 : specs.yScale(valueState);
+    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint() == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint()) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;
@@ -833,6 +845,7 @@ function LineChart({ params }) {
                         let yPos = seriesLabelPositionUS;
     
                         if(key !== 'US') {
+
                           const isOverlapping = seriesLabelPositionState < seriesLabelPositionUS + specs.seriesOverlapMargin && seriesLabelPositionState > seriesLabelPositionUS - specs.seriesOverlapMargin;
                           if (isOverlapping) {
                             if (seriesLabelPositionState < seriesLabelPositionUS) {
