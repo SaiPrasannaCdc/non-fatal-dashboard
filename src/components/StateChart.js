@@ -10,16 +10,6 @@ import '../css/StateChart.css';
 const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames) => {
 
   var finalData = {};
-  var yr_total_drug_OD_n = 0;
-  var yr_total_Benzo_OD_n = 0;
-  var yr_total_opioid_OD_n = 0;
-  var yr_total_Fentanyl_OD_n = 0;
-  var yr_total_heroin_OD_n = 0;
-  var yr_total_stimulant_OD_n = 0;
-  var yr_total_Cocaine_OD_n = 0;
-  var yr_total_Methamphetamine_OD_n = 0;
-
-/*   debugger; */
 
   if (data?.length > 0)
   {

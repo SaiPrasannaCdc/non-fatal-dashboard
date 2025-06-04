@@ -834,8 +834,10 @@ const getYears = (startYrInp, endYrInp) => {
       var juris = {};
       var tmpJuris = [];
 
+      var monFinal = endUSMonthYearForSlider.includes(yr) ? Number(endUSMonthYearForSlider.substring(4)) : mon
+
       for (let i=0;i<keyedRawDataMonthly.length;i++) {
-        if (!tmpJuris.includes(keyedRawDataMonthly[i].geoid) && keyedRawDataMonthly[i].geoid.length > 0 && keyedRawDataMonthly[i].YYYYMM == String(yr) + String(mon).padStart(2, '0'))
+        if (!tmpJuris.includes(keyedRawDataMonthly[i].geoid) && keyedRawDataMonthly[i].geoid.length > 0 && keyedRawDataMonthly[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
           tmpJuris.push(keyedRawDataMonthly[i].geoid)
       }
 
@@ -963,7 +965,7 @@ const getYears = (startYrInp, endYrInp) => {
               stateNames={stateNames}
               drugOptions={drugOptions}
               currentTimeframe={timelineLine}
-              currentDrug={currentDrug}
+              currentDrug={currentState === 'US' ? currentDrug : selectedDrugsLine[0]}
               currentState={currentState}
               currentYear={currentYear}
               currentMonth={currentMonth}
@@ -992,9 +994,9 @@ const getYears = (startYrInp, endYrInp) => {
   const usaMapMemo = useMemo(() =>
       <>
         <UsaMap 
-        data={timeline == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
+        data={mapMonthly == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
         stateNames={stateNames}
-        currentState={currentState}
+        currentState={'US'}
         currentYear={currentYearMap}
         currentMonth={currentMonthMap}
         currentTimeLine={mapMonthly}
@@ -1150,14 +1152,21 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const handleDrugSelectionsLineChange = (event, drug) => {
-    if (selectedDrugsLine.includes(drug)) {
-      if (selectedDrugsLine.length > 1) {
-        setselectedDrugsLine(selectedDrugsLine.filter(dr=>dr !== drug))
+
+    if (currentState == 'US') {
+      if (selectedDrugsLine.includes(drug)) {
+        if (selectedDrugsLine.length > 1) {
+          setselectedDrugsLine(selectedDrugsLine.filter(dr=>dr !== drug))
+        }
+      }
+      else
+      {
+        setselectedDrugsLine([...selectedDrugsLine, drug])
       }
     }
     else
     {
-      setselectedDrugsLine([...selectedDrugsLine, drug])
+      setselectedDrugsLine([drug])
     }
   }
 
@@ -1586,7 +1595,7 @@ const getYears = (startYrInp, endYrInp) => {
             <tr>
               <td style={{'width': '47%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">View Data For:</div></td>
               <td style={{'width': '53%'}}>
-                <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugs(['all']); setCurrentDrug('all')}}>
+                <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
                 {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
               </select>
@@ -1774,7 +1783,7 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
               </td>
               <td style={{'width': '10%'}}>
-                <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }} disabled={mapMonthly === 'Monthly' ? false : true}>
+                <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }}>
                   {monthsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
