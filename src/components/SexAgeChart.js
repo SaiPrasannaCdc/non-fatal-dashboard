@@ -335,7 +335,7 @@ function SexAgeChart(params) {
             }}
           />
           {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years) and Sex'}</text>}
-          {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 110} fontSize={fontSize - 4} fill={'#000066'} textAnchor="middle">{'Note: X (XX%) of data are mssing.'}</text>}
+          {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 110} fontSize={fontSize - 4} fill={'#000066'} textAnchor="middle">{''}</text>}
           {<text x={xMax/2} y={yMax+ 130} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
         </Group>
       </svg>

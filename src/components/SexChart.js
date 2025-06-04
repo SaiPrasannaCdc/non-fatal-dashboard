@@ -111,6 +111,79 @@ const getFilteredData = (data, currentDrug, currentYear, currentMonth) => {
   return finalData;
 };
 
+const getMissingData = (data, currentDrug, currentYear, currentMonth) => {
+  
+  var missing_rate = 0;
+  var missing_pct = 0;
+
+    for(let i=0;i<data.length;i++) {
+          if (data[i].YYYYMM == currentYear + currentMonth.padStart(2, '0'))
+          {
+            if (data[i].geoid == 'US' && data[i].Age_Group == 'Total')
+            {
+              switch (currentDrug) {
+                case 'all':
+                  if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_drug_OD_pct == 9999 ? 0 : data[i].total_drug_OD_pct);
+                  }
+                  break;
+                case 'benzodiazepine':
+                  if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_Benzo_OD_n == 9999 ? 0 : data[i].total_Benzo_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_Benzo_OD_pct == 9999 ? 0 : data[i].total_Benzo_OD_pct);
+                  }
+                  break;
+                case 'opioids':
+                  if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_opioid_OD_n == 9999 ? 0 : data[i].total_opioid_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_opioid_OD_pct == 9999 ? 0 : data[i].total_opioid_OD_pct);
+                  }
+                  break;
+                case 'fentanyl':
+                  if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_Fentanyl_OD_n == 9999 ? 0 : data[i].total_Fentanyl_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_Fentanyl_OD_pct == 9999 ? 0 : data[i].total_Fentanyl_OD_pct);
+                  }
+                  break;
+                case 'heroin':
+                   if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_heroin_OD_n == 9999 ? 0 : data[i].total_heroin_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_heroin_OD_pct == 9999 ? 0 : data[i].total_heroin_OD_pct);
+                  }
+                  break;
+                case 'stimulants':
+                  if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_stimulant_OD_n == 9999 ? 0 : data[i].total_stimulant_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_stimulant_OD_pct == 9999 ? 0 : data[i].total_stimulant_OD_pct);
+                  }
+                  break;
+                case 'cocaine':
+                  if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_Cocaine_OD_n == 9999 ? 0 : data[i].total_Cocaine_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_Cocaine_OD_pct == 9999 ? 0 : data[i].total_Cocaine_OD_pct);
+                  }
+                  break;
+                case 'methamphetamine':
+                  if (data[i].Sex == 'Missing') {
+                    missing_rate = Number(missing_rate) + Number(data[i].total_Methamphetamine_OD_n == 9999 ? 0 : data[i].total_Methamphetamine_OD_n);
+                    missing_pct = Number(missing_pct) + Number(data[i].total_Methamphetamine_OD_pct == 9999 ? 0 : data[i].total_Methamphetamine_OD_pct);
+                  }
+                  break;
+
+          }
+        }
+    }
+  }
+
+  var missingData = {};
+
+  missingData['rate'] = missing_rate;
+  missingData['percent'] = missing_pct;
+
+  return missingData;
+};
+
 const getMaxValue = (fdata) => {
 
     let vals = [];
@@ -129,6 +202,7 @@ function SexChart(params) {
   const [ animated, setAnimated ] = useState(false);
 
   const filteredData = getFilteredData(data, currentDrug, currentYear, currentMonth);
+  const missingData = getMissingData(data, currentDrug, currentYear, currentMonth);
 
   const margin = {top: 10, bottom: 50, left: 90, right: 10};
   const adjustedHeight = height - margin.top - margin.bottom - 100;
@@ -157,6 +231,11 @@ function SexChart(params) {
       setAnimated(true);
     }
   };
+
+  const getMissingNote = (mdata) => {
+    return 'Note: ' + mdata['rate'] + ' (' + mdata['percent'] + '%) of data are missing.'
+  };
+  
 
   useEffect(() => {
     window.addEventListener('scroll', onScroll);
@@ -239,9 +318,8 @@ function SexChart(params) {
                 />
               </>
             )
-
             {<text x={adjustedWidth/2} y={height - 70} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Sex'}</text>}
-            {<text x={adjustedWidth/2} y={height - 50} fontSize={fontSize - 4} fill={'#000066'} textAnchor="middle">{'Note: X (XX%) of data are mssing.'}</text>} 
+            {<text x={adjustedWidth/2} y={height - 50} fontSize={fontSize - 4} fill={'#000066'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
             {<text x={adjustedWidth/2} y={height - 30} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
           </Group>
         </svg>

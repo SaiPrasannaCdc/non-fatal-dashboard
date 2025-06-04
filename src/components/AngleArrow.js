@@ -2,7 +2,7 @@ import React, {} from 'react';
 import { Polygon } from '@visx/shape';
 import { Group } from '@visx/group';
 
-function UpDownArrow(params) {
+function AngleArrow(params) {
     const {colorScale, defaultValueIfEmpty, percentValue, width, height } = params;
     const upArrayPoints  = [
         { x: width /2, y: height/10 },
@@ -25,7 +25,7 @@ function UpDownArrow(params) {
       ];
 
     return (<>
-        <svg width={width} height={height} id='upArrow'>
+        <svg width={width} height={height} id='AngleArrow'>
             <Group>
                 <Polygon
                     sides={3}
@@ -36,9 +36,10 @@ function UpDownArrow(params) {
                         upArrayPoints.map(p => [p.x, p.y]):
                         (percentValue == 0 ? [] : decreaseArrayPoints.map(p => [p.x, p.y]))}
                     fill={colorScale}
+                    transform="rotate(-35 10 0)"
                 ></Polygon>
             </Group>
         </svg>
     </>);
 }
-export default UpDownArrow;
+export default AngleArrow;

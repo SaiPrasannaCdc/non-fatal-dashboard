@@ -81,7 +81,7 @@ const drugOptions = {
     'titleAllGram': 'All Drug',
     'titleForDropDown': 'All Drugs',
     'rateColumn': 'drug_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'drug_pct',
     'color': '#325D7D',
     'barChartOrder': '1',
     'lineChartOrder': '1',
@@ -93,7 +93,7 @@ const drugOptions = {
     'titleAllGram': 'Benzodiazepine',
     'titleForDropDown': 'Benzodiazepine',
     'rateColumn': 'benzo_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'benzo_pct',
     'color': '#B83A5E',
     'barChartOrder': '8',
     'lineChartOrder': '8',
@@ -105,7 +105,7 @@ const drugOptions = {
     'titleAllGram': 'All Opioid',
     'titleForDropDown': 'All Opioids',
     'rateColumn': 'opioid_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'opioid_pct',
     'color': '#000C77',
     'barChartOrder': '5',
     'lineChartOrder': '5',
@@ -117,7 +117,7 @@ const drugOptions = {
     'titleAllGram': 'Fentanyl',
     'titleForDropDown': 'Fentanyl',
     'rateColumn': 'fentanyl_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'fentanyl_pct',
     'color': '#294891',
     'barChartOrder': '6',
     'lineChartOrder': '6',
@@ -129,7 +129,7 @@ const drugOptions = {
     'titleAllGram': 'Heroin',
     'titleForDropDown': 'Heroin',
     'rateColumn': 'heroin_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'heroin_pct',
     'color': '#0C6F96',
     'barChartOrder': '7',
     'lineChartOrder': '7',
@@ -141,7 +141,7 @@ const drugOptions = {
     'titleAllGram': 'All Stimulant',
     'titleForDropDown': 'All Stimulants',
     'rateColumn': 'stimulant_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'stimulant_pct',
     'color': '#411B6D',
     'barChartOrder': '2',
     'lineChartOrder': '2',
@@ -153,7 +153,7 @@ const drugOptions = {
     'titleAllGram': 'Cocaine',
     'titleForDropDown': 'Cocaine',
     'rateColumn': 'cocaine_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'cocaine_pct',
     'color': '#671AAA',
     'barChartOrder': '3',
     'lineChartOrder': '3',
@@ -165,7 +165,7 @@ const drugOptions = {
     'titleAllGram': 'Methamphetamine',
     'titleForDropDown': 'Methamphetamine',
     'rateColumn': 'methamphetamine_rate',
-    'percentageColumn': '',
+    'percentageColumn': 'methamphetamine_pct',
     'color': '#A378E8',
     'barChartOrder': '4',
     'lineChartOrder': '4',
@@ -192,7 +192,10 @@ export default function App({ dataUrl }) {
   const [keyedRawUSDataMonthly, setKeyedRawUSdataMonthly] = useState([]);
   const [keyedRawDataAnnual, setKeyedRawdataAnnual] = useState([]);
   const [keyedRawDataMonthly, setKeyedRawdataMonthly] = useState([]);
-  const [monthsForDropDown, setMonthsForDropDown] = useState([]);  
+  const [monthsForDropDown, setMonthsForDropDown] = useState([]); 
+  const [monthsForDropDownMap, setMonthsForDropDownMap] = useState([]);
+  const [monthsForDropDownBar, setMonthsForDropDownBar] = useState([]);
+  const [monthsForDropDownSexAge, setMonthsForDropDownSexAge] = useState([]); 
   const [yearsForDropDown, setYearsForDropDown] = useState([]); 
   const [jurisCount, setJurisCount] = useState([]);
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
@@ -334,13 +337,21 @@ export default function App({ dataUrl }) {
             obj['Age_Group'] = ageGroup;
             obj['YYYYMM'] = usData.Monthly['US'][mon][sex][ageGroup][b].year + String(mon).padStart(2, '0');
             obj['total_drug_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].all;
+            obj['total_drug_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].all_pct;
             obj['total_Benzo_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].benzodiazepine;
+            obj['total_Benzo_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].benzodiazepine_pct;
             obj['total_opioid_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].opioids;
+            obj['total_opioid_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].opioids_pct;
             obj['total_Fentanyl_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].fentanyl;
+            obj['total_Fentanyl_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].fentanyl_pct;
             obj['total_heroin_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].heroin;
+            obj['total_heroin_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].heroin_pct;
             obj['total_stimulant_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].stimulants;
+            obj['total_stimulant_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].stimulants_pct;
             obj['total_Cocaine_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].cocaine;
+            obj['total_Cocaine_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].cocaine_pct;
             obj['total_Methamphetamine_OD_n'] = usData.Monthly['US'][mon][sex][ageGroup][b].methamphetamine;
+            obj['total_Methamphetamine_OD_pct'] = usData.Monthly['US'][mon][sex][ageGroup][b].methamphetamine_pct;
 
             tempKeyedRawUSDataMonthly.push(obj);
           }
@@ -377,13 +388,21 @@ export default function App({ dataUrl }) {
             obj['Age_Group'] = ageGroup;
             obj['YYYYMM'] = usData.Annual['US'][mon][sex][ageGroup][b].year + String(mon).padStart(2, '0');
             obj['total_drug_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].all;
+            obj['total_drug_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].all_pct;
             obj['total_Benzo_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].benzodiazepine;
+            obj['total_Benzo_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].benzodiazepine_pct;
             obj['total_opioid_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].opioids;
+            obj['total_opioid_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].opioids_pct;
             obj['total_Fentanyl_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].fentanyl;
+            obj['total_Fentanyl_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].fentanyl_pct;
             obj['total_heroin_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].heroin;
+            obj['total_heroin_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].heroin_pct;
             obj['total_stimulant_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].stimulants;
+            obj['total_stimulant_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].stimulants_pct;
             obj['total_Cocaine_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].cocaine;
+            obj['total_Cocaine_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].cocaine_pct;
             obj['total_Methamphetamine_OD_n'] = usData.Annual['US'][mon][sex][ageGroup][b].methamphetamine;
+            obj['total_Methamphetamine_OD_pct'] = usData.Annual['US'][mon][sex][ageGroup][b].methamphetamine_pct;
 
             tempKeyedRawUSDataAnnual.push(obj);
           }
@@ -467,6 +486,9 @@ export default function App({ dataUrl }) {
       setCurrentMonthSexAge(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
       setYearsForDropDown(getYears(tempKeyedRawUSDataMonthly[0]['YYYYMM'], tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM']));
       setMonthsForDropDown(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+      setMonthsForDropDownBar(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+      setMonthsForDropDownMap(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+      setMonthsForDropDownSexAge(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setJurisCount(getJurisCount(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setJurisForDropDown(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setLookupPeriodStartYear(String(tempKeyedRawUSDataMonthly[0]['YYYYMM'].substring(0,4)));
@@ -543,6 +565,7 @@ export default function App({ dataUrl }) {
         let yearDatumOverall = { year: getValueOverall('year', i) };
         Object.keys(drugOptions).forEach(drug => {
             yearDatumOverall[drug] = formatNumber(getValueOverall(drugOptions[drug].rateColumn, i));
+            yearDatumOverall[drug + '_pct'] = formatNumber(getValueOverall(drugOptions[drug].percentageColumn, i));
         });
         datasetNodeOverall.push(yearDatumOverall);
       }
@@ -572,7 +595,7 @@ export default function App({ dataUrl }) {
       }
       else {
         setMonthsForDropDown(getMonths());
-        setCurrentMonth('12');
+        setCurrentMonth(currentMonth);
       }
   };
  
@@ -587,12 +610,12 @@ export default function App({ dataUrl }) {
 
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
-        setMonthsForDropDown(getMonths(mon))
+        setMonthsForDropDownMap(getMonths(mon))
         setCurrentMonthMap(String(mon));
       }
       else {
-        setMonthsForDropDown(getMonths());
-        setCurrentMonthMap('12');
+        setMonthsForDropDownMap(getMonths());
+        setCurrentMonthMap(currentMonthMap);
       }
   };
 
@@ -607,11 +630,11 @@ export default function App({ dataUrl }) {
 
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
-        setMonthsForDropDown(getMonths(mon))
+        setMonthsForDropDownBar(getMonths(mon))
         setCurrentMonthBar(String(mon));
       }
       else {
-        setMonthsForDropDown(getMonths());
+        setMonthsForDropDownBar(getMonths());
         setCurrentMonthBar('12');
       }
   };
@@ -627,12 +650,12 @@ export default function App({ dataUrl }) {
 
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
-        setMonthsForDropDown(getMonths(mon))
+        setMonthsForDropDownSexAge(getMonths(mon))
         setCurrentMonthSexAge(String(mon));
       }
       else {
-        setMonthsForDropDown(getMonths());
-        setCurrentMonthSexAge('12');
+        setMonthsForDropDownSexAge(getMonths());
+        setCurrentMonthSexAge(currentMonthSexAge);
       }
   };
 
@@ -691,10 +714,11 @@ const didOnAfterChangeTriggerMonthly = (value) => {
     setLookupPeriodEndMonth(String(Number(endmonYr.substring(4))));
   };
 
-function getMonthYear( startYear, value) {
+  const getMonthYear = ( startYear, value) => {
+
     if (value > 12) {
       let mod = value % 12;
-      return  monthNames[mod] + ' ' + String((Number(startYear) + Math.round(value/12)))
+      return (mod == 0 ? monthNames[12] : monthNames[mod]) + ' ' + (mod == 0 ? String((Number(startYear) + Math.floor(value/12) - 1)) : String((Number(startYear) + Math.floor(value/12))))
     }
     else {
       return monthNames[value] + ' ' + startYear;
@@ -1482,7 +1506,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '6%'}}>
-                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value) }}>
+                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value); setCurrentMonth(currentMonth)}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -1536,12 +1560,12 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               
               <td style={{'width': '10%'}}>
-                <select id="month-select" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value))) }}>
-                  {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value))) }}>
+                  {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
               <td style={{'width': '6%'}}>
-                <select id="year-select" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value); setJurisForDropDown(getJuris(e.target.value, currentMonthBar)) }}>
+                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value); setJurisForDropDown(getJuris(e.target.value, currentMonthBar)); setCurrentMonthBar(currentMonthBar)}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -1655,7 +1679,7 @@ const getYears = (startYrInp, endYrInp) => {
              <tr>
               <td style={{'width': '15%', 'textAlign': 'right', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
               <td style={{'width': '85%'}}>
-                {!showAnnualLine &&
+                {/* {!showAnnualLine && */}
                   <div style={wrapperStyle}>
                     <Range 
                     min={1} 
@@ -1666,8 +1690,8 @@ const getYears = (startYrInp, endYrInp) => {
                     onAfterChange={didOnAfterChangeTriggerMonthly}
                     />
                   </div>
-                }
-                {showAnnualLine &&
+               {/*  } */}
+                {/* {showAnnualLine &&
                   <div style={wrapperStyle}>
                     <Range 
                     min={1} 
@@ -1678,7 +1702,7 @@ const getYears = (startYrInp, endYrInp) => {
                     onAfterChange={didOnAfterChangeTriggerAnnual}
                     />
                   </div>
-                }      
+                }       */}
               </td>
               </tr>
             </table>
@@ -1784,11 +1808,11 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               <td style={{'width': '10%'}}>
                 <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }}>
-                  {monthsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                  {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
               <td style={{'width': '51%'}}>
-              <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value) }}>
+              <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value); setCurrentMonthMap(currentMonthMap) }}>
                 {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
               </select>
               </td>
@@ -1879,11 +1903,11 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               <td style={{'width': '10%'}}>
                 <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
-                  {monthsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                  {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
               <td style={{'width': '51%'}}>
-              <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value) }}>
+              <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value); setCurrentMonthSexAge(currentMonthSexAge)}}>
                 {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
               </select>
               </td>
