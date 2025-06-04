@@ -7,73 +7,77 @@ import { UtilityFunctions } from '../utility'
 import Utils from '../shared/Utils';
 import '../css/BarChart.css';
 
-const getData = (data, currentState, currentYear, currentMonth, timeline, drugOptions) => {
+const getData = (data, currentState, currentYear, currentMonth, selectedDrugs) => {
 
   var finalData = {};
-  var yr_total_drug_OD_n = 0;
-  var yr_total_Benzo_OD_n = 0;
-  var yr_total_opioid_OD_n = 0;
-  var yr_total_Fentanyl_OD_n = 0;
-  var yr_total_heroin_OD_n = 0;
-  var yr_total_stimulant_OD_n = 0;
-  var yr_total_Cocaine_OD_n = 0;
-  var yr_total_Methamphetamine_OD_n = 0;
-  var yr_total = 0;
 
   if (data?.length > 0)
   {
-    if (timeline === 'Monthly') {
       for(var i=0;i<data.length;i++)
       {
         if (data[i].YYYYMM == currentYear + currentMonth.padStart(2, "0"))
         {
-          if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
-          {
-            yr_total = data[i].total_ED_visits;
+          if (currentState == 'US') {
+            if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
+            {
+              if (selectedDrugs.includes('all'))
+                finalData['all'] = {rate: data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n, stateKey: 'all', forTooltip: data[i].total_drug_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
 
-            finalData['all'] = {rate: data[i].total_drug_OD_n < 20 ? 0 : ((data[i].total_drug_OD_n/yr_total)*10000), stateKey: 'all', forTooltip: data[i].total_drug_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-            finalData['benzodiazepine'] = {rate: data[i].total_Benzo_OD_n < 20 ? 0 : ((data[i].total_Benzo_OD_n/yr_total)*10000), stateKey: 'benzodiazepine', forTooltip: data[i].total_Benzo_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-            finalData['opioids'] = {rate: data[i].total_opioid_OD_n < 20 ? 0 : ((data[i].total_opioid_OD_n/yr_total)*10000), stateKey: 'opioids', forTooltip: data[i].total_opioid_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-            finalData['fentanyl'] = {rate: data[i].total_Fentanyl_OD_n < 20 ? 0 : ((data[i].total_Fentanyl_OD_n/yr_total)*10000), stateKey: 'fentanyl', forTooltip: data[i].total_Fentanyl_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-            finalData['heroin'] = {rate: data[i].total_heroin_OD_n < 20 ? 0 : ((data[i].total_heroin_OD_n/yr_total)*10000), stateKey: 'heroin', forTooltip: data[i].total_heroin_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-            finalData['stimulants'] = {rate: data[i].total_stimulant_OD_n < 20 ? 0 : ((data[i].total_stimulant_OD_n/yr_total)*10000), stateKey: 'stimulants', forTooltip: data[i].total_stimulant_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-            finalData['cocaine'] = {rate: data[i].total_Cocaine_OD_n < 20 ? 0 : ((data[i].total_Cocaine_OD_n/yr_total)*10000), stateKey: 'cocaine', forTooltip: data[i].total_Cocaine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-            finalData['methamphetamine'] = {rate: data[i].total_Methamphetamine_OD_n < 20 ? 0 : ((data[i].total_Methamphetamine_OD_n/yr_total)*100), stateKey: 'methamphetamine', forTooltip: data[i].total_Methamphetamine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
+              if (selectedDrugs.includes('benzodiazepine'))
+                finalData['benzodiazepine'] = {rate: data[i].total_Benzo_OD_n == 9999 ? 0 :data[i].total_Benzo_OD_n, stateKey: 'benzodiazepine', forTooltip: data[i].total_Benzo_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+              
+              if (selectedDrugs.includes('opioids'))
+                finalData['opioids'] = {rate: data[i].total_opioid_OD_n == 9999 ? 0 :data[i].total_opioid_OD_n, stateKey: 'opioids', forTooltip: data[i].total_opioid_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('fentanyl'))
+                finalData['fentanyl'] = {rate: data[i].total_Fentanyl_OD_n == 9999 ? 0 :data[i].total_Fentanyl_OD_n, stateKey: 'fentanyl', forTooltip: data[i].total_Fentanyl_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('heroin'))
+                finalData['heroin'] = {rate: data[i].total_heroin_OD_n == 9999 ? 0 :data[i].total_heroin_OD_n, stateKey: 'heroin', forTooltip: data[i].total_heroin_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('stimulants'))
+                finalData['stimulants'] = {rate: data[i].total_stimulant_OD_n == 9999 ? 0 :data[i].total_stimulant_OD_n, stateKey: 'stimulants', forTooltip: data[i].total_stimulant_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('cocaine'))
+                finalData['cocaine'] = {rate: data[i].total_Cocaine_OD_n == 9999 ? 0 :data[i].total_Cocaine_OD_n, stateKey: 'cocaine', forTooltip: data[i].total_Cocaine_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+              
+              if (selectedDrugs.includes('methamphetamine'))
+                finalData['methamphetamine'] = {rate: data[i].total_Methamphetamine_OD_n == 9999 ? 0 :data[i].total_Methamphetamine_OD_n, stateKey: 'methamphetamine', forTooltip: data[i].total_Methamphetamine_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+            }
+          }
+          else
+          {
+            if (data[i].geoid == currentState)
+            {
+              if (selectedDrugs.includes('all'))
+                finalData['all'] = {rate: data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n, stateKey: 'all', forTooltip: data[i].total_drug_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('benzodiazepine'))
+                finalData['benzodiazepine'] = {rate: data[i].total_Benzo_OD_n == 9999 ? 0 :data[i].total_Benzo_OD_n, stateKey: 'benzodiazepine', forTooltip: data[i].total_Benzo_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+              
+              if (selectedDrugs.includes('opioids'))
+                finalData['opioids'] = {rate: data[i].total_opioid_OD_n == 9999 ? 0 :data[i].total_opioid_OD_n, stateKey: 'opioids', forTooltip: data[i].total_opioid_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('fentanyl'))
+                finalData['fentanyl'] = {rate: data[i].total_Fentanyl_OD_n == 9999 ? 0 :data[i].total_Fentanyl_OD_n, stateKey: 'fentanyl', forTooltip: data[i].total_Fentanyl_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('heroin'))
+                finalData['heroin'] = {rate: data[i].total_heroin_OD_n == 9999 ? 0 :data[i].total_heroin_OD_n, stateKey: 'heroin', forTooltip: data[i].total_heroin_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('stimulants'))
+                finalData['stimulants'] = {rate: data[i].total_stimulant_OD_n == 9999 ? 0 :data[i].total_stimulant_OD_n, stateKey: 'stimulants', forTooltip: data[i].total_stimulant_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+
+              if (selectedDrugs.includes('cocaine'))
+                finalData['cocaine'] = {rate: data[i].total_Cocaine_OD_n == 9999 ? 0 :data[i].total_Cocaine_OD_n, stateKey: 'cocaine', forTooltip: data[i].total_Cocaine_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+              
+              if (selectedDrugs.includes('methamphetamine'))
+                finalData['methamphetamine'] = {rate: data[i].total_Methamphetamine_OD_n == 9999 ? 0 :data[i].total_Methamphetamine_OD_n, stateKey: 'methamphetamine', forTooltip: data[i].total_Methamphetamine_OD_n == 9999 ? 'Data suppressed' : 'dummy'};
+            }
           }
         }
       }
-    }
-    else {
-
-      for(var i=0;i<data.length;i++) {
-        if (data[i].YYYYMM?.substring(0,4) == currentYear)
-        {
-          if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
-          {
-            yr_total = yr_total + Number(data[i].total_ED_visits);
-            yr_total_drug_OD_n = yr_total_drug_OD_n + Number(data[i].total_drug_OD_n);
-            yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + Number(data[i].total_Benzo_OD_n);
-            yr_total_opioid_OD_n =yr_total_opioid_OD_n + Number(data[i].total_opioid_OD_n);
-            yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + Number(data[i].total_Fentanyl_OD_n);
-            yr_total_heroin_OD_n = yr_total_heroin_OD_n + Number(data[i].total_heroin_OD_n);
-            yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + Number(data[i].total_stimulant_OD_n);
-            yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + Number(data[i].total_Cocaine_OD_n);
-            yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + Number(data[i].total_Methamphetamine_OD_n);
-          }
-        }
-      }
-
-      finalData['all'] = {rate: yr_total_drug_OD_n < 20 ? 0 : ((yr_total_drug_OD_n/yr_total)*10000), stateKey: 'all', forTooltip: yr_total_drug_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-      finalData['benzodiazepine'] = {rate: yr_total_Benzo_OD_n < 20 ? 0 : ((yr_total_Benzo_OD_n/yr_total)*10000), stateKey: 'benzodiazepine', forTooltip: yr_total_Benzo_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-      finalData['opioids'] = {rate: yr_total_opioid_OD_n < 20 ? 0 : ((yr_total_opioid_OD_n/yr_total)*10000), stateKey: 'opioids', forTooltip: yr_total_opioid_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-      finalData['fentanyl'] = {rate: yr_total_Fentanyl_OD_n < 20 ? 0 : ((yr_total_Fentanyl_OD_n/yr_total)*10000), stateKey: 'fentanyl', forTooltip: yr_total_Fentanyl_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-      finalData['heroin'] = {rate: yr_total_heroin_OD_n < 20 ? 0 : ((yr_total_heroin_OD_n/yr_total)*10000), stateKey: 'heroin', forTooltip: yr_total_heroin_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-      finalData['stimulants'] = {rate: yr_total_stimulant_OD_n < 20 ? 0 : ((yr_total_stimulant_OD_n/yr_total)*10000), stateKey: 'stimulants', forTooltip: yr_total_stimulant_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-      finalData['cocaine'] = {rate: yr_total_Cocaine_OD_n < 20 ? 0 : ((yr_total_Cocaine_OD_n/yr_total)*10000), stateKey: 'cocaine', forTooltip: yr_total_Cocaine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-      finalData['methamphetamine'] = {rate: yr_total_Methamphetamine_OD_n < 20 ? 0 : ((yr_total_Methamphetamine_OD_n/yr_total)*100), stateKey: 'methamphetamine', forTooltip: yr_total_Methamphetamine_OD_n < 20 ? 'Data suppressed' : 'dummy'};
-    }
   }
-
   return finalData;
 }
 
@@ -83,18 +87,18 @@ function BarChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentState, currentDrug, selectedDrugs, currentYear, currentMonth, timeline, drugOptions } = params;
-
-  const dataRates = getData(data, currentState, currentYear, currentMonth, timeline, drugOptions);
+  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions } = params;
+ 
+  const dataRates = getData(data, currentState, currentYear, currentMonth, selectedDrugs);
 
   const dataKeys = Object.keys(dataRates || {}).filter(name => name !== 'max' && name !== 'min');
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
   const margin = {top: 100, bottom: 0, left: 170, right: 10};
-  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
+  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(drugOptions).length / 50)*(1.2));
   const adjustedWidth = width - margin.left - margin.right - 100; 
-  const heightNew = (height * ((Object.keys(dataKeys).length / 50)*(1.55))) + 210;
+  const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.55))) + 210;
 
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
@@ -175,7 +179,7 @@ function BarChart(params) {
                         'transformOrigin': `0px 0px`,
                         outline: 'none'
                       }}
-                      d={Utils.horizontalBarPath(true, 0, yScale(name), xScale(rate < 0.25 ? 0.25: rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
+                      d={selectedDrugs.includes(stateKey) ? Utils.horizontalBarPath(true, 0, yScale(name), xScale(rate < 0.25 ? 0.25: rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : null}
                       fill={selectedDrugs.includes(stateKey) ? drugOptions[stateKey].color : 'lightgray'}
                       stroke={selectedDrugs.includes(stateKey) ? drugOptions[stateKey].color : ''}
                       strokeWidth="3"
@@ -217,9 +221,9 @@ function BarChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight + 70 - 320} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
+              <text width={adjustedWidth} y={adjustedHeight - 210} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
               <AxisTop
-                top={adjustedHeight - 200}
+                top={adjustedHeight - 160}
                 scale={xScale}
                 numTicks={width < viewportCutoff ? 4 : null}
                 tickStroke="none"

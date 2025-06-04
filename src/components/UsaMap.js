@@ -21,83 +21,78 @@ const getYearlyData = (data, yr, drug, st) => {
     for(let i=0;i<data.length;i++) {
       if (data[i].YYYYMM?.substring(0,4) == yr)
       {
-        if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == st)
+        if (data[i].geoid == st)
         {
-          yr_total = yr_total + Number(data[i].total_ED_visits);
-
           switch (drug) {
             case 'all':
-              yr_drug_total = yr_drug_total + Number(data[i].total_drug_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n);
               break;
             case 'benzodiazepine':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Benzo_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n);
               break;
             case 'opioids':
-              yr_drug_total = yr_drug_total + Number(data[i].total_opioid_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n);
               break;
             case 'fentanyl':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Fentanyl_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n);
               break;
             case 'heroin':
-              yr_drug_total = yr_drug_total + Number(data[i].total_heroin_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n);
               break;
             case 'stimulants':
-              yr_drug_total = yr_drug_total + Number(data[i].total_stimulant_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n);
               break;
             case 'cocaine':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Cocaine_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n);
               break;
             case 'methamphetamine':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Methamphetamine_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n);
               break;
           }
         }
       }
      }
-     return String(yr_drug_total < 20 ? 0 : ((yr_drug_total/yr_total) * 10000).toFixed(2));
+     return String(((yr_drug_total/yr_total) * 10000).toFixed(2));
 }
 
 const getMonthlyData = (data, yrmon, drug, st) => {
     var month_drug = 0;
-    var month_total = 0;
 
     for(let i=0;i<data.length;i++) {
       if (data[i].YYYYMM == yrmon)
       {
-        if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == st)
+        if (data[i].geoid == st)
         {
-          month_total = month_total + Number(data[i].total_ED_visits);
-
           switch (drug) {
             case 'all':
-              month_drug = month_drug + Number(data[i].total_drug_OD_n);
+              month_drug = month_drug + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
               break;
             case 'benzodiazepine':
-              month_drug = month_drug + Number(data[i].total_Benzo_OD_n);
+              month_drug = month_drug + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
               break;
             case 'opioids':
-              month_drug = month_drug + Number(data[i].total_opioid_OD_n);
+              month_drug = month_drug + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
               break;
             case 'fentanyl':
-              month_drug = month_drug + Number(data[i].total_Fentanyl_OD_n);
+              month_drug = month_drug + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
               break;
             case 'heroin':
-              month_drug = month_drug + Number(data[i].total_heroin_OD_n);
+              month_drug = month_drug + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
               break;
             case 'stimulants':
-              month_drug = month_drug + Number(data[i].total_stimulant_OD_n);
+              month_drug = month_drug + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
               break;
             case 'cocaine':
-              month_drug = month_drug + Number(data[i].total_Cocaine_OD_n);
+              month_drug = month_drug + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
               break;
             case 'methamphetamine':
-              month_drug = month_drug + Number(data[i].total_Methamphetamine_OD_n);
+              month_drug = month_drug + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
               break;
           }
         }
       }
     }
-    return String(month_drug < 20 ? 0 : ((month_drug/month_total) * 10000).toFixed(2));
+    return String(Number(month_drug).toFixed(1));
 }
 
 const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, currentDrug, jurisdictions) => {
@@ -105,41 +100,22 @@ const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, curre
   var yrData = {};
   var monthData = {};
 
-  var dataUS = data.keyedRawUSData;
-  var dataState = data.keyedRawData;
-
-  if (currentTimeLine == 'Annual') { 
-
-    var retVal = 0; 
-
-    for(let i=0;i<Object.keys(jurisdictions).length;i++) {
-      var st = Object.keys(jurisdictions)[i];
-      retVal = getYearlyData(dataState, currentYear, currentDrug, st);
-      yrData[st] = retVal;
-    }
-
-    return yrData;
-    
-  }
-  else 
-  {
     var yyyymm = currentYear + currentMonth.padStart(2, '0');
     var retVal = 0; 
 
     for(let i=0;i<Object.keys(jurisdictions).length;i++) {
       var st = Object.keys(jurisdictions)[i];
-      retVal = getMonthlyData(dataState, yyyymm, currentDrug, st);
+      retVal = getMonthlyData(data, yyyymm, currentDrug, st);
       monthData[st] = retVal;
     }
 
     return monthData;
-  }
      
 };
 
 const UsaMap = (params) => {
 
-  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, supportedYears, width, drugOptions, jurisdictions, onData } = params;
+  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData } = params;
   
   const [selectedDrugsMap, setselectedDrugsMap] = useState(['all']);
 
@@ -149,8 +125,9 @@ const UsaMap = (params) => {
 
   const isSmallViewport = width < 500;
   const fontSize = 15;
-  const suppressedColor = '#999';
-  const unavailableColor = '#EEE';
+  const suppressedColor = '#7F7F7F';
+  const unavailableColor = '#C9C9C9';
+  const unfundedColor = '#86A1D7';
   const legendWidth = 240;
   const height = Math.max(width / 2, 250);
   const legendHeight = Math.max(width / 2, 350);
@@ -163,8 +140,8 @@ const UsaMap = (params) => {
 
   const values = Object.keys(filteredData).map(key => filteredData[key]);
 
-  const max = Math.max(...values.filter(val => !isNaN(val)));
-  const min = Math.min(...values.filter(val => !isNaN(val)));
+  const max = Math.max(...values.filter(val => !isNaN(val) && val > 0));
+  const min = Math.min(...values.filter(val => !isNaN(val) && val > 0));
   const intervals = 5;
   const intervalWidth = ((max - min) / intervals).toFixed(4);
 
@@ -172,13 +149,13 @@ const UsaMap = (params) => {
   let colorIntervals = [];
   for (let i = 0; i < 5; i++) {
     let val = max - (intervalWidth) * (i+1)
-    labelIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(4))
-    colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(4))
+    labelIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
+    colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
   }
 
   const colorScale = scaleLinear({
     domain: [min, max],
-    range: ['rgb(201, 201, 201)', UtilityFunctions.getSeriesColor(selectedDrugsMap[0], 'US')]
+    range: [UtilityFunctions.getSeriesColorStart(selectedDrugsMap[0], 'US'), UtilityFunctions.getSeriesColor(selectedDrugsMap[0], 'US')]
   })
 
   const colorLegendScale = scaleLinear({
@@ -187,23 +164,29 @@ const UsaMap = (params) => {
   })
 
   const getColor = (id) => {
+    if (stateFipsMapping[id] == 'ND') return unfundedColor;
     if(!filteredData[stateFipsMapping[id]]) return unavailableColor;
-    if(isNaN(filteredData[stateFipsMapping[id]])) return suppressedColor;
+    if(filteredData[stateFipsMapping[id]] == '0.0') return suppressedColor;
     return colorScale(filteredData[stateFipsMapping[id]]);
   }
 
   const getRateHTML = (geoId) => {
-    return '<span>' + filteredData[stateFipsMapping[geoId.substring(0, 2)]] + '</span></br>'
+    return '<span>' + (filteredData[stateFipsMapping[geoId.substring(0, 2)]]  == '0.0' ? '*Data Suppressed' : filteredData[stateFipsMapping[geoId.substring(0, 2)]]) + '</span></br>'
   }
 
   const getTooltipFragment = (geoId) => {
 
-    if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == undefined)
-      return;
-
     var presentState = stateFipsMapping[geoId.substring(0, 2)];
     var heading = '<div class="alignCenterTT"><h2 class="borderBottomLine blackFont" style="margin: 0; padding: 0;"><strong>' + `${stateNames[presentState]}` + '</br></strong></h2></div>'; 
-    var rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+    var rateStr;
+
+    if (stateFipsMapping[geoId.substring(0, 2)] == 'ND')
+        rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
+    else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] !== undefined)
+       rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+    else
+       rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+      
     return heading + '<table class="tooltipTableUS"><tr><td><div class="containerTT">' + rateStr + '</div></td></tr></table>'
   }
 
@@ -318,6 +301,21 @@ const UsaMap = (params) => {
                             
                             {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 180} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
                             {labelIntervals.map((value, idx) => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 165} fill="black" alignmentBaseline="middle">{value}</text>)}
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} />
+                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
+
+                            <rect x={0} y={35} width={50} height={10} fill={unavailableColor} />
+                            <text x={60} y={40} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
+                            <text x={60} y={60} fill="black" alignmentBaseline="middle" fontSize={12}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
+
+                            <rect x={0} y={75} width={50} height={10} fill={unfundedColor} />
+                            <text x={60} y={80} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
                         </svg>
                       </td>
                     </tr>

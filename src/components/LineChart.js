@@ -62,9 +62,7 @@ const getYears = (startYrInp, endYrInp) => {
   return years;
 } 
 
-const getFilteredData = (dataAll, currentState, lookupPeriodStartYear, lookupPeriodEndYear) => {
-
-  var data = currentState == 'US' ? dataAll.keyedRawUSData : dataAll.keyedRawData;
+const getFilteredData = (data, currentState, lookupPeriodStartYear, lookupPeriodEndYear) => {
 
   var finalData = {};
   var allYrsData = [];
@@ -80,36 +78,50 @@ const getFilteredData = (dataAll, currentState, lookupPeriodStartYear, lookupPer
     var yr_total_stimulant_OD_n = 0;
     var yr_total_Cocaine_OD_n = 0;
     var yr_total_Methamphetamine_OD_n = 0;
-    var yr_total = 0;
 
 
     for(let i=0;i<data.length;i++) {
           if (data[i].YYYYMM?.substring(0,4) == yrs[x])
           {
-            if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
+             if (currentState == 'US') {
+                if (data[i].geoid == currentState && data[i].Sex == 'Total' && data[i].Age_Group == 'Total')
+                {
+                  yr_total_drug_OD_n = yr_total_drug_OD_n + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
+                  yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
+                  yr_total_opioid_OD_n =yr_total_opioid_OD_n + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
+                  yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
+                  yr_total_heroin_OD_n = yr_total_heroin_OD_n + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
+                  yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
+                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
+                  yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
+                }
+            }
+            else
             {
-              yr_total = yr_total + Number(data[i].total_ED_visits);
-              yr_total_drug_OD_n = yr_total_drug_OD_n + Number(data[i].total_drug_OD_n);
-              yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + Number(data[i].total_Benzo_OD_n);
-              yr_total_opioid_OD_n =yr_total_opioid_OD_n + Number(data[i].total_opioid_OD_n);
-              yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + Number(data[i].total_Fentanyl_OD_n);
-              yr_total_heroin_OD_n = yr_total_heroin_OD_n + Number(data[i].total_heroin_OD_n);
-              yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + Number(data[i].total_stimulant_OD_n);
-              yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + Number(data[i].total_Cocaine_OD_n);
-              yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + Number(data[i].total_Methamphetamine_OD_n);
+              if (data[i].geoid == currentState)
+                {
+                  yr_total_drug_OD_n = yr_total_drug_OD_n + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
+                  yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
+                  yr_total_opioid_OD_n =yr_total_opioid_OD_n + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
+                  yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
+                  yr_total_heroin_OD_n = yr_total_heroin_OD_n + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
+                  yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
+                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
+                  yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
+                }
             }
           }
         }
 
         yrData['year'] = Number(yrs[x]);
-        yrData['all'] = yr_total_drug_OD_n < 20 ? '0' : String(((yr_total_drug_OD_n/yr_total) * 10000).toFixed(2));
-        yrData['benzodiazepine'] = yr_total_Benzo_OD_n < 20 ? '0' : String(((yr_total_Benzo_OD_n/yr_total) * 10000).toFixed(2));
-        yrData['opioids'] = yr_total_opioid_OD_n < 20 ? '0' : String(((yr_total_opioid_OD_n/yr_total) * 10000).toFixed(2));
-        yrData['fentanyl'] = yr_total_Fentanyl_OD_n < 20 ? '0' : String(((yr_total_Fentanyl_OD_n/yr_total) * 10000).toFixed(2));
-        yrData['heroin'] = yr_total_heroin_OD_n < 20 ? '0' : String(((yr_total_heroin_OD_n/yr_total) * 10000).toFixed(2));
-        yrData['stimulants'] = yr_total_stimulant_OD_n < 20 ? '0' : String(((yr_total_stimulant_OD_n/yr_total) * 10000).toFixed(2));
-        yrData['cocaine'] = yr_total_Cocaine_OD_n < 20 ? '0' : String(((yr_total_Cocaine_OD_n/yr_total) * 10000).toFixed(2));
-        yrData['methamphetamine'] = yr_total_Methamphetamine_OD_n < 20 ? '0' : String(((yr_total_Methamphetamine_OD_n/yr_total) * 10000).toFixed(2));
+        yrData['all'] = String(Number(yr_total_drug_OD_n).toFixed(1));
+        yrData['benzodiazepine'] = String(Number(yr_total_Benzo_OD_n).toFixed(1));
+        yrData['opioids'] = String(Number(yr_total_opioid_OD_n).toFixed(1));
+        yrData['fentanyl'] = String(Number(yr_total_Fentanyl_OD_n).toFixed(1));
+        yrData['heroin'] = String(Number(yr_total_heroin_OD_n).toFixed(1));
+        yrData['stimulants'] = String(Number(yr_total_stimulant_OD_n).toFixed(1));
+        yrData['cocaine'] = String(Number(yr_total_Cocaine_OD_n).toFixed(1));
+        yrData['methamphetamine'] = String(Number(yr_total_Methamphetamine_OD_n).toFixed(1));
 
       allYrsData.push(yrData);
 
@@ -120,9 +132,7 @@ const getFilteredData = (dataAll, currentState, lookupPeriodStartYear, lookupPer
       return finalData[currentState];
 };
 
-const getFilteredDataPeriod = (dataAll, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) => {
-
-  var data = currentState == 'US' ? dataAll.keyedRawUSData : dataAll.keyedRawData;
+const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) => {
 
   var allMonthsData = [];
 
@@ -133,25 +143,46 @@ const getFilteredDataPeriod = (dataAll, currentState, lookupPeriodStartYear, loo
         {
           if (data[i].YYYYMM == monthsArray[j])
           {
-            if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
+            if (currentState == 'US') {
+              if (data[i].geoid == currentState && data[i].Sex == 'Total' && data[i].Age_Group == 'Total')
+              {
+                var monData = {}
+                monData['index'] = Number(index);
+                monData['year'] = monthsArray[j]
+                monData['all'] = data[i].total_drug_OD_n == 9999 ? '0' : String(Number(data[i].total_drug_OD_n).toFixed(1));
+                monData['benzodiazepine'] = data[i].total_Benzo_OD_n == 9999 ? '0' :  String(Number(data[i].total_Benzo_OD_n).toFixed(1));
+                monData['opioids'] = data[i].total_opioid_OD_n == 9999 ? '0' :  String(Number(data[i].total_opioid_OD_n).toFixed(1));
+                monData['fentanyl'] = data[i].total_Fentanyl_OD_n == 9999 ? '0' :  String(Number(data[i].total_Fentanyl_OD_n).toFixed(1));
+                monData['heroin'] = data[i].total_heroin_OD_n == 9999 ? '0' :  String(Number(data[i].total_heroin_OD_n).toFixed(1));
+                monData['stimulants'] = data[i].total_stimulant_OD_n == 9999 ? '0' :  String(Number(data[i].total_stimulant_OD_n).toFixed(1));
+                monData['cocaine'] = data[i].total_Cocaine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Cocaine_OD_n).toFixed(1));
+                monData['methamphetamine'] = data[i].total_Methamphetamine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Methamphetamine_OD_n).toFixed(1));
+
+                allMonthsData.push(monData);
+
+                index++;
+              }
+            }
+            else
             {
-              var yr_total = data[i].total_ED_visits;
+              if (data[i].geoid == currentState)
+              {
+                var monData = {}
+                monData['index'] = Number(index);
+                monData['year'] = monthsArray[j]
+                monData['all'] = data[i].total_drug_OD_n == 9999 ? '0' : String(Number(data[i].total_drug_OD_n).toFixed(1));
+                monData['benzodiazepine'] = data[i].total_Benzo_OD_n == 9999 ? '0' :  String(Number(data[i].total_Benzo_OD_n).toFixed(1));
+                monData['opioids'] = data[i].total_opioid_OD_n == 9999 ? '0' :  String(Number(data[i].total_opioid_OD_n).toFixed(1));
+                monData['fentanyl'] = data[i].total_Fentanyl_OD_n == 9999 ? '0' :  String(Number(data[i].total_Fentanyl_OD_n).toFixed(1));
+                monData['heroin'] = data[i].total_heroin_OD_n == 9999 ? '0' :  String(Number(data[i].total_heroin_OD_n).toFixed(1));
+                monData['stimulants'] = data[i].total_stimulant_OD_n == 9999 ? '0' :  String(Number(data[i].total_stimulant_OD_n).toFixed(1));
+                monData['cocaine'] = data[i].total_Cocaine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Cocaine_OD_n).toFixed(2));
+                monData['methamphetamine'] = data[i].total_Methamphetamine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Methamphetamine_OD_n).toFixed(1));
 
-              var monData = {}
-              monData['index'] = Number(index);
-              monData['year'] = monthsArray[j]
-              monData['all'] = data[i].total_drug_OD_n < 20 ? '0' : String(((data[i].total_drug_OD_n/yr_total)*10000).toFixed(2));
-              monData['benzodiazepine'] = data[i].total_Benzo_OD_n < 20 ? '0' : String(((data[i].total_Benzo_OD_n/yr_total)*10000).toFixed(2));
-              monData['opioids'] = data[i].total_opioid_OD_n < 20 ? '0' : String(((data[i].total_opioid_OD_n/yr_total)*10000).toFixed(2));
-              monData['fentanyl'] = data[i].total_Fentanyl_OD_n < 20 ? '0' : String(((data[i].total_Fentanyl_OD_n/yr_total)*10000).toFixed(2));
-              monData['heroin'] = data[i].total_heroin_OD_n < 20 ? '0' : String(((data[i].total_heroin_OD_n/yr_total)*10000).toFixed(2));
-              monData['stimulants'] = data[i].total_stimulant_OD_n < 20 ? '0' : String(((data[i].total_stimulant_OD_n/yr_total)*10000).toFixed(2));
-              monData['cocaine'] = data[i].total_Cocaine_OD_n < 20 ? '0' : String(((data[i].total_Cocaine_OD_n/yr_total)*10000).toFixed(2));
-              monData['methamphetamine'] = data[i].total_Methamphetamine_OD_n < 20 ? '0' : String(((data[i].total_Methamphetamine_OD_n/yr_total)*10000).toFixed(2));
+                allMonthsData.push(monData);
 
-              allMonthsData.push(monData);
-
-              index++;
+                index++;
+              }
             }
           }
         }
@@ -163,7 +194,7 @@ const getFilteredDataPeriod = (dataAll, currentState, lookupPeriodStartYear, loo
 
 function LineChart(params) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, supportedYears, currentDataSource, jurisdictionsCnt  } = params;
+  const { data, dataOverall, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, jurisdictionsCnt  } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -171,11 +202,11 @@ function LineChart(params) {
   const currentDrugOnly = currentState != 'US' ? true : false;
 
   const filteredData = {
-    [currentState]: isPeriod ? getFilteredDataPeriod(data, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentState, String(lookupPeriodStartYear), String(lookupPeriodEndYear))
+    [currentState]: isPeriod ? getFilteredDataPeriod(currentState != 'US' ? data : dataOverall , currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(currentState != 'US' ? data : dataOverall, currentState, String(lookupPeriodStartYear), String(lookupPeriodEndYear))
   }
 
   if (currentState !== 'US') {
-    filteredData['US'] = isPeriod ? getFilteredDataPeriod(data, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, 'US', String(lookupPeriodStartYear), String(lookupPeriodEndYear))
+    filteredData['US'] = isPeriod ? getFilteredDataPeriod(dataOverall, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(dataOverall, 'US', String(lookupPeriodStartYear), String(lookupPeriodEndYear))
   }
 
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
@@ -493,13 +524,13 @@ function LineChart(params) {
       for (var i in selectedDrugs) {
         if (selectedDrugs[i].includes(currentDrug)) {
           let rate = getRateforDrug(selectedDrugs[i], parmState, val);
-          leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+          leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : (rate == 0 ? '*Data Suppressed' : rate)) + '</span></br>'
         }
       }
     }
     else {
       let rate = getRateforDrug(currentDrug, parmState, val);
-        leftRateStr = leftRateStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+        leftRateStr = leftRateStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : (rate == 0 ? '*Data Suppressed' : rate)) + '</span></br>'
     }
     return leftRateStr;
   }
@@ -507,7 +538,7 @@ function LineChart(params) {
   const getTooltipStateFragment = (param, val) => {
     let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
     let stStr = isPeriod ? `${inp.monthNamesPeriod[param]}` : (inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[param]} ${inp.currentYear}` : param);
-    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${val}</p>`
+    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${val == 0 ? '*Data Suppressed' : val}</p>`
     let parStr = `</strong></span>` + midStr + `</td></tr></table>`;
     return str + stStr + parStr;
   }
@@ -579,7 +610,7 @@ function LineChart(params) {
               var tooltipValues = [];
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
-                      tooltipValues.push(`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]]}</p>`);
+                      tooltipValues.push(`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == 0 ? '*Data Suppressed' : d[inp.selectedDrugs[i]]}</p>`);
                     }
                   }
               }
@@ -676,16 +707,19 @@ function LineChart(params) {
 
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] > 0 && dNext[currentDrug] > 0 && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} strokeWidth={3} />
                           }
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key != 'US') && 
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] > 0 && dNext[currentDrug] > 0 && key != 'US') && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] > 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{'*'}</text>}
+
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && UtilityFunctions.getSeriesColor(currentDrug, key)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={(currentTimeframe === 'Monthly' && d[specs.xKey]) && UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] > 0 && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == 0 && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColor(currentDrug, key)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{'*'}</text>}
                         </Group>
                         )
                     })}

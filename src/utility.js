@@ -458,4 +458,38 @@ export const UtilityFunctions = {
   
       return seriesColor;
   },
+
+  getSeriesColorStart : (currentDrug, key) => {
+
+    var seriesColor;
+  
+    switch (currentDrug) {
+      case 'all':
+        seriesColor = (key === 'US') ? 'rgb(173, 190, 203)' : 'lightblue';
+        break;
+      case 'opioids':
+        seriesColor = (key === 'US') ? 'rgb(153, 158, 201)' : 'lightblue';
+        break;
+      case 'heroin':
+        seriesColor = (key === 'US') ? 'rgb(158, 197, 213)' : 'lightblue';
+        break;
+      case 'stimulants':
+        seriesColor = (key === 'US') ? 'rgb(179, 164, 197)' : 'lightblue';
+        break;
+      case 'benzodiazepine':
+        seriesColor = (key === 'US') ? 'rgb(227, 176, 191)' : 'lightblue';
+        break;
+      case 'fentanyl':
+        seriesColor = (key === 'US') ? 'rgb(169, 182, 211)' : 'lightblue';
+        break;
+      case 'cocaine':
+        seriesColor = (key === 'US') ? 'rgb(194, 163, 221)' : 'lightblue';
+        break;
+      case 'methamphetamine':
+        seriesColor = (key === 'US') ? 'rgb(218, 201, 246)' : 'lightblue';
+        break;
+      }
+  
+      return seriesColor;
+  },
 }

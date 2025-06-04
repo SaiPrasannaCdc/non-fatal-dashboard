@@ -1,0 +1,15 @@
+#header-line-chart-container {
+    width: 100px;
+    height: calc(100px - 1em - 2px);
+    display: inline-block;
+    vertical-align: middle;
+    align-self: center;
+}
+
+#line-chart-container {
+    height: 300px;
+}
+
+.App.accessible #header-line-chart-container {
+    width: 100%;
+}
