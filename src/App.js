@@ -1414,26 +1414,71 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
             <tr>
-              {/* <td colspan='4'>
+              <td colspan='4'>
                 <div style={{'float': 'right', 'margin-right' : '20px'}}>
                   <button id="reset-button" style={{ 'backgroundColor': '#000066' }} onClick={() => {
-                    setYearsForDropDown(getYears(startUSMonthYearForSlider, endUSMonthYearForSlider));
+
+                    let cntUS = keyedRawUSDataMonthly.length; 
+
                     setCurrentDrug('all');
                     setselectedDrugs(['all'])
-                    setMonthlyToggle(true);
                     setCurrentState('US');
-                    setYearSelected(getYears(startUSMonthYearForSlider, endUSMonthYearForSlider)[0])
+                    setTimeline('Monthly');
+                    setTimelineBar('Monthly');
+                    setTimelineLine('Monthly');
+                    setCurrentState('US');
+
+                    setMonthlyToggle(false);
+                    setMonthlyToggleBar(false);
+                    setMonthlyToggleLine(false);
+                    setPercentToggle(false);  
+                    setOverallToggle(false);
+                    
+                    setCurrentYear(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                    setCurrentYearMap(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                    setCurrentYearBar(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                    setCurrentYearSexAge(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                    setCurrentMonth(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                    setCurrentMonthMap(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                    setCurrentMonthBar(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                    setCurrentMonthSexAge(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                    setYearsForDropDown(getYears(keyedRawUSDataMonthly[0]['YYYYMM'], keyedRawUSDataMonthly[cntUS-1]['YYYYMM']));
+                    setMonthsForDropDown(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setMonthsForDropDownBar(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setMonthsForDropDownMap(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setMonthsForDropDownSexAge(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setJurisCount(getJurisCount(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setJurisForDropDown(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setLookupPeriodStartYear(String(keyedRawUSDataMonthly[0]['YYYYMM'].substring(0,4)));
+                    setLookupPeriodStartMonth(String(Number(keyedRawUSDataMonthly[0]['YYYYMM'].substring(4))));
+                    setLookupPeriodEndYear(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
+                    setLookupPeriodEndMonth(String(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setStartUSMonthYearForSlider(keyedRawUSDataMonthly[0]['YYYYMM']); 
+                    setEndUSMonthYearForSlider(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+                    setStartMonthYearForSlider(keyedRawUSDataMonthly[0]['YYYYMM']); 
+                    setEndMonthYearForSlider(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+
+                    setselectedDrugs(['all']);
+                    setselectedDrugsBar(['benzodiazepine', 'opioids', 'fentanyl', 'heroin', 'stimulants', 'cocaine', 'methamphetamine']);
+                    setselectedDrugsLine(['all']);
+                    setselectedDrugsSexAge(['all']);
+                    setShowConsiderations(false);
+                    setShowFootNotes(false);
+
+                    setMapMonthly('Monthly');
+                    handleData('all')
+                    setSexAgeMetric('Monthly');
 
                               }}>Reset</button>
                 </div>
-              </td> */}
+              </td>
             </tr>
           </table>
         </div>
 
       <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            {getPriorMonth()} Suspected Nonfatal Overdose ED Visits for {drugOptions[selectedDrugs[0]].titleAll}<sup>[4]</sup>
+            {getPriorMonth()} Suspected Nonfatal Overdose ED Visits for {drugOptions[currentDrug].titleAll}<sup>[4]</sup>
           </h2>
         </div>
       </div>
@@ -1445,7 +1490,7 @@ const getYears = (startYrInp, endYrInp) => {
           <span className="callout" style={{ 'color': drugColor }}>{isNaN(usRate) ? 'N/A' : `${Number(usRate)}`}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>
-              {timeline} Suspected Nonfatal Overdose Visits for {drugOptions[selectedDrugs[0]].titleAll}</span>
+              {timeline} Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
               <p>Per 10,000 total ED visits</p>
           </div>
         </div>
@@ -1467,7 +1512,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <span className="callout" style={{ 'color': drugColor }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span> 
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>
-                    {usPercent < 0 ? 'Decrease' : 'Increase' } in Suspected Nonfatal Overdose Visits for {drugOptions[selectedDrugs[0]].titleAll}</span>
+                    {usPercent < 0 ? 'Decrease' : 'Increase' } in Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
                     <p>Per 10,000 total ED visits from the prior month</p>
                 </div>
               </td>
@@ -1487,7 +1532,7 @@ const getYears = (startYrInp, endYrInp) => {
           
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            What were the trends in Suspected Nonfatal Overdose Visits in {monthNames[Number(currentMonth)] + ', ' + currentYear}{' for ' + drugOptions[selectedDrugs[0]].titleAll}{'?'}
+            What were the trends in Suspected Nonfatal Overdose Visits in {monthNames[Number(currentMonth)] + ', ' + currentYear}{' for ' + drugOptions[currentDrug].titleAll}{'?'}
           </h2>
         </div>
 
