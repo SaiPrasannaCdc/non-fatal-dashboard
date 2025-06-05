@@ -591,11 +591,11 @@ export default function App({ dataUrl }) {
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
         setMonthsForDropDown(getMonths(mon))
-        setCurrentMonth(String(mon));
+        setMonthSelected(monthNames[Number(mon)]);
       }
       else {
         setMonthsForDropDown(getMonths());
-        setCurrentMonth(currentMonth);
+        setMonthSelected(monthNames[Number(currentMonth)]);
       }
   };
  
@@ -611,11 +611,11 @@ export default function App({ dataUrl }) {
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
         setMonthsForDropDownMap(getMonths(mon))
-        setCurrentMonthMap(String(mon));
+        setMonthSelectedMap(monthNames[Number(mon)]);
       }
       else {
         setMonthsForDropDownMap(getMonths());
-        setCurrentMonthMap(currentMonthMap);
+        setMonthSelectedMap(monthNames[Number(currentMonthMap)]);
       }
   };
 
@@ -631,11 +631,11 @@ export default function App({ dataUrl }) {
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
         setMonthsForDropDownBar(getMonths(mon))
-        setCurrentMonthBar(String(mon));
+        setMonthSelectedBar(monthNames[Number(mon)]);
       }
       else {
         setMonthsForDropDownBar(getMonths());
-        setCurrentMonthBar('12');
+        setMonthSelectedBar(monthNames[Number(currentMonthBar)]);
       }
   };
 
@@ -651,11 +651,11 @@ export default function App({ dataUrl }) {
       if (endUSMonthYearForSlider.includes(yr)) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
         setMonthsForDropDownSexAge(getMonths(mon))
-        setCurrentMonthSexAge(String(mon));
+        setMonthSelectedSexAge(monthNames[Number(mon)]);
       }
       else {
         setMonthsForDropDownSexAge(getMonths());
-        setCurrentMonthSexAge(currentMonthSexAge);
+        setMonthSelectedSexAge(monthNames[Number(currentMonthSexAge)]);
       }
   };
 
@@ -1506,7 +1506,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '6%'}}>
-                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value); setCurrentMonth(currentMonth)}}>
+                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value);}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -1565,7 +1565,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '6%'}}>
-                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value); setJurisForDropDown(getJuris(e.target.value, currentMonthBar)); setCurrentMonthBar(currentMonthBar)}}>
+                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value); setJurisForDropDown(getJuris(e.target.value, currentMonthBar));}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -1812,7 +1812,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '51%'}}>
-              <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value); setCurrentMonthMap(currentMonthMap) }}>
+              <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value); }}>
                 {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
               </select>
               </td>
@@ -1907,7 +1907,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '51%'}}>
-              <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value); setCurrentMonthSexAge(currentMonthSexAge)}}>
+              <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value); }}>
                 {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
               </select>
               </td>

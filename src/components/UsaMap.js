@@ -306,8 +306,8 @@ const UsaMap = (params) => {
                             <text x={0} y={30} fill="black" fontSize={fontSize}>Suspected Overdoses per</text>
                             <text x={0} y={50} fill="black" fontSize={fontSize}>10,000 visits (Quantiles)</text>
                             
-                            {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 180} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 165} fill="black" alignmentBaseline="middle">{value}</text>)}
+                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 180} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 165} fill="black" alignmentBaseline="middle">{value}</text>)}
                         </svg>
                       </td>
                     </tr>
