@@ -6,6 +6,7 @@ import { CustomProjection } from '@visx/geo';
 import { scaleLinear } from '@visx/scale';
 import ReactTooltip from 'react-tooltip';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
+import AngleArrow from './AngleArrow';
 import { UtilityFunctions } from '../utility'
 
 const { features: stateTopoPre2020 } = feature(topoJSONPre2020, topoJSONPre2020.objects.states)
@@ -14,6 +15,12 @@ const { features: stateTopoPost2020 } = feature(topoJSONPost2020, topoJSONPost20
 const stateFipsMapping = { '10': 'DE', '11': 'DC', '12': 'FL', '13': 'GA', '15': 'HI', '16': 'ID', '17': 'IL', '18': 'IN', '19': 'IA', '20': 'KS', '21': 'KY', '22': 'LA', '23': 'ME', '24': 'MD', '25': 'MA', '26': 'MI', '27': 'MN', '28': 'MS', '29': 'MO', '30': 'MT', '31': 'NE', '32': 'NV', '33': 'NH', '34': 'NJ', '35': 'NM', '36': 'NY', '37': 'NC', '38': 'ND', '39': 'OH', '40': 'OK', '41': 'OR', '42': 'PA', '44': 'RI', '45': 'SC', '46': 'SD', '47': 'TN', '48': 'TX', '49': 'UT', '50': 'VT', '51': 'VA', '53': 'WA', '54': 'WV', '55': 'WI', '56': 'WY', '60': 'AS', '66': 'GU', '72': 'PR', '78': 'VI', '02': 'AK', '01': 'AL', '05': 'AR', '04': 'AZ', '06': 'CA', '08': 'CO', '09': 'CT' };
 const statePositions = { 'US': { scale: 1, x: 0, y: 0 }, 'CA': { scale: 2.2, x: 0.3, y: 0, rotate: -14 }, 'AK': { scale: 4, x: 0.3, y: -0.18, rotate: 10 }, 'AL': { 'scale': 1, 'x': 0, 'y': 0 },'AZ': { 'scale': 2, 'x': 0.2, 'y': -0.1 }, 'AR': { 'scale': 1, 'x': 0, 'y': 0 }, 'CO': { 'scale': 4, 'x': 0.125, 'y': 0.01, rotate: -5 }, 'CT': { 'scale': 1, 'x': 0, 'y': 0 }, 'DE': { 'scale': 10, 'x': -0.28, 'y': 0.035, rotate: 12 }, 'DC': { 'scale': 20, 'x': -0.26, 'y': 0.025 }, 'FL': { 'scale': 3, 'x': -0.19, 'y': -0.19 }, 'GA': { 'scale': 5.5, 'x': -0.19, 'y': -0.09, 'rotate': 6 }, 'HI': { 'scale': 4, 'x': 0.16, 'y': -0.215 }, 'ID': { 'scale': 1, 'x': 0, 'y': 0 }, 'IL': { 'scale': 4, 'x': -0.09, 'y': 0.02, rotate: 4 }, 'IN': { 'scale': 5, 'x': -0.13, 'y': 0.03, rotate: 6 }, 'IA': { 'scale': 7, 'x': -0.04, 'y': 0.06, rotate: 2 }, 'KS': { 'scale': 6, 'x': 0.025, 'y': -0.005, rotate: -1 }, 'KY': { 'scale': 7, 'x': -0.15, 'y': -0.01, rotate: 5 }, 'LA': { 'scale': 3, 'x': -0.05, 'y': -0.15 }, 'ME': { 'scale': 1, 'x': 0, 'y': 0 }, 'MD': { 'scale': 6, 'x': -0.25, 'y': 0.02 }, 'MA': { 'scale': 1, 'x': 0, 'y': 0 }, 'MI': { 'scale': 4, 'x': -0.13, 'y': 0.1, rotate: 7 }, 'MN': { 'scale': 4, 'x': -0.02, 'y': 0.14, rotate: 1 }, 'MS': { 'scale': 5, 'x': -0.095, 'y': -0.102, rotate: 4 }, 'MO': { 'scale': 5, 'x': -0.055, 'y': -0.008, rotate: 2 }, 'MT': { 'scale': 3, 'x': 0.15, 'y': 0.15 }, 'NE': { 'scale': 5, 'x': 0.04, 'y': 0.05, 'rotate': -3 }, 'NV': { 'scale': 1, 'x': 0, 'y': 0 }, 'NH': { 'scale': 1, 'x': 0, 'y': 0 }, 'NJ': { 'scale': 7, 'x': -0.285, 'y': 0.05 }, 'NM': { 'scale': 1, 'x': 0, 'y': 0 }, 'NY': { 'scale': 5, 'x': -0.27, 'y': 0.105, 'rotate': 11 }, 'NC': { 'scale': 5, 'x': -0.23, 'y': -0.04, 'rotate': 10 }, 'ND': { 'scale': 1, 'x': 0, 'y': 0 }, 'OH': { 'scale': 1, 'x': 0, 'y': 0 }, 'OK': { 'scale': 5, 'x': 0.02, 'y': -0.06, 'rotate': -2 }, 'OR': { 'scale': 4.5, 'x': 0.3, 'y': 0.13, 'rotate': -15 }, 'PA': { 'scale': 1, 'x': 0, 'y': 0 }, 'RI': { 'scale': 14, 'x': -0.318, 'y': 0.093, 'rotate': 17 }, 'SC': { 'scale': 6, 'x': -0.22, 'y': -0.07, 'rotate': 8 }, 'SD': { 'scale': 1, 'x': 0, 'y': 0 }, 'TN': { 'scale': 1, 'x': 0, 'y': 0 }, 'TX': { 'scale': 1.75, 'x': 0.05, 'y': -0.135 }, 'UT': { 'scale': 4, 'x': 0.2, 'y': 0.03, 'rotate': -9 }, 'VT': { 'scale': 1, 'x': 0, 'y': 0 }, 'VA': { 'scale': 1, 'x': 0, 'y': 0 }, 'WA': { 'scale': 6, 'x': 0.28, 'y': 0.19, 'rotate': -14 }, 'WV': { 'scale': 1, 'x': 0, 'y': 0 }, 'WI': { 'scale': 5, 'x': -0.08, 'y': 0.11, 'rotate': 4 }, 'WY': { 'scale': 1, 'x': 0, 'y': 0 } };
 
+const defaultValueIfEmpty = (v, df) => {
+    if (v && v != '') return v;
+
+    else return df;
+}
+
 const getYearlyData = (data, yr, drug, st) => {
     var yr_drug_total = 0;
     var yr_total = 0;
@@ -21,83 +28,78 @@ const getYearlyData = (data, yr, drug, st) => {
     for(let i=0;i<data.length;i++) {
       if (data[i].YYYYMM?.substring(0,4) == yr)
       {
-        if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == st)
+        if (data[i].geoid == st)
         {
-          yr_total = yr_total + Number(data[i].total_ED_visits);
-
           switch (drug) {
             case 'all':
-              yr_drug_total = yr_drug_total + Number(data[i].total_drug_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n);
               break;
             case 'benzodiazepine':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Benzo_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n);
               break;
             case 'opioids':
-              yr_drug_total = yr_drug_total + Number(data[i].total_opioid_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n);
               break;
             case 'fentanyl':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Fentanyl_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n);
               break;
             case 'heroin':
-              yr_drug_total = yr_drug_total + Number(data[i].total_heroin_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n);
               break;
             case 'stimulants':
-              yr_drug_total = yr_drug_total + Number(data[i].total_stimulant_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n);
               break;
             case 'cocaine':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Cocaine_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n);
               break;
             case 'methamphetamine':
-              yr_drug_total = yr_drug_total + Number(data[i].total_Methamphetamine_OD_n);
+              yr_drug_total = yr_drug_total + data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n);
               break;
           }
         }
       }
      }
-     return String(yr_drug_total < 20 ? 0 : ((yr_drug_total/yr_total) * 10000).toFixed(2));
+     return String(((yr_drug_total/yr_total) * 10000).toFixed(2));
 }
 
 const getMonthlyData = (data, yrmon, drug, st) => {
     var month_drug = 0;
-    var month_total = 0;
 
     for(let i=0;i<data.length;i++) {
       if (data[i].YYYYMM == yrmon)
       {
-        if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == st)
+        if (data[i].geoid == st)
         {
-          month_total = month_total + Number(data[i].total_ED_visits);
-
           switch (drug) {
             case 'all':
-              month_drug = month_drug + Number(data[i].total_drug_OD_n);
+              month_drug = month_drug + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
               break;
             case 'benzodiazepine':
-              month_drug = month_drug + Number(data[i].total_Benzo_OD_n);
+              month_drug = month_drug + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
               break;
             case 'opioids':
-              month_drug = month_drug + Number(data[i].total_opioid_OD_n);
+              month_drug = month_drug + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
               break;
             case 'fentanyl':
-              month_drug = month_drug + Number(data[i].total_Fentanyl_OD_n);
+              month_drug = month_drug + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
               break;
             case 'heroin':
-              month_drug = month_drug + Number(data[i].total_heroin_OD_n);
+              month_drug = month_drug + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
               break;
             case 'stimulants':
-              month_drug = month_drug + Number(data[i].total_stimulant_OD_n);
+              month_drug = month_drug + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
               break;
             case 'cocaine':
-              month_drug = month_drug + Number(data[i].total_Cocaine_OD_n);
+              month_drug = month_drug + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
               break;
             case 'methamphetamine':
-              month_drug = month_drug + Number(data[i].total_Methamphetamine_OD_n);
+              month_drug = month_drug + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
               break;
           }
         }
       }
     }
-    return String(month_drug < 20 ? 0 : ((month_drug/month_total) * 10000).toFixed(2));
+    return String(Number(month_drug).toFixed(1));
 }
 
 const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, currentDrug, jurisdictions) => {
@@ -105,41 +107,22 @@ const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, curre
   var yrData = {};
   var monthData = {};
 
-  var dataUS = data.keyedRawUSData;
-  var dataState = data.keyedRawData;
-
-  if (currentTimeLine == 'Annual') { 
-
-    var retVal = 0; 
-
-    for(let i=0;i<Object.keys(jurisdictions).length;i++) {
-      var st = Object.keys(jurisdictions)[i];
-      retVal = getYearlyData(dataState, currentYear, currentDrug, st);
-      yrData[st] = retVal;
-    }
-
-    return yrData;
-    
-  }
-  else 
-  {
     var yyyymm = currentYear + currentMonth.padStart(2, '0');
     var retVal = 0; 
 
     for(let i=0;i<Object.keys(jurisdictions).length;i++) {
       var st = Object.keys(jurisdictions)[i];
-      retVal = getMonthlyData(dataState, yyyymm, currentDrug, st);
+      retVal = getMonthlyData(data, yyyymm, currentDrug, st);
       monthData[st] = retVal;
     }
 
     return monthData;
-  }
      
 };
 
 const UsaMap = (params) => {
 
-  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, supportedYears, width, drugOptions, jurisdictions, onData } = params;
+  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData } = params;
   
   const [selectedDrugsMap, setselectedDrugsMap] = useState(['all']);
 
@@ -149,8 +132,9 @@ const UsaMap = (params) => {
 
   const isSmallViewport = width < 500;
   const fontSize = 15;
-  const suppressedColor = '#999';
-  const unavailableColor = '#EEE';
+  const suppressedColor = '#7F7F7F';
+  const unavailableColor = '#C9C9C9';
+  const unfundedColor = '#86A1D7';
   const legendWidth = 240;
   const height = Math.max(width / 2, 250);
   const legendHeight = Math.max(width / 2, 350);
@@ -163,8 +147,8 @@ const UsaMap = (params) => {
 
   const values = Object.keys(filteredData).map(key => filteredData[key]);
 
-  const max = Math.max(...values.filter(val => !isNaN(val)));
-  const min = Math.min(...values.filter(val => !isNaN(val)));
+  const max = Math.max(...values.filter(val => !isNaN(val) && val > 0));
+  const min = Math.min(...values.filter(val => !isNaN(val) && val > 0));
   const intervals = 5;
   const intervalWidth = ((max - min) / intervals).toFixed(4);
 
@@ -172,13 +156,13 @@ const UsaMap = (params) => {
   let colorIntervals = [];
   for (let i = 0; i < 5; i++) {
     let val = max - (intervalWidth) * (i+1)
-    labelIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(4))
-    colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(4))
+    labelIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
+    colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
   }
 
   const colorScale = scaleLinear({
     domain: [min, max],
-    range: ['rgb(201, 201, 201)', UtilityFunctions.getSeriesColor(selectedDrugsMap[0], 'US')]
+    range: [UtilityFunctions.getSeriesColorStart(selectedDrugsMap[0], 'US'), UtilityFunctions.getSeriesColor(selectedDrugsMap[0], 'US')]
   })
 
   const colorLegendScale = scaleLinear({
@@ -187,23 +171,29 @@ const UsaMap = (params) => {
   })
 
   const getColor = (id) => {
+    if (stateFipsMapping[id] == 'ND') return unfundedColor;
     if(!filteredData[stateFipsMapping[id]]) return unavailableColor;
-    if(isNaN(filteredData[stateFipsMapping[id]])) return suppressedColor;
+    if(filteredData[stateFipsMapping[id]] == '0.0') return suppressedColor;
     return colorScale(filteredData[stateFipsMapping[id]]);
   }
 
   const getRateHTML = (geoId) => {
-    return '<span>' + filteredData[stateFipsMapping[geoId.substring(0, 2)]] + '</span></br>'
+    return '<span>' + (filteredData[stateFipsMapping[geoId.substring(0, 2)]]  == '0.0' ? '*Data Suppressed' : filteredData[stateFipsMapping[geoId.substring(0, 2)]]) + '</span></br>'
   }
 
   const getTooltipFragment = (geoId) => {
 
-    if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == undefined)
-      return;
-
     var presentState = stateFipsMapping[geoId.substring(0, 2)];
     var heading = '<div class="alignCenterTT"><h2 class="borderBottomLine blackFont" style="margin: 0; padding: 0;"><strong>' + `${stateNames[presentState]}` + '</br></strong></h2></div>'; 
-    var rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+    var rateStr;
+
+    if (stateFipsMapping[geoId.substring(0, 2)] == 'ND')
+        rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
+    else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] !== undefined)
+       rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+    else
+       rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+      
     return heading + '<table class="tooltipTableUS"><tr><td><div class="containerTT">' + rateStr + '</div></td></tr></table>'
   }
 
@@ -316,8 +306,23 @@ const UsaMap = (params) => {
                             <text x={0} y={30} fill="black" fontSize={fontSize}>Suspected Overdoses per</text>
                             <text x={0} y={50} fill="black" fontSize={fontSize}>10,000 visits (Quantiles)</text>
                             
-                            {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 180} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 165} fill="black" alignmentBaseline="middle">{value}</text>)}
+                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 180} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 165} fill="black" alignmentBaseline="middle">{value}</text>)}
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} />
+                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
+
+                            <rect x={0} y={35} width={50} height={10} fill={unavailableColor} />
+                            <text x={60} y={40} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
+                            <text x={60} y={60} fill="black" alignmentBaseline="middle" fontSize={12}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
+
+                            <rect x={0} y={75} width={50} height={10} fill={unfundedColor} />
+                            <text x={60} y={80} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
                         </svg>
                       </td>
                     </tr>
@@ -328,11 +333,21 @@ const UsaMap = (params) => {
                 <td>
                   <table>
                     <tr>
+                      <td style={{ 'width' : '15%'}}>
+                         <AngleArrow
+                            width={15}
+                            height={30}
+                            colorScale={'#000000'}
+                            defaultValueIfEmpty={defaultValueIfEmpty}
+                            percentValue={1}
+                          ></AngleArrow>
+                      </td>
                       <td>
                           <svg style={{ height: 100, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
                             <text x={20} y={30} fill="black" alignmentBaseline="middle" fontSize={fontSize} fontWeight={'bold'}>Want to know more?</text>
-                            <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Hover over any state to see</text>
-                            <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={fontSize}>overdose-specific visits</text>
+                            <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Hover over any state to </text>
+                            <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={fontSize}>see overdose-specific </text>
+                            <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={fontSize}>visits</text>
                         </svg>
                       </td>
                     </tr>
