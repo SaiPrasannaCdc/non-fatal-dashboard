@@ -273,7 +273,7 @@ const UsaMap = (params) => {
       <br></br>
       <table style={{width: '100%'}}>
         <tr>
-          <td style={{width: '82%'}} >
+          <td style={{width: '79%'}} >
               <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
               <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
                 <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
@@ -283,7 +283,7 @@ const UsaMap = (params) => {
             </svg>
             <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the chart may change based on the data selected. </i></small></span></div>
           </td>
-          <td style={{width: '18%'}}>
+          <td style={{width: '21%'}}>
             <table>
               <tr>
                 <td style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
@@ -302,12 +302,15 @@ const UsaMap = (params) => {
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
+                        <label style={{'fontSize':'16px'}}>Suspected Overdoses per</label>
+                        <label style={{'fontSize':'16px'}}>10,000 visits (Quantiles)</label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
                           <svg style={{ height: legendHeight - 350, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            <text x={0} y={30} fill="black" fontSize={fontSize}>Suspected Overdoses per</text>
-                            <text x={0} y={50} fill="black" fontSize={fontSize}>10,000 visits (Quantiles)</text>
-                            
-                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 180} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 165} fill="black" alignmentBaseline="middle">{value}</text>)}
+                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 205} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 190} fill="black" alignmentBaseline="middle">{value}</text>)}
                         </svg>
                       </td>
                     </tr>

@@ -771,11 +771,11 @@ border-radius: 50%;
 display: inline-block;
 }
 
-.alldrugToolTip {
+.allToolTip {
 color: #325D7D;
 }
 
-.opioidToolTip {
+.opioidsToolTip {
 color: #000C77;
 }
 
@@ -783,7 +783,7 @@ color: #000C77;
 color: #0C6F96;
 }
 
-.stimulantToolTip {
+.stimulantsToolTip {
 color: #411B6D;
 }
 
@@ -1627,10 +1627,10 @@ padding-left: 2px!important;
     background-color: rgba(215, 215, 215, 1);
 }
 
-/* .rc-slider-mark {
+.rc-slider-mark {
 
     .rc-slider-mark-text {
-        max-width: 50px;
+/*         max-width: 50px;
         color: $black;
 
         top: -35px;
@@ -1638,9 +1638,11 @@ padding-left: 2px!important;
         &:first-child,
         &:last-child {
             top: 0;
-        }
+        } */
+
+        white-space: nowrap;
     }
-} */
+} 
 
 .rc-slider-handle-1 {
     width: 17px;

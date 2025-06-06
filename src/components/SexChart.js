@@ -268,7 +268,7 @@ function SexChart(params) {
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.sex}`} className="animate-bars">
-                    {d.value >= countCutoff && (
+                    {d.value > 0 && (
                       <path
                         key={`cause-bar-${d.sex}`}
                         className={`animated-bar vertical ${animated ? 'animated' : ''}`}
@@ -279,29 +279,30 @@ function SexChart(params) {
                         opacity={d.sex == 'Male' ? 0.4 : 1.0}
                         d={Utils.verticalBarPath(xScale(d.sex), yScale(d.value), xScale.bandwidth(), adjustedHeight - yScale(d.value), xScale.bandwidth() * .1)}
                         fill={drugOptions[currentDrug].color}
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/>Overdoses: ${Number(d.value).toLocaleString()}`}
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: ${Number(d.value).toLocaleString()}`}
                       ></path>
                     )}
-                    {d.value < countCutoff && (
+                    {d.value == 0 && (
                       <text
                         x={xScale(d.sex) + halfBandwidth}
-                        y={adjustedHeight - 5}
-                        fill="white"
+                        y={adjustedHeight - 10}
+                        fill="#687697"
+                        fontWeight='bold'
                         textAnchor="middle"
                         cursor="default"
-                        data-tip="*Data suppressed"
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: *Data Suppressed`}
                       >*</text>
                     )}
-                    {d.value >= countCutoff && (
-                      <text
-                        x={xScale(d.sex) + halfBandwidth}
-                        y={yScale(d.value) + 25}
-                        fill="white"
-                        textAnchor="middle"
-                        cursor="default"
-                        data-tip="*Data suppressed"
-                      >{d.value}</text>
-                    )}
+                    {d.value > 0 && (
+                        <text
+                          x={xScale(d.sex) + halfBandwidth}
+                          y={yScale(d.value) - 10}
+                          fill="#687697"
+                          fontWeight='bold'
+                          textAnchor="middle"
+                          cursor="default"
+                        >{d.value}</text>
+                      )}
                   </Group>
                 ))}
 

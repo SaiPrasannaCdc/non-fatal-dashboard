@@ -219,36 +219,56 @@ function StateChart(params) {
 
                 return (
                   <Group key={`bar-${name}`}>
-                    <path 
-                      className={`animated-bar ${animated ? 'animated' : ''}`}
-                      style={{
-                        'transition': animated ? 'transform 1s ease-in-out' : '',
-                        'transformOrigin': `0px 0px`,
-                        outline: 'none'
-                      }}
-                      d={Utils.horizontalBarPath(true, 0, yScale(name), rate < 0 ? 10 : xScale(rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
-                      fill={stateKey === 'US' ? 'white' : drugOptions[currentDrug].color}
-                      stroke={stateKey === currentState ? 'rgba(255, 102, 1, 0.9)' : drugOptions[currentDrug].color}
-                      strokeWidth="3"
-                      opacity={(currentState === 'US' || stateKey === currentState) ? 1 : 0.4}
-                      onClick={() => {
-                        if(currentState === stateKey){
-                          setCurrentState('US');
-                        } else {
-                          setCurrentState(stateKey);
-                        }
-                      }}
-                      data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                      Rate: ${rate == 0 ? "*Data Suppressed" : Number(rate).toLocaleString()}</div>`}
-                    ></path>
-                    <text 
-                      className="bar-label"
-                      x={rate < 0 ? 10 : xScale(rate)}
-                      y={yScale(name)}
-                      dy="12"
-                      dx="5">
-                        {rate == 0 ? (toolTip?.includes('Data suppressed') ? '*' : '†') : rate}
-                    </text>
+                    {
+                      rate > 0 && 
+                        <path 
+                        className={`animated-bar ${animated ? 'animated' : ''}`}
+                        style={{
+                          'transition': animated ? 'transform 1s ease-in-out' : '',
+                          'transformOrigin': `0px 0px`,
+                          outline: 'none'
+                        }}
+                        d={Utils.horizontalBarPath(true, 0, yScale(name), rate < 0 ? 10 : xScale(rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
+                        fill={stateKey === 'US' ? 'white' : drugOptions[currentDrug].color}
+                        stroke={stateKey === currentState ? 'rgba(255, 102, 1, 0.9)' : drugOptions[currentDrug].color}
+                        strokeWidth="3"
+                        opacity={(currentState === 'US' || stateKey === currentState) ? 1 : 0.4}
+                        onClick={() => {
+                          if(currentState === stateKey){
+                            setCurrentState('US');
+                          } else {
+                            setCurrentState(stateKey);
+                          }
+                        }}
+                        data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
+                        Rate: ${Number(rate).toLocaleString()}</div>`}
+                      ></path>
+                    }
+                    {
+                      rate == 0 &&
+                        <text 
+                        className="bar-label"
+                        x={rate < 0 ? 10 : xScale(rate)}
+                        y={yScale(name)}
+                        dy="12"
+                        dx="5"
+                        data-tip={`<strong>${name}</strong><br/><br/>Overdoses: *Data Suppressed`}>
+                        {'*'}
+                      </text>
+                    }
+                    {
+                      rate > 0 &&
+                        <text 
+                        className="bar-label"
+                        x={rate < 0 ? 10 : xScale(rate)}
+                        y={yScale(name)}
+                        dy="12"
+                        dx="5">
+                        {rate}
+                      </text>
+                    }
+                    
+                    
                   </Group>
                 )}
               )}
