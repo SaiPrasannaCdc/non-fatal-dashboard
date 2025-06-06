@@ -22,7 +22,7 @@ const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 const Handle = Slider.Handle;
 
-const wrapperStyle = { width: 830, marginBottom: 50, marginLeft: 10, marginTop: 5 };
+const wrapperStyle = { width: 900, marginBottom: 50, marginLeft: 10, marginTop: 5 };
 
 /* const handle = (props) => {
   const { value, dragging, index, ...restProps } = props;
@@ -712,17 +712,12 @@ const didOnAfterChangeTriggerMonthly = (value) => {
     setLookupPeriodStartMonth(String(Number(stmonYr.substring(4))));
     setLookupPeriodEndYear(endmonYr.substring(0,4));
     setLookupPeriodEndMonth(String(Number(endmonYr.substring(4))));
+
   };
 
   const getMonthYear = ( startYear, value) => {
-
-    if (value > 12) {
-      let mod = value % 12;
-      return (mod == 0 ? monthNames[12] : monthNames[mod]) + ' ' + (mod == 0 ? String((Number(startYear) + Math.floor(value/12) - 1)) : String((Number(startYear) + Math.floor(value/12))))
-    }
-    else {
-      return monthNames[value] + ' ' + startYear;
-    }
+    let hdr = '12-month rolling average from \n'
+    return hdr + lookupPeriodStartMonth + '/' + lookupPeriodStartYear + ' - ' + lookupPeriodEndMonth + '/' + lookupPeriodEndYear;
   }
 
   function getYear(startYear, value) {
@@ -1497,8 +1492,8 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <table>
             <tr>
-              <td style={{ 'width': '10%' }}>
-                <div id="stats-section-icon" className="" >
+              <td style={{ 'width': '10%'}} className="topPos">
+                <div id="stats-section-icon">
                   <UpDownArrow
                     width={25}
                     height={80}
@@ -1510,11 +1505,9 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               <td>
                 <span className="callout" style={{ 'color': drugColor }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span> 
-                <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>
                     {usPercent < 0 ? 'Decrease' : 'Increase' } in Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
                     <p>Per 10,000 total ED visits from the prior month</p>
-                </div>
               </td>
             </tr>
           </table>
@@ -1720,10 +1713,11 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
           <br></br>
+          <br></br>
           <table>
              <tr>
-              <td style={{'width': '15%', 'textAlign': 'right', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
-              <td style={{'width': '85%'}}>
+              <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
+              <td style={{'width': '84%'}}>
                 {/* {!showAnnualLine && */}
                   <div style={wrapperStyle}>
                     <Range 
@@ -1765,7 +1759,7 @@ const getYears = (startYrInp, endYrInp) => {
                               }
                               else {
                                 setMonthlyToggleLine(false)
-                                setTimelineBar('Monthly');
+                                setTimelineLine('Monthly');
                                 setPeriodToggle(true)
                               }
                             }}/>
@@ -1976,6 +1970,7 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+          {getFootNotesForData()}
       </section>
 
       <div className='data-tables'>

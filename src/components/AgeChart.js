@@ -297,7 +297,7 @@ function AgeChart(params) {
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.ageN}`} className="animate-bars">
-                    {d.value >= countCutoff && (
+                    {d.value > 0 && (
                       <path
                         key={`cause-bar-${d.ageN}`}
                         className={`animated-bar vertical ${animated ? 'animated' : ''}`}
@@ -307,27 +307,28 @@ function AgeChart(params) {
                         }}
                         d={Utils.verticalBarPath(xScale(d.ageN), yScale(d.value), xScale.bandwidth(), adjustedHeight - yScale(d.value), xScale.bandwidth() * .1)}
                         fill={drugOptions[currentDrug].color}
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/>Overdoses: ${Number(d.value).toLocaleString()}`}
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age: ${d.ageN}<br/><br/>Overdoses: ${Number(d.value).toLocaleString()}`}
                       ></path>
                     )}
-                    {d.value < countCutoff && (
+                    {d.value == 0 && (
                       <text
                         x={xScale(d.ageN) + halfBandwidth}
-                        y={adjustedHeight + 15}
-                        fill="white"
+                        y={adjustedHeight - 10}
+                        fill="#687697"
+                        fontWeight='bold'
                         textAnchor="middle"
                         cursor="default"
-                        data-tip="*Data suppressed"
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age Group: ${d.ageN}<br/><br/>Overdoses: *Data Suppressed`}
                       >*</text>
                     )}
-                    {d.value >= countCutoff && (
+                    {d.value > 0 && (
                         <text
                           x={xScale(d.ageN) + halfBandwidth}
-                          y={yScale(d.value) + 25}
-                          fill="white"
+                          y={yScale(d.value) - 10}
+                          fill="#687697"
+                          fontWeight='bold'
                           textAnchor="middle"
                           cursor="default"
-                          data-tip="*Data suppressed"
                         >{d.value}</text>
                       )}
                   </Group>
