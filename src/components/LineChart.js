@@ -286,7 +286,7 @@ function LineChart(params) {
 
   const markYearsForTicks = () => {
 
-    const xAxis = document?.getElementsByClassName("visx-axis-bottom")[0];
+    const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
     if (ticks !== undefined && ticks != null) {
       for (var i=0; i<ticks?.length; i++) {
