@@ -428,7 +428,7 @@ export const UtilityFunctions = {
   getSeriesColor : (currentDrug, key) => {
 
     var seriesColor;
-  
+       
     switch (currentDrug) {
       case 'all':
         seriesColor = (key === 'US') ? 'rgb(56, 71, 102)' : 'lightblue';
@@ -457,6 +457,74 @@ export const UtilityFunctions = {
       }
   
       return seriesColor;
+  },
+
+  getSeriesColorLine : (currentDrug, key, showOverall) => {
+
+    var seriesColor;
+  
+    if (!showOverall) {
+      
+      switch (currentDrug) {
+        case 'all':
+          seriesColor = 'rgb(56, 71, 102)';
+          break;
+        case 'opioids':
+          seriesColor = 'rgb(0, 12, 119)';
+          break;
+        case 'heroin':
+          seriesColor = 'rgb(12, 111, 150)';
+          break;
+        case 'stimulants':
+          seriesColor = 'rgb(65, 27, 109)';
+          break;
+        case 'benzodiazepine':
+          seriesColor = 'rgb(184, 58, 94)';
+          break;
+        case 'fentanyl':
+          seriesColor = 'rgb(41, 72, 145)';
+          break;
+        case 'cocaine':
+          seriesColor = 'rgb(103, 26, 170)';
+          break;
+        case 'methamphetamine':
+          seriesColor = 'rgb(163, 120, 232)';
+          break;
+        }
+    
+        return seriesColor;
+    }
+    else
+    {
+      switch (currentDrug) {
+        case 'all':
+          seriesColor = (key !== 'US') ? 'rgb(56, 71, 102)' : 'rgb(56, 71, 102, 0.5)';
+          break;
+        case 'opioids':
+          seriesColor = (key !== 'US') ? 'rgb(0, 12, 119)' : 'rgb(0, 12, 119, 0.5)';
+          break;
+        case 'heroin':
+          seriesColor = (key !== 'US') ? 'rgb(12, 111, 150)' : 'rgb(12, 111, 150, 0.5)';
+          break;
+        case 'stimulants':
+          seriesColor = (key !== 'US') ? 'rgb(65, 27, 109)' : 'rgb(65, 27, 109)';
+          break;
+        case 'benzodiazepine':
+          seriesColor = (key !== 'US') ? 'rgb(184, 58, 94)' : 'rgb(184, 58, 94, 0.5)';
+          break;
+        case 'fentanyl':
+          seriesColor = (key !== 'US') ? 'rgb(41, 72, 145)' : 'rgb(41, 72, 145, 0.5)';
+          break;
+        case 'cocaine':
+          seriesColor = (key !== 'US') ? 'rgb(103, 26, 170)' : 'rgb(103, 26, 170, 0.5)';
+          break;
+        case 'methamphetamine':
+          seriesColor = (key !== 'US') ? 'rgb(163, 120, 232)' : 'rgb(163, 120, 232, 0.5)';
+          break;
+        }
+      
+          return seriesColor;
+        }
   },
 
   getSeriesColorStart : (currentDrug, key) => {
