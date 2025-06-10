@@ -308,24 +308,24 @@ const UsaMap = (params) => {
                     </tr>
                     <tr>
                       <td>
-                          <svg style={{ height: legendHeight - 420, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 245} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 230} fill="black" alignmentBaseline="middle">{value}</text>)}
+                          <svg style={{ height: legendHeight - 390, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 215} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 200} fill="black" alignmentBaseline="middle">{value}</text>)}
                         </svg>
                       </td>
                     </tr>
                     <tr>
                       <td>
                         <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            <rect x={0} y={5} width={50} height={10} fill={suppressedColor} />
-                            <text x={60} y={10} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
+                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} />
+                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
 
-                            <rect x={0} y={25} width={50} height={10} fill={unavailableColor} />
-                            <text x={60} y={30} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
-                            <text x={60} y={50} fill="black" alignmentBaseline="middle" fontSize={12}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
+                            <rect x={0} y={35} width={50} height={10} fill={unavailableColor} />
+                            <text x={60} y={40} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
+                            <text x={60} y={60} fill="black" alignmentBaseline="middle" fontSize={12}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
 
-                            <rect x={0} y={65} width={50} height={10} fill={unfundedColor} />
-                            <text x={60} y={70} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
+                            <rect x={0} y={75} width={50} height={10} fill={unfundedColor} />
+                            <text x={60} y={80} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
                         </svg>
                       </td>
                     </tr>
