@@ -832,7 +832,7 @@ function LineChart(params) {
                       getFormattedValue(value)
                   }
                   tickLabelProps={(value) => ({
-                    fontSize: specs.fontSize,
+                    fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
                     fill: '#000066',
                     textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
                     angle: (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)

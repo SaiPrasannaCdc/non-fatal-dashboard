@@ -716,8 +716,9 @@ const didOnAfterChangeTriggerMonthly = (value) => {
   };
 
   const getMonthYear = ( startYear, value) => {
-    let hdr = '12-month rolling average from \n'
-    return hdr + lookupPeriodStartMonth + '/' + lookupPeriodStartYear + ' - ' + lookupPeriodEndMonth + '/' + lookupPeriodEndYear;
+    let hdr = '12-month rolling averages from \n'
+    var rem = lookupPeriodStartMonth + '/' + lookupPeriodStartYear + ' - ' + lookupPeriodEndMonth + '/' + lookupPeriodEndYear;
+    return timelineLine == 'Monthly' ? rem : hdr + rem;
   }
 
   function getYear(startYear, value) {
@@ -1387,7 +1388,6 @@ const getYears = (startYrInp, endYrInp) => {
   return (
     <Context.Provider value={{ drugOptions, currentDrug, Hexagon }}>
       <div className="filters-container" ref={outerContainerRef}>
-        <br></br>
         <div>
           <table style={{'width': '100%'}}>
             <tr>
@@ -1492,19 +1492,25 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <table>
             <tr>
-              <td style={{ 'width': '10%'}} className="topPos">
-                <div id="stats-section-icon">
-                  <UpDownArrow
-                    width={25}
-                    height={80}
-                    colorScale={drugColor}
-                    defaultValueIfEmpty={defaultValueIfEmpty}
-                    percentValue={usPercent}
-                  ></UpDownArrow>
-                </div>
+              <td style={{ 'width': ((!isNaN(usPercent) && usPercent > 9.9) ? '45%' : '40%')}} className="topPos">
+                <table>
+                  <tr>
+                    <td style={{ 'width': '40%'}} className="topPos">
+                        <UpDownArrow
+                          width={15}
+                          height={60}
+                          colorScale={drugColor}
+                          defaultValueIfEmpty={defaultValueIfEmpty}
+                          percentValue={usPercent}
+                        ></UpDownArrow>
+                    </td>
+                    <td>
+                        <span className="callout" style={{ 'color': drugColor, 'float': 'left' }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span>
+                    </td>
+                  </tr>
+                </table>
               </td>
               <td>
-                <span className="callout" style={{ 'color': drugColor }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span> 
                   <span className='data-bite-title' style={{ color: drugColor }}>
                     {usPercent < 0 ? 'Decrease' : 'Increase' } in Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
                     <p>Per 10,000 total ED visits from the prior month</p>
@@ -1528,8 +1534,6 @@ const getYears = (startYrInp, endYrInp) => {
             What were the trends in Suspected Nonfatal Overdose Visits in {monthNames[Number(currentMonth)] + ', ' + currentYear}{' for ' + drugOptions[currentDrug].titleAll}{'?'}
           </h2>
         </div>
-
-        &nbsp;
         <div>
           <table style={{'width': '100%'}}>
           <tr>
@@ -1573,7 +1577,6 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
-          <br></br>
         </div>
           <br></br>
           {stateBarChartMemo}
