@@ -286,7 +286,7 @@ function LineChart(params) {
 
   const markYearsForTicks = () => {
 
-    const xAxis = document?.getElementsByClassName("visx-axis-bottom")[0];
+    const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
     if (ticks !== undefined && ticks != null) {
       for (var i=0; i<ticks?.length; i++) {
@@ -832,7 +832,7 @@ function LineChart(params) {
                       getFormattedValue(value)
                   }
                   tickLabelProps={(value) => ({
-                    fontSize: specs.fontSize,
+                    fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
                     fill: '#000066',
                     textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
                     angle: (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)

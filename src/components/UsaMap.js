@@ -273,7 +273,7 @@ const UsaMap = (params) => {
       <br></br>
       <table style={{width: '100%'}}>
         <tr>
-          <td style={{width: '79%'}} >
+          <td style={{width: '79%', verticalAlign: 'top'}} >
               <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
               <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
                 <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
@@ -308,9 +308,9 @@ const UsaMap = (params) => {
                     </tr>
                     <tr>
                       <td>
-                          <svg style={{ height: legendHeight - 350, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 205} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 190} fill="black" alignmentBaseline="middle">{value}</text>)}
+                          <svg style={{ height: legendHeight - 390, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 215} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 200} fill="black" alignmentBaseline="middle">{value}</text>)}
                         </svg>
                       </td>
                     </tr>

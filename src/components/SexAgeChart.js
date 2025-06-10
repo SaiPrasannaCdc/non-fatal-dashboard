@@ -317,7 +317,8 @@ function SexAgeChart(params) {
                   transform: 'rotate(-60deg)',
                   transformOrigin: `${x1Scale(value)}px ${18}px`,
                   textAnchor: 'end',
-                  fontSize: fontSize
+                  fontSize: fontSize,
+                  fill: '#000066',
                 }
               }
             }}
