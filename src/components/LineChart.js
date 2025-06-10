@@ -86,28 +86,28 @@ const getFilteredData = (data, currentState, lookupPeriodStartYear, lookupPeriod
              if (currentState == 'US') {
                 if (data[i].geoid == currentState && data[i].Sex == 'Total' && data[i].Age_Group == 'Total')
                 {
-                  yr_total_drug_OD_n = yr_total_drug_OD_n + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
-                  yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
-                  yr_total_opioid_OD_n =yr_total_opioid_OD_n + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
-                  yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
-                  yr_total_heroin_OD_n = yr_total_heroin_OD_n + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
-                  yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
-                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
-                  yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
+                  yr_total_drug_OD_n = yr_total_drug_OD_n + (UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? 0 : Number(data[i].total_drug_OD_n));
+                  yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + (UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? 0 : Number(data[i].total_Benzo_OD_n));
+                  yr_total_opioid_OD_n =yr_total_opioid_OD_n + (UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? 0 : Number(data[i].total_opioid_OD_n));
+                  yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + (UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? 0 : Number(data[i].total_Fentanyl_OD_n));
+                  yr_total_heroin_OD_n = yr_total_heroin_OD_n + (UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? 0 : Number(data[i].total_heroin_OD_n));
+                  yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + (UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? 0 : Number(data[i].total_stimulant_OD_n));
+                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? 0 : Number(data[i].total_Cocaine_OD_n));
+                  yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + (UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? 0 : Number(data[i].total_Methamphetamine_OD_n));
                 }
             }
             else
             {
               if (data[i].geoid == currentState)
                 {
-                  yr_total_drug_OD_n = yr_total_drug_OD_n + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
-                  yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
-                  yr_total_opioid_OD_n =yr_total_opioid_OD_n + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
-                  yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
-                  yr_total_heroin_OD_n = yr_total_heroin_OD_n + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
-                  yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
-                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
-                  yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
+                  yr_total_drug_OD_n = yr_total_drug_OD_n + (UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? 0 : Number(data[i].total_drug_OD_n));
+                  yr_total_Benzo_OD_n = yr_total_Benzo_OD_n + (UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? 0 : Number(data[i].total_Benzo_OD_n));
+                  yr_total_opioid_OD_n =yr_total_opioid_OD_n + (UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? 0 : Number(data[i].total_opioid_OD_n));
+                  yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + (UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? 0 : Number(data[i].total_Fentanyl_OD_n));
+                  yr_total_heroin_OD_n = yr_total_heroin_OD_n + (UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? 0 : Number(data[i].total_heroin_OD_n));
+                  yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + (UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? 0 : Number(data[i].total_stimulant_OD_n));
+                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (UtilityFunctions.isInValidData(ata[i].total_Cocaine_OD_n) ? 0 : Number(data[i].total_Cocaine_OD_n));
+                  yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + (UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? 0 : Number(data[i].total_Methamphetamine_OD_n));
                 }
             }
           }
@@ -149,14 +149,14 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
                 var monData = {}
                 monData['index'] = Number(index);
                 monData['year'] = monthsArray[j]
-                monData['all'] = data[i].total_drug_OD_n == 9999 ? '0' : String(Number(data[i].total_drug_OD_n).toFixed(1));
-                monData['benzodiazepine'] = data[i].total_Benzo_OD_n == 9999 ? '0' :  String(Number(data[i].total_Benzo_OD_n).toFixed(1));
-                monData['opioids'] = data[i].total_opioid_OD_n == 9999 ? '0' :  String(Number(data[i].total_opioid_OD_n).toFixed(1));
-                monData['fentanyl'] = data[i].total_Fentanyl_OD_n == 9999 ? '0' :  String(Number(data[i].total_Fentanyl_OD_n).toFixed(1));
-                monData['heroin'] = data[i].total_heroin_OD_n == 9999 ? '0' :  String(Number(data[i].total_heroin_OD_n).toFixed(1));
-                monData['stimulants'] = data[i].total_stimulant_OD_n == 9999 ? '0' :  String(Number(data[i].total_stimulant_OD_n).toFixed(1));
-                monData['cocaine'] = data[i].total_Cocaine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Cocaine_OD_n).toFixed(1));
-                monData['methamphetamine'] = data[i].total_Methamphetamine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Methamphetamine_OD_n).toFixed(1));
+                monData['all'] = UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? '0' : String(Number(data[i].total_drug_OD_n).toFixed(1));
+                monData['benzodiazepine'] = UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? '0' :  String(Number(data[i].total_Benzo_OD_n).toFixed(1));
+                monData['opioids'] = UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? '0' :  String(Number(data[i].total_opioid_OD_n).toFixed(1));
+                monData['fentanyl'] = UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? '0' :  String(Number(data[i].total_Fentanyl_OD_n).toFixed(1));
+                monData['heroin'] = UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? '0' :  String(Number(data[i].total_heroin_OD_n).toFixed(1));
+                monData['stimulants'] = UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? '0' :  String(Number(data[i].total_stimulant_OD_n).toFixed(1));
+                monData['cocaine'] = UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? '0' :  String(Number(data[i].total_Cocaine_OD_n).toFixed(1));
+                monData['methamphetamine'] = UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? '0' :  String(Number(data[i].total_Methamphetamine_OD_n).toFixed(1));
 
                 allMonthsData.push(monData);
 
@@ -170,14 +170,14 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
                 var monData = {}
                 monData['index'] = Number(index);
                 monData['year'] = monthsArray[j]
-                monData['all'] = data[i].total_drug_OD_n == 9999 ? '0' : String(Number(data[i].total_drug_OD_n).toFixed(1));
-                monData['benzodiazepine'] = data[i].total_Benzo_OD_n == 9999 ? '0' :  String(Number(data[i].total_Benzo_OD_n).toFixed(1));
-                monData['opioids'] = data[i].total_opioid_OD_n == 9999 ? '0' :  String(Number(data[i].total_opioid_OD_n).toFixed(1));
-                monData['fentanyl'] = data[i].total_Fentanyl_OD_n == 9999 ? '0' :  String(Number(data[i].total_Fentanyl_OD_n).toFixed(1));
-                monData['heroin'] = data[i].total_heroin_OD_n == 9999 ? '0' :  String(Number(data[i].total_heroin_OD_n).toFixed(1));
-                monData['stimulants'] = data[i].total_stimulant_OD_n == 9999 ? '0' :  String(Number(data[i].total_stimulant_OD_n).toFixed(1));
-                monData['cocaine'] = data[i].total_Cocaine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Cocaine_OD_n).toFixed(2));
-                monData['methamphetamine'] = data[i].total_Methamphetamine_OD_n == 9999 ? '0' :  String(Number(data[i].total_Methamphetamine_OD_n).toFixed(1));
+                monData['all'] = UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? '0' : String(Number(data[i].total_drug_OD_n).toFixed(1));
+                monData['benzodiazepine'] = UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? '0' :  String(Number(data[i].total_Benzo_OD_n).toFixed(1));
+                monData['opioids'] = UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? '0' :  String(Number(data[i].total_opioid_OD_n).toFixed(1));
+                monData['fentanyl'] = UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? '0' :  String(Number(data[i].total_Fentanyl_OD_n).toFixed(1));
+                monData['heroin'] = UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? '0' :  String(Number(data[i].total_heroin_OD_n).toFixed(1));
+                monData['stimulants'] = UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? '0' :  String(Number(data[i].total_stimulant_OD_n).toFixed(1));
+                monData['cocaine'] = UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? '0' :  String(Number(data[i].total_Cocaine_OD_n).toFixed(2));
+                monData['methamphetamine'] = UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? '0' :  String(Number(data[i].total_Methamphetamine_OD_n).toFixed(1));
 
                 allMonthsData.push(monData);
 

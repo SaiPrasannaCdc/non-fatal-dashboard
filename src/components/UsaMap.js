@@ -32,28 +32,28 @@ const getYearlyData = (data, yr, drug, st) => {
         {
           switch (drug) {
             case 'all':
-              yr_drug_total = yr_drug_total + data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? 0 : Number(data[i].total_drug_OD_n);
               break;
             case 'benzodiazepine':
-              yr_drug_total = yr_drug_total + data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? 0 : Number(data[i].total_Benzo_OD_n);
               break;
             case 'opioids':
-              yr_drug_total = yr_drug_total + data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? 0 : Number(data[i].total_opioid_OD_n);
               break;
             case 'fentanyl':
-              yr_drug_total = yr_drug_total + data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? 0 : Number(data[i].total_Fentanyl_OD_n);
               break;
             case 'heroin':
-              yr_drug_total = yr_drug_total + data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? 0 : Number(data[i].total_heroin_OD_n);
               break;
             case 'stimulants':
-              yr_drug_total = yr_drug_total + data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? 0 : Number(data[i].total_stimulant_OD_n);
               break;
             case 'cocaine':
-              yr_drug_total = yr_drug_total + data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? 0 : Number(data[i].total_Cocaine_OD_n);
               break;
             case 'methamphetamine':
-              yr_drug_total = yr_drug_total + data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? 0 : Number(data[i].total_Methamphetamine_OD_n);
               break;
           }
         }
@@ -72,28 +72,28 @@ const getMonthlyData = (data, yrmon, drug, st) => {
         {
           switch (drug) {
             case 'all':
-              month_drug = month_drug + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_drug_OD_n) : Number(data[i].total_drug_OD_n));
               break;
             case 'benzodiazepine':
-              month_drug = month_drug + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Benzo_OD_n) : Number(data[i].total_Benzo_OD_n));
               break;
             case 'opioids':
-              month_drug = month_drug + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_opioid_OD_n) : Number(data[i].total_opioid_OD_n));
               break;
             case 'fentanyl':
-              month_drug = month_drug + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Fentanyl_OD_n) : Number(data[i].total_Fentanyl_OD_n));
               break;
             case 'heroin':
-              month_drug = month_drug + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_heroin_OD_n) : Number(data[i].total_heroin_OD_n));
               break;
             case 'stimulants':
-              month_drug = month_drug + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_stimulant_OD_n) : Number(data[i].total_stimulant_OD_n));
               break;
             case 'cocaine':
-              month_drug = month_drug + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Cocaine_OD_n) : Number(data[i].total_Cocaine_OD_n));
               break;
             case 'methamphetamine':
-              month_drug = month_drug + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
+              month_drug = month_drug + (UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Methamphetamine_OD_n) : Number(data[i].total_Methamphetamine_OD_n));
               break;
           }
         }
@@ -171,8 +171,8 @@ const UsaMap = (params) => {
   })
 
   const getColor = (id) => {
-    if (stateFipsMapping[id] == 'ND') return unfundedColor;
-    if(!filteredData[stateFipsMapping[id]]) return unavailableColor;
+    if (filteredData[stateFipsMapping[id] == -2]) return unfundedColor;
+    if(filteredData[stateFipsMapping[id] == -1]) return unavailableColor;
     if(filteredData[stateFipsMapping[id]] == '0.0') return suppressedColor;
     return colorScale(filteredData[stateFipsMapping[id]]);
   }
@@ -187,12 +187,14 @@ const UsaMap = (params) => {
     var heading = '<div class="alignCenterTT"><h2 class="borderBottomLine blackFont" style="margin: 0; padding: 0;"><strong>' + `${stateNames[presentState]}` + '</br></strong></h2></div>'; 
     var rateStr;
 
-    if (stateFipsMapping[geoId.substring(0, 2)] == 'ND')
-        rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
-    else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] !== undefined)
+    if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] > 0)
        rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
-    else
-       rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+    else {
+      if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == -1)
+        rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+      else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == -2)
+        rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
+    }
       
     return heading + '<table class="tooltipTableUS"><tr><td><div class="containerTT">' + rateStr + '</div></td></tr></table>'
   }

@@ -26,43 +26,43 @@ const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear,
 
               switch (currentDrug) {
                 case 'all':
-                  val = data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n;
-                  tooltipVal = data[i].total_drug_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_drug_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? 0 : data[i].total_drug_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? 'Data suppressed' : String(data[i].total_drug_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'benzodiazepine':
-                  val = data[i].total_Benzo_OD_n == 9999 ? 0 : data[i].total_Benzo_OD_n;
-                  tooltipVal = data[i].total_Benzo_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Benzo_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? 0 : data[i].total_Benzo_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? 'Data suppressed' : String(data[i].total_Benzo_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'opioids':
-                  val = data[i].total_opioid_OD_n == 9999 ? 0 : data[i].total_opioid_OD_n;
-                  tooltipVal = data[i].total_opioid_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_opioid_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? 0 : data[i].total_opioid_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? 'Data suppressed' : String(data[i].total_opioid_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'fentanyl':
-                  val = data[i].total_Fentanyl_OD_n == 9999 ? 0 : data[i].total_Fentanyl_OD_n;
-                  tooltipVal = data[i].total_Fentanyl_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Fentanyl_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? 0 : data[i].total_Fentanyl_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? 'Data suppressed' : String(data[i].total_Fentanyl_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'heroin':
-                  val = data[i].total_heroin_OD_n == 9999 ? 0 : data[i].total_heroin_OD_n;
-                  tooltipVal = data[i].total_heroin_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_heroin_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? 0 : data[i].total_heroin_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? 'Data suppressed' : String(data[i].total_heroin_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'stimulants':
-                  val = data[i].total_stimulant_OD_n == 9999 ? 0 : data[i].total_stimulant_OD_n;
-                  tooltipVal = data[i].total_stimulant_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_stimulant_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? 0 : data[i].total_stimulant_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? 'Data suppressed' : String(data[i].total_stimulant_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'cocaine':
-                  val = data[i].total_Cocaine_OD_n == 9999 ? 0 : data[i].total_Cocaine_OD_n;
-                  tooltipVal = data[i].total_Cocaine_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Cocaine_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? 0 : data[i].total_Cocaine_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? 'Data suppressed' : String(data[i].total_Cocaine_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'methamphetamine':
-                  val = data[i].total_Methamphetamine_OD_n == 9999 ? 0 : data[i].total_Methamphetamine_OD_n;
-                  tooltipVal = data[i].total_Methamphetamine_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Methamphetamine_OD_n);
+                  val = UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? 0 : data[i].total_Methamphetamine_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? 'Data suppressed' : String(data[i].total_Methamphetamine_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
               }
@@ -81,43 +81,43 @@ const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear,
 
               switch (currentDrug) {
                 case 'all':
-                  val = dataOverall[i].total_drug_OD_n == 9999 ? 0 : dataOverall[i].total_drug_OD_n;
-                  tooltipVal = dataOverall[i].total_drug_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_drug_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_drug_OD_n) ? 0 : dataOverall[i].total_drug_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_drug_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_drug_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'benzodiazepine':
-                  val = dataOverall[i].total_Benzo_OD_n == 9999 ? 0 : dataOverall[i].total_Benzo_OD_n;
-                  tooltipVal = dataOverall[i].total_Benzo_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Benzo_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_Benzo_OD_n) ? 0 : dataOverall[i].total_Benzo_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_Benzo_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_Benzo_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'opioids':
-                  val = dataOverall[i].total_opioid_OD_n == 9999 ? 0 : dataOverall[i].total_opioid_OD_n;
-                  tooltipVal = dataOverall[i].total_opioid_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_opioid_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_opioid_OD_n) ? 0 : dataOverall[i].total_opioid_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_opioid_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_opioid_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'fentanyl':
-                  val = dataOverall[i].total_Fentanyl_OD_n == 9999 ? 0 : dataOverall[i].total_Fentanyl_OD_n;
-                  tooltipVal = dataOverall[i].total_Fentanyl_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Fentanyl_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_Fentanyl_OD_n) ? 0 : dataOverall[i].total_Fentanyl_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_Fentanyl_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_Fentanyl_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'heroin':
-                  val = dataOverall[i].total_heroin_OD_n == 9999 ? 0 : dataOverall[i].total_heroin_OD_n;
-                  tooltipVal = dataOverall[i].total_heroin_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_heroin_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_heroin_OD_n) ? 0 : dataOverall[i].total_heroin_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_heroin_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_heroin_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'stimulants':
-                  val = dataOverall[i].total_stimulant_OD_n == 9999 ? 0 : dataOverall[i].total_stimulant_OD_n;
-                  tooltipVal = dataOverall[i].total_stimulant_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_stimulant_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_stimulant_OD_n) ? 0 : dataOverall[i].total_stimulant_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_stimulant_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_stimulant_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'cocaine':
-                  val = dataOverall[i].total_Cocaine_OD_n == 9999 ? 0 : dataOverall[i].total_Cocaine_OD_n;
-                  tooltipVal = dataOverall[i].total_Cocaine_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Cocaine_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_Cocaine_OD_n) ? 0 : dataOverall[i].total_Cocaine_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_Cocaine_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_Cocaine_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'methamphetamine':
-                  val = dataOverall[i].total_Methamphetamine_OD_n == 9999 ? 0 : dataOverall[i].total_Methamphetamine_OD_n;
-                  tooltipVal = dataOverall[i].total_Methamphetamine_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Methamphetamine_OD_n);
+                  val = UtilityFunctions.isInValidData(dataOverall[i].total_Methamphetamine_OD_n) ? 0 : dataOverall[i].total_Methamphetamine_OD_n;
+                  tooltipVal = UtilityFunctions.isInValidData(dataOverall[i].total_Methamphetamine_OD_n) ? 'Data suppressed' : String(dataOverall[i].total_Methamphetamine_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
               }

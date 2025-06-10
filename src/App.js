@@ -1274,6 +1274,8 @@ const getYears = (startYrInp, endYrInp) => {
           <div>
             <table style={{ width: '100%' }}>
               <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
+              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'** Data not avaialble/not reported'}</td></tr>
+              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'*** Not funded'}</td></tr>
             </table>
           </div>
     )
@@ -1491,19 +1493,23 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <table>
             <tr>
-              <td style={{ 'width': '35%'}} className="topPos">
-                      <div id="stats-section-icon" className="callout" style={{ 'float': 'left'}}>
+              <td style={{ 'width': ((!isNaN(usPercent) && usPercent > 9.9) ? '45%' : '40%')}} className="topPos">
+                <table>
+                  <tr>
+                    <td style={{ 'width': '40%'}} className="topPos">
                         <UpDownArrow
-                          width={25}
-                          height={80}
+                          width={15}
+                          height={60}
                           colorScale={drugColor}
                           defaultValueIfEmpty={defaultValueIfEmpty}
                           percentValue={usPercent}
                         ></UpDownArrow>
-                      </div>
-                      <div style={{ 'float': 'left'}}>
-                      <span className="callout" style={{ 'color': drugColor }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span>
-                      </div>
+                    </td>
+                    <td>
+                        <span className="callout" style={{ 'color': drugColor, 'float': 'left' }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span>
+                    </td>
+                  </tr>
+                </table>
               </td>
               <td>
                   <span className='data-bite-title' style={{ color: drugColor }}>
@@ -1555,7 +1561,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '45%'}}>
-                <div style={{float: 'left'}}>
+                <div style={{float: 'left', paddingLeft: '5px'}}>
                         <label class="toggleA" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
                             <input id="toggleMonthly" class="toggleA-input" type="checkbox" checked={showAnnual}
                             onChange={(e) => {
@@ -1611,7 +1617,7 @@ const getYears = (startYrInp, endYrInp) => {
               </select>
               </td>
 
-              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+              <td style={{'width': '18%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
                 <div className="select-input">Select Time Period:</div>
               </td>
               
@@ -1668,11 +1674,11 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '84%'}}>
                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                   <tr>
-                    <td style={{'width': '22%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right'}} className="select-input">Select Drug Syndrome:</div>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                       <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
                     </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
                       {getDrugControlsBar()}
                     </td>
                   </tr>
@@ -1683,6 +1689,7 @@ const getYears = (startYrInp, endYrInp) => {
           </table>
         </div> 
        <br></br>
+       &nbsp;
         {drugsBarChartMemo}
         {getFootNotesForData()}
         <table style={{width: '100%'}}>
@@ -1706,7 +1713,6 @@ const getYears = (startYrInp, endYrInp) => {
           </h2>
         </div>
 
-        &nbsp;
         <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '25%'}}></td>
@@ -1726,11 +1732,11 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '84%'}}>
                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                   <tr>
-                    <td style={{'width': '22%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right'}} className="select-input">Select Drug Syndrome:</div>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                       <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
                     </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
                       {getDrugControlsLine()}
                     </td>
                   </tr>
@@ -1739,6 +1745,7 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '8%'}}></td>
             </tr>
           </table>
+          <br></br>
           <table>
              <tr>
               <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
@@ -1841,7 +1848,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlyMap">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'left'}}>
+                    <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
                       <div>
                         <input
                         id="radioUSAnnualMap"
@@ -1899,11 +1906,11 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '84%'}}>
                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                   <tr>
-                    <td style={{'width': '22%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right'}} className="select-input">Select Drug Syndrome:</div>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                       <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
                     </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
                       {getDrugControlsSexAge()}
                     </td>
                   </tr>
@@ -1935,7 +1942,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlySexAge">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'left'}}>
+                    <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
                       <div>
                         <input
                         id="emerging-percent-metric-line-chart"
