@@ -21,28 +21,28 @@ const getData = (data, currentState, currentYear, currentMonth, selectedDrugs) =
             if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
             {
               if (selectedDrugs.includes('all'))
-                finalData['all'] = {rate: UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_drug_OD_n) : data[i].total_drug_OD_n, stateKey: 'all'};
+                finalData['all'] = {rate: UtilityFunctions.convertValue(data[i].total_drug_OD_n), stateKey: 'all'};
 
               if (selectedDrugs.includes('benzodiazepine'))
-                finalData['benzodiazepine'] = {rate: UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Benzo_OD_n) : data[i].total_Benzo_OD_n, stateKey: 'benzodiazepine'};
+                finalData['benzodiazepine'] = {rate: UtilityFunctions.convertValue(data[i].total_Benzo_OD_n), stateKey: 'benzodiazepine'};
               
               if (selectedDrugs.includes('opioids'))
-                finalData['opioids'] = {rate: UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_opioid_OD_n) : data[i].total_opioid_OD_n, stateKey: 'opioids'};
+                finalData['opioids'] = {rate: UtilityFunctions.convertValue(data[i].total_opioid_OD_n), stateKey: 'opioids'};
 
               if (selectedDrugs.includes('fentanyl'))
-                finalData['fentanyl'] = {rate: UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Fentanyl_OD_n) : data[i].total_Fentanyl_OD_n, stateKey: 'fentanyl'};
+                finalData['fentanyl'] = {rate: UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n), stateKey: 'fentanyl'};
 
               if (selectedDrugs.includes('heroin'))
-                finalData['heroin'] = {rate: UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_heroin_OD_n) : data[i].total_heroin_OD_n, stateKey: 'heroin'};
+                finalData['heroin'] = {rate: UtilityFunctions.convertValue(data[i].total_heroin_OD_n), stateKey: 'heroin'};
 
               if (selectedDrugs.includes('stimulants'))
-                finalData['stimulants'] = {rate: UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_stimulant_OD_n) : data[i].total_stimulant_OD_n, stateKey: 'stimulants'};
+                finalData['stimulants'] = {rate: UtilityFunctions.convertValue(data[i].total_stimulant_OD_n), stateKey: 'stimulants'};
 
               if (selectedDrugs.includes('cocaine'))
-                finalData['cocaine'] = {rate: UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Cocaine_OD_n) : data[i].total_Cocaine_OD_n, stateKey: 'cocaine'};
+                finalData['cocaine'] = {rate: UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n), stateKey: 'cocaine'};
               
               if (selectedDrugs.includes('methamphetamine'))
-                finalData['methamphetamine'] = {rate: UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Methamphetamine_OD_n) : data[i].total_Methamphetamine_OD_n, stateKey: 'methamphetamine'};
+                finalData['methamphetamine'] = {rate: UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n), stateKey: 'methamphetamine'};
 
             }
           }
@@ -51,28 +51,28 @@ const getData = (data, currentState, currentYear, currentMonth, selectedDrugs) =
             if (data[i].geoid == currentState)
             {
               if (selectedDrugs.includes('all'))
-                finalData['all'] = {rate: UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_drug_OD_n) : data[i].total_drug_OD_n, stateKey: 'all'};
+                finalData['all'] = {rate: UtilityFunctions.convertValue(data[i].total_drug_OD_n), stateKey: 'all'};
 
               if (selectedDrugs.includes('benzodiazepine'))
-                finalData['benzodiazepine'] = {rate: UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Benzo_OD_n) : data[i].total_Benzo_OD_n, stateKey: 'benzodiazepine'};
+                finalData['benzodiazepine'] = {rate: UtilityFunctions.convertValue(data[i].total_Benzo_OD_n), stateKey: 'benzodiazepine'};
               
               if (selectedDrugs.includes('opioids'))
-                finalData['opioids'] = {rate: UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_opioid_OD_n) : data[i].total_opioid_OD_n, stateKey: 'opioids'};
+                finalData['opioids'] = {rate: UtilityFunctions.convertValue(data[i].total_opioid_OD_n), stateKey: 'opioids'};
 
               if (selectedDrugs.includes('fentanyl'))
-                finalData['fentanyl'] = {rate: UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Fentanyl_OD_n) : data[i].total_Fentanyl_OD_n, stateKey: 'fentanyl'};
+                finalData['fentanyl'] = {rate: UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n), stateKey: 'fentanyl'};
 
               if (selectedDrugs.includes('heroin'))
-                finalData['heroin'] = {rate: UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_heroin_OD_n) : data[i].total_heroin_OD_n, stateKey: 'heroin'};
+                finalData['heroin'] = {rate: UtilityFunctions.convertValue(data[i].total_heroin_OD_n), stateKey: 'heroin'};
 
               if (selectedDrugs.includes('stimulants'))
-                finalData['stimulants'] = {rate: UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_stimulant_OD_n) : data[i].total_stimulant_OD_n, stateKey: 'stimulants'};
+                finalData['stimulants'] = {rate: UtilityFunctions.convertValue(data[i].total_stimulant_OD_n), stateKey: 'stimulants'};
 
               if (selectedDrugs.includes('cocaine'))
-                finalData['cocaine'] = {rate: UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Cocaine_OD_n) : data[i].total_Cocaine_OD_n, stateKey: 'cocaine'};
+                finalData['cocaine'] = {rate: UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n), stateKey: 'cocaine'};
               
               if (selectedDrugs.includes('methamphetamine'))
-                finalData['methamphetamine'] = {rate: UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Methamphetamine_OD_n) : data[i].total_Methamphetamine_OD_n, stateKey: 'methamphetamine'};
+                finalData['methamphetamine'] = {rate: UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n), stateKey: 'methamphetamine'};
             }
           }
         }

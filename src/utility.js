@@ -561,20 +561,24 @@ export const UtilityFunctions = {
       return seriesColor;
   },
 
-  isInValidData : (val) => {
-    if (val == 8888 || val == 7777 || val == 9999)
-      return true;
-    else
-      return false;
-  },
-
-  invalidDataInd : (val) => {
+  convertValue : (val) => {
     if (val == 8888)
       return -1;
     else if (val == 7777)
       return -2;
-   else
+   else if (val == 9999)
       return 0;
+  else
+      return val;
+  },
+
+  deleteStateKeys : (obj) => {
+    for (let key in obj) {
+      if (obj[key].rate < 0) {
+        delete obj[key];
+      }
+    }
+    return obj;
   }
 
 }

@@ -25,73 +25,73 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
               switch (currentDrug) {
                 case 'all':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_drug_OD_n) : data[i].total_drug_OD_n);
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.isInValidData(data[i].total_drug_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_drug_OD_n) : data[i].total_drug_OD_n);
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n));
                   }
 
                   break;
                 case 'benzodiazepine':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Benzo_OD_n) : data[i].total_Benzo_OD_n);
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) +Number(UtilityFunctions.isInValidData(data[i].total_Benzo_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Benzo_OD_n) : data[i].total_Benzo_OD_n);
+                    female_total = Number(female_total) +Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
                   }
 
                   break;
                 case 'opioids':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) +Number(UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_opioid_OD_n) : data[i].total_opioid_OD_n);
+                    male_total = Number(male_total) +Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.isInValidData(data[i].total_opioid_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_opioid_OD_n) : data[i].total_opioid_OD_n);
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
                   }
 
                   break;
                 case 'fentanyl':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Fentanyl_OD_n) : data[i].total_Fentanyl_OD_n);
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
                   } 
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.isInValidData(data[i].total_Fentanyl_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Fentanyl_OD_n) : data[i].total_Fentanyl_OD_n);
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
                   }
 
                   break;
                 case 'heroin':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) +Number(UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_heroin_OD_n) : data[i].total_heroin_OD_n);
+                    male_total = Number(male_total) +Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.isInValidData(data[i].total_heroin_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_heroin_OD_n) : data[i].total_heroin_OD_n);
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
                   }
 
                   break;
                 case 'stimulants':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_stimulant_OD_n) : data[i].total_stimulant_OD_n);
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.isInValidData(data[i].total_stimulant_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_stimulant_OD_n) : data[i].total_stimulant_OD_n);
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
                   }
 
                   break;
                 case 'cocaine':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Cocaine_OD_n) : data[i].total_Cocaine_OD_n);
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.isInValidData(data[i].total_Cocaine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Cocaine_OD_n) : data[i].total_Cocaine_OD_n);
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
                   }
 
                   break;
                 case 'methamphetamine':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Methamphetamine_OD_n) : data[i].total_Methamphetamine_OD_n);
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.isInValidData(data[i].total_Methamphetamine_OD_n) ? UtilityFunctions.invalidDataInd(data[i].total_Methamphetamine_OD_n) : data[i].total_Methamphetamine_OD_n);
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
                   }
 
                   break;

@@ -1274,8 +1274,6 @@ const getYears = (startYrInp, endYrInp) => {
           <div>
             <table style={{ width: '100%' }}>
               <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
-              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'** Data not avaialble/not reported'}</td></tr>
-              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'*** Not funded'}</td></tr>
             </table>
           </div>
     )
@@ -1506,7 +1504,7 @@ const getYears = (startYrInp, endYrInp) => {
                         ></UpDownArrow>
                     </td>
                     <td>
-                        <span className="callout" style={{ 'color': drugColor, 'float': 'left' }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span>
+                        <span className="callout" style={{ 'color': drugColor, 'float': 'left' }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent).toFixed(1)}` + '%'}</span>
                     </td>
                   </tr>
                 </table>
