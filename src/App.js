@@ -812,14 +812,37 @@ const getYears = (startYrInp, endYrInp) => {
     return sortObjectByKeyDescending(years);
   }; 
 
+   const isValidStateData = (rec) => {
+    if (rec.total_drug_OD_n == 7777.0 || rec.total_drug_OD_n == 8888.0)
+      return false;
+    if (rec.total_Benzo_OD_n == 7777.0 || rec.total_Benzo_OD_n == 8888.0)
+      return false;
+    if (rec.total_opioid_OD_n == 7777.0 || rec.total_opioid_OD_n == 8888.0)
+      return false;
+    if (rec.total_Fentanyl_OD_n == 7777.0 || rec.total_Fentanyl_OD_n == 8888.0)
+      return false;
+    if (rec.total_heroin_OD_n == 7777.0 || rec.total_heroin_OD_n == 8888.0)
+      return false;
+    if (rec.total_stimulant_OD_n == 7777.0 || rec.total_stimulant_OD_n == 8888.0)
+      return false;
+    if (rec.total_Cocaine_OD_n == 7777.0 || rec.total_Cocaine_OD_n == 8888.0)
+      return false;
+    if (rec.total_Methamphetamine_OD_n == 7777.0 || rec.total_Methamphetamine_OD_n == 8888.0)
+      return false;
+
+    return true;
+   }
+
    const getJurisCount = (stateData, yr, mon) => {
 
       var juris = {};
       var tmpJuris = [];
 
       for (let i=0;i<stateData.length;i++) {
-        if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0'))
-          tmpJuris.push(stateData[i].geoid)
+        if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0')) {
+          if (isValidStateData(stateData[i]))
+            tmpJuris.push(stateData[i].geoid)
+        }
       }
 
       tmpJuris.sort();
@@ -1269,6 +1292,12 @@ const getYears = (startYrInp, endYrInp) => {
     )
   }
 
+  const getPeriod = (currentYear, currentMonth) => {
+    let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
+    d.setMonth(d.getMonth() - 11);
+    return d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear; 
+  }
+
   const getFootNotesForData = () => {
     return (
           <div>
@@ -1474,7 +1503,7 @@ const getYears = (startYrInp, endYrInp) => {
 
       <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            {getPriorMonth()} Suspected Nonfatal Overdose ED Visits for {drugOptions[currentDrug].titleAll}<sup>[4]</sup>
+            {getPriorMonth()} Suspected Nonfatal Overdose ED Visits for {drugOptions[currentDrug].titleAll} in Participating Jurisdictions ({jurisCount})<sup>[4]</sup>
           </h2>
         </div>
       </div>
@@ -1531,12 +1560,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({Object.keys(getJuris(currentYear, currentMonth)).length} Jurisdictions) and by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataMonthly, currentYear, currentMonth)} Jurisdictions), {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({Object.keys(getJuris(currentYear, currentMonth)).length} Jurisdictions) and by Jurisdiction, [TBD]
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataAnnual, currentYear, currentMonth)} Jurisdictions), [{getPeriod(currentYear, currentMonth)}]
           </h2>
           }
         </div>
