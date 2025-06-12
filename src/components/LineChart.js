@@ -194,7 +194,7 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
 
 function LineChart(params) {
 
-  const { data, dataOverall, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, jurisdictionsCnt  } = params;
+  const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, jurisdictionsCnt  } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -598,6 +598,19 @@ function LineChart(params) {
     }
     return sortedToolTips;
   }
+
+  const isCovidPeriod = (yearmon) => {
+    const covidPeriod = ['202003', '202004', '202005', '202006', '202007', '202008']
+    return covidPeriod.includes(yearmon);
+  }
+
+  const getTooltipCovid = () => {
+    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
+  }
+
+  const getJurisCount = (yearmon) => {
+    return jurisCountData[yearmon]
+  }
   
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
@@ -619,14 +632,13 @@ function LineChart(params) {
 
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
-              className={''}
+              fill={isCovidPeriod(d['year']) ? '#E7E7E7' : 'transparent'}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
               width={sectionWidth}
               height={specs.yMax}
               style={{outline: 'none'}}
-              fill='transparent'
-              data-tip={(inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey], d[inp.selectedDrugs[0]]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
+              data-tip={isCovidPeriod(d['year']) ? getTooltipCovid() : ((inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey], d[inp.selectedDrugs[0]]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + (inp.currentTimeframe === 'Annual' ? `<tr><td class='alignCenter'><span><small>12-month rolling averages </small></span></td></tr><tr><td class='alignCenter'><span><small>starting and ending period</small></span></td></tr>` : '') + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr><tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`)}></rect>
           })
         }
       </Fragment>

@@ -498,28 +498,28 @@ export const UtilityFunctions = {
     {
       switch (currentDrug) {
         case 'all':
-          seriesColor = (key !== 'US') ? 'rgb(56, 71, 102)' : 'rgb(56, 71, 102, 0.5)';
+          seriesColor = (key !== 'US') ? 'rgb(56, 71, 102)' : 'rgb(56, 71, 102, 0.65)';
           break;
         case 'opioids':
-          seriesColor = (key !== 'US') ? 'rgb(0, 12, 119)' : 'rgb(0, 12, 119, 0.5)';
+          seriesColor = (key !== 'US') ? 'rgb(0, 12, 119)' : 'rgb(0, 12, 119, 0.65)';
           break;
         case 'heroin':
-          seriesColor = (key !== 'US') ? 'rgb(12, 111, 150)' : 'rgb(12, 111, 150, 0.5)';
+          seriesColor = (key !== 'US') ? 'rgb(12, 111, 150)' : 'rgb(12, 111, 150, 0.65)';
           break;
         case 'stimulants':
-          seriesColor = (key !== 'US') ? 'rgb(65, 27, 109)' : 'rgb(65, 27, 109)';
+          seriesColor = (key !== 'US') ? 'rgb(65, 27, 109)' : 'rgb(65, 27, 109, 0.65)';
           break;
         case 'benzodiazepine':
-          seriesColor = (key !== 'US') ? 'rgb(184, 58, 94)' : 'rgb(184, 58, 94, 0.5)';
+          seriesColor = (key !== 'US') ? 'rgb(184, 58, 94)' : 'rgb(184, 58, 94, 0.65)';
           break;
         case 'fentanyl':
-          seriesColor = (key !== 'US') ? 'rgb(41, 72, 145)' : 'rgb(41, 72, 145, 0.5)';
+          seriesColor = (key !== 'US') ? 'rgb(41, 72, 145)' : 'rgb(41, 72, 145, 0.65)';
           break;
         case 'cocaine':
-          seriesColor = (key !== 'US') ? 'rgb(103, 26, 170)' : 'rgb(103, 26, 170, 0.5)';
+          seriesColor = (key !== 'US') ? 'rgb(103, 26, 170)' : 'rgb(103, 26, 170, 0.65)';
           break;
         case 'methamphetamine':
-          seriesColor = (key !== 'US') ? 'rgb(163, 120, 232)' : 'rgb(163, 120, 232, 0.5)';
+          seriesColor = (key !== 'US') ? 'rgb(163, 120, 232)' : 'rgb(163, 120, 232, 0.65)';
           break;
         }
       
@@ -579,6 +579,14 @@ export const UtilityFunctions = {
       }
     }
     return obj;
+  },
+
+  getPeriod : (currentYear, currentMonth) => {
+    const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
+
+    let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
+    d.setMonth(d.getMonth() - 11);
+    return '(' + d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear + ')'; 
   }
 
 }

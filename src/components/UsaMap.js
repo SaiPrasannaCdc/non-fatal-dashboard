@@ -132,9 +132,9 @@ const UsaMap = (params) => {
 
   const isSmallViewport = width < 500;
   const fontSize = 15;
-  const suppressedColor = '#7F7F7F';
+  const suppressedColor = 'url(#pattern_KJD3DK2)';
   const unavailableColor = '#C9C9C9';
-  const unfundedColor = '#86A1D7';
+  const unfundedColor = '#FFFFFF';
   const legendWidth = 240;
   const height = Math.max(width / 2, 250);
   const legendHeight = Math.max(width / 2, 350);
@@ -172,7 +172,7 @@ const UsaMap = (params) => {
 
   const getColor = (id) => {
 
-    if (filteredData[stateFipsMapping[id]] == '-2.0') return unfundedColor;
+    if (filteredData[stateFipsMapping[id]] == '-2.0') return unfundedColor; 
     if(filteredData[stateFipsMapping[id]] == '-1.0') return unavailableColor;
     if(filteredData[stateFipsMapping[id]] == '0.0') return suppressedColor;
     return colorScale(filteredData[stateFipsMapping[id]]);
@@ -250,12 +250,12 @@ const UsaMap = (params) => {
           key={geo.id}
           className="geo-group"
         >
-          <path
+         <path
             tabIndex={-1}
             className='single-geo'
             stroke={'#000'}
             strokeWidth={state ? 1 : currentState === 'US' && isSmallViewport ? 0.1 : .5}
-            fill={getColor(geo.id)}
+            fill= {getColor(geo.id)}
             d={path}
             style={{ pointerEvents: geo.id.length <= 2 ? 'default' : 'default' }}
             data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : getTooltipFragment(geo.id)}
@@ -278,6 +278,11 @@ const UsaMap = (params) => {
         <tr>
           <td style={{width: '79%', verticalAlign: 'top'}} >
               <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
+                <defs>
+                  <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
+                    <line x1="0" y="0" x2="0" y2="9.5" stroke="#0C0824" style={{ strokeWidth: 2 }} />
+                  </pattern>
+                </defs>
               <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
                 <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
                   {({ features, projection }) => constructGeoJsx(features, projection, true)}
@@ -320,14 +325,14 @@ const UsaMap = (params) => {
                     <tr>
                       <td>
                         <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            <rect x={0} y={5} width={50} height={10} fill={suppressedColor} />
+                            <rect x={0} y={5} width={50} height={10} fill={suppressedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
                             <text x={60} y={10} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
 
-                            <rect x={0} y={25} width={50} height={10} fill={unavailableColor} />
+                            <rect x={0} y={25} width={50} height={10} fill={unavailableColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
                             <text x={60} y={30} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
                             <text x={60} y={50} fill="black" alignmentBaseline="middle" fontSize={12}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
 
-                            <rect x={0} y={65} width={50} height={10} fill={unfundedColor} />
+                            <rect x={0} y={65} width={50} height={10} fill={unfundedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
                             <text x={60} y={70} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
                         </svg>
                       </td>

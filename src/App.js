@@ -22,7 +22,7 @@ const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 const Handle = Slider.Handle;
 
-const wrapperStyle = { width: 900, marginBottom: 50, marginLeft: 10, marginTop: 5 };
+const wrapperStyle = { width: 900, marginBottom: 30, marginLeft: 10, marginTop: 5 };
 
 /* const handle = (props) => {
   const { value, dragging, index, ...restProps } = props;
@@ -198,6 +198,7 @@ export default function App({ dataUrl }) {
   const [monthsForDropDownBar, setMonthsForDropDownBar] = useState([]);
   const [monthsForDropDownSexAge, setMonthsForDropDownSexAge] = useState([]); 
   const [yearsForDropDown, setYearsForDropDown] = useState([]); 
+  const [jurisCountData, setJurisCountData] = useState([]);
   const [jurisCount, setJurisCount] = useState([]);
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
   const [startUSMonthYearForSlider, setStartUSMonthYearForSlider] = useState('');
@@ -301,12 +302,15 @@ export default function App({ dataUrl }) {
     }
   };
 
-  const prepareData = (stData, usData) => {
+  const prepareData = (stData, usData, jurisCntData) => {
 
     let tempKeyedRawDataMonthly = [];
     let tempKeyedRawDataAnnual = [];
     let tempKeyedRawUSDataMonthly = [];
     let tempKeyedRawUSDataAnnual = [];
+
+    //juris count data 
+    setJurisCountData(jurisCntData);
 
     //us data
     for(let y=0;y<Object.keys(usData.Monthly['US']).length;y++)
@@ -492,8 +496,8 @@ export default function App({ dataUrl }) {
       setMonthsForDropDownSexAge(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setJurisCount(getJurisCount(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setJurisForDropDown(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-      setLookupPeriodStartYear(String(tempKeyedRawUSDataMonthly[0]['YYYYMM'].substring(0,4)));
-      setLookupPeriodStartMonth(String(Number(tempKeyedRawUSDataMonthly[0]['YYYYMM'].substring(4))));
+      setLookupPeriodStartYear('2023');
+      setLookupPeriodStartMonth('1');
       setLookupPeriodEndYear(String(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
       setLookupPeriodEndMonth(String(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setStartUSMonthYearForSlider(tempKeyedRawUSDataMonthly[0]['YYYYMM']); 
@@ -516,7 +520,7 @@ export default function App({ dataUrl }) {
       let columnInfoSt = getColumnsInfo(stateSheet);
       let columnHeadersSt = columnInfoSt.columnHeaders;
       let columnsSt = columnInfoSt.columns;
-      let getValueSt = (key, i) => stateSheet[columnHeadersSt[key] + i].v;
+      let getValueSt = (key, j) => stateSheet[columnHeadersSt[key] + j].v;
 
       let stateData = {};
       let datasetNodeSt;
@@ -550,7 +554,7 @@ export default function App({ dataUrl }) {
       let columnInfoOverall = getColumnsInfo(overallSheet);
       let columnHeadersOverall = columnInfoOverall.columnHeaders;
       let columnsOverall = columnInfoOverall.columns;
-      let getValueOverall = (key, i) => overallSheet[columnHeadersOverall[key] + i].v;
+      let getValueOverall = (key, k) => overallSheet[columnHeadersOverall[key] + k].v;
 
       let overallData = {};
       let datasetNodeOverall;
@@ -571,7 +575,25 @@ export default function App({ dataUrl }) {
         datasetNodeOverall.push(yearDatumOverall);
       }
 
-      prepareData(stateData, overallData);
+      //Populate Juris count data
+      const jurisCountSheet = wb.Sheets['Jurisdiction_count'];
+      let columnInfoJuris = getColumnsInfo(jurisCountSheet);
+      let columnHeadersJuris = columnInfoJuris.columnHeaders;
+      let columnsJuris = columnInfoJuris.columns;
+      let getValueJuris = (key, l) => jurisCountSheet[columnHeadersJuris[key] + l].v;
+
+      let jurisCountsData = {};
+
+      for (let x = 2; x <= columnsJuris; x++) {
+        let mon = String(getValueJuris('month', x)).padStart(2, '0');
+        let yr = getValueJuris('year', x);
+        let count = getValueJuris('jurisdiction_count', x);
+
+       jurisCountsData[yr + mon] = count;
+
+      }
+
+      prepareData(stateData, overallData, jurisCountsData);
       
     }
 
@@ -719,7 +741,15 @@ const didOnAfterChangeTriggerMonthly = (value) => {
   const getMonthYear = ( startYear, value) => {
     let hdr = '12-month rolling averages from \n'
     var rem = lookupPeriodStartMonth + '/' + lookupPeriodStartYear + ' - ' + lookupPeriodEndMonth + '/' + lookupPeriodEndYear;
-    return timelineLine == 'Monthly' ? rem : hdr + rem;
+    if (timelineLine == 'Annual') {
+      return hdr + rem;
+    }
+    else {
+      const startDate = new Date(startYear + '-01-01'); 
+      const date = new Date(startDate.getFullYear(), startDate.getMonth() + value, 1);
+      const options = { year: 'numeric', month: 'long' };
+      return date.toLocaleDateString('en-US', options);
+    }
   }
 
   function getYear(startYear, value) {
@@ -1005,6 +1035,7 @@ const getYears = (startYrInp, endYrInp) => {
               <LineChart 
               data={timelineLine == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
               dataOverall={timelineLine == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+              jurisCountData={jurisCountData}
               monthNames={monthNames}
               stateNames={stateNames}
               drugOptions={drugOptions}
@@ -1170,8 +1201,8 @@ const getYears = (startYrInp, endYrInp) => {
                 entries.map((drug, index) => (
                   index < 4 &&
                     <div class={`drugDiv-${drug[0]}`}>
-                      {(index < 4 && drug[0] != 'all') && <span class={(selectedDrugsBar.includes(drug[0])) ? drug[0] : 'notSelectedBar'} onClick={(event) => { handleDrugSelectionsBarChange(event, drug[0]) }}></span>}
-                      {(index < 4 && drug[0] != 'all') && <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>}
+                      <span class={(selectedDrugsBar.includes(drug[0])) ? drug[0] : 'notSelectedBar'} onClick={(event) => { handleDrugSelectionsBarChange(event, drug[0]) }}></span>
+                      <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
                     </div>
                     
                 ))
@@ -1252,7 +1283,14 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const handleDrugSelectionsSexAgeChange = (event, drug) => {
-    setselectedDrugsSexAge([drug])
+    if (sexAgeMonthly == 'Annual') {
+      setselectedDrugsSexAge([drug])
+    }
+    else
+    {
+      if (drug == 'all' || drug == 'opioids' || drug == 'stimulants')
+        setselectedDrugsSexAge([drug])
+    }
   }
 
   const getDrugControlsSexAge = () => {
@@ -1290,12 +1328,6 @@ const getYears = (startYrInp, endYrInp) => {
         </Fragment>
       </Fragment>
     )
-  }
-
-  const getPeriod = (currentYear, currentMonth) => {
-    let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
-    d.setMonth(d.getMonth() - 11);
-    return d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear; 
   }
 
   const getFootNotesForData = () => {
@@ -1565,7 +1597,7 @@ const getYears = (startYrInp, endYrInp) => {
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataAnnual, currentYear, currentMonth)} Jurisdictions), [{getPeriod(currentYear, currentMonth)}]
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataAnnual, currentYear, currentMonth)} Jurisdictions), {UtilityFunctions.getPeriod(currentYear, currentMonth)}
           </h2>
           }
         </div>
@@ -1613,6 +1645,17 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
         </div>
+        <br></br>
+        { timeline == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                </td>
+              </tr>
+              <br></br>
+            </table>
+          }
           {stateBarChartMemo}
           {getFootNotesForData()}
       </section>
@@ -1622,12 +1665,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses by Drug Type<sup>†</sup><sup>†</sup>, Month or Year, and Jurisdiction<sup>†</sup>, {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Drug Overdoses by Drug Type<sup>†</sup><sup>†</sup>, Month or Year, and Jurisdiction<sup>†</sup>, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses by Drug Type<sup>†</sup><sup>†</sup>, Month or Year, and Jurisdiction<sup>†</sup>, (TBD)
+            Suspected Drug Overdoses by Drug Type<sup>†</sup><sup>†</sup>, Month or Year, and Jurisdiction<sup>†</sup>, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -1636,8 +1679,8 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '10%'}}></td>
-              <td style={{'width': '12%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">View Data For:</div></td>
-              <td style={{'width': '16%'}}>
+              <td style={{'width': '14%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '14%'}}>
                 <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
                 {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
@@ -1689,7 +1732,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period TBD </span>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
                 </td>
               </tr>
               <br></br>
@@ -1729,8 +1772,8 @@ const getYears = (startYrInp, endYrInp) => {
             <td style={{width: '5%'}}></td>
           </tr>
         </table>
-        <br></br>
-        <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_dashboard_output-download.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
+        {/* <br></br>
+        <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_dashboard_output-download.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span> */}
       </section>
 
       <section>
@@ -1739,20 +1782,6 @@ const getYears = (startYrInp, endYrInp) => {
             Suspected Nonfatal Drug Overdose Visits per 10,000 total ED Visits over time<sup>†</sup>
           </h2>
         </div>
-
-        <table style={{'width': '100%'}}>
-          <tr>
-              <td style={{'width': '25%'}}></td>
-              <td style={{'width': '12%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">View Data For:</div></td>
-              <td style={{'width': '43%'}}>
-                <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
-                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
-              </select>
-              </td>
-            </tr>
-        </table>
-        <br></br>
         <table>
             <tr>
               <td style={{'width': '8%'}}></td>
@@ -1782,7 +1811,7 @@ const getYears = (startYrInp, endYrInp) => {
                     <Range 
                     min={1} 
                     max={getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)}
-                    defaultValue={[1,getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)]} 
+                    defaultValue={[61,getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)]} 
                     step={1} marks={getMarksForRangeMonthly(startUSMonthYearForSlider, endUSMonthYearForSlider)} 
                     tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSlider.substring(0,4)), value)}`} 
                     onAfterChange={didOnAfterChangeTriggerMonthly}
@@ -1803,6 +1832,18 @@ const getYears = (startYrInp, endYrInp) => {
                 }       */}
               </td>
               </tr>
+            </table>
+            <table style={{'width': '100%'}}>
+              <tr>
+              <td style={{'width': '25%'}}></td>
+              <td style={{'width': '12%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '43%'}}>
+                <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
+                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
+              </select>
+              </td>
+            </tr>
             </table>
             <table>
              <tr>
@@ -1831,6 +1872,16 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+          { timelineBar == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                </td>
+              </tr>
+              <br></br>
+            </table>
+          }
 
           {lineChartMemo}
           {getFootNotesForData()}
@@ -1839,6 +1890,7 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '5%'}}></td>
               <td style={{width: '80%'}}>
                 <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented. *Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter [2].</i></small></span></div>
+                <div><span><small><i><sup>†</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
               </td>
               <td style={{width: '15%'}}></td>
             </tr>
@@ -2043,7 +2095,7 @@ const getYears = (startYrInp, endYrInp) => {
               <ol>
                 <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
                 <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values <strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
-                <li><strong>Reporting facilities and the data they report can change.</strong> everal jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [5] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
+                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [5] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
                 <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [6] and therefore may underreport specific drug types involved.</li>
                 <li><strong>Data likely represent an undercount,</strong> given potential inaccuracies in preliminary coding and potentially incomplete clinical descriptions captured in chief complaint information.</li>
                 <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine poisonings during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and diagnosis codes to identify drug overdose cases. ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes, suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the drug-specific syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
@@ -2061,7 +2113,7 @@ const getYears = (startYrInp, endYrInp) => {
             <div className="datatable-body">
             <ul id='noBullets'>
               <li><strong><sup>1</sup></strong>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions.</li>
-              <li><strong><sup>2</sup></strong>Data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see Healthy People 2010 Criteria for Data Suppression.  Additionally, data were collected for the time period beginning January 2018 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
+              <li><strong><sup>2</sup></strong>Data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>.  Additionally, data were collected for the time period beginning January 2018 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
               <li><strong><sup>3</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
               <li><strong><sup>4</sup></strong>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, query syntax, and technical briefs, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a></li>
               <li><strong><sup>5</sup></strong>Holland KM, Jones C, Vivolo-Kantor AM, et al. Trends in US Emergency Department Visits for Mental Health, Overdose, and Violence Outcomes Before and During the COVID-19 Pandemic. JAMA Psychiatry. 2021;78(4):372–379. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/33533876/">doi:10.1001/jamapsychiatry.2020.4402</a>.</li>
