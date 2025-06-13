@@ -1051,7 +1051,6 @@ const getYears = (startYrInp, endYrInp) => {
 
   const lineChartMemo = useMemo(() =>
   <>
-    {getToggleControls()}
     <table style={{width: '100%'}}>
       <tr>
         <td>
@@ -1613,8 +1612,6 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
         
-      <section>
-          
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
@@ -1671,7 +1668,6 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
         </div>
-        <br></br>
         { timeline == 'Annual' &&
             <table>
               <tr>
@@ -1679,24 +1675,22 @@ const getYears = (startYrInp, endYrInp) => {
                   <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
                 </td>
               </tr>
-              <br></br>
             </table>
           }
           {stateBarChartMemo}
           {getFootNotesForData()}
-      </section>
 
       <section>
 
           <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses by Drug Type<sup>†</sup><sup>†</sup>, Month or Year, and Jurisdiction<sup>†</sup>, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0')] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses by Drug Type<sup>†</sup><sup>†</sup>, Month or Year, and Jurisdiction<sup>†</sup>, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0')] + ' Jurisdictions)' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -1805,30 +1799,10 @@ const getYears = (startYrInp, endYrInp) => {
       <section>
           <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            Suspected Nonfatal Drug Overdose Visits per 10,000 total ED Visits over time<sup>†</sup>
+            Suspected Nonfatal Overdose per 10,000 total ED Visits<sup>†</sup>, {currentStateLine == 'US' ? stateNames[currentStateLine] + ' (' + Object.keys(jurisForDropDownLine).length + ' Jurisdictions)' : stateNames[currentStateLine]}
           </h2>
         </div>
         <table>
-            <tr>
-              <td style={{'width': '8%'}}></td>
-              <td style={{'width': '84%'}}>
-                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                  <tr>
-                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
-                    </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
-                      {getDrugControlsLine()}
-                    </td>
-                  </tr>
-                  </table>
-              </td>
-              <td style={{'width': '8%'}}></td>
-            </tr>
-          </table>
-          <br></br>
-          <table>
              <tr>
               <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
               <td style={{'width': '84%'}}>
@@ -1861,43 +1835,63 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
             <table style={{'width': '100%'}}>
               <tr>
-              <td style={{'width': '25%'}}></td>
-              <td style={{'width': '14%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '20%'}}></td>
+              <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '41%'}}>
                 <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDownLine).length} Jurisdictions&#41;</option>
                 {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
               </select>
               </td>
-            </tr>
-            </table>
-            <table>
-             <tr>
-              <td style={{'width': '100%'}}>
+              <td style={{'width': '10%', 'textAlign': 'right'}}>
                   <div style={{float: 'right'}}>
-                        <label class="toggleC" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
-                            <input id="toggleMonthlyLine" class="toggleC-input" type="checkbox" checked={showAnnualLine}
-                            onChange={(e) => {
-                              if(e.target.checked) {
-                                setMonthlyToggleLine(true)
-                                setTimelineLine('Annual');
-                                setPeriodToggle(false)
-                              }
-                              else {
-                                setMonthlyToggleLine(false)
-                                setTimelineLine('Monthly');
-                                setPeriodToggle(true)
-                              }
-                            }}/>
-                            <span class="toggleC-label" data-off="Monthly" 
-                                  data-on="Annual">
-                            </span>
-                            <span class="toggleC-handle"></span>
-                        </label>
-                    </div>
+                    <label class="toggleC" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
+                        <input id="toggleMonthlyLine" class="toggleC-input" type="checkbox" checked={showAnnualLine}
+                        onChange={(e) => {
+                          if(e.target.checked) {
+                            setMonthlyToggleLine(true)
+                            setTimelineLine('Annual');
+                            setPeriodToggle(false)
+                          }
+                          else {
+                            setMonthlyToggleLine(false)
+                            setTimelineLine('Monthly');
+                            setPeriodToggle(true)
+                          }
+                        }}/>
+                        <span class="toggleC-label" data-off="Monthly" 
+                              data-on="Annual">
+                        </span>
+                        <span class="toggleC-handle"></span>
+                    </label>
+                </div>
               </td>
             </tr>
+            </table>
+          {getToggleControls()}
+        <table>
+            <tr>
+              <td style={{'width': '8%'}}></td>
+              <td style={{'width': '84%'}}>
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControlsLine()}
+                    </td>
+                  </tr>
+                  </table>
+              </td>
+              <td style={{'width': '8%'}}></td>
+            </tr>
           </table>
+          <br></br>
+          
+            
+            
           { timelineLine == 'Annual' &&
             <table>
               <tr>
@@ -2010,7 +2004,7 @@ const getYears = (startYrInp, endYrInp) => {
 
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            How do Suspected Nonfatal Overdose Visits vary by Sex and Age Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')]} Jurisdictions&#41;?
+            Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')]} Jurisdictions&#41;, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
         </div>
 

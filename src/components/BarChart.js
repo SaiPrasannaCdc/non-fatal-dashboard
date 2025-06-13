@@ -233,7 +233,7 @@ function BarChart(params) {
                           dy="20"
                           dx={rate == 0 ? "0" : "15"}
                           fill="black">
-                            {Math.round(rate * 100) / 100}
+                            {(Math.round(rate * 100) / 100).toFixed(1)}
                       </text>
                     }
                     
