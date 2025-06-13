@@ -9,6 +9,7 @@ import QuickStat from './quickStat';
 import ReactDOMServer from 'react-dom/server';
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
+const covidPeriod = ['202003', '202004', '202005', '202006', '202007', '202008']
 
 export const colorScale = {
   'all': '#325D7D',
@@ -280,24 +281,42 @@ function LineChart(params) {
     } 
 }
 
- const adjustCrowdedLabels = () => {
+const adjustCrowdedLabels = () => {
 
   if (currentState != 'US')
     return;
+
+    var rec = inp.filteredData['US'][inp.filteredData['US'].length - 1];
+    var covidTimeIndex = covidPeriod.indexOf(rec.year) + 1;
 
     var positionsVar = [];
     const allLabels = document?.getElementsByClassName("adjustCrowded");
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
-        var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]);
-        if (pos !== undefined) {
-          positionsVar.push({
-              label: drugOptions[selectedDrugs[i]].titleForDropDown, 
-              xpos: specs.xMax + 18,
-              ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
-              yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
-              adjusted: false
-            })
+        if (!isCovidPeriod(rec.year)) {
+          var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]);
+          if (pos !== undefined) {
+            positionsVar.push({
+                label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+                xpos: specs.xMax + 18,
+                ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+                yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+                adjusted: false
+              })
+          }
+        }
+        else {
+          
+          var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][selectedDrugs[i]]);
+          if (pos !== undefined) {
+            positionsVar.push({
+                label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+                xpos: specs.xMax + 18,
+                ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][selectedDrugs[i]]),
+                yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][selectedDrugs[i]]),
+                adjusted: false
+              })
+          }
         }
       }
     }
@@ -562,7 +581,6 @@ function LineChart(params) {
   }
 
   const isCovidPeriod = (yearmon) => {
-    const covidPeriod = ['202003', '202004', '202005', '202006', '202007', '202008']
     return covidPeriod.includes(yearmon);
   }
 
@@ -576,7 +594,7 @@ function LineChart(params) {
 
   const getDataTip = (d, tooltipValuesSorted) => {
     return (isCovidPeriod(d['year']) ? getTooltipCovid() : ((inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
-                `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr>` : '') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`));
+                `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`));
   }
   
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
@@ -590,7 +608,7 @@ function LineChart(params) {
               var tooltipValues = [];
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
-                      tooltipValues.push(`<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == 0 ? '*Data Suppressed' : d[inp.selectedDrugs[i]]}</p>`);
+                      tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == 0 ? '*Data Suppressed' : d[inp.selectedDrugs[i]]}</span></div>`);
                     }
                   }
               }

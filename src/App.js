@@ -1705,7 +1705,7 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '10%'}}></td>
-              <td style={{'width': '14%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '16%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '14%'}}>
                 <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
@@ -1862,8 +1862,8 @@ const getYears = (startYrInp, endYrInp) => {
             <table style={{'width': '100%'}}>
               <tr>
               <td style={{'width': '25%'}}></td>
-              <td style={{'width': '12%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
-              <td style={{'width': '43%'}}>
+              <td style={{'width': '14%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '41%'}}>
                 <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDownLine).length} Jurisdictions&#41;</option>
                 {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
@@ -1898,7 +1898,7 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
-          { timelineBar == 'Annual' &&
+          { timelineLine == 'Annual' &&
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
@@ -1993,7 +1993,16 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
-        
+          { mapMonthly == 'Annual' &&
+              <table>
+                <tr>
+                  <td style={{'textAlign': 'center'}}>
+                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                  </td>
+                </tr>
+                <br></br>
+              </table>
+            }
           {usaMapMemo}
       </section>
 
@@ -2087,6 +2096,16 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+          { sexAgeMonthly == 'Annual' &&
+              <table>
+                <tr>
+                  <td style={{'textAlign': 'center'}}>
+                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                  </td>
+                </tr>
+                <br></br>
+              </table>
+            }
           <br></br>
           <table>
             <tr>
