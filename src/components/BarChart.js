@@ -197,7 +197,7 @@ function BarChart(params) {
                         dy="20"
                         dx={rate == 0 ? "0" : "15"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: *Data Suppressed`}>*
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: *Data Suppressed`}>*
                         </text>
                     }
                     {
@@ -209,7 +209,7 @@ function BarChart(params) {
                         dy="20"
                         dx={rate == 0 ? "0" : "15"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: *Data Not Available/Not Reported`}>**
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: *Data Not Available/Not Reported`}>**
                         </text>
                     }
                     {

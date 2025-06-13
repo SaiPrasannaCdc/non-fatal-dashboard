@@ -252,7 +252,7 @@ function StateChart(params) {
                         y={yScale(name)}
                         dy="12"
                         dx="5"
-                        data-tip={`<strong>${name}</strong><br/><br/>Overdoses: *Data Suppressed`}>
+                        data-tip={`<strong>${name}</strong><br/><br/>Rate: *Data Suppressed`}>
                         {'*'}
                       </text>
                     }

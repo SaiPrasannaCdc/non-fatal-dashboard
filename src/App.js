@@ -201,6 +201,8 @@ export default function App({ dataUrl }) {
   const [jurisCountData, setJurisCountData] = useState([]);
   const [jurisCount, setJurisCount] = useState([]);
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
+  const [jurisForDropDownLine, setJurisForDropDownLine] = useState([]);
+  const [jurisForDropDownMap, setJurisForDropDownMap] = useState([]);
   const [startUSMonthYearForSlider, setStartUSMonthYearForSlider] = useState('');
   const [startMonthYearForSlider, setStartMonthYearForSlider] = useState('');
   const [endUSMonthYearForSlider, setEndUSMonthYearForSlider] = useState('');
@@ -495,7 +497,9 @@ export default function App({ dataUrl }) {
       setMonthsForDropDownMap(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setMonthsForDropDownSexAge(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setJurisCount(getJurisCount(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-      setJurisForDropDown(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+      setJurisForDropDown(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+      setJurisForDropDownLine(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+      setJurisForDropDownMap(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
       setLookupPeriodStartYear('2023');
       setLookupPeriodStartMonth('1');
       setLookupPeriodEndYear(String(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
@@ -711,7 +715,7 @@ const didOnAfterChangeTriggerMonthly = (value) => {
     var sliderEndYr = currentStateLine == 'US' ? endUSMonthYearForSlider.substring(0,4) : endMonthYearForSlider.substring(0,4);
     var sliderEndMon = currentStateLine == 'US' ? String(Number(endUSMonthYearForSlider.substring(4))) : String(Number(endMonthYearForSlider.substring(4)));
 
-    var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon))
+    var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon));
 
     let stmonYr =  monthsArray[value[0] - 1];
     let endmonYr =  monthsArray[value[1] - 1];
@@ -720,6 +724,18 @@ const didOnAfterChangeTriggerMonthly = (value) => {
     setLookupPeriodStartMonth(String(Number(stmonYr.substring(4))));
     setLookupPeriodEndYear(endmonYr.substring(0,4));
     setLookupPeriodEndMonth(String(Number(endmonYr.substring(4))));
+
+    var monthsArraySel = UtilityFunctions.generateYYMMArray(Number(stmonYr.substring(0,4)), Number(stmonYr.substring(4)), Number(endmonYr.substring(0,4)), Number(endmonYr.substring(4)));
+    var monthsArraySelCnt = Object.keys(monthsArraySel).length;
+
+    var jurisForDate = {};
+    for (let i=0; i<monthsArraySel.length;i++) {
+      jurisForDate[monthsArraySel[i]] = jurisCountData[monthsArraySel[i]];
+    }
+
+    let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
+    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4))));
+
   };
 
   const didOnAfterChangeTriggerAnnual = (value) => {
@@ -884,14 +900,22 @@ const getYears = (startYrInp, endYrInp) => {
       return Object.keys(juris).length;
   }
 
-  const getJurisInitial = (stateData, yr, mon) => {
+  const getJurisInitial = (stateData, yr, mon, isMap) => {
 
       var juris = {};
       var tmpJuris = [];
 
       for (let i=0;i<stateData.length;i++) {
         if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0'))
-          tmpJuris.push(stateData[i].geoid)
+          if (!isMap) {
+            if (isValidStateData(stateData[i])) {
+              tmpJuris.push(stateData[i].geoid)
+            }
+          }
+          else
+          {
+            tmpJuris.push(stateData[i].geoid)
+          }
       }
 
       tmpJuris.sort();
@@ -912,7 +936,8 @@ const getYears = (startYrInp, endYrInp) => {
 
       for (let i=0;i<keyedRawDataMonthly.length;i++) {
         if (!tmpJuris.includes(keyedRawDataMonthly[i].geoid) && keyedRawDataMonthly[i].geoid.length > 0 && keyedRawDataMonthly[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
-          tmpJuris.push(keyedRawDataMonthly[i].geoid)
+          if (isValidStateData(keyedRawDataMonthly[i]))
+            tmpJuris.push(keyedRawDataMonthly[i].geoid)
       }
 
       tmpJuris.sort();
@@ -1055,7 +1080,6 @@ const getYears = (startYrInp, endYrInp) => {
               isPeriod={true}
               selectedDrugs={selectedDrugsLine} 
               currentDataSource={'ED'}
-              jurisdictionsCnt={Object.keys(jurisForDropDown).length}
               />
             </div>
           </div>
@@ -1077,7 +1101,7 @@ const getYears = (startYrInp, endYrInp) => {
         currentTimeLine={mapMonthly}
         width={width} 
         drugOptions={drugOptions}
-        jurisdictions={jurisForDropDown}
+        jurisdictions={jurisForDropDownMap}
         onData={handleData}
         />
   </>,
@@ -1505,7 +1529,9 @@ const getYears = (startYrInp, endYrInp) => {
                     setMonthsForDropDownMap(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
                     setMonthsForDropDownSexAge(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
                     setJurisCount(getJurisCount(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-                    setJurisForDropDown(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setJurisForDropDown(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+                    setJurisForDropDownLine(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+                    setJurisForDropDownMap(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
                     setLookupPeriodStartYear(String(keyedRawUSDataMonthly[0]['YYYYMM'].substring(0,4)));
                     setLookupPeriodStartMonth(String(Number(keyedRawUSDataMonthly[0]['YYYYMM'].substring(4))));
                     setLookupPeriodEndYear(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
@@ -1839,8 +1865,8 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '12%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '43%'}}>
                 <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
-                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
+                <option value="US">Overall &#40;{Object.keys(jurisForDropDownLine).length} Jurisdictions&#41;</option>
+                {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
               </select>
               </td>
             </tr>

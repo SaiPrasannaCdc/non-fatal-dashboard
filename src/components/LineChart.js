@@ -194,7 +194,7 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
 
 function LineChart(params) {
 
-  const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, jurisdictionsCnt  } = params;
+  const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -535,10 +535,12 @@ function LineChart(params) {
     return leftRateStr;
   }
 
-  const getTooltipStateFragment = (param, val) => {
+  const getTooltipStateFragment = (param) => {
+    let val = isPeriod ? inp.monthNamesPeriod[param] : param; 
+    let rate = getRateforDrug(inp.selectedDrugs[0], currentState, val)
     let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
     let stStr = isPeriod ? `${inp.monthNamesPeriod[param]}` : (inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[param]} ${inp.currentYear}` : param);
-    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${val == 0 ? '*Data Suppressed' : val}</p>`
+    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rate == 0 ? '*Data Suppressed' : rate}</p>`
     let parStr = `</strong></span>` + midStr + `</td></tr></table>`;
     return str + stStr + parStr;
   }
@@ -611,6 +613,11 @@ function LineChart(params) {
   const getJurisCount = (yearmon) => {
     return jurisCountData[yearmon]
   }
+
+  const getDataTip = (d, tooltipValuesSorted) => {
+    return (isCovidPeriod(d['year']) ? getTooltipCovid() : ((inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
+                `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr>` : '') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`));
+  }
   
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
@@ -619,7 +626,7 @@ function LineChart(params) {
           inp.filteredData['US'].map(d => {
 
             if (inp.currentState === 'US') {
-              let numStates = jurisdictionsCnt;
+              let numStates = getJurisCount(d['year']);
               var tooltipValues = [];
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
@@ -638,7 +645,7 @@ function LineChart(params) {
               width={sectionWidth}
               height={specs.yMax}
               style={{outline: 'none'}}
-              data-tip={isCovidPeriod(d['year']) ? getTooltipCovid() : ((inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey], d[inp.selectedDrugs[0]]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + (inp.currentTimeframe === 'Annual' ? `<tr><td class='alignCenter'><span><small>12-month rolling averages </small></span></td></tr><tr><td class='alignCenter'><span><small>starting and ending period</small></span></td></tr>` : '') + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr><tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`)}></rect>
+              data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
           })
         }
       </Fragment>
