@@ -1531,8 +1531,10 @@ const getYears = (startYrInp, endYrInp) => {
                     setJurisForDropDown(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
                     setJurisForDropDownLine(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
                     setJurisForDropDownMap(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
-                    setLookupPeriodStartYear(String(keyedRawUSDataMonthly[0]['YYYYMM'].substring(0,4)));
-                    setLookupPeriodStartMonth(String(Number(keyedRawUSDataMonthly[0]['YYYYMM'].substring(4))));
+
+                    setLookupPeriodStartYear('2023');
+                    setLookupPeriodStartMonth('1');
+
                     setLookupPeriodEndYear(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
                     setLookupPeriodEndMonth(String(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
                     setStartUSMonthYearForSlider(keyedRawUSDataMonthly[0]['YYYYMM']); 
@@ -1672,7 +1674,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYear, currentMonth)}</span>
                 </td>
               </tr>
             </table>
@@ -1752,7 +1754,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}</span>
                 </td>
               </tr>
               <br></br>
@@ -1869,6 +1871,7 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
             </table>
           {getToggleControls()}
+          <br></br>
         <table>
             <tr>
               <td style={{'width': '8%'}}></td>
@@ -1991,7 +1994,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table>
                 <tr>
                   <td style={{'textAlign': 'center'}}>
-                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}</span>
                   </td>
                 </tr>
                 <br></br>
@@ -2094,7 +2097,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table>
                 <tr>
                   <td style={{'textAlign': 'center'}}>
-                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
                   </td>
                 </tr>
                 <br></br>
