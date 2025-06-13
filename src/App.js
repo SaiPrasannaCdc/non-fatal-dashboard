@@ -2001,7 +2001,7 @@ const getYears = (startYrInp, endYrInp) => {
 
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            How do Suspected Nonfatal Overdose Visits vary by Sex and Age Overall &#40;47 Jurisdictions&#41;?
+            How do Suspected Nonfatal Overdose Visits vary by Sex and Age Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')]} Jurisdictions&#41;?
           </h2>
         </div>
 

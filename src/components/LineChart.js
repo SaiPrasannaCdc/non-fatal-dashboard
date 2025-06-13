@@ -260,30 +260,6 @@ function LineChart(params) {
   inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
   inp['numOfTicks'] = specs['xMax']/inp['tickWidth'];
 
-  const generateYearLabels = () => {
-
-    return (
-      <Fragment>
-        <Fragment>
-            return <text y={specs.yMax + 80} x={inp['tickIndexes'].length == 0 ? ((specs.xMax + 5)/2) : ((inp['tickWidth'] *((inp['tickIndexes'][0] == 1 ? 5.5 : (inp['tickIndexes'][0] - 2)/2))) + 5)} textAnchor="middle" fill='#000066' style={{fontWeight: 'bold'}}>{lookupPeriodStartYear}</text>
-        </Fragment>
-        <Fragment>
-          {inp['tickIndexes'].map((yearIdx, idx) => {
-            if(yearIdx > 1) {
-              if (idx < (inp['tickIndexes'].length) - 1) {
-                return <text y={specs.yMax + 80} x={((inp['tickWidth'] * (inp['tickIndexes'][idx] - 2)) + (inp['tickWidth'] * 6 )  + 5)} textAnchor="middle" fill='#000066' style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
-              }
-              else
-              {
-                return <text y={specs.yMax + 80} x={((inp['tickWidth'] * inp['tickIndexes'][idx] - 2) + (((inp['numOfTicks'] - inp['tickIndexes'][idx] - 2) * inp['tickWidth'])/2))  + 5} textAnchor="middle" fill='#000066' style={{fontWeight: 'bold'}}>{inp['monthNamesShortPeriod'][yearIdx]}</text>
-              }
-            }
-            })}
-        </Fragment>
-      </Fragment>
-    )
-  }
-
   const markYearsForTicks = () => {
 
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
@@ -294,13 +270,15 @@ function LineChart(params) {
         var ln = ticks[i]?.getElementsByClassName("visx-line");
         if (ln !== undefined && ln != null) {
           ln[0]?.setAttribute("y1","0");
-          if (tickText == 'Dec') {
-            ln[0]?.setAttribute("y1","-10");
+          ln[0]?.setAttribute('stroke-width', '1')
+          if (tickText.substring(0,3) === 'Jan') {
+            ln[0]?.setAttribute("y1","1");
+            ln[0]?.setAttribute('stroke-width', '3')
           }
         }
       }
     } 
-  }
+}
 
  const adjustCrowdedLabels = () => {
 
@@ -431,38 +409,20 @@ function LineChart(params) {
   }
 
   const getFormattedValue = (val) => {
-    if (isPeriod)
+    if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
     {
-      if (inp['numOfTicks'] > 12) {
-        if (inp.monthNamesShortPeriod[val].length == 4)
-          return monthNamesShort[parseInt('1')]
+      if (inp.monthNamesShortPeriod[val].length == 4) {
+        let retVal =  monthNamesShort[parseInt('1')];
+        if (retVal == 'Jan')
+          return monthNamesShort[parseInt('1')] + ' ' + inp.monthNamesShortPeriod[val];
         else
-          return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])]
+          return '';
       }
-      else
-      {
-        if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
-        {
-          if (inp.monthNamesShortPeriod[val].length == 4)
-            return monthNamesShort[parseInt('1')] + ' ' + lookupPeriodEndYear;
-          else 
-            return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])] + ' ' + (val == 1 ? lookupPeriodStartYear : lookupPeriodEndYear);
-        }
-        else
-          return monthNamesShort[parseInt(inp.monthNamesShortPeriod[val])];
-      }
+      else 
+        return '';
     }
     else
-    {
-      if (currentTimeframe === 'Monthly') {
-        if (val == 1 || val == 12)
-          return monthNamesShort[val] + ' ' + currentYear;
-        else
-          return monthNamesShort[val];
-      }
-      else
-        return Number(val)?.toFixed(0);
-    }
+      return '';
   } 
   
   const getRateforDrug = (drug, parmState, val) => {
@@ -853,16 +813,14 @@ function LineChart(params) {
                   tickLabelProps={(value) => ({
                     fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
                     fill: '#000066',
-                    textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
-                    angle: (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)
+                    textAnchor: ('start'),
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
-                    textAnchor: 'middle'
+                    textAnchor: 'middle',                    
                   }}
                 >
                 </AxisBottom>
-                {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
               </Group>
             </svg>
         </td>
