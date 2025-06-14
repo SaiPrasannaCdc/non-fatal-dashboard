@@ -208,6 +208,7 @@ export default function App({ dataUrl }) {
   const [endUSMonthYearForSlider, setEndUSMonthYearForSlider] = useState('');
   const [endMonthYearForSlider, setEndMonthYearForSlider] = useState('');
   const [sliderKey, setSliderKey] = useState(0);
+  const [mapKey, setMapKey] = useState(0);
   
 
   const [showAnnual, setMonthlyToggle] = useState(false);
@@ -1104,9 +1105,10 @@ const getYears = (startYrInp, endYrInp) => {
         drugOptions={drugOptions}
         jurisdictions={jurisForDropDownMap}
         onData={handleData}
+        key={mapKey}
         />
   </>,
-  [currentYearMap, currentMonthMap, width, mapMonthly]);
+  [currentYearMap, currentMonthMap, width, mapMonthly, mapKey]);
 
   const sexChartMemo = useMemo(() =>
     <>
@@ -1555,7 +1557,8 @@ const getYears = (startYrInp, endYrInp) => {
                     handleData('all')
                     setSexAgeMetric('Monthly');
 
-                    setSliderKey(Date.now())
+                    setSliderKey(Date.now());
+                    setMapKey(Date.now());
 
                               }}>Reset</button>
                 </div>
