@@ -237,7 +237,7 @@ function LineChart(params) {
     range: [10, specs.xMax]
   });
   specs['yScale'] = scaleLinear({
-    domain: [0, yScaleDomainPeriod], 
+    domain: [0, yScaleDomainPeriod == 0 ? 0.8 : yScaleDomainPeriod], 
     range: [specs.yMax, 0],
   });
 
@@ -588,6 +588,11 @@ const adjustCrowdedLabels = () => {
     return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
   }
 
+  const doesEndWithCovidPeriod = () => {
+    var cnt = inp.filteredData['US'].length;
+    return covidPeriod.includes(inp.filteredData['US'][cnt - 1]['year']);
+  }
+
   const getJurisCount = (yearmon) => {
     return jurisCountData[yearmon]
   }
@@ -601,7 +606,7 @@ const adjustCrowdedLabels = () => {
     return (
       <Fragment>
         {
-          inp.filteredData['US'].map(d => {
+          inp.filteredData['US'].map((d, index) => {
 
             if (inp.currentState === 'US') {
               let numStates = getJurisCount(d['year']);
@@ -617,10 +622,10 @@ const adjustCrowdedLabels = () => {
 
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
-              fill={isCovidPeriod(d['year']) ? '#E7E7E7' : 'transparent'}
+              fill={isCovidPeriod(d['year'])  ? '#E7E7E7' : 'transparent'}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
-              width={sectionWidth}
+              width={(doesEndWithCovidPeriod() && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
               height={specs.yMax}
               style={{outline: 'none'}}
               data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
@@ -712,11 +717,11 @@ const adjustCrowdedLabels = () => {
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] > 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{'*'}</text>}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!covidPeriod.includes(d['year']) ? '*' : ''}</text>}
 
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] > 0 && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == 0 && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{'*'}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == 0 && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!covidPeriod.includes(d['year']) ? '*' : ''}</text>}
                         </Group>
                         )
                     })}
