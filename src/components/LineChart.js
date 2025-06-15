@@ -691,8 +691,11 @@ const adjustCrowdedLabels = () => {
     const sectionWidth = specs.xMax / specs.xValues.length;
     const sectionWidthHalf = sectionWidth / 2;
 
-    const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
-    const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
+    var yr = inp.filteredData['US'][inp.filteredData['US'].length - 1]['year'];
+    var covidTimeIndex = covidPeriod.indexOf(yr) + 1;
+    var endWithCovidPeriod = isCovidPeriod(yr);
+    const seriesLabelPositionUS = endWithCovidPeriod ? specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][currentDrug]) : specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
+    const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][currentDrug] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug]) : 'Data suppressed*';
     const seriesLabelPositionState = valueState === 'Data suppressed*' ? specs.yScale(0) - 30 : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
@@ -803,7 +806,7 @@ const adjustCrowdedLabels = () => {
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '85%'}}>
-            <svg style={{height: specs.height, width: '100%'}}>
+            <svg style={{height: specs.height - 50, width: '100%'}}>
               <Group top={specs.margin.top} left={specs.margin.left}>
                 {currentState !== 'US' && buildLineForDrug(currentDrug)}
                 {inp.selectedDrugs.includes('all') && currentState === 'US' && buildLineForDrug('all')}

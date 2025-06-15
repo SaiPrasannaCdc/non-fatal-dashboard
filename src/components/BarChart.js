@@ -98,7 +98,7 @@ function BarChart(params) {
   const margin = {top: 100, bottom: 0, left: 170, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(drugOptions).length / 50)*(1.2));
   const adjustedWidth = width - margin.left - margin.right - 100; 
-  const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.55))) + 210;
+  const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.10))) + 210;
 
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
@@ -260,9 +260,9 @@ function BarChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight - 210} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
               <AxisTop
-                top={adjustedHeight - 160}
+                top={adjustedHeight - 140}
                 scale={xScale}
                 numTicks={width < viewportCutoff ? 4 : null}
                 tickStroke="none"

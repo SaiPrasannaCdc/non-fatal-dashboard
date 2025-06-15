@@ -1708,7 +1708,7 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '10%'}}></td>
-              <td style={{'width': '16%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '14%'}}>
                 <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
@@ -1788,7 +1788,6 @@ const getYears = (startYrInp, endYrInp) => {
           </table>
         </div> 
        <br></br>
-       &nbsp;
         {drugsBarChartMemo}
         {getFootNotesForData()}
         <table style={{width: '100%'}}>

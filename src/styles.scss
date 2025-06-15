@@ -1455,7 +1455,7 @@ width: 100%;
 }
 
 .drugsDivTop {
-padding-bottom: 25px!important;
+padding-bottom: 8px!important;
 }
 
 .tooltipTableLC
@@ -1750,4 +1750,9 @@ display: inline-block;
 
 .toolTipPad {
     padding-bottom: 8px;
+}
+
+table {
+border-collapse: separate;
+border-spacing: 0;
 }
