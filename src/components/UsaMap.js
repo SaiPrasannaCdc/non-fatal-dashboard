@@ -277,7 +277,6 @@ const UsaMap = (params) => {
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '79%', verticalAlign: 'top'}} >
-          <td style={{width: '79%', verticalAlign: 'top'}} >
               <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
                 <defs>
                   <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
