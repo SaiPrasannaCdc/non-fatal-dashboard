@@ -18,7 +18,7 @@ const getFilteredData = (data, currentDrug, currentYear, currentMonth) => {
     for(let i=0;i<data.length;i++) {
           if (data[i].YYYYMM == currentYear + currentMonth.padStart(2, '0') && data[i].Age_Group === 'Total')
           {
-            if (data[i].geoid == 'US')
+            if (data[i].geoid == 'US' && data[i].Age_Group == 'Total')
             {
               switch (currentDrug) {
                 case 'all':
