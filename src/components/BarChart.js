@@ -21,28 +21,28 @@ const getData = (data, currentState, currentYear, currentMonth, selectedDrugs) =
             if (data[i].Sex === 'Total' && data[i].Age_Group === 'Total' && data[i].geoid == currentState)
             {
               if (selectedDrugs.includes('all'))
-                finalData['all'] = {rate: data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n, stateKey: 'all'};
+                finalData['all'] = {rate: UtilityFunctions.convertValue(data[i].total_drug_OD_n), stateKey: 'all'};
 
               if (selectedDrugs.includes('benzodiazepine'))
-                finalData['benzodiazepine'] = {rate: data[i].total_Benzo_OD_n == 9999 ? 0 :data[i].total_Benzo_OD_n, stateKey: 'benzodiazepine'};
+                finalData['benzodiazepine'] = {rate: UtilityFunctions.convertValue(data[i].total_Benzo_OD_n), stateKey: 'benzodiazepine'};
               
               if (selectedDrugs.includes('opioids'))
-                finalData['opioids'] = {rate: data[i].total_opioid_OD_n == 9999 ? 0 :data[i].total_opioid_OD_n, stateKey: 'opioids'};
+                finalData['opioids'] = {rate: UtilityFunctions.convertValue(data[i].total_opioid_OD_n), stateKey: 'opioids'};
 
               if (selectedDrugs.includes('fentanyl'))
-                finalData['fentanyl'] = {rate: data[i].total_Fentanyl_OD_n == 9999 ? 0 :data[i].total_Fentanyl_OD_n, stateKey: 'fentanyl'};
+                finalData['fentanyl'] = {rate: UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n), stateKey: 'fentanyl'};
 
               if (selectedDrugs.includes('heroin'))
-                finalData['heroin'] = {rate: data[i].total_heroin_OD_n == 9999 ? 0 :data[i].total_heroin_OD_n, stateKey: 'heroin'};
+                finalData['heroin'] = {rate: UtilityFunctions.convertValue(data[i].total_heroin_OD_n), stateKey: 'heroin'};
 
               if (selectedDrugs.includes('stimulants'))
-                finalData['stimulants'] = {rate: data[i].total_stimulant_OD_n == 9999 ? 0 :data[i].total_stimulant_OD_n, stateKey: 'stimulants'};
+                finalData['stimulants'] = {rate: UtilityFunctions.convertValue(data[i].total_stimulant_OD_n), stateKey: 'stimulants'};
 
               if (selectedDrugs.includes('cocaine'))
-                finalData['cocaine'] = {rate: data[i].total_Cocaine_OD_n == 9999 ? 0 :data[i].total_Cocaine_OD_n, stateKey: 'cocaine'};
+                finalData['cocaine'] = {rate: UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n), stateKey: 'cocaine'};
               
               if (selectedDrugs.includes('methamphetamine'))
-                finalData['methamphetamine'] = {rate: data[i].total_Methamphetamine_OD_n == 9999 ? 0 :data[i].total_Methamphetamine_OD_n, stateKey: 'methamphetamine'};
+                finalData['methamphetamine'] = {rate: UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n), stateKey: 'methamphetamine'};
 
             }
           }
@@ -51,28 +51,28 @@ const getData = (data, currentState, currentYear, currentMonth, selectedDrugs) =
             if (data[i].geoid == currentState)
             {
               if (selectedDrugs.includes('all'))
-                finalData['all'] = {rate: data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n, stateKey: 'all'};
+                finalData['all'] = {rate: UtilityFunctions.convertValue(data[i].total_drug_OD_n), stateKey: 'all'};
 
               if (selectedDrugs.includes('benzodiazepine'))
-                finalData['benzodiazepine'] = {rate: data[i].total_Benzo_OD_n == 9999 ? 0 :data[i].total_Benzo_OD_n, stateKey: 'benzodiazepine'};
+                finalData['benzodiazepine'] = {rate: UtilityFunctions.convertValue(data[i].total_Benzo_OD_n), stateKey: 'benzodiazepine'};
               
               if (selectedDrugs.includes('opioids'))
-                finalData['opioids'] = {rate: data[i].total_opioid_OD_n == 9999 ? 0 :data[i].total_opioid_OD_n, stateKey: 'opioids'};
+                finalData['opioids'] = {rate: UtilityFunctions.convertValue(data[i].total_opioid_OD_n), stateKey: 'opioids'};
 
               if (selectedDrugs.includes('fentanyl'))
-                finalData['fentanyl'] = {rate: data[i].total_Fentanyl_OD_n == 9999 ? 0 :data[i].total_Fentanyl_OD_n, stateKey: 'fentanyl'};
+                finalData['fentanyl'] = {rate: UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n), stateKey: 'fentanyl'};
 
               if (selectedDrugs.includes('heroin'))
-                finalData['heroin'] = {rate: data[i].total_heroin_OD_n == 9999 ? 0 :data[i].total_heroin_OD_n, stateKey: 'heroin'};
+                finalData['heroin'] = {rate: UtilityFunctions.convertValue(data[i].total_heroin_OD_n), stateKey: 'heroin'};
 
               if (selectedDrugs.includes('stimulants'))
-                finalData['stimulants'] = {rate: data[i].total_stimulant_OD_n == 9999 ? 0 :data[i].total_stimulant_OD_n, stateKey: 'stimulants'};
+                finalData['stimulants'] = {rate: UtilityFunctions.convertValue(data[i].total_stimulant_OD_n), stateKey: 'stimulants'};
 
               if (selectedDrugs.includes('cocaine'))
-                finalData['cocaine'] = {rate: data[i].total_Cocaine_OD_n == 9999 ? 0 :data[i].total_Cocaine_OD_n, stateKey: 'cocaine'};
+                finalData['cocaine'] = {rate: UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n), stateKey: 'cocaine'};
               
               if (selectedDrugs.includes('methamphetamine'))
-                finalData['methamphetamine'] = {rate: data[i].total_Methamphetamine_OD_n == 9999 ? 0 :data[i].total_Methamphetamine_OD_n, stateKey: 'methamphetamine'};
+                finalData['methamphetamine'] = {rate: UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n), stateKey: 'methamphetamine'};
             }
           }
         }
@@ -98,7 +98,7 @@ function BarChart(params) {
   const margin = {top: 100, bottom: 0, left: 170, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(drugOptions).length / 50)*(1.2));
   const adjustedWidth = width - margin.left - margin.right - 100; 
-  const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.55))) + 210;
+  const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.10))) + 210;
 
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
@@ -197,7 +197,31 @@ function BarChart(params) {
                         dy="20"
                         dx={rate == 0 ? "0" : "15"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: *Data Suppressed`}>*
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: *Data Suppressed`}>*
+                        </text>
+                    }
+                    {
+                      rate == -1 &&
+                       <text 
+                        className="bar-label"
+                        x={rate < 0 ? 10 : xScale(rate)}
+                        y={yScale(name)}
+                        dy="20"
+                        dx={rate == 0 ? "0" : "15"}
+                        fill="black"
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: *Data Not Available/Not Reported`}>**
+                        </text>
+                    }
+                    {
+                      rate == -2 &&
+                       <text 
+                        className="bar-label"
+                        x={rate < 0 ? 10 : xScale(rate)}
+                        y={yScale(name)}
+                        dy="20"
+                        dx={rate == 0 ? "0" : "15"}
+                        fill="black"
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: ***Not Funded`}>***
                         </text>
                     }
                     {
@@ -209,7 +233,7 @@ function BarChart(params) {
                           dy="20"
                           dx={rate == 0 ? "0" : "15"}
                           fill="black">
-                            {Math.round(rate * 100) / 100}
+                            {(Math.round(rate * 100) / 100).toFixed(1)}
                       </text>
                     }
                     
@@ -236,9 +260,9 @@ function BarChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight - 210} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
               <AxisTop
-                top={adjustedHeight - 160}
+                top={adjustedHeight - 140}
                 scale={xScale}
                 numTicks={width < viewportCutoff ? 4 : null}
                 tickStroke="none"

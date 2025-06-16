@@ -26,43 +26,43 @@ const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear,
 
               switch (currentDrug) {
                 case 'all':
-                  val = data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n;
-                  tooltipVal = data[i].total_drug_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_drug_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_drug_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_drug_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'benzodiazepine':
-                  val = data[i].total_Benzo_OD_n == 9999 ? 0 : data[i].total_Benzo_OD_n;
-                  tooltipVal = data[i].total_Benzo_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Benzo_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_Benzo_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_Benzo_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'opioids':
-                  val = data[i].total_opioid_OD_n == 9999 ? 0 : data[i].total_opioid_OD_n;
-                  tooltipVal = data[i].total_opioid_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_opioid_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_opioid_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_opioid_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'fentanyl':
-                  val = data[i].total_Fentanyl_OD_n == 9999 ? 0 : data[i].total_Fentanyl_OD_n;
-                  tooltipVal = data[i].total_Fentanyl_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Fentanyl_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_Fentanyl_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'heroin':
-                  val = data[i].total_heroin_OD_n == 9999 ? 0 : data[i].total_heroin_OD_n;
-                  tooltipVal = data[i].total_heroin_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_heroin_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_heroin_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_heroin_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'stimulants':
-                  val = data[i].total_stimulant_OD_n == 9999 ? 0 : data[i].total_stimulant_OD_n;
-                  tooltipVal = data[i].total_stimulant_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_stimulant_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_stimulant_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_stimulant_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'cocaine':
-                  val = data[i].total_Cocaine_OD_n == 9999 ? 0 : data[i].total_Cocaine_OD_n;
-                  tooltipVal = data[i].total_Cocaine_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Cocaine_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_Cocaine_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
                 case 'methamphetamine':
-                  val = data[i].total_Methamphetamine_OD_n == 9999 ? 0 : data[i].total_Methamphetamine_OD_n;
-                  tooltipVal = data[i].total_Methamphetamine_OD_n == 9999 ? 'Data suppressed' : String(data[i].total_Methamphetamine_OD_n);
+                  val = UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(data[i].total_Methamphetamine_OD_n);
                   finalData[stateNames[st]] = {rate: val, stateKey: st, forTooltip: tooltipVal};
                   break;
               }
@@ -81,43 +81,43 @@ const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear,
 
               switch (currentDrug) {
                 case 'all':
-                  val = dataOverall[i].total_drug_OD_n == 9999 ? 0 : dataOverall[i].total_drug_OD_n;
-                  tooltipVal = dataOverall[i].total_drug_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_drug_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_drug_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_drug_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'benzodiazepine':
-                  val = dataOverall[i].total_Benzo_OD_n == 9999 ? 0 : dataOverall[i].total_Benzo_OD_n;
-                  tooltipVal = dataOverall[i].total_Benzo_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Benzo_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_Benzo_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_Benzo_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'opioids':
-                  val = dataOverall[i].total_opioid_OD_n == 9999 ? 0 : dataOverall[i].total_opioid_OD_n;
-                  tooltipVal = dataOverall[i].total_opioid_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_opioid_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_opioid_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_opioid_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'fentanyl':
-                  val = dataOverall[i].total_Fentanyl_OD_n == 9999 ? 0 : dataOverall[i].total_Fentanyl_OD_n;
-                  tooltipVal = dataOverall[i].total_Fentanyl_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Fentanyl_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_Fentanyl_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_Fentanyl_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'heroin':
-                  val = dataOverall[i].total_heroin_OD_n == 9999 ? 0 : dataOverall[i].total_heroin_OD_n;
-                  tooltipVal = dataOverall[i].total_heroin_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_heroin_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_heroin_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_heroin_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'stimulants':
-                  val = dataOverall[i].total_stimulant_OD_n == 9999 ? 0 : dataOverall[i].total_stimulant_OD_n;
-                  tooltipVal = dataOverall[i].total_stimulant_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_stimulant_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_stimulant_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_stimulant_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'cocaine':
-                  val = dataOverall[i].total_Cocaine_OD_n == 9999 ? 0 : dataOverall[i].total_Cocaine_OD_n;
-                  tooltipVal = dataOverall[i].total_Cocaine_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Cocaine_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_Cocaine_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_Cocaine_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
                 case 'methamphetamine':
-                  val = dataOverall[i].total_Methamphetamine_OD_n == 9999 ? 0 : dataOverall[i].total_Methamphetamine_OD_n;
-                  tooltipVal = dataOverall[i].total_Methamphetamine_OD_n == 9999 ? 'Data suppressed' : String(dataOverall[i].total_Methamphetamine_OD_n);
+                  val = UtilityFunctions.convertValue(dataOverall[i].total_Methamphetamine_OD_n);
+                  tooltipVal = val == 0 ? 'Data suppressed' : String(dataOverall[i].total_Methamphetamine_OD_n);
                   finalData[stateNames['US']] = {rate: val, stateKey: 'US', forTooltip: tooltipVal};
                   break;
               }
@@ -126,7 +126,7 @@ const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear,
       }
   }
 
-  return finalData;
+  return UtilityFunctions.deleteStateKeys(finalData);
 }
 
 function StateChart(params) {
@@ -146,7 +146,7 @@ function StateChart(params) {
   const margin = {top: 10, bottom: 0, left: 130, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
   const adjustedWidth = width - margin.left - margin.right - 100; 
-  const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.45));
+  const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.42));
 
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
@@ -252,7 +252,7 @@ function StateChart(params) {
                         y={yScale(name)}
                         dy="12"
                         dx="5"
-                        data-tip={`<strong>${name}</strong><br/><br/>Overdoses: *Data Suppressed`}>
+                        data-tip={`<strong>${name}</strong><br/><br/>Rate: *Data Suppressed`}>
                         {'*'}
                       </text>
                     }

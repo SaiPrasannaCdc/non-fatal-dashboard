@@ -428,7 +428,7 @@ export const UtilityFunctions = {
   getSeriesColor : (currentDrug, key) => {
 
     var seriesColor;
-  
+       
     switch (currentDrug) {
       case 'all':
         seriesColor = (key === 'US') ? 'rgb(56, 71, 102)' : 'lightblue';
@@ -457,6 +457,74 @@ export const UtilityFunctions = {
       }
   
       return seriesColor;
+  },
+
+  getSeriesColorLine : (currentDrug, key, showOverall) => {
+
+    var seriesColor;
+  
+    if (!showOverall) {
+      
+      switch (currentDrug) {
+        case 'all':
+          seriesColor = 'rgb(56, 71, 102)';
+          break;
+        case 'opioids':
+          seriesColor = 'rgb(0, 12, 119)';
+          break;
+        case 'heroin':
+          seriesColor = 'rgb(12, 111, 150)';
+          break;
+        case 'stimulants':
+          seriesColor = 'rgb(65, 27, 109)';
+          break;
+        case 'benzodiazepine':
+          seriesColor = 'rgb(184, 58, 94)';
+          break;
+        case 'fentanyl':
+          seriesColor = 'rgb(41, 72, 145)';
+          break;
+        case 'cocaine':
+          seriesColor = 'rgb(103, 26, 170)';
+          break;
+        case 'methamphetamine':
+          seriesColor = 'rgb(163, 120, 232)';
+          break;
+        }
+    
+        return seriesColor;
+    }
+    else
+    {
+      switch (currentDrug) {
+        case 'all':
+          seriesColor = (key !== 'US') ? 'rgb(56, 71, 102)' : 'rgb(56, 71, 102, 0.65)';
+          break;
+        case 'opioids':
+          seriesColor = (key !== 'US') ? 'rgb(0, 12, 119)' : 'rgb(0, 12, 119, 0.65)';
+          break;
+        case 'heroin':
+          seriesColor = (key !== 'US') ? 'rgb(12, 111, 150)' : 'rgb(12, 111, 150, 0.65)';
+          break;
+        case 'stimulants':
+          seriesColor = (key !== 'US') ? 'rgb(65, 27, 109)' : 'rgb(65, 27, 109, 0.65)';
+          break;
+        case 'benzodiazepine':
+          seriesColor = (key !== 'US') ? 'rgb(184, 58, 94)' : 'rgb(184, 58, 94, 0.65)';
+          break;
+        case 'fentanyl':
+          seriesColor = (key !== 'US') ? 'rgb(41, 72, 145)' : 'rgb(41, 72, 145, 0.65)';
+          break;
+        case 'cocaine':
+          seriesColor = (key !== 'US') ? 'rgb(103, 26, 170)' : 'rgb(103, 26, 170, 0.65)';
+          break;
+        case 'methamphetamine':
+          seriesColor = (key !== 'US') ? 'rgb(163, 120, 232)' : 'rgb(163, 120, 232, 0.65)';
+          break;
+        }
+      
+          return seriesColor;
+        }
   },
 
   getSeriesColorStart : (currentDrug, key) => {
@@ -492,4 +560,33 @@ export const UtilityFunctions = {
   
       return seriesColor;
   },
+
+  convertValue : (val) => {
+    if (val == 8888)
+      return -1;
+    else if (val == 7777)
+      return -2;
+   else if (val == 9999)
+      return 0;
+  else
+      return val;
+  },
+
+  deleteStateKeys : (obj) => {
+    for (let key in obj) {
+      if (obj[key].rate < 0) {
+        delete obj[key];
+      }
+    }
+    return obj;
+  },
+
+  getPeriod : (currentYear, currentMonth) => {
+    const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
+
+    let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
+    d.setMonth(d.getMonth() - 11);
+    return '(' + d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear + ')'; 
+  }
+
 }

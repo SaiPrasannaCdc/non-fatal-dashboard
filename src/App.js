@@ -22,7 +22,7 @@ const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 const Handle = Slider.Handle;
 
-const wrapperStyle = { width: 900, marginBottom: 50, marginLeft: 10, marginTop: 5 };
+const wrapperStyle = { width: 900, marginBottom: 30, marginLeft: 10, marginTop: 5 };
 
 /* const handle = (props) => {
   const { value, dragging, index, ...restProps } = props;
@@ -177,7 +177,8 @@ export default function App({ dataUrl }) {
   const [timeline, setTimeline] = useState('Monthly');
   const [timelineBar, setTimelineBar] = useState('Monthly');
   const [timelineLine, setTimelineLine] = useState('Monthly');
-  const [currentState, setCurrentState] = useState('US')
+  const [currentState, setCurrentState] = useState('US');
+  const [currentStateLine, setCurrentStateLine] = useState('US')
   const [currentYear, setCurrentYear] = useState('');
   const [currentYearMap, setCurrentYearMap] = useState('');
   const [currentYearBar, setCurrentYearBar] = useState('');
@@ -197,12 +198,18 @@ export default function App({ dataUrl }) {
   const [monthsForDropDownBar, setMonthsForDropDownBar] = useState([]);
   const [monthsForDropDownSexAge, setMonthsForDropDownSexAge] = useState([]); 
   const [yearsForDropDown, setYearsForDropDown] = useState([]); 
+  const [jurisCountData, setJurisCountData] = useState([]);
   const [jurisCount, setJurisCount] = useState([]);
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
+  const [jurisForDropDownLine, setJurisForDropDownLine] = useState([]);
+  const [jurisForDropDownMap, setJurisForDropDownMap] = useState([]);
   const [startUSMonthYearForSlider, setStartUSMonthYearForSlider] = useState('');
   const [startMonthYearForSlider, setStartMonthYearForSlider] = useState('');
   const [endUSMonthYearForSlider, setEndUSMonthYearForSlider] = useState('');
   const [endMonthYearForSlider, setEndMonthYearForSlider] = useState('');
+  const [sliderKey, setSliderKey] = useState(0);
+  const [mapKey, setMapKey] = useState(0);
+  
 
   const [showAnnual, setMonthlyToggle] = useState(false);
   const [showAnnualBar, setMonthlyToggleBar] = useState(false);
@@ -300,12 +307,15 @@ export default function App({ dataUrl }) {
     }
   };
 
-  const prepareData = (stData, usData) => {
+  const prepareData = (stData, usData, jurisCntData) => {
 
     let tempKeyedRawDataMonthly = [];
     let tempKeyedRawDataAnnual = [];
     let tempKeyedRawUSDataMonthly = [];
     let tempKeyedRawUSDataAnnual = [];
+
+    //juris count data 
+    setJurisCountData(jurisCntData);
 
     //us data
     for(let y=0;y<Object.keys(usData.Monthly['US']).length;y++)
@@ -490,9 +500,11 @@ export default function App({ dataUrl }) {
       setMonthsForDropDownMap(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setMonthsForDropDownSexAge(getMonths(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setJurisCount(getJurisCount(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-      setJurisForDropDown(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-      setLookupPeriodStartYear(String(tempKeyedRawUSDataMonthly[0]['YYYYMM'].substring(0,4)));
-      setLookupPeriodStartMonth(String(Number(tempKeyedRawUSDataMonthly[0]['YYYYMM'].substring(4))));
+      setJurisForDropDown(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+      setJurisForDropDownLine(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+      setJurisForDropDownMap(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
+      setLookupPeriodStartYear('2023');
+      setLookupPeriodStartMonth('1');
       setLookupPeriodEndYear(String(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
       setLookupPeriodEndMonth(String(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
       setStartUSMonthYearForSlider(tempKeyedRawUSDataMonthly[0]['YYYYMM']); 
@@ -515,7 +527,7 @@ export default function App({ dataUrl }) {
       let columnInfoSt = getColumnsInfo(stateSheet);
       let columnHeadersSt = columnInfoSt.columnHeaders;
       let columnsSt = columnInfoSt.columns;
-      let getValueSt = (key, i) => stateSheet[columnHeadersSt[key] + i].v;
+      let getValueSt = (key, j) => stateSheet[columnHeadersSt[key] + j].v;
 
       let stateData = {};
       let datasetNodeSt;
@@ -549,7 +561,7 @@ export default function App({ dataUrl }) {
       let columnInfoOverall = getColumnsInfo(overallSheet);
       let columnHeadersOverall = columnInfoOverall.columnHeaders;
       let columnsOverall = columnInfoOverall.columns;
-      let getValueOverall = (key, i) => overallSheet[columnHeadersOverall[key] + i].v;
+      let getValueOverall = (key, k) => overallSheet[columnHeadersOverall[key] + k].v;
 
       let overallData = {};
       let datasetNodeOverall;
@@ -570,7 +582,25 @@ export default function App({ dataUrl }) {
         datasetNodeOverall.push(yearDatumOverall);
       }
 
-      prepareData(stateData, overallData);
+      //Populate Juris count data
+      const jurisCountSheet = wb.Sheets['Jurisdiction_count'];
+      let columnInfoJuris = getColumnsInfo(jurisCountSheet);
+      let columnHeadersJuris = columnInfoJuris.columnHeaders;
+      let columnsJuris = columnInfoJuris.columns;
+      let getValueJuris = (key, l) => jurisCountSheet[columnHeadersJuris[key] + l].v;
+
+      let jurisCountsData = {};
+
+      for (let x = 2; x <= columnsJuris; x++) {
+        let mon = String(getValueJuris('month', x)).padStart(2, '0');
+        let yr = getValueJuris('year', x);
+        let count = getValueJuris('jurisdiction_count', x);
+
+       jurisCountsData[yr + mon] = count;
+
+      }
+
+      prepareData(stateData, overallData, jurisCountsData);
       
     }
 
@@ -683,12 +713,12 @@ export default function App({ dataUrl }) {
 
 const didOnAfterChangeTriggerMonthly = (value) => {
 
-    var sliderStartYr = currentState == 'US' ? startUSMonthYearForSlider.substring(0,4) : startMonthYearForSlider.substring(0,4);
-    var sliderStartMon = currentState == 'US' ? String(Number(startUSMonthYearForSlider.substring(4))) : String(Number(startMonthYearForSlider.substring(4)));
-    var sliderEndYr = currentState == 'US' ? endUSMonthYearForSlider.substring(0,4) : endMonthYearForSlider.substring(0,4);
-    var sliderEndMon = currentState == 'US' ? String(Number(endUSMonthYearForSlider.substring(4))) : String(Number(endMonthYearForSlider.substring(4)));
+    var sliderStartYr = currentStateLine == 'US' ? startUSMonthYearForSlider.substring(0,4) : startMonthYearForSlider.substring(0,4);
+    var sliderStartMon = currentStateLine == 'US' ? String(Number(startUSMonthYearForSlider.substring(4))) : String(Number(startMonthYearForSlider.substring(4)));
+    var sliderEndYr = currentStateLine == 'US' ? endUSMonthYearForSlider.substring(0,4) : endMonthYearForSlider.substring(0,4);
+    var sliderEndMon = currentStateLine == 'US' ? String(Number(endUSMonthYearForSlider.substring(4))) : String(Number(endMonthYearForSlider.substring(4)));
 
-    var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon))
+    var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon));
 
     let stmonYr =  monthsArray[value[0] - 1];
     let endmonYr =  monthsArray[value[1] - 1];
@@ -697,6 +727,18 @@ const didOnAfterChangeTriggerMonthly = (value) => {
     setLookupPeriodStartMonth(String(Number(stmonYr.substring(4))));
     setLookupPeriodEndYear(endmonYr.substring(0,4));
     setLookupPeriodEndMonth(String(Number(endmonYr.substring(4))));
+
+    var monthsArraySel = UtilityFunctions.generateYYMMArray(Number(stmonYr.substring(0,4)), Number(stmonYr.substring(4)), Number(endmonYr.substring(0,4)), Number(endmonYr.substring(4)));
+    var monthsArraySelCnt = Object.keys(monthsArraySel).length;
+
+    var jurisForDate = {};
+    for (let i=0; i<monthsArraySel.length;i++) {
+      jurisForDate[monthsArraySel[i]] = jurisCountData[monthsArraySel[i]];
+    }
+
+    let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
+    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4))));
+
   };
 
   const didOnAfterChangeTriggerAnnual = (value) => {
@@ -718,7 +760,15 @@ const didOnAfterChangeTriggerMonthly = (value) => {
   const getMonthYear = ( startYear, value) => {
     let hdr = '12-month rolling averages from \n'
     var rem = lookupPeriodStartMonth + '/' + lookupPeriodStartYear + ' - ' + lookupPeriodEndMonth + '/' + lookupPeriodEndYear;
-    return timelineLine == 'Monthly' ? rem : hdr + rem;
+    if (timelineLine == 'Annual') {
+      return hdr + rem;
+    }
+    else {
+      const startDate = new Date(startYear + '-01-01'); 
+      const date = new Date(startDate.getFullYear(), startDate.getMonth() + value, 1);
+      const options = { year: 'numeric', month: 'long' };
+      return date.toLocaleDateString('en-US', options);
+    }
   }
 
   function getYear(startYear, value) {
@@ -811,14 +861,37 @@ const getYears = (startYrInp, endYrInp) => {
     return sortObjectByKeyDescending(years);
   }; 
 
+   const isValidStateData = (rec) => {
+    if (rec.total_drug_OD_n == 7777.0 || rec.total_drug_OD_n == 8888.0)
+      return false;
+    if (rec.total_Benzo_OD_n == 7777.0 || rec.total_Benzo_OD_n == 8888.0)
+      return false;
+    if (rec.total_opioid_OD_n == 7777.0 || rec.total_opioid_OD_n == 8888.0)
+      return false;
+    if (rec.total_Fentanyl_OD_n == 7777.0 || rec.total_Fentanyl_OD_n == 8888.0)
+      return false;
+    if (rec.total_heroin_OD_n == 7777.0 || rec.total_heroin_OD_n == 8888.0)
+      return false;
+    if (rec.total_stimulant_OD_n == 7777.0 || rec.total_stimulant_OD_n == 8888.0)
+      return false;
+    if (rec.total_Cocaine_OD_n == 7777.0 || rec.total_Cocaine_OD_n == 8888.0)
+      return false;
+    if (rec.total_Methamphetamine_OD_n == 7777.0 || rec.total_Methamphetamine_OD_n == 8888.0)
+      return false;
+
+    return true;
+   }
+
    const getJurisCount = (stateData, yr, mon) => {
 
       var juris = {};
       var tmpJuris = [];
 
       for (let i=0;i<stateData.length;i++) {
-        if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0'))
-          tmpJuris.push(stateData[i].geoid)
+        if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0')) {
+          if (isValidStateData(stateData[i]))
+            tmpJuris.push(stateData[i].geoid)
+        }
       }
 
       tmpJuris.sort();
@@ -830,14 +903,22 @@ const getYears = (startYrInp, endYrInp) => {
       return Object.keys(juris).length;
   }
 
-  const getJurisInitial = (stateData, yr, mon) => {
+  const getJurisInitial = (stateData, yr, mon, isMap) => {
 
       var juris = {};
       var tmpJuris = [];
 
       for (let i=0;i<stateData.length;i++) {
         if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0'))
-          tmpJuris.push(stateData[i].geoid)
+          if (!isMap) {
+            if (isValidStateData(stateData[i])) {
+              tmpJuris.push(stateData[i].geoid)
+            }
+          }
+          else
+          {
+            tmpJuris.push(stateData[i].geoid)
+          }
       }
 
       tmpJuris.sort();
@@ -858,7 +939,8 @@ const getYears = (startYrInp, endYrInp) => {
 
       for (let i=0;i<keyedRawDataMonthly.length;i++) {
         if (!tmpJuris.includes(keyedRawDataMonthly[i].geoid) && keyedRawDataMonthly[i].geoid.length > 0 && keyedRawDataMonthly[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
-          tmpJuris.push(keyedRawDataMonthly[i].geoid)
+          if (isValidStateData(keyedRawDataMonthly[i]))
+            tmpJuris.push(keyedRawDataMonthly[i].geoid)
       }
 
       tmpJuris.sort();
@@ -885,7 +967,9 @@ const getYears = (startYrInp, endYrInp) => {
                 <table>
                   <tr>
                     <td style={{width: '88%', textAlign: 'right'}}>
-                      {currentState != 'US' &&
+                    </td>
+                    <td style={{width: '12%', textAlign: 'right'}}>
+                      {currentStateLine != 'US' &&
                         <div style={{float: 'right'}}>
                             <label class="toggleD" title={'Toggle to compare with overall.'}>
                                 <input id="toggleOverall" class="toggleD-input" type="checkbox" checked={showOverall}
@@ -904,9 +988,7 @@ const getYears = (startYrInp, endYrInp) => {
                             </label>
                         </div>
                         }
-                    </td>
-                    <td style={{width: '12%', textAlign: 'right'}}>
-                      <div style={{float: 'right'}}>
+                      {/* <div style={{float: 'right'}}>
                               <label class="toggleB" title={'Toggle to hover over a data point on the line chart to view percent change for the selected compared to the previous.'}>
                                   <input id="togglePercent" class="toggleB-input" type="checkbox" checked={showPercent}
                                   onChange={(e) => {
@@ -922,7 +1004,7 @@ const getYears = (startYrInp, endYrInp) => {
                                   </span>
                                   <span class="toggleB-handle"></span>
                               </label>
-                          </div>
+                          </div> */}
                     </td>
                   </tr>
                 </table>
@@ -958,7 +1040,7 @@ const getYears = (startYrInp, endYrInp) => {
       <BarChart
         data={currentState === 'US' ? (timelineBar == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly) : (timelineBar == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly)}
         width={width} 
-        height={900} 
+        height={850} 
         el={drugsBarChartRef}
         currentState={currentState}
         selectedDrugs={selectedDrugsBar}
@@ -972,7 +1054,6 @@ const getYears = (startYrInp, endYrInp) => {
 
   const lineChartMemo = useMemo(() =>
   <>
-    {getToggleControls()}
     <table style={{width: '100%'}}>
       <tr>
         <td>
@@ -981,12 +1062,13 @@ const getYears = (startYrInp, endYrInp) => {
               <LineChart 
               data={timelineLine == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
               dataOverall={timelineLine == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+              jurisCountData={jurisCountData}
               monthNames={monthNames}
               stateNames={stateNames}
               drugOptions={drugOptions}
               currentTimeframe={timelineLine}
-              currentDrug={currentState === 'US' ? currentDrug : selectedDrugsLine[0]}
-              currentState={currentState}
+              currentDrug={currentStateLine === 'US' ? currentDrug : selectedDrugsLine[0]}
+              currentState={currentStateLine}
               currentYear={currentYear}
               currentMonth={currentMonth}
               width={width}
@@ -1000,7 +1082,6 @@ const getYears = (startYrInp, endYrInp) => {
               isPeriod={true}
               selectedDrugs={selectedDrugsLine} 
               currentDataSource={'ED'}
-              jurisdictionsCnt={Object.keys(jurisForDropDown).length}
               />
             </div>
           </div>
@@ -1009,7 +1090,7 @@ const getYears = (startYrInp, endYrInp) => {
     
     </table>
   </>,
-  [timelineLine, currentDrug, currentState, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth]);
+  [timelineLine, currentDrug, currentStateLine, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth]);
 
   const usaMapMemo = useMemo(() =>
       <>
@@ -1022,11 +1103,12 @@ const getYears = (startYrInp, endYrInp) => {
         currentTimeLine={mapMonthly}
         width={width} 
         drugOptions={drugOptions}
-        jurisdictions={jurisForDropDown}
+        jurisdictions={jurisForDropDownMap}
         onData={handleData}
+        key={mapKey}
         />
   </>,
-  [currentYearMap, currentMonthMap, width, mapMonthly]);
+  [currentYearMap, currentMonthMap, width, mapMonthly, mapKey]);
 
   const sexChartMemo = useMemo(() =>
     <>
@@ -1102,9 +1184,9 @@ const getYears = (startYrInp, endYrInp) => {
     if (endUSMonthYearForSlider) {
         let mon = Number(endUSMonthYearForSlider.substring(4));
         if (mon != 1)
-          return monthNames[mon] + ', ' + endUSMonthYearForSlider.substring(0,4);
+          return monthNames[mon] + ' ' + endUSMonthYearForSlider.substring(0,4);
         else
-          return monthNames[12] + ', ' + endUSMonthYearForSlider.substring(0,4);
+          return monthNames[12] + ' ' + endUSMonthYearForSlider.substring(0,4);
       }
       else
         return '';
@@ -1146,8 +1228,8 @@ const getYears = (startYrInp, endYrInp) => {
                 entries.map((drug, index) => (
                   index < 4 &&
                     <div class={`drugDiv-${drug[0]}`}>
-                      {(index < 4 && drug[0] != 'all') && <span class={(selectedDrugsBar.includes(drug[0])) ? drug[0] : 'notSelectedBar'} onClick={(event) => { handleDrugSelectionsBarChange(event, drug[0]) }}></span>}
-                      {(index < 4 && drug[0] != 'all') && <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>}
+                      <span class={(selectedDrugsBar.includes(drug[0])) ? drug[0] : 'notSelectedBar'} onClick={(event) => { handleDrugSelectionsBarChange(event, drug[0]) }}></span>
+                      <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
                     </div>
                     
                 ))
@@ -1173,7 +1255,7 @@ const getYears = (startYrInp, endYrInp) => {
 
   const handleDrugSelectionsLineChange = (event, drug) => {
 
-    if (currentState == 'US') {
+    if (currentStateLine == 'US') {
       if (selectedDrugsLine.includes(drug)) {
         if (selectedDrugsLine.length > 1) {
           setselectedDrugsLine(selectedDrugsLine.filter(dr=>dr !== drug))
@@ -1228,7 +1310,14 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const handleDrugSelectionsSexAgeChange = (event, drug) => {
-    setselectedDrugsSexAge([drug])
+    if (sexAgeMonthly == 'Annual') {
+      setselectedDrugsSexAge([drug])
+    }
+    else
+    {
+      if (drug == 'all' || drug == 'opioids' || drug == 'stimulants')
+        setselectedDrugsSexAge([drug])
+    }
   }
 
   const getDrugControlsSexAge = () => {
@@ -1270,7 +1359,7 @@ const getYears = (startYrInp, endYrInp) => {
 
   const getFootNotesForData = () => {
     return (
-          <div className="datatable-body">
+          <div>
             <table style={{ width: '100%' }}>
               <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
             </table>
@@ -1395,15 +1484,15 @@ const getYears = (startYrInp, endYrInp) => {
                 <div>
                   <div className="drug-tab-section">
                     {drugTab('all', <span>All Drugs</span>)}
-                    {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
-                    {drugTab('heroin', <span>Heroin</span>)}
                     {drugTab('stimulants', <span>All Stimulants</span>)}
-                  </div>
-                  <div className="drug-tab-section">
                     {drugTab('opioids', <span>All Opioids</span>)}
                     {drugTab('fentanyl', <span>Fentanyl</span>)}
+                  </div>
+                  <div className="drug-tab-section">
                     {drugTab('cocaine',<span>Cocaine</span>)}
                     {drugTab('methamphetamine', <span>Methamphetamine</span>)}
+                    {drugTab('heroin', <span>Heroin</span>)}
+                    {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
                   </div>
                 </div>
               </td>
@@ -1421,7 +1510,7 @@ const getYears = (startYrInp, endYrInp) => {
                     setTimeline('Monthly');
                     setTimelineBar('Monthly');
                     setTimelineLine('Monthly');
-                    setCurrentState('US');
+                    setCurrentStateLine('US');
 
                     setMonthlyToggle(false);
                     setMonthlyToggleBar(false);
@@ -1443,9 +1532,13 @@ const getYears = (startYrInp, endYrInp) => {
                     setMonthsForDropDownMap(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
                     setMonthsForDropDownSexAge(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
                     setJurisCount(getJurisCount(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-                    setJurisForDropDown(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-                    setLookupPeriodStartYear(String(keyedRawUSDataMonthly[0]['YYYYMM'].substring(0,4)));
-                    setLookupPeriodStartMonth(String(Number(keyedRawUSDataMonthly[0]['YYYYMM'].substring(4))));
+                    setJurisForDropDown(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+                    setJurisForDropDownLine(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+                    setJurisForDropDownMap(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
+
+                    setLookupPeriodStartYear('2023');
+                    setLookupPeriodStartMonth('1');
+
                     setLookupPeriodEndYear(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
                     setLookupPeriodEndMonth(String(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
                     setStartUSMonthYearForSlider(keyedRawUSDataMonthly[0]['YYYYMM']); 
@@ -1464,6 +1557,9 @@ const getYears = (startYrInp, endYrInp) => {
                     handleData('all')
                     setSexAgeMetric('Monthly');
 
+                    setSliderKey(Date.now());
+                    setMapKey(Date.now());
+
                               }}>Reset</button>
                 </div>
               </td>
@@ -1473,16 +1569,14 @@ const getYears = (startYrInp, endYrInp) => {
 
       <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            {getPriorMonth()} Suspected Nonfatal Overdose ED Visits for {drugOptions[currentDrug].titleAll}<sup>[4]</sup>
+            {getPriorMonth()} Suspected Nonfatal Overdose ED Visits for {drugOptions[currentDrug].titleAll} in Participating Jurisdictions ({jurisCount})<sup>[4]</sup>
           </h2>
         </div>
       </div>
 
-      &nbsp;
-
       <div className="callouts">
         <div style={{'borderLeft': '5px solid' + drugColor}}>
-          <span className="callout" style={{ 'color': drugColor }}>{isNaN(usRate) ? 'N/A' : `${Number(usRate)}`}</span>
+          <span className="callout" style={{ 'color': drugColor }}>{isNaN(usRate) ? 'N/A' : `${Number(usRate).toFixed(1)}`}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>
               {timeline} Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
@@ -1505,7 +1599,7 @@ const getYears = (startYrInp, endYrInp) => {
                         ></UpDownArrow>
                     </td>
                     <td>
-                        <span className="callout" style={{ 'color': drugColor, 'float': 'left' }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent)}` + '%'}</span>
+                        <span className="callout" style={{ 'color': drugColor, 'float': 'left' }}>{isNaN(usPercent) ? 'N/A' : `${Number(usPercent < 0 ? (usPercent * -1) : usPercent).toFixed(1)}` + '%'}</span>
                     </td>
                   </tr>
                 </table>
@@ -1527,12 +1621,17 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
         
-      <section>
-          
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+          {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            What were the trends in Suspected Nonfatal Overdose Visits in {monthNames[Number(currentMonth)] + ', ' + currentYear}{' for ' + drugOptions[currentDrug].titleAll}{'?'}
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataMonthly, currentYear, currentMonth)} Jurisdictions), {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
+          }
+          {timeline == 'Annual' &&
+          <h2 className="data-bite-header">
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataAnnual, currentYear, currentMonth)} Jurisdictions), {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+          </h2>
+          }
         </div>
         <div>
           <table style={{'width': '100%'}}>
@@ -1553,7 +1652,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '45%'}}>
-                <div style={{float: 'left'}}>
+                <div style={{float: 'left', paddingLeft: '5px'}}>
                         <label class="toggleA" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
                             <input id="toggleMonthly" class="toggleA-input" type="checkbox" checked={showAnnual}
                             onChange={(e) => {
@@ -1578,25 +1677,46 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
         </div>
-          <br></br>
+        { timeline == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYear, currentMonth)}</span>
+                </td>
+              </tr>
+            </table>
+          }
           {stateBarChartMemo}
           {getFootNotesForData()}
-      </section>
 
       <section>
 
           <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+          {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Breakdown by Drug Type*, Month, Year or Jurisdiction<sup>†</sup>
+            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0')] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
+          }
+          {timelineBar == 'Annual' &&
+          <h2 className="data-bite-header">
+            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0')] + ' Jurisdictions)' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+          </h2>
+          }
         </div>
 
-        <br></br>
           <div>
           <table style={{'width': '100%'}}>
           <tr>
-              <td style={{'width': '14%'}}></td>
-              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+              <td style={{'width': '10%'}}></td>
+              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '14%'}}>
+                <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
+                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
+              </select>
+              </td>
+
+              <td style={{'width': '18%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
                 <div className="select-input">Select Time Period:</div>
               </td>
               
@@ -1610,7 +1730,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
-              <td style={{'width': '45%'}}>
+              <td style={{'width': '10%'}}>
                 <div style={{float: 'left'}}>
                     <label class="toggleB" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
                         <input id="toggleMonthlyBar" class="toggleB-input" type="checkbox" checked={showAnnualBar}
@@ -1633,20 +1753,31 @@ const getYears = (startYrInp, endYrInp) => {
                     </label>
                 </div>
               </td>
+              <td style={{'width': '10%'}}></td>
             </tr>
           </table>
           <br></br>
+          { timelineBar == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}</span>
+                </td>
+              </tr>
+              <br></br>
+            </table>
+          }
           <table>
             <tr>
               <td style={{'width': '8%'}}></td>
               <td style={{'width': '84%'}}>
                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                   <tr>
-                    <td style={{'width': '22%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right'}} className="select-input">Select Drug Syndrome:</div>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                       <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
                     </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
                       {getDrugControlsBar()}
                     </td>
                   </tr>
@@ -1655,69 +1786,31 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '8%'}}></td>
             </tr>
           </table>
-          <br></br>
-          <table style={{'width': '100%'}}>
-            <tr>
-              <td style={{'width': '47%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">View Data For:</div></td>
-              <td style={{'width': '53%'}}>
-                <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
-                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
-              </select>
-              </td>
-            </tr>
-          </table>
         </div> 
-        <br></br>
-        <br></br>
-        
+       <br></br>
         {drugsBarChartMemo}
         {getFootNotesForData()}
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '15%'}}></td>
             <td style={{width: '80%'}}>
-              <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented</i></small></span></div>
-              <div><span><small><i><sup>*</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+              <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented.</i></small></span></div>
+              <div><span><small><i><sup>†</sup><sup>†</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
             </td>
             <td style={{width: '5%'}}></td>
           </tr>
         </table>
-        <br></br>
-        <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_dashboard_output-download.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
+        {/* <br></br>
+        <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_dashboard_output-download.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span> */}
       </section>
 
       <section>
           <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            {timeline} Suspected Nonfatal Drug Overdose Visits per 10,000 total ED Visits over time<sup>†</sup>
+            Suspected Nonfatal Overdose per 10,000 total ED Visits<sup>†</sup>, {currentStateLine == 'US' ? stateNames[currentStateLine] + ' (' + Object.keys(jurisForDropDownLine).length + ' Jurisdictions)' : stateNames[currentStateLine]}
           </h2>
         </div>
-
-        &nbsp;
-
         <table>
-            <tr>
-              <td style={{'width': '8%'}}></td>
-              <td style={{'width': '84%'}}>
-                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                  <tr>
-                    <td style={{'width': '22%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right'}} className="select-input">Select Drug Syndrome:</div>
-                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
-                    </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
-                      {getDrugControlsLine()}
-                    </td>
-                  </tr>
-                  </table>
-              </td>
-              <td style={{'width': '8%'}}></td>
-            </tr>
-          </table>
-          <br></br>
-          <br></br>
-          <table>
              <tr>
               <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
               <td style={{'width': '84%'}}>
@@ -1726,10 +1819,11 @@ const getYears = (startYrInp, endYrInp) => {
                     <Range 
                     min={1} 
                     max={getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)}
-                    defaultValue={[1,getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)]} 
+                    defaultValue={[61,getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)]} 
                     step={1} marks={getMarksForRangeMonthly(startUSMonthYearForSlider, endUSMonthYearForSlider)} 
                     tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSlider.substring(0,4)), value)}`} 
                     onAfterChange={didOnAfterChangeTriggerMonthly}
+                    key={sliderKey}
                     />
                   </div>
                {/*  } */}
@@ -1748,33 +1842,76 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               </tr>
             </table>
-            <table>
-             <tr>
-              <td style={{'width': '100%'}}>
+            <table style={{'width': '100%'}}>
+              <tr>
+              <td style={{'width': '20%'}}></td>
+              <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '41%'}}>
+                <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                <option value="US">Overall &#40;{Object.keys(jurisForDropDownLine).length} Jurisdictions&#41;</option>
+                {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
+              </select>
+              </td>
+              <td style={{'width': '10%', 'textAlign': 'right'}}>
                   <div style={{float: 'right'}}>
-                        <label class="toggleC" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
-                            <input id="toggleMonthlyLine" class="toggleC-input" type="checkbox" checked={showAnnualLine}
-                            onChange={(e) => {
-                              if(e.target.checked) {
-                                setMonthlyToggleLine(true)
-                                setTimelineLine('Annual');
-                                setPeriodToggle(false)
-                              }
-                              else {
-                                setMonthlyToggleLine(false)
-                                setTimelineLine('Monthly');
-                                setPeriodToggle(true)
-                              }
-                            }}/>
-                            <span class="toggleC-label" data-off="Monthly" 
-                                  data-on="Annual">
-                            </span>
-                            <span class="toggleC-handle"></span>
-                        </label>
-                    </div>
+                    <label class="toggleC" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
+                        <input id="toggleMonthlyLine" class="toggleC-input" type="checkbox" checked={showAnnualLine}
+                        onChange={(e) => {
+                          if(e.target.checked) {
+                            setMonthlyToggleLine(true)
+                            setTimelineLine('Annual');
+                            setPeriodToggle(false)
+                          }
+                          else {
+                            setMonthlyToggleLine(false)
+                            setTimelineLine('Monthly');
+                            setPeriodToggle(true)
+                          }
+                        }}/>
+                        <span class="toggleC-label" data-off="Monthly" 
+                              data-on="Annual">
+                        </span>
+                        <span class="toggleC-handle"></span>
+                    </label>
+                </div>
               </td>
             </tr>
+            </table>
+          {getToggleControls()}
+          <br></br>
+        <table>
+            <tr>
+              <td style={{'width': '8%'}}></td>
+              <td style={{'width': '84%'}}>
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControlsLine()}
+                    </td>
+                  </tr>
+                  </table>
+              </td>
+              <td style={{'width': '8%'}}></td>
+            </tr>
           </table>
+          <br></br>
+          
+            
+            
+          { timelineLine == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                </td>
+              </tr>
+              <br></br>
+            </table>
+          }
 
           {lineChartMemo}
           {getFootNotesForData()}
@@ -1783,6 +1920,7 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '5%'}}></td>
               <td style={{width: '80%'}}>
                 <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented. *Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter [2].</i></small></span></div>
+                <div><span><small><i><sup>†</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
               </td>
               <td style={{width: '15%'}}></td>
             </tr>
@@ -1819,7 +1957,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlyMap">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'left'}}>
+                    <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
                       <div>
                         <input
                         id="radioUSAnnualMap"
@@ -1842,7 +1980,6 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
 
-        <br></br>
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '14%'}}></td>
@@ -1860,8 +1997,16 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
-          <br></br>
-        
+          { mapMonthly == 'Annual' &&
+              <table>
+                <tr>
+                  <td style={{'textAlign': 'center'}}>
+                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}</span>
+                  </td>
+                </tr>
+                <br></br>
+              </table>
+            }
           {usaMapMemo}
       </section>
 
@@ -1869,7 +2014,7 @@ const getYears = (startYrInp, endYrInp) => {
 
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            How do Suspected Nonfatal Overdose Visits vary by Sex and Age Overall &#40;47 Jurisdictions&#41;?
+            Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')]} Jurisdictions&#41;, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
         </div>
 
@@ -1879,11 +2024,11 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '84%'}}>
                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                   <tr>
-                    <td style={{'width': '22%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right'}} className="select-input">Select Drug Syndrome:</div>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                       <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
                     </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px'}}>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
                       {getDrugControlsSexAge()}
                     </td>
                   </tr>
@@ -1915,7 +2060,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlySexAge">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'left'}}>
+                    <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
                       <div>
                         <input
                         id="emerging-percent-metric-line-chart"
@@ -1955,6 +2100,16 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+          { sexAgeMonthly == 'Annual' &&
+              <table>
+                <tr>
+                  <td style={{'textAlign': 'center'}}>
+                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                  </td>
+                </tr>
+                <br></br>
+              </table>
+            }
           <br></br>
           <table>
             <tr>
@@ -1989,9 +2144,8 @@ const getYears = (startYrInp, endYrInp) => {
               <ol>
                 <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
                 <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values <strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
-                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [6] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits.</li>
-                <li><strong>Syndromic data are frequently updated over time.</strong> The chief complaint, or the reason for the ED visit, is available in NSSP often within 24 hours for ~80% of ED visits. However, the chief complaint field may be incomplete. ED visit data may be progressively updated over the course of several weeks, and relevant drug overdose discharge diagnosis codes or revised chief complaint text may be received during this time. DOSE-SYS data are reported with a two-month time lag and not typically updated each month.</li>
-                <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [7] and therefore may underreport specific drug types involved.</li>
+                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [5] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
+                <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [6] and therefore may underreport specific drug types involved.</li>
                 <li><strong>Data likely represent an undercount,</strong> given potential inaccuracies in preliminary coding and potentially incomplete clinical descriptions captured in chief complaint information.</li>
                 <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine poisonings during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and diagnosis codes to identify drug overdose cases. ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes, suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the drug-specific syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
                 <li><strong>Drug overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories (depicted in the figure below) and some drug overdose visits involved multiple substances (e.g., a given drug overdose ED visit could have involved both opioids and stimulants).</li>
@@ -2007,10 +2161,10 @@ const getYears = (startYrInp, endYrInp) => {
           {showFootNotes &&
             <div className="datatable-body">
             <ul id='noBullets'>
-              <li><strong><sup>1</sup></strong>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions. For more information on the definitions used to identify drug overdose visits in syndromic surveillance data, including how these definitions have changed, visit <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">About DOSE</a>.</li>
-              <li><strong><sup>2</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
-              <li><strong><sup>3</sup></strong>Data were collected for the time period beginning January 2018 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020). In some cases, the funded jurisdiction did not provide CDC enough months of data, which had to be suppressed when based on &lt;20 drug overdose visits; thus, no drug overdose visit estimates are available. For more information, please see: <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression.</a></li>
-              <li><strong><sup>4</sup></strong>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a></li>
+              <li><strong><sup>1</sup></strong>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions.</li>
+              <li><strong><sup>2</sup></strong>Data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>.  Additionally, data were collected for the time period beginning January 2018 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
+              <li><strong><sup>3</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
+              <li><strong><sup>4</sup></strong>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, query syntax, and technical briefs, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a></li>
               <li><strong><sup>5</sup></strong>Holland KM, Jones C, Vivolo-Kantor AM, et al. Trends in US Emergency Department Visits for Mental Health, Overdose, and Violence Outcomes Before and During the COVID-19 Pandemic. JAMA Psychiatry. 2021;78(4):372–379. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/33533876/">doi:10.1001/jamapsychiatry.2020.4402</a>.</li>
               <li><strong><sup>6</sup></strong>Morrow JB, Ropero-Miller JD, Catlin ML, et al. The Opioid Epidemic: Moving Toward an Integrated, Holistic Analytical Response. Journal of Analytical Toxicology. 2019; 43(1); 1–9. <a target="_blank" href="https://doi.org/10.1093/jat/bky049">https://doi.org/10.1093/jat/bky049</a>.</li>
               </ul>

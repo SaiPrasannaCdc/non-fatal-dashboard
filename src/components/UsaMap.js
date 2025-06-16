@@ -32,28 +32,28 @@ const getYearlyData = (data, yr, drug, st) => {
         {
           switch (drug) {
             case 'all':
-              yr_drug_total = yr_drug_total + data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_drug_OD_n);
               break;
             case 'benzodiazepine':
-              yr_drug_total = yr_drug_total + data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_Benzo_OD_n);
               break;
             case 'opioids':
-              yr_drug_total = yr_drug_total + data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_opioid_OD_n);
               break;
             case 'fentanyl':
-              yr_drug_total = yr_drug_total + data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n);
               break;
             case 'heroin':
-              yr_drug_total = yr_drug_total + data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_heroin_OD_n);
               break;
             case 'stimulants':
-              yr_drug_total = yr_drug_total + data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_stimulant_OD_n);
               break;
             case 'cocaine':
-              yr_drug_total = yr_drug_total + data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n);
               break;
             case 'methamphetamine':
-              yr_drug_total = yr_drug_total + data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n);
+              yr_drug_total = yr_drug_total + UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n);
               break;
           }
         }
@@ -72,28 +72,28 @@ const getMonthlyData = (data, yrmon, drug, st) => {
         {
           switch (drug) {
             case 'all':
-              month_drug = month_drug + (data[i].total_drug_OD_n == 9999 ? 0 : Number(data[i].total_drug_OD_n));
+              month_drug = month_drug + Number((UtilityFunctions.convertValue(data[i].total_drug_OD_n)));
               break;
             case 'benzodiazepine':
-              month_drug = month_drug + (data[i].total_Benzo_OD_n == 9999 ? 0 : Number(data[i].total_Benzo_OD_n));
+              month_drug = month_drug + Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
               break;
             case 'opioids':
-              month_drug = month_drug + (data[i].total_opioid_OD_n == 9999 ? 0 : Number(data[i].total_opioid_OD_n));
+              month_drug = month_drug + Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
               break;
             case 'fentanyl':
-              month_drug = month_drug + (data[i].total_Fentanyl_OD_n == 9999 ? 0 : Number(data[i].total_Fentanyl_OD_n));
+              month_drug = month_drug + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
               break;
             case 'heroin':
-              month_drug = month_drug + (data[i].total_heroin_OD_n == 9999 ? 0 : Number(data[i].total_heroin_OD_n));
+              month_drug = month_drug + Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
               break;
             case 'stimulants':
-              month_drug = month_drug + (data[i].total_stimulant_OD_n == 9999 ? 0 : Number(data[i].total_stimulant_OD_n));
+              month_drug = month_drug + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
               break;
             case 'cocaine':
-              month_drug = month_drug + (data[i].total_Cocaine_OD_n == 9999 ? 0 : Number(data[i].total_Cocaine_OD_n));
+              month_drug = month_drug + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
               break;
             case 'methamphetamine':
-              month_drug = month_drug + (data[i].total_Methamphetamine_OD_n == 9999 ? 0 : Number(data[i].total_Methamphetamine_OD_n));
+              month_drug = month_drug + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
               break;
           }
         }
@@ -132,9 +132,9 @@ const UsaMap = (params) => {
 
   const isSmallViewport = width < 500;
   const fontSize = 15;
-  const suppressedColor = '#7F7F7F';
+  const suppressedColor = 'url(#pattern_KJD3DK2)';
   const unavailableColor = '#C9C9C9';
-  const unfundedColor = '#86A1D7';
+  const unfundedColor = '#FFFFFF';
   const legendWidth = 240;
   const height = Math.max(width / 2, 250);
   const legendHeight = Math.max(width / 2, 350);
@@ -171,8 +171,9 @@ const UsaMap = (params) => {
   })
 
   const getColor = (id) => {
-    if (stateFipsMapping[id] == 'ND') return unfundedColor;
-    if(!filteredData[stateFipsMapping[id]]) return unavailableColor;
+
+    if (filteredData[stateFipsMapping[id]] == '-2.0') return unfundedColor; 
+    if(filteredData[stateFipsMapping[id]] == '-1.0') return unavailableColor;
     if(filteredData[stateFipsMapping[id]] == '0.0') return suppressedColor;
     return colorScale(filteredData[stateFipsMapping[id]]);
   }
@@ -187,12 +188,14 @@ const UsaMap = (params) => {
     var heading = '<div class="alignCenterTT"><h2 class="borderBottomLine blackFont" style="margin: 0; padding: 0;"><strong>' + `${stateNames[presentState]}` + '</br></strong></h2></div>'; 
     var rateStr;
 
-    if (stateFipsMapping[geoId.substring(0, 2)] == 'ND')
-        rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
-    else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] !== undefined)
+    if (Number(filteredData[stateFipsMapping[geoId.substring(0, 2)]]) >= 0)
        rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
-    else
-       rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+    else {
+      if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == '-1.0')
+        rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+      else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == '-2.0')
+        rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
+    }
       
     return heading + '<table class="tooltipTableUS"><tr><td><div class="containerTT">' + rateStr + '</div></td></tr></table>'
   }
@@ -247,12 +250,12 @@ const UsaMap = (params) => {
           key={geo.id}
           className="geo-group"
         >
-          <path
+         <path
             tabIndex={-1}
             className='single-geo'
             stroke={'#000'}
             strokeWidth={state ? 1 : currentState === 'US' && isSmallViewport ? 0.1 : .5}
-            fill={getColor(geo.id)}
+            fill= {getColor(geo.id)}
             d={path}
             style={{ pointerEvents: geo.id.length <= 2 ? 'default' : 'default' }}
             data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : getTooltipFragment(geo.id)}
@@ -274,7 +277,13 @@ const UsaMap = (params) => {
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '79%', verticalAlign: 'top'}} >
+          <td style={{width: '79%', verticalAlign: 'top'}} >
               <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
+                <defs>
+                  <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
+                    <line x1="0" y="0" x2="0" y2="9.5" stroke="#0C0824" style={{ strokeWidth: 2 }} />
+                  </pattern>
+                </defs>
               <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
                 <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
                   {({ features, projection }) => constructGeoJsx(features, projection, true)}
@@ -309,23 +318,23 @@ const UsaMap = (params) => {
                     <tr>
                       <td>
                           <svg style={{ height: legendHeight - 390, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            {colorIntervals.map(value => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value) - 215} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value) - 200} fill="black" alignmentBaseline="middle">{value}</text>)}
+                            {colorIntervals.map((value, idx) => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={idx == 0 ? 15 : (15 + (idx * 30))} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={idx == 0 ? 28 : (28 + (idx * 30))} fill="black" alignmentBaseline="middle">{value}</text>)}
                         </svg>
                       </td>
                     </tr>
                     <tr>
                       <td>
                         <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} />
+                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
                             <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
 
-                            <rect x={0} y={35} width={50} height={10} fill={unavailableColor} />
-                            <text x={60} y={40} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
-                            <text x={60} y={60} fill="black" alignmentBaseline="middle" fontSize={12}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
+                            <rect x={0} y={30} width={50} height={10} fill={unavailableColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={35} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
+                            <text x={60} y={50} fill="black" alignmentBaseline="middle" fontSize={12}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
 
-                            <rect x={0} y={75} width={50} height={10} fill={unfundedColor} />
-                            <text x={60} y={80} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
+                            <rect x={0} y={60} width={50} height={10} fill={unfundedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={65} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
                         </svg>
                       </td>
                     </tr>

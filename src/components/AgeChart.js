@@ -4,6 +4,7 @@ import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import Utils from '../shared/Utils';
+import { UtilityFunctions } from '../utility'
 import { countCutoff } from '../constants.json';
 
 import '../css/AgeChart.css';
@@ -55,28 +56,28 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
             {
               switch (currentDrug) {
                 case 'all':
-                  drug_total = Number(drug_total) + Number(data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n);
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n));
                   break;
                 case 'benzodiazepine':
-                   drug_total = Number(drug_total) + Number(data[i].total_Benzo_OD_n == 9999 ? 0 : data[i].total_Benzo_OD_n);
+                   drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
                    break;
                 case 'opioids':
-                  drug_total = Number(drug_total) + Number(data[i].total_opioid_OD_n == 9999 ? 0 : data[i].total_opioid_OD_n);
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
                   break;
                 case 'fentanyl':
-                  drug_total = Number(drug_total) + Number(data[i].total_Fentanyl_OD_n == 9999 ? 0 : data[i].total_Fentanyl_OD_n);
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
                   break;
                 case 'heroin':
-                  drug_total = Number(drug_total) + Number(data[i].total_heroin_OD_n == 9999 ? 0 : data[i].total_heroin_OD_n);
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
                   break;
                 case 'stimulants':
-                  drug_total = Number(drug_total) + Number(data[i].total_stimulant_OD_n == 9999 ? 0 : data[i].total_stimulant_OD_n);
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
                   break;
                 case 'cocaine':
-                  drug_total = Number(drug_total) + Number(data[i].total_Cocaine_OD_n == 9999 ? 0 : data[i].total_Cocaine_OD_n);
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
                   break;
                 case 'methamphetamine':
-                  drug_total = Number(drug_total) + Number(data[i].total_Methamphetamine_OD_n == 9999 ? 0 : data[i].total_Methamphetamine_OD_n);
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
                   break;
           }
         }
@@ -145,50 +146,50 @@ const getMissingData = (data, currentDrug, currentYear, currentMonth) => {
               switch (currentDrug) {
                 case 'all':
                   if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_drug_OD_n == 9999 ? 0 : data[i].total_drug_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_drug_OD_pct == 9999 ? 0 : data[i].total_drug_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_pct));
                   }
                   break;
                 case 'benzodiazepine':
                   if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_Benzo_OD_n == 9999 ? 0 : data[i].total_Benzo_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_Benzo_OD_pct == 9999 ? 0 : data[i].total_Benzo_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_pct));
                   }
                   break;
                 case 'opioids':
                   if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_opioid_OD_n == 9999 ? 0 : data[i].total_opioid_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_opioid_OD_pct == 9999 ? 0 : data[i].total_opioid_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_pct));
                   }
                   break;
                 case 'fentanyl':
                   if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_Fentanyl_OD_n == 9999 ? 0 : data[i].total_Fentanyl_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_Fentanyl_OD_pct == 9999 ? 0 : data[i].total_Fentanyl_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_pct));
                   }
                   break;
                 case 'heroin':
                    if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_heroin_OD_n == 9999 ? 0 : data[i].total_heroin_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_heroin_OD_pct == 9999 ? 0 : data[i].total_heroin_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_pct));
                   }
                   break;
                 case 'stimulants':
                   if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_stimulant_OD_n == 9999 ? 0 : data[i].total_stimulant_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_stimulant_OD_pct == 9999 ? 0 : data[i].total_stimulant_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_pct));
                   }
                   break;
                 case 'cocaine':
                   if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_Cocaine_OD_n == 9999 ? 0 : data[i].total_Cocaine_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_Cocaine_OD_pct == 9999 ? 0 : data[i].total_Cocaine_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_pct));
                   }
                   break;
                 case 'methamphetamine':
                   if (data[i].Age_Group == 'Missing') {
-                    missing_rate = Number(missing_rate) + Number(data[i].total_Methamphetamine_OD_n == 9999 ? 0 : data[i].total_Methamphetamine_OD_n);
-                    missing_pct = Number(missing_pct) + Number(data[i].total_Methamphetamine_OD_pct == 9999 ? 0 : data[i].total_Methamphetamine_OD_pct);
+                    missing_rate = Number(missing_rate) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
+                    missing_pct = Number(missing_pct) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_pct));
                   }
                   break;
 
