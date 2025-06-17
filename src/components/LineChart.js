@@ -9,7 +9,6 @@ import QuickStat from './quickStat';
 import ReactDOMServer from 'react-dom/server';
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
-const covidPeriod = ['202003', '202004', '202005', '202006', '202007', '202008']
 
 export const colorScale = {
   'all': '#325D7D',
@@ -226,7 +225,7 @@ function LineChart(params) {
   specs['height'] = 400;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = (isPeriod && filteredData['US'].length > 12) ? { top: 15, bottom: 85, left: (currentState != 'US' && !showOverall ? 125 : 75), right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = isPeriod ? { top: 15, bottom: 85, left: (currentState != 'US' && !showOverall ? 125 : 75), right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
@@ -286,14 +285,21 @@ const adjustCrowdedLabels = () => {
   if (currentState != 'US')
     return;
 
+  var yr = inp.filteredData['US'][inp.filteredData['US'].length - 1]['year'];
+  var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(yr) + 1;
+  var allPeriodIsCovid = (inp.filteredData['US'].length  <= covidTimeIndex) ? true : false;
+
+  if (allPeriodIsCovid)
+    return;
+
     var rec = inp.filteredData['US'][inp.filteredData['US'].length - 1];
-    var covidTimeIndex = covidPeriod.indexOf(rec.year) + 1;
+    var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(rec.year) + 1;
 
     var positionsVar = [];
     const allLabels = document?.getElementsByClassName("adjustCrowded");
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
-        if (!isCovidPeriod(rec.year)) {
+        if (!UtilityFunctions.isCovidPeriod(rec.year)) {
           var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]);
           if (pos !== undefined) {
             positionsVar.push({
@@ -580,17 +586,8 @@ const adjustCrowdedLabels = () => {
     return sortedToolTips;
   }
 
-  const isCovidPeriod = (yearmon) => {
-    return covidPeriod.includes(yearmon);
-  }
-
   const getTooltipCovid = () => {
     return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
-  }
-
-  const doesEndWithCovidPeriod = () => {
-    var cnt = inp.filteredData['US'].length;
-    return covidPeriod.includes(inp.filteredData['US'][cnt - 1]['year']);
   }
 
   const getJurisCount = (yearmon) => {
@@ -598,7 +595,7 @@ const adjustCrowdedLabels = () => {
   }
 
   const getDataTip = (d, tooltipValuesSorted) => {
-    return (isCovidPeriod(d['year']) ? getTooltipCovid() : ((inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
+    return (UtilityFunctions.isCovidPeriod(d['year']) ? getTooltipCovid() : ((inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
                 `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`));
   }
   
@@ -622,10 +619,10 @@ const adjustCrowdedLabels = () => {
 
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
-              fill={isCovidPeriod(d['year'])  ? '#E7E7E7' : 'transparent'}
+              fill={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : 'transparent'}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
-              width={(doesEndWithCovidPeriod() && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
+              width={(UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
               height={specs.yMax}
               style={{outline: 'none'}}
               data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
@@ -692,10 +689,12 @@ const adjustCrowdedLabels = () => {
     const sectionWidthHalf = sectionWidth / 2;
 
     var yr = inp.filteredData['US'][inp.filteredData['US'].length - 1]['year'];
-    var covidTimeIndex = covidPeriod.indexOf(yr) + 1;
-    var endWithCovidPeriod = isCovidPeriod(yr);
-    const seriesLabelPositionUS = endWithCovidPeriod ? specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][currentDrug]) : specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
-    const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][currentDrug] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug]) : 'Data suppressed*';
+    var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(yr) + 1;
+    var allPeriodIsCovid = (inp.filteredData['US'].length  <= covidTimeIndex) ? true : false;
+    var endWithCovidPeriod = UtilityFunctions.isCovidPeriod(yr);
+
+    const seriesLabelPositionUS = endWithCovidPeriod && !allPeriodIsCovid ? specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][currentDrug]) : specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
+    const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][currentDrug] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug]) : 'Data suppressed*';
     const seriesLabelPositionState = valueState === 'Data suppressed*' ? specs.yScale(0) - 30 : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
@@ -720,11 +719,11 @@ const adjustCrowdedLabels = () => {
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] > 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!covidPeriod.includes(d['year']) ? '*' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
 
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] > 0 && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == 0 && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!covidPeriod.includes(d['year']) ? '*' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == 0 && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
                         </Group>
                         )
                     })}
@@ -806,7 +805,7 @@ const adjustCrowdedLabels = () => {
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '85%'}}>
-            <svg style={{height: specs.height - 50, width: '100%'}}>
+            <svg style={{height: (specs.height - 50), width: '100%'}}>
               <Group top={specs.margin.top} left={specs.margin.left}>
                 {currentState !== 'US' && buildLineForDrug(currentDrug)}
                 {inp.selectedDrugs.includes('all') && currentState === 'US' && buildLineForDrug('all')}
@@ -828,7 +827,7 @@ const adjustCrowdedLabels = () => {
                     dy: 5
                   })}
                 />
-                <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 ED visits</text>
+                <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>{yScaleDomainPeriod}</text>
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}
