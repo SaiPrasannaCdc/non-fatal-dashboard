@@ -1198,8 +1198,6 @@ const getYears = (startYrInp, endYrInp) => {
       onClick={() => {
         setCurrentDrug(drugName);
         setselectedDrugs([drugName])
-        setDeselectAllFlag(false);
-        setSelectAllFlag(false);
       }}
     >{drugLabel || drugName}</button>
   );

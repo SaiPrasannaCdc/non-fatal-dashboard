@@ -143,7 +143,7 @@ function StateChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 10, bottom: 0, left: 130, right: 10};
+  const margin = {top: 10, bottom: 10, left: 130, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
   const adjustedWidth = width - margin.left - margin.right - 100; 
   const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.42));

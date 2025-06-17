@@ -1,3 +1,5 @@
+export const covidPeriod = ['202003', '202004', '202005', '202006', '202007', '202008'];
+
 export const UtilityFunctions = {
 
   calculateMinMax: (data, drug, flag)=> {
@@ -121,7 +123,7 @@ export const UtilityFunctions = {
 
     if (currentState != 'US' && !showOverall)
       return statemax;
-    
+
     if (usmax < statemax)
       return statemax;
     else
@@ -587,6 +589,19 @@ export const UtilityFunctions = {
     let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
     d.setMonth(d.getMonth() - 11);
     return '(' + d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear + ')'; 
+  },
+
+  isCovidPeriod : (yearmon) => {
+    return covidPeriod.includes(yearmon);
+  },
+  
+   doesEndWithCovidPeriod : (data, st) => {
+    var cnt = data[st].length;
+    return covidPeriod.includes(data[st][cnt - 1]['year']);
+  },
+
+  getCovidPeriodIndex : (yr) => {
+    return covidPeriod.indexOf(yr);
   }
 
 }
