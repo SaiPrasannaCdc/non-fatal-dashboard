@@ -330,7 +330,7 @@ const UsaMap = (params) => {
 
                             <rect x={0} y={30} width={50} height={10} fill={unavailableColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
                             <text x={60} y={35} fill="black" alignmentBaseline="middle" fontSize={12}>Data not available/</text>
-                            <text x={60} y={50} fill="black" alignmentBaseline="middle" fontSize={12}>not reported<tspan baselineShift="super" fontSize="10">1</tspan></text>
+                            <text x={60} y={50} fill="black" alignmentBaseline="middle" fontSize={12}>not reported</text>
 
                             <rect x={0} y={60} width={50} height={10} fill={unfundedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
                             <text x={60} y={65} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
