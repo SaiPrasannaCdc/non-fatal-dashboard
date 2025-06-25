@@ -1112,58 +1112,73 @@ const getYears = (startYrInp, endYrInp) => {
 
   const sexChartMemo = useMemo(() =>
     <>
-    <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={sexChartRef}>
-      <SexChart
-          data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
-          year={'2023'}
-          width={width * 0.5}
-          height={600} //TODO
-          el={sexChartRef}
-          currentDrug={selectedDrugsSexAge[0]} 
-          drugOptions={drugOptions}
-          currentTimeLine={sexAgeMonthly}
-          currentYear={currentYearSexAge}
-          currentMonth={currentMonthSexAge}
-        />
-    </div>
+    <div className="column column-right">
+        <div className={"subsection marked " + selectedDrugsSexAge[0] + 'ToolTip'}>
+          <span className="individual-header margin-top">By Sex</span>
+          <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={sexChartRef}>
+            <SexChart
+                data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+                year={'2023'}
+                width={width * 0.5}
+                height={600} //TODO
+                el={sexChartRef}
+                currentDrug={selectedDrugsSexAge[0]} 
+                drugOptions={drugOptions}
+                currentTimeLine={sexAgeMonthly}
+                currentYear={currentYearSexAge}
+                currentMonth={currentMonthSexAge}
+              />
+          </div>
+        </div>
+      </div>
     </>,
   [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge]);
   
   const ageChartMemo = useMemo(() =>
     <>
-      <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={ageChartRef}>
-        <AgeChart
-            data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
-            maxes={{'month': 6150,'quarter': 17726}}
-            year={'2023'}
-            width={width * 0.5}
-            height={600} //TODO
-            header={false}
-            el={ageChartRef}
-            overallMax={100}
-            currentDrug={selectedDrugsSexAge[0]} 
-            drugOptions={drugOptions}
-            currentTimeLine={sexAgeMonthly}
-            currentYear={currentYearSexAge}
-            currentMonth={currentMonthSexAge}
-          />
+    <div className="column column-right">
+        <div className={"subsection marked " + selectedDrugsSexAge[0] + 'ToolTip'}>
+          <span className="individual-header margin-top">By Age (In years)</span>
+          <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={ageChartRef}>
+            <AgeChart
+                data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+                maxes={{'month': 6150,'quarter': 17726}}
+                year={'2023'}
+                width={width * 0.5}
+                height={600} //TODO
+                header={false}
+                el={ageChartRef}
+                overallMax={100}
+                currentDrug={selectedDrugsSexAge[0]} 
+                drugOptions={drugOptions}
+                currentTimeLine={sexAgeMonthly}
+                currentYear={currentYearSexAge}
+                currentMonth={currentMonthSexAge}
+              />
+          </div>
+        </div>
       </div>
       </>,
   [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge]);
         
   const sexAgeChartMemo = useMemo(() =>
     <>
-      <div class='' ref={sexAgeChartRef}>
-        <SexAgeChart 
-        data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
-        currentTimeframe={sexAgeMonthly}
-        currentYear={currentYearSexAge}
-        currentMonth={currentMonthSexAge}
-        currentDataType={'rate'}
-        width={width * 0.5} 
-        currentDrug={selectedDrugsSexAge[0]} 
-        drugOptions={drugOptions} />
-      </div>
+    <div className="column column-right">
+        <div className={"subsection marked " + selectedDrugsSexAge[0] + 'ToolTip'}>
+          <span className="individual-header margin-top">By Age (In years) and Sex</span>
+          <div class='' ref={sexAgeChartRef}>
+            <SexAgeChart 
+            data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+            currentTimeframe={sexAgeMonthly}
+            currentYear={currentYearSexAge}
+            currentMonth={currentMonthSexAge}
+            currentDataType={'rate'}
+            width={width * 0.5} 
+            currentDrug={selectedDrugsSexAge[0]} 
+            drugOptions={drugOptions} />
+          </div>
+        </div>
+       </div> 
       </>,
   [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge]);
 
@@ -1467,6 +1482,16 @@ const getYears = (startYrInp, endYrInp) => {
 
     return  ((getMonthlyValueForCurrentDrug() - priorMon) / priorMon) * 100; 
   }
+
+  const isDisabledDrug = () => {
+
+    if (selectedDrugsSexAge[0] != 'all' && selectedDrugsSexAge[0] != 'opioids' && selectedDrugsSexAge[0] != 'stimulants')
+      return true;
+    else
+      return false;
+    
+  }
+  
 
   const drugColor = drugOptions[currentDrug].color;
   const usRate = String(getMonthlyValueForCurrentDrug().toFixed(1)); 
@@ -2120,6 +2145,7 @@ const getYears = (startYrInp, endYrInp) => {
                           type="radio"
                           value="Monthly"
                           checked={sexAgeMonthly === 'Monthly'}
+                          disabled={isDisabledDrug()}
                           onChange={(e) => {
                             setSexAgeMetric(e.target.value);
                           }} />
