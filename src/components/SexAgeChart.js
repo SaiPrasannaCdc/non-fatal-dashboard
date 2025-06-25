@@ -106,7 +106,7 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
 
     switch (ageGroups[x]) {
       case '< 15':
-        ageN = '<15';
+        ageN = '0-14';
         sortOrder = 1; 
         break;
       case '15 to 24':
@@ -319,7 +319,7 @@ function SexAgeChart(params) {
   });
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata['rate'] + ' (' + mdata['percent'] + '%) of data are missing.'
+    return 'Note: ' + mdata['percent'] + '% of data are missing.'
   };
 
   const getBar = (d) => {
@@ -373,7 +373,7 @@ function SexAgeChart(params) {
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
-          <Text x={-20} y={yMax / 2} style={{ transform: 'rotate(-90deg)', transformOrigin: `-20px ${yMax / 2}px` }} fill={'#000066'} fontSize={fontSize} textAnchor="middle">Nonfatal Overdoses per 10,000 ED visits by Age Group</Text>
+          {/* <Text x={-20} y={yMax / 2} style={{ transform: 'rotate(-90deg)', transformOrigin: `-20px ${yMax / 2}px` }} fill={'#000066'} fontSize={fontSize} textAnchor="middle">Nonfatal Overdoses per 10,000 ED visits by Age Group</Text> */}
           <AxisLeft
           scale={yScale}
           tickLabelProps={() => ({
@@ -386,7 +386,7 @@ function SexAgeChart(params) {
           hideTicks
           hideAxisLine
         />
-          <AxisBottom
+         {/*  <AxisBottom
             top={yMax}
             scale={x1Scale}
             numTicks={isSmallViewport ? 3 : null}
@@ -417,10 +417,10 @@ function SexAgeChart(params) {
                 }
               }
             }}
-          />
+          /> */}
           {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years) and Sex'}</text>}
-          {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 110} fontSize={fontSize - 4} fill={'#000066'} textAnchor="middle">{getMissingNote(missingData)}</text>}
-          {<text x={xMax/2} y={yMax+ 130} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
+          {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax+ 110} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
+          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 110)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
         </Group>
       </svg>
     </>

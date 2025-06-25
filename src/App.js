@@ -1834,8 +1834,6 @@ const getYears = (startYrInp, endYrInp) => {
             <td style={{width: '5%'}}></td>
           </tr>
         </table>
-        {/* <br></br>
-        <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_dashboard_output-download.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span> */}
       </section>
 
       <section>
@@ -2064,7 +2062,7 @@ const getYears = (startYrInp, endYrInp) => {
 
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')]} Jurisdictions&#41;, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
+            Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')]} Jurisdictions&#41;, {sexAgeMonthly == 'Monthly' ? (monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge) : UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
         </div>
 
@@ -2092,11 +2090,30 @@ const getYears = (startYrInp, endYrInp) => {
             <tr>
               <td></td>
               <td>
+                          <table>
+            <tr>
+              <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
+              <td style={{'width': '16%'}}>
+                  <table style={{'width': '100%'}}>
+                  <tr>
+                      <td style={{'width': '10%'}}>
+                        <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
+                        {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
+                      </select>
+                      </td>
+                      <td style={{'width': '51%'}}>
+                      <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value); }}>
+                      {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                    </select>
+                      </td>
+                    </tr>
+                  </table>
+              </td>
+              <td style={{'width': '16%', 'textAlign': 'right'}}>
                 <table>
                   <tr>
-                    <td style={{'width': '40%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
-                    <td style={{'width': '10%', 'textAlign': 'right'}}>
-                      <div>
+                      <td style={{'width': '50%', 'textAlign': 'right'}}>
+                     <div>
                         <input
                           id="radioUSMonthlySexAge"
                           name="radioUSMonthlySexAge"
@@ -2110,7 +2127,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlySexAge">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '5px'}}>
                       <div>
                         <input
                         id="radioUSYearlySexAge"
@@ -2125,31 +2142,17 @@ const getYears = (startYrInp, endYrInp) => {
                         htmlFor="radioUSYearlySexAge">Annual</label>
                       </div>
                     </td>
-                  </tr>
-                </table>
+                    </tr>
+                  </table>
+                </td>
+                <td style={{'width': '28%'}}>
+                </td>
+            </tr>
+          </table>
               </td>
-              <td></td>
-
             </tr>
           </table>
           <br></br>
-          <table style={{'width': '100%'}}>
-          <tr>
-              <td style={{'width': '14%'}}></td>
-              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
-              </td>
-              <td style={{'width': '10%'}}>
-                <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
-                  {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-              </td>
-              <td style={{'width': '51%'}}>
-              <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value); }}>
-                {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
-              </select>
-              </td>
-            </tr>
-          </table>
           { sexAgeMonthly == 'Annual' &&
               <table>
                 <tr>
@@ -2161,6 +2164,15 @@ const getYears = (startYrInp, endYrInp) => {
               </table>
             }
           <br></br>
+          <table>
+            <tr>
+              <td>
+                <svg height={50}>
+                  <text x={width/2} y={20} fill={'#000066'} fontSize={16} textAnchor="middle">Nonfatal Overdoses per 10,000 ED visits<tspan baselineShift="super" fontSize="10">†</tspan></text>
+                  </svg>
+              </td>
+            </tr>
+          </table>
           <table>
             <tr>
               <td style={{width: '50%'}}>
@@ -2221,6 +2233,8 @@ const getYears = (startYrInp, endYrInp) => {
           </div>}
         </div>
       </div>
+
+      <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_dashboard_output-download.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
 
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
 

@@ -602,6 +602,32 @@ export const UtilityFunctions = {
 
   getCovidPeriodIndex : (yr) => {
     return covidPeriod.indexOf(yr);
+  },
+
+  allDataIsSupressed : (fdata) => {
+  
+      var ret = true;
+      for (var x=0;x<fdata.length;x++)
+      {
+        if (fdata[x].value > 0) {
+          ret = false;
+          break;
+        }
+      }
+      return ret;
+  },
+
+  allDataIsSupressedSA : (fdata) => {
+  
+      var ret = true;
+      for (var x=0;x<fdata.length;x++)
+      {
+        if (fdata[x].F > 0 || fdata[x].M > 0) {
+          ret = false;
+          break;
+        }
+      }
+      return ret;
   }
 
 }

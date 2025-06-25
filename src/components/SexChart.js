@@ -234,7 +234,7 @@ function SexChart(params) {
   };
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata['rate'] + ' (' + mdata['percent'] + '%) of data are missing.'
+    return 'Note: ' + mdata['percent'] + '% of data are missing.'
   };
   
 
@@ -265,7 +265,7 @@ function SexChart(params) {
                   })}
                   labelOffset={60}
                 />
-                <text x={adjustedHeight / -2} y={-65} textAnchor="middle" fill={'#000066'} transform="rotate(-90)">Nonfatal Overdoses per 10,000 ED visits</text>
+                {/* <text x={adjustedHeight / -2} y={-65} textAnchor="middle" fill={'#000066'} transform="rotate(-90)">Nonfatal Overdoses per 10,000 ED visits</text> */}
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.sex}`} className="animate-bars">
@@ -321,8 +321,8 @@ function SexChart(params) {
               </>
             )
             {<text x={adjustedWidth/2} y={height - 70} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Sex'}</text>}
-            {<text x={adjustedWidth/2} y={height - 50} fontSize={fontSize - 4} fill={'#000066'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
-            {<text x={adjustedWidth/2} y={height - 30} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
+            {!UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 50} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 50)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
           </Group>
         </svg>
       </div>
