@@ -1604,7 +1604,7 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               <td>
                   <span className='data-bite-title' style={{ color: drugColor }}>
-                    {usPercent < 0 ? 'Decrease' : 'Increase' } in Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
+                    {usPercent <= 0 ? (usPercent == 0 ? 'No Change' : 'Decrease') : 'Increase' } in Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
                     <p>Per 10,000 total ED visits from the prior month</p>
               </td>
             </tr>
@@ -1650,27 +1650,45 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '45%'}}>
-                <div style={{float: 'left', paddingLeft: '5px'}}>
-                        <label class="toggleA" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
-                            <input id="toggleMonthly" class="toggleA-input" type="checkbox" checked={showAnnual}
+                <table>
+                  <tr>
+                    <td style={{'width': '10%', 'textAlign': 'right'}}>
+                        <div>
+                          <input
+                            id="radioUSMonthlyState"
+                            name="radioUSMonthlyState"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnual === false}
                             onChange={(e) => {
-                              if(e.target.checked) {
-                                setMonthlyToggle(true)
-                                setTimeline('Annual');
-                                setPeriodToggle(false)
-                              }
-                              else {
                                 setMonthlyToggle(false)
                                 setTimeline('Monthly');
                                 setPeriodToggle(true)
-                              }
-                            }}/>
-                            <span class="toggleA-label" data-off="Monthly" 
-                                  data-on="Annual">
-                            </span>
-                            <span class="toggleA-handle"></span>
-                        </label>
-                    </div>
+                            }} />
+                          <label
+                            htmlFor="radioUSMonthlyState">Monthly</label>
+                        </div>
+                      </td>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                        <div>
+                          <input
+                          id="radioUSAnnualState"
+                          name="radioUSAnnualState"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnual === true}
+                          onChange={(e) => {
+                              setMonthlyToggle(true);
+                              setTimeline('Annual');
+                              setPeriodToggle(false);
+                          }} 
+                          />
+                          <label
+                          htmlFor="radioUSAnnualState">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           </table>
@@ -1706,19 +1724,19 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '10%'}}></td>
-              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
-              <td style={{'width': '14%'}}>
+              <td style={{'width': '14%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '18%'}}>
                 <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
                 {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
               </select>
               </td>
 
-              <td style={{'width': '18%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+              <td style={{'width': '14%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
                 <div className="select-input">Select Time Period:</div>
               </td>
               
-              <td style={{'width': '10%'}}>
+              <td style={{'width': '8%'}}>
                 <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value))) }}>
                   {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
@@ -1728,28 +1746,46 @@ const getYears = (startYrInp, endYrInp) => {
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
-              <td style={{'width': '10%'}}>
-                <div style={{float: 'left'}}>
-                    <label class="toggleB" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
-                        <input id="toggleMonthlyBar" class="toggleB-input" type="checkbox" checked={showAnnualBar}
-                        onChange={(e) => {
-                          if(e.target.checked) {
-                            setMonthlyToggleBar(true)
+              <td style={{'width': '15%'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '50%', 'textAlign': 'right'}}>
+                        <div>
+                          <input
+                            id="radioUSMonthlyBar"
+                            name="radioUSMonthlyBar"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnualBar === false}
+                            onChange={(e) => {
+                              setMonthlyToggleBar(false);
+                              setTimelineBar('Monthly');
+                              setPeriodToggle(true);
+                            }} />
+                          <label
+                            htmlFor="radioUSMonthlyBar">Monthly</label>
+                        </div>
+                      </td>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                        <div>
+                          <input
+                          id="radioUSAnnualBar"
+                          name="radioUSAnnualBar"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnualBar === true}
+                          onChange={(e) => {
+                            setMonthlyToggleBar(true);
                             setTimelineBar('Annual');
-                            setPeriodToggle(false)
-                          }
-                          else {
-                            setMonthlyToggleBar(false)
-                            setTimelineBar('Monthly');
-                            setPeriodToggle(true)
-                          }
-                        }}/>
-                        <span class="toggleB-label" data-off="Monthly" 
-                              data-on="Annual">
-                        </span>
-                        <span class="toggleB-handle"></span>
-                    </label>
-                </div>
+                            setPeriodToggle(false);
+                          }} 
+                          />
+                          <label
+                          htmlFor="radioUSAnnualBar">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
               </td>
               <td style={{'width': '10%'}}></td>
             </tr>
@@ -1842,37 +1878,56 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
             <table style={{'width': '100%'}}>
               <tr>
-              <td style={{'width': '20%'}}></td>
+              <td style={{'width': '15%'}}></td>
               <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
-              <td style={{'width': '41%'}}>
+              <td style={{'width': '20%'}}>
                 <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDownLine).length} Jurisdictions&#41;</option>
                 {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
               </select>
               </td>
-              <td style={{'width': '10%', 'textAlign': 'right'}}>
-                  <div style={{float: 'right'}}>
-                    <label class="toggleC" title={'Toggle to select between Monthly and Annual view. The default is Monthly.'}>
-                        <input id="toggleMonthlyLine" class="toggleC-input" type="checkbox" checked={showAnnualLine}
-                        onChange={(e) => {
-                          if(e.target.checked) {
-                            setMonthlyToggleLine(true)
+              <td style={{'width': '13%', 'textAlign': 'left'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '50%', 'textAlign': 'left'}}>
+                        <div>
+                          <input
+                            id="radioUSMonthlyLine"
+                            name="radioUSMonthlyLine"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnualLine === false}
+                            onChange={(e) => {
+                              setMonthlyToggleLine(false);
+                              setTimelineLine('Monthly');
+                              setPeriodToggle(true);
+                            }} />
+                          <label
+                            htmlFor="radioUSMonthlyLine">Monthly</label>
+                        </div>
+                      </td>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                        <div>
+                          <input
+                          id="radioUSAnnualLine"
+                          name="radioUSAnnualLine"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnualLine === true}
+                          onChange={(e) => {
+                            setMonthlyToggleLine(true);
                             setTimelineLine('Annual');
-                            setPeriodToggle(false)
-                          }
-                          else {
-                            setMonthlyToggleLine(false)
-                            setTimelineLine('Monthly');
-                            setPeriodToggle(true)
-                          }
-                        }}/>
-                        <span class="toggleC-label" data-off="Monthly" 
-                              data-on="Annual">
-                        </span>
-                        <span class="toggleC-handle"></span>
-                    </label>
-                </div>
+                            setPeriodToggle(false);
+                          }} 
+                          />
+                          <label
+                          htmlFor="radioUSAnnualLine">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
               </td>
+              <td style={{'width': '25%'}}></td>
             </tr>
             </table>
           {getToggleControls()}
@@ -1932,15 +1987,29 @@ const getYears = (startYrInp, endYrInp) => {
             {mapMonthly} Suspected Nonfatal Overdose ED visits per 10,000 Total ED Visits<sup>†</sup>
           </h2>
         </div>
-
-        <table>
+          <table>
             <tr>
-              <td></td>
-              <td>
+              <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
+              <td style={{'width': '16%'}}>
+                  <table style={{'width': '100%'}}>
+                  <tr>
+                      <td style={{'width': '10%'}}>
+                        <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }}>
+                          {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                      </td>
+                      <td style={{'width': '51%'}}>
+                      <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value); }}>
+                        {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                      </select>
+                      </td>
+                    </tr>
+                  </table>
+              </td>
+              <td style={{'width': '13%', 'textAlign': 'right'}}>
                 <table>
                   <tr>
-                    <td style={{'width': '40%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
-                    <td style={{'width': '10%', 'textAlign': 'right'}}>
+                      <td style={{'width': '50%', 'textAlign': 'right'}}>
                       <div>
                         <input
                           id="radioUSMonthlyMap"
@@ -1955,7 +2024,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlyMap">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '5px'}}>
                       <div>
                         <input
                         id="radioUSAnnualMap"
@@ -1965,34 +2034,17 @@ const getYears = (startYrInp, endYrInp) => {
                         checked={mapMonthly === 'Annual'}
                         onChange={(e) => {
                           setMapMonthly(e.target.value);
-                        }} />
+                        }} 
+                        />
                         <label
-                        htmlFor="emerging-percent-metric-line-chart">Annual</label>
+                        htmlFor="radioUSAnnualMap">Annual</label>
                       </div>
                     </td>
-                  </tr>
-                </table>
-              </td>
-              <td></td>
-
-            </tr>
-          </table>
-
-          <table style={{'width': '100%'}}>
-          <tr>
-              <td style={{'width': '14%'}}></td>
-              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
-              </td>
-              <td style={{'width': '10%'}}>
-                <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }}>
-                  {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-              </td>
-              <td style={{'width': '51%'}}>
-              <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value); }}>
-                {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
-              </select>
-              </td>
+                    </tr>
+                  </table>
+                </td>
+                <td style={{'width': '28%'}}>
+                </td>
             </tr>
           </table>
           { mapMonthly == 'Annual' &&
@@ -2061,8 +2113,8 @@ const getYears = (startYrInp, endYrInp) => {
                     <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
                       <div>
                         <input
-                        id="emerging-percent-metric-line-chart"
-                        name="emerging-metric-line-chart"
+                        id="radioUSYearlySexAge"
+                        name="radioUSYearlySexAge"
                         type="radio"
                         value="Annual"
                         checked={sexAgeMonthly === 'Annual'}
@@ -2070,7 +2122,7 @@ const getYears = (startYrInp, endYrInp) => {
                           setSexAgeMetric(e.target.value);
                         }} />
                         <label
-                        htmlFor="emerging-percent-metric-line-chart">Annual</label>
+                        htmlFor="radioUSYearlySexAge">Annual</label>
                       </div>
                     </td>
                   </tr>

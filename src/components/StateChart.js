@@ -241,7 +241,7 @@ function StateChart(params) {
                           }
                         }}
                         data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                        Rate: ${Number(rate).toLocaleString()}</div>`}
+                        Rate: ${(rate)}</div>`}
                       ></path>
                     }
                     {

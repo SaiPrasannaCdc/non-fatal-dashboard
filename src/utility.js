@@ -588,7 +588,7 @@ export const UtilityFunctions = {
 
     let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
     d.setMonth(d.getMonth() - 11);
-    return '(' + d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear + ')'; 
+    return d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear; 
   },
 
   isCovidPeriod : (yearmon) => {

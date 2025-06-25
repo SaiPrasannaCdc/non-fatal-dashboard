@@ -29,14 +29,14 @@ function AngleArrow(params) {
             <Group>
                 <Polygon
                     sides={3}
-                    size={50}
+                    size={60}
                     center={{ x: 50, y: 50 }}
                     points={
                         percentValue > 0 ? 
                         upArrayPoints.map(p => [p.x, p.y]):
                         (percentValue == 0 ? [] : decreaseArrayPoints.map(p => [p.x, p.y]))}
                     fill={colorScale}
-                    transform="rotate(-35 10 0)"
+                    transform="rotate(-105 10 10)"
                 ></Polygon>
             </Group>
         </svg>
