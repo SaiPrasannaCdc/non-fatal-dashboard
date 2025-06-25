@@ -155,7 +155,7 @@ const UsaMap = (params) => {
   let labelIntervals = [];
   let colorIntervals = [];
   for (let i = 0; i < 5; i++) {
-    let val = max - (intervalWidth) * (i+1)
+    let val = i == 0 ? max : (max - (intervalWidth) * (i))
     labelIntervals.push( i != 4 ? (String(Number(val < 0 ? 0.0001 : val).toFixed(1)) + ' - '  + String((Number(val < 0 ? 0.0001 : val) - intervalWidth).toFixed(1))) : (String(Number(val < 0 ? 0.0001 : val).toFixed(1)) + ' - 0.0'))
     colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
   }
