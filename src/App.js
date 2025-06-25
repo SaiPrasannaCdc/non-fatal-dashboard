@@ -1664,7 +1664,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <div className="select-input">Select Time Period:</div>
               </td>
               
-              <td style={{'width': '10%'}}>
+              <td style={{'width': '11%'}}>
                 <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
                   {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
@@ -1677,7 +1677,7 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '45%'}}>
                 <table>
                   <tr>
-                    <td style={{'width': '10%', 'textAlign': 'right'}}>
+                    <td style={{'width': '14%', 'textAlign': 'right'}}>
                         <div>
                           <input
                             id="radioUSMonthlyState"
@@ -1694,7 +1694,7 @@ const getYears = (startYrInp, endYrInp) => {
                             htmlFor="radioUSMonthlyState">Monthly</label>
                         </div>
                       </td>
-                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '15px'}}>
                         <div>
                           <input
                           id="radioUSAnnualState"
@@ -1748,8 +1748,8 @@ const getYears = (startYrInp, endYrInp) => {
           <div>
           <table style={{'width': '100%'}}>
           <tr>
-              <td style={{'width': '10%'}}></td>
-              <td style={{'width': '14%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '4%'}}></td>
+              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '18%'}}>
                 <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
@@ -1757,11 +1757,11 @@ const getYears = (startYrInp, endYrInp) => {
               </select>
               </td>
 
-              <td style={{'width': '14%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+              <td style={{'width': '18%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
                 <div className="select-input">Select Time Period:</div>
               </td>
               
-              <td style={{'width': '8%'}}>
+              <td style={{'width': '11%'}}>
                 <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value))) }}>
                   {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
@@ -1771,7 +1771,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
-              <td style={{'width': '15%'}}>
+              <td style={{'width': '18%'}}>
                 <table>
                   <tr>
                     <td style={{'width': '50%', 'textAlign': 'right'}}>
@@ -1791,7 +1791,7 @@ const getYears = (startYrInp, endYrInp) => {
                             htmlFor="radioUSMonthlyBar">Monthly</label>
                         </div>
                       </td>
-                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '15px'}}>
                         <div>
                           <input
                           id="radioUSAnnualBar"
@@ -1812,7 +1812,7 @@ const getYears = (startYrInp, endYrInp) => {
                   </tr>
                 </table>
               </td>
-              <td style={{'width': '10%'}}></td>
+              <td style={{'width': '3%'}}></td>
             </tr>
           </table>
           <br></br>
@@ -1901,7 +1901,7 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
             <table style={{'width': '100%'}}>
               <tr>
-              <td style={{'width': '15%'}}></td>
+              <td style={{'width': '12%'}}></td>
               <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '20%'}}>
                 <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
@@ -1909,7 +1909,7 @@ const getYears = (startYrInp, endYrInp) => {
                 {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
               </select>
               </td>
-              <td style={{'width': '13%', 'textAlign': 'left'}}>
+              <td style={{'width': '15%', 'textAlign': 'left'}}>
                 <table>
                   <tr>
                     <td style={{'width': '50%', 'textAlign': 'left'}}>
@@ -1929,7 +1929,7 @@ const getYears = (startYrInp, endYrInp) => {
                             htmlFor="radioUSMonthlyLine">Monthly</label>
                         </div>
                       </td>
-                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '5px'}}>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '15px'}}>
                         <div>
                           <input
                           id="radioUSAnnualLine"
@@ -1950,7 +1950,7 @@ const getYears = (startYrInp, endYrInp) => {
                   </tr>
                 </table>
               </td>
-              <td style={{'width': '25%'}}></td>
+              <td style={{'width': '22%'}}></td>
             </tr>
             </table>
           {getToggleControls()}
@@ -2013,15 +2013,15 @@ const getYears = (startYrInp, endYrInp) => {
           <table>
             <tr>
               <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
-              <td style={{'width': '16%'}}>
+              <td style={{'width': '18%'}}>
                   <table style={{'width': '100%'}}>
                   <tr>
-                      <td style={{'width': '10%'}}>
+                      <td style={{'width': '30%'}}>
                         <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }}>
                           {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
                         </select>
                       </td>
-                      <td style={{'width': '51%'}}>
+                      <td style={{'width': '30%'}}>
                       <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value); }}>
                         {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                       </select>
@@ -2029,7 +2029,7 @@ const getYears = (startYrInp, endYrInp) => {
                     </tr>
                   </table>
               </td>
-              <td style={{'width': '13%', 'textAlign': 'right'}}>
+              <td style={{'width': '16%', 'textAlign': 'right'}}>
                 <table>
                   <tr>
                       <td style={{'width': '50%', 'textAlign': 'right'}}>
@@ -2047,7 +2047,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlyMap">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '5px'}}>
+                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
                       <div>
                         <input
                         id="radioUSAnnualMap"
@@ -2118,15 +2118,15 @@ const getYears = (startYrInp, endYrInp) => {
                           <table>
             <tr>
               <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
-              <td style={{'width': '16%'}}>
+              <td style={{'width': '22%'}}>
                   <table style={{'width': '100%'}}>
                   <tr>
-                      <td style={{'width': '10%'}}>
+                      <td style={{'width': '30%'}}>
                         <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
                         {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
                       </select>
                       </td>
-                      <td style={{'width': '51%'}}>
+                      <td style={{'width': '30%'}}>
                       <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value); }}>
                       {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                     </select>
@@ -2134,7 +2134,7 @@ const getYears = (startYrInp, endYrInp) => {
                     </tr>
                   </table>
               </td>
-              <td style={{'width': '16%', 'textAlign': 'right'}}>
+              <td style={{'width': '20%', 'textAlign': 'right'}}>
                 <table>
                   <tr>
                       <td style={{'width': '50%', 'textAlign': 'right'}}>
@@ -2153,7 +2153,7 @@ const getYears = (startYrInp, endYrInp) => {
                           htmlFor="radioUSMonthlySexAge">Monthly</label>
                       </div>
                     </td>
-                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '5px'}}>
+                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
                       <div>
                         <input
                         id="radioUSYearlySexAge"
@@ -2171,7 +2171,7 @@ const getYears = (startYrInp, endYrInp) => {
                     </tr>
                   </table>
                 </td>
-                <td style={{'width': '28%'}}>
+                <td style={{'width': '26%'}}>
                 </td>
             </tr>
           </table>

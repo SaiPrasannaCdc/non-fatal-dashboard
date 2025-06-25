@@ -318,6 +318,7 @@ const UsaMap = (params) => {
                   </table>
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                 <div style={{'fontWeight': 'bold'}} className="select-input">Select Drug Syndrome:</div>
