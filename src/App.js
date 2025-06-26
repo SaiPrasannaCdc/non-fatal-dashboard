@@ -92,8 +92,8 @@ const drugOptions = {
     'titleAll': 'Benzodiazepine',
     'titleAllGram': 'Benzodiazepine',
     'titleForDropDown': 'Benzodiazepine',
-    'rateColumn': 'benzo_rate',
-    'percentageColumn': 'benzo_pct',
+    'rateColumn': 'benzodiazepine_rate',
+    'percentageColumn': 'benzodiazepine_pct',
     'color': '#B83A5E',
     'barChartOrder': '8',
     'lineChartOrder': '8',
@@ -543,7 +543,7 @@ export default function App({ dataUrl }) {
         });
         datasetNodeSt.push(yearDatumSt);
 
-        //prepare jurisdictions data
+        /* //prepare jurisdictions data
         let ds = 'ED';
         let yr = getValueSt('year', i);
         let tmp = getValueSt('month', i);
@@ -553,7 +553,7 @@ export default function App({ dataUrl }) {
         if(supportedJurisdictions[key])
           supportedJurisdictions[key] = supportedJurisdictions[key] + ',' + st;
         else
-          supportedJurisdictions[key] = st;
+          supportedJurisdictions[key] = st; */
       }
 
       //Populate overall data
@@ -583,20 +583,21 @@ export default function App({ dataUrl }) {
       }
 
       //Populate Juris count data
-      const jurisCountSheet = wb.Sheets['Jurisdiction_count'];
+      /* const jurisCountSheet = wb.Sheets['Jurisdiction_count'];
       let columnInfoJuris = getColumnsInfo(jurisCountSheet);
       let columnHeadersJuris = columnInfoJuris.columnHeaders;
       let columnsJuris = columnInfoJuris.columns;
       let getValueJuris = (key, l) => jurisCountSheet[columnHeadersJuris[key] + l].v;
-
+ */
       let jurisCountsData = {};
 
-      for (let x = 2; x <= columnsJuris; x++) {
-        let mon = String(getValueJuris('month', x)).padStart(2, '0');
-        let yr = getValueJuris('year', x);
-        let count = getValueJuris('jurisdiction_count', x);
+      for (let x = 2; x <= columnsOverall; x++) {
+        let mon = String(getValueOverall('month', x)).padStart(2, '0');
+        let yr = getValueOverall('year', x);
+        let rt = getValueOverall('rate_time', x);
+        let count = getValueOverall('jurisdiction_count', x);
 
-       jurisCountsData[yr + mon] = count;
+       jurisCountsData[yr + mon + rt] = count;
 
       }
 
@@ -733,7 +734,7 @@ const didOnAfterChangeTriggerMonthly = (value) => {
 
     var jurisForDate = {};
     for (let i=0; i<monthsArraySel.length;i++) {
-      jurisForDate[monthsArraySel[i]] = jurisCountData[monthsArraySel[i]];
+      jurisForDate[monthsArraySel[i]] = jurisCountData[monthsArraySel[i] + timelineLine];
     }
 
     let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
@@ -1647,12 +1648,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataMonthly, currentYear, currentMonth)} Jurisdictions), {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Jurisdictions), {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({getJurisCount(keyedRawDataAnnual, currentYear, currentMonth)} Jurisdictions), {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Jurisdictions), {UtilityFunctions.getPeriod(currentYear, currentMonth)}
           </h2>
           }
         </div>
@@ -1735,12 +1736,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0')] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0')] + ' Jurisdictions)' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -2087,7 +2088,7 @@ const getYears = (startYrInp, endYrInp) => {
 
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')]} Jurisdictions&#41;, {sexAgeMonthly == 'Monthly' ? (monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge) : UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions&#41;, {sexAgeMonthly == 'Monthly' ? (monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge) : UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
         </div>
 
@@ -2260,7 +2261,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
 
-      <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_dashboard_output-download.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
+      <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_SyS_Dashboard_Download_06-25-2025.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
 
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
 

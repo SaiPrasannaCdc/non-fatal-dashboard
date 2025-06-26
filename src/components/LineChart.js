@@ -591,7 +591,7 @@ const adjustCrowdedLabels = () => {
   }
 
   const getJurisCount = (yearmon) => {
-    return jurisCountData[yearmon]
+    return jurisCountData[yearmon + currentTimeframe]
   }
 
   const getDataTip = (d, tooltipValuesSorted) => {

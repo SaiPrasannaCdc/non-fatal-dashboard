@@ -89,7 +89,7 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
     var sortOrder = 0;
 
     switch (ageGroups[x]) {
-      case '< 15':
+      case '0 to 14':
         ageN = '0-14';
         sortOrder = 1; 
         break;
