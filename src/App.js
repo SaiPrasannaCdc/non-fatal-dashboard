@@ -781,7 +781,7 @@ const didOnAfterChangeTriggerMonthly = (value) => {
     }
 
     let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
-    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4))));
+    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4). timelineLine)));
 
   };
 
@@ -974,17 +974,27 @@ const getYears = (startYrInp, endYrInp) => {
       return juris;
   }
 
-  const getJuris = (yr, mon) => {
+  const getJuris = (yr, mon, freq) => {
 
       var juris = {};
       var tmpJuris = [];
 
       var monFinal = endUSMonthYearForSlider.includes(yr) ? Number(endUSMonthYearForSlider.substring(4)) : mon
 
-      for (let i=0;i<keyedRawDataMonthly.length;i++) {
-        if (!tmpJuris.includes(keyedRawDataMonthly[i].geoid) && keyedRawDataMonthly[i].geoid.length > 0 && keyedRawDataMonthly[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
-          if (isValidStateData(keyedRawDataMonthly[i]))
-            tmpJuris.push(keyedRawDataMonthly[i].geoid)
+      if (freq == 'Monthly') {
+        for (let i=0;i<keyedRawDataMonthly.length;i++) {
+          if (!tmpJuris.includes(keyedRawDataMonthly[i].geoid) && keyedRawDataMonthly[i].geoid.length > 0 && keyedRawDataMonthly[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
+            if (isValidStateData(keyedRawDataMonthly[i]))
+              tmpJuris.push(keyedRawDataMonthly[i].geoid)
+        }
+      }
+      else
+      {
+        for (let i=0;i<keyedRawDataAnnual.length;i++) {
+          if (!tmpJuris.includes(keyedRawDataAnnual[i].geoid) && keyedRawDataAnnual[i].geoid.length > 0 && keyedRawDataAnnual[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
+            if (isValidStateData(keyedRawDataAnnual[i]))
+              tmpJuris.push(keyedRawDataAnnual[i].geoid)
+        }
       }
 
       tmpJuris.sort();
@@ -1824,12 +1834,12 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               
               <td style={{'width': '11%'}}>
-                <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value))) }}>
+                <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
                   {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
               <td style={{'width': '6%'}}>
-                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar));}}>
+                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -2298,13 +2308,14 @@ const getYears = (startYrInp, endYrInp) => {
             <div className="datatable-body">
              <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ol>
+                <li>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions.</li>
                 <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
                 <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values <strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
-                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [5] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
-                <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [6] and therefore may underreport specific drug types involved.</li>
+                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [4] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
+                <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [5] and therefore may underreport specific drug types involved.</li>
                 <li><strong>Data likely represent an undercount,</strong> given potential inaccuracies in preliminary coding and potentially incomplete clinical descriptions captured in chief complaint information.</li>
                 <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine poisonings during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and diagnosis codes to identify drug overdose cases. ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes, suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the drug-specific syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
-                <li><strong>Drug overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories (depicted in the figure below) and some drug overdose visits involved multiple substances (e.g., a given drug overdose ED visit could have involved both opioids and stimulants).</li>
+                <li><strong>Drug overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories and some drug overdose visits involved multiple substances (e.g., a given drug overdose ED visit could have involved both opioids and stimulants).</li>
               </ol>
             </div>}
         </div>
@@ -2317,12 +2328,11 @@ const getYears = (startYrInp, endYrInp) => {
           {showFootNotes &&
             <div className="datatable-body">
             <ul id='noBullets'>
-              <li><strong><sup>1</sup></strong>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions.</li>
-              <li><strong><sup>2</sup></strong>Data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>.  Additionally, data were collected for the time period beginning January 2018 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
-              <li><strong><sup>3</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
-              <li><strong><sup>4</sup></strong>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, query syntax, and technical briefs, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a></li>
-              <li><strong><sup>5</sup></strong>Holland KM, Jones C, Vivolo-Kantor AM, et al. Trends in US Emergency Department Visits for Mental Health, Overdose, and Violence Outcomes Before and During the COVID-19 Pandemic. JAMA Psychiatry. 2021;78(4):372–379. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/33533876/">doi:10.1001/jamapsychiatry.2020.4402</a>.</li>
-              <li><strong><sup>6</sup></strong>Morrow JB, Ropero-Miller JD, Catlin ML, et al. The Opioid Epidemic: Moving Toward an Integrated, Holistic Analytical Response. Journal of Analytical Toxicology. 2019; 43(1); 1–9. <a target="_blank" href="https://doi.org/10.1093/jat/bky049">https://doi.org/10.1093/jat/bky049</a>.</li>
+              <li><strong><sup>1</sup></strong>Data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>.  Additionally, data are shown for the time period beginning January 2019 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
+              <li><strong><sup>2</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
+              <li><strong><sup>3</sup></strong>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, query syntax, and technical briefs, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a></li>
+              <li><strong><sup>4</sup></strong>Holland KM, Jones C, Vivolo-Kantor AM, et al. Trends in US Emergency Department Visits for Mental Health, Overdose, and Violence Outcomes Before and During the COVID-19 Pandemic. JAMA Psychiatry. 2021;78(4):372–379. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/33533876/">doi:10.1001/jamapsychiatry.2020.4402</a>.</li>
+              <li><strong><sup>5</sup></strong>Morrow JB, Ropero-Miller JD, Catlin ML, et al. The Opioid Epidemic: Moving Toward an Integrated, Holistic Analytical Response. Journal of Analytical Toxicology. 2019; 43(1); 1–9. <a target="_blank" href="https://doi.org/10.1093/jat/bky049">https://doi.org/10.1093/jat/bky049</a>.</li>
               </ul>
           </div>}
         </div>
