@@ -1492,6 +1492,22 @@ const getYears = (startYrInp, endYrInp) => {
       return false;
     
   }
+
+    const getHeaderColor = (selDrugs) => {
+
+      var drugIndexes = [];
+      for (var x=0;x<selDrugs.length;x++)
+        drugIndexes.push(drugOptions[selDrugs[x]].barChartOrder)
+      
+      var selIdx = Math.min(...drugIndexes);
+
+      for (var y=0;y<Object.keys(drugOptions).length;y++)
+      {
+        if (drugOptions[Object.keys(drugOptions)[y]].barChartOrder == String(selIdx))
+          return drugOptions[Object.keys(drugOptions)[y]].color;
+      }
+    
+  }
   
 
   const drugColor = drugOptions[currentDrug].color;
@@ -1733,7 +1749,7 @@ const getYears = (startYrInp, endYrInp) => {
 
       <section>
 
-          <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+          <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
             Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
@@ -1863,7 +1879,7 @@ const getYears = (startYrInp, endYrInp) => {
       </section>
 
       <section>
-          <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+          <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
           <h2 className="data-bite-header">
             Suspected Nonfatal Overdose per 10,000 total ED Visits<sup>†</sup>, {currentStateLine == 'US' ? stateNames[currentStateLine] + ' (' + Object.keys(jurisForDropDownLine).length + ' Jurisdictions)' : stateNames[currentStateLine]}
           </h2>
@@ -2086,7 +2102,7 @@ const getYears = (startYrInp, endYrInp) => {
 
        <section>
 
-        <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+        <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
           <h2 className="data-bite-header">
             Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions&#41;, {sexAgeMonthly == 'Monthly' ? (monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge) : UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>

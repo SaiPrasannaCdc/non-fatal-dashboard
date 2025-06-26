@@ -628,6 +628,19 @@ export const UtilityFunctions = {
         }
       }
       return ret;
+  },
+
+  allDataIsSupressedMap : (fdata) => {
+
+      var ret = true;
+      for (var x=0;x<Object.keys(fdata).length;x++)
+      {
+        if (fdata[Object.keys(fdata)[x]] > 0) {
+          ret = false;
+          break;
+        }
+      }
+      return ret;
   }
 
 }

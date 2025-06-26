@@ -340,6 +340,7 @@ const UsaMap = (params) => {
                         <label style={{'fontSize':'16px'}}>10,000 visits</label>
                       </td>
                     </tr>
+                    {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 
                     <tr>
                       <td>
                           <svg style={{ height: legendHeight - 390, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
@@ -348,6 +349,7 @@ const UsaMap = (params) => {
                         </svg>
                       </td>
                     </tr>
+                    }
                     <tr>
                       <td>
                         <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
