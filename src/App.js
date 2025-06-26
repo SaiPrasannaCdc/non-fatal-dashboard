@@ -616,7 +616,7 @@ export default function App({ dataUrl }) {
   };
 
 
-   const setYearSelected = (yr) => {
+   const setYearSelected = (yr, freq) => {
       setCurrentYear(yr);
 
       if (endUSMonthYearForSlider.includes(yr)) {
@@ -625,28 +625,14 @@ export default function App({ dataUrl }) {
         setMonthSelected(monthNames[Number(mon)]);
       }
       else {
-        setMonthsForDropDown(getMonths());
-        setMonthSelected(monthNames[Number(currentMonth)]);
-      }
-  };
- 
-  const setMonthSelectedMap = (mon) => {
-    let monNum = getKeyByValue(monthNames, mon)
-    setCurrentMonthMap(monNum);
-  };
 
-  const setYearSelectedMap = (yr) => {
+        var tmpMonths = getMonthsYrChanged(yr, freq);
+        setMonthsForDropDown(tmpMonths);
 
-      setCurrentYearMap(yr);
-
-      if (endUSMonthYearForSlider.includes(yr)) {
-        let mon = Number(endUSMonthYearForSlider.substring(4));
-        setMonthsForDropDownMap(getMonths(mon))
-        setMonthSelectedMap(monthNames[Number(mon)]);
-      }
-      else {
-        setMonthsForDropDownMap(getMonths());
-        setMonthSelectedMap(monthNames[Number(currentMonthMap)]);
+        if (tmpMonths.includes(monthNames[Number(currentMonth)]))
+          setMonthSelected(monthNames[Number(currentMonth)]);
+        else
+          setMonthSelected((tmpMonths[0]));
       }
   };
 
@@ -655,7 +641,7 @@ export default function App({ dataUrl }) {
     setCurrentMonthBar(monNum);
   };
 
-  const setYearSelectedBar = (yr) => {
+  const setYearSelectedBar = (yr, freq) => {
 
       setCurrentYearBar(yr);
 
@@ -665,8 +651,39 @@ export default function App({ dataUrl }) {
         setMonthSelectedBar(monthNames[Number(mon)]);
       }
       else {
-        setMonthsForDropDownBar(getMonths());
-        setMonthSelectedBar(monthNames[Number(currentMonthBar)]);
+         var tmpMonths = getMonthsYrChanged(yr, freq);
+        setMonthsForDropDownBar(tmpMonths);
+
+        if (tmpMonths.includes(monthNames[Number(currentMonthBar)]))
+          setMonthSelectedBar(monthNames[Number(currentMonthBar)]);
+        else
+          setMonthSelectedBar(tmpMonths[0]);
+      }
+  };
+
+ 
+  const setMonthSelectedMap = (mon) => {
+    let monNum = getKeyByValue(monthNames, mon)
+    setCurrentMonthMap(monNum);
+  };
+
+  const setYearSelectedMap = (yr, freq) => {
+
+      setCurrentYearMap(yr);
+
+      if (endUSMonthYearForSlider.includes(yr)) {
+        let mon = Number(endUSMonthYearForSlider.substring(4));
+        setMonthsForDropDownMap(getMonths(mon))
+        setMonthSelectedMap(monthNames[Number(mon)]);
+      }
+      else {
+         var tmpMonths = getMonthsYrChanged(yr, freq);
+        setMonthsForDropDownMap(tmpMonths);
+
+        if (tmpMonths.includes(monthNames[Number(currentMonthMap)]))
+          setMonthSelectedMap(monthNames[Number(currentMonthMap)]);
+        else
+          setMonthSelectedMap(tmpMonths[0]);
       }
   };
 
@@ -675,7 +692,7 @@ export default function App({ dataUrl }) {
     setCurrentMonthSexAge(monNum);
   };
 
-  const setYearSelectedSexAge = (yr) => {
+  const setYearSelectedSexAge = (yr, freq) => {
 
       setCurrentYearSexAge(yr);
 
@@ -685,8 +702,12 @@ export default function App({ dataUrl }) {
         setMonthSelectedSexAge(monthNames[Number(mon)]);
       }
       else {
-        setMonthsForDropDownSexAge(getMonths());
-        setMonthSelectedSexAge(monthNames[Number(currentMonthSexAge)]);
+        var tmpMonths = getMonthsYrChanged(yr, freq);
+        setMonthsForDropDownSexAge(tmpMonths);
+        if (tmpMonths.includes(monthNames[Number(currentMonthSexAge)]))
+          setMonthSelectedSexAge(monthNames[Number(currentMonthSexAge)]);
+        else
+          setMonthSelectedSexAge(tmpMonths[0]);
       }
   };
 
@@ -696,21 +717,43 @@ export default function App({ dataUrl }) {
  
   const getMonths = (mon) => {
 
-  var monthsForListBox = [];
-  if (mon == null)
-  {
-    for (let i=12;i>0;i--)
-      monthsForListBox.push(monthNames[i])
-  }
-  else
-  {
-  for (let i=mon;i>0;i--)
-      monthsForListBox.push(monthNames[i])
-  }
+    var monthsForListBox = [];
+    if (mon == null)
+    {
+      for (let i=12;i>0;i--)
+        monthsForListBox.push(monthNames[i])
+    }
+    else
+    {
+    for (let i=mon;i>0;i--)
+        monthsForListBox.push(monthNames[i])
+    }
 
-  return monthsForListBox;
+    return monthsForListBox;
 
 }
+
+const getMonthsYrChanged = (yr, freq) => {
+
+    var months = [];
+
+    for (var x=0;x<Object.keys(jurisCountData).length;x++)
+    {
+      if (Object.keys(jurisCountData)[x].startsWith(yr) && Object.keys(jurisCountData)[x].includes(freq))
+          months.push(Number(Object.keys(jurisCountData)[x].substring(4).substring(0,2)))
+    }
+
+    months.sort((a, b) => b - a);
+
+    var monthsForListBox = [];
+    
+    for (let i=0;i<months.length;i++)
+        monthsForListBox.push(monthNames[months[i]])
+
+    return monthsForListBox;
+
+}
+
 
 const didOnAfterChangeTriggerMonthly = (value) => {
 
@@ -1687,7 +1730,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '6%'}}>
-                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value);}}>
+                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -1705,7 +1748,8 @@ const getYears = (startYrInp, endYrInp) => {
                             onChange={(e) => {
                                 setMonthlyToggle(false)
                                 setTimeline('Monthly');
-                                setPeriodToggle(true)
+                                setPeriodToggle(true);
+                                setYearSelected(currentYear, 'Monthly');
                             }} />
                           <label
                             htmlFor="radioUSMonthlyState">Monthly</label>
@@ -1723,6 +1767,7 @@ const getYears = (startYrInp, endYrInp) => {
                               setMonthlyToggle(true);
                               setTimeline('Annual');
                               setPeriodToggle(false);
+                              setYearSelected(currentYear, 'Annual');
                           }} 
                           />
                           <label
@@ -1784,7 +1829,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </select>
               </td>
               <td style={{'width': '6%'}}>
-                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value); setJurisForDropDown(getJuris(e.target.value, currentMonthBar));}}>
+                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar));}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
@@ -1803,6 +1848,7 @@ const getYears = (startYrInp, endYrInp) => {
                               setMonthlyToggleBar(false);
                               setTimelineBar('Monthly');
                               setPeriodToggle(true);
+                              setYearSelectedBar(currentYearBar, 'Monthly');
                             }} />
                           <label
                             htmlFor="radioUSMonthlyBar">Monthly</label>
@@ -1820,6 +1866,7 @@ const getYears = (startYrInp, endYrInp) => {
                             setMonthlyToggleBar(true);
                             setTimelineBar('Annual');
                             setPeriodToggle(false);
+                            setYearSelectedBar(currentYearBar, 'Annual');
                           }} 
                           />
                           <label
@@ -2039,7 +2086,7 @@ const getYears = (startYrInp, endYrInp) => {
                         </select>
                       </td>
                       <td style={{'width': '30%'}}>
-                      <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value); }}>
+                      <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly); }}>
                         {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                       </select>
                       </td>
@@ -2059,6 +2106,7 @@ const getYears = (startYrInp, endYrInp) => {
                           checked={mapMonthly === 'Monthly'}
                           onChange={(e) => {
                             setMapMonthly(e.target.value);
+                            setYearSelectedMap(currentYearMap, 'Monthly');
                           }} />
                         <label
                           htmlFor="radioUSMonthlyMap">Monthly</label>
@@ -2074,6 +2122,7 @@ const getYears = (startYrInp, endYrInp) => {
                         checked={mapMonthly === 'Annual'}
                         onChange={(e) => {
                           setMapMonthly(e.target.value);
+                          setYearSelectedMap(currentYearMap, 'Annual');
                         }} 
                         />
                         <label
@@ -2144,7 +2193,7 @@ const getYears = (startYrInp, endYrInp) => {
                       </select>
                       </td>
                       <td style={{'width': '30%'}}>
-                      <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value); }}>
+                      <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value, sexAgeMonthly); }}>
                       {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                     </select>
                       </td>
@@ -2165,6 +2214,7 @@ const getYears = (startYrInp, endYrInp) => {
                           disabled={isDisabledDrug()}
                           onChange={(e) => {
                             setSexAgeMetric(e.target.value);
+                            setYearSelectedSexAge(currentYearSexAge, 'Monthly');
                           }} />
                         <label
                           htmlFor="radioUSMonthlySexAge">Monthly</label>
@@ -2180,6 +2230,7 @@ const getYears = (startYrInp, endYrInp) => {
                         checked={sexAgeMonthly === 'Annual'}
                         onChange={(e) => {
                           setSexAgeMetric(e.target.value);
+                          setYearSelectedSexAge(currentYearSexAge, 'Annual');
                         }} />
                         <label
                         htmlFor="radioUSYearlySexAge">Annual</label>
