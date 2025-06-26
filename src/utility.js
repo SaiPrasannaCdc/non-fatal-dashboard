@@ -588,7 +588,7 @@ export const UtilityFunctions = {
 
     let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
     d.setMonth(d.getMonth() - 11);
-    return '(' + d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear + ')'; 
+    return d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' - ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear; 
   },
 
   isCovidPeriod : (yearmon) => {
@@ -602,6 +602,56 @@ export const UtilityFunctions = {
 
   getCovidPeriodIndex : (yr) => {
     return covidPeriod.indexOf(yr);
+  },
+
+  allDataIsSupressed : (fdata) => {
+  
+      var ret = true;
+      for (var x=0;x<fdata.length;x++)
+      {
+        if (fdata[x].value > 0) {
+          ret = false;
+          break;
+        }
+      }
+      return ret;
+  },
+
+  allDataIsSupressedSA : (fdata) => {
+  
+      var ret = true;
+      for (var x=0;x<fdata.length;x++)
+      {
+        if (fdata[x].F > 0 || fdata[x].M > 0) {
+          ret = false;
+          break;
+        }
+      }
+      return ret;
+  },
+
+  allDataIsSupressedMap : (fdata) => {
+
+      var ret = true;
+      for (var x=0;x<Object.keys(fdata).length;x++)
+      {
+        if (fdata[Object.keys(fdata)[x]] > 0) {
+          ret = false;
+          break;
+        }
+      }
+      return ret;
+  },
+
+  getObjectWithCommonKeys : (obj1, obj2) => {
+    const commonKeys = Object.keys(obj1).filter(key => Object.keys(obj2).includes(key));
+    const result = {};
+
+    for (const key of commonKeys) {
+      result[key] = obj1[key]; 
+    }
+
+    return result;
   }
 
 }

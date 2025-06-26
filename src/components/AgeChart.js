@@ -89,8 +89,8 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
     var sortOrder = 0;
 
     switch (ageGroups[x]) {
-      case '< 15':
-        ageN = '<15';
+      case '0 to 14':
+        ageN = '0-14';
         sortOrder = 1; 
         break;
       case '15 to 24':
@@ -264,7 +264,7 @@ function AgeChart(params) {
   };
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata['rate'] + ' (' + mdata['percent'] + '%) of data are missing.'
+    return 'Note: ' +  mdata['percent'] + '% of data are missing.'
   };
 
   useEffect(() => {
@@ -294,7 +294,7 @@ function AgeChart(params) {
                   })}
                   labelOffset={60}
                 />
-                <text x={adjustedHeight / -2} y={-65} textAnchor="middle" fill={'#000066'} transform="rotate(-90)">Nonfatal Overdoses per 10,000 ED visits</text>
+                {/* <text x={adjustedHeight / -2} y={-65} textAnchor="middle" fill={'#000066'} transform="rotate(-90)">Nonfatal Overdoses per 10,000 ED visits</text> */}
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.ageN}`} className="animate-bars">
@@ -308,7 +308,7 @@ function AgeChart(params) {
                         }}
                         d={Utils.verticalBarPath(xScale(d.ageN), yScale(d.value), xScale.bandwidth(), adjustedHeight - yScale(d.value), xScale.bandwidth() * .1)}
                         fill={drugOptions[currentDrug].color}
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age: ${d.ageN}<br/><br/>Overdoses: ${Number(d.value).toLocaleString()}`}
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age: ${d.ageN}<br/><br/>Overdoses: ${Number(d.value).toFixed(1)}`}
                       ></path>
                     )}
                     {d.value == 0 && (
@@ -349,9 +349,9 @@ function AgeChart(params) {
               </>
             )
 
-            {<text x={adjustedWidth/2} y={height - 70} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years)'}</text>}
-            {<text x={adjustedWidth/2} y={height - 50} fontSize={fontSize - 4} fill={'#000066'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
-            {<text x={adjustedWidth/2} y={height - 30} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
+           {/*  {<text x={adjustedWidth/2} y={height - 70} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years)'}</text>} */}
+            {!UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 70} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 50 : 70)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
 
           </Group>
         </svg>

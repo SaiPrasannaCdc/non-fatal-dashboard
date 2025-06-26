@@ -7,7 +7,7 @@ import { UtilityFunctions } from '../utility'
 import Utils from '../shared/Utils';
 import '../css/StateChart.css';
 
-const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames) => {
+const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames, drugOptions) => {
 
   var finalData = {};
 
@@ -201,7 +201,7 @@ function StateChart(params) {
   }, [currentDrug, currentYear]);
 
   const getXAxisLabel = () => {
-      return 'Nonfatal Overdoses per 10,000 Total ED Visits';
+      return 'Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
@@ -241,7 +241,7 @@ function StateChart(params) {
                           }
                         }}
                         data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                        Rate: ${Number(rate).toLocaleString()}</div>`}
+                        Rate: ${(rate)}</div>`}
                       ></path>
                     }
                     {
@@ -291,7 +291,7 @@ function StateChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}</text>
+              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">*</tspan></text>
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}

@@ -155,8 +155,8 @@ const UsaMap = (params) => {
   let labelIntervals = [];
   let colorIntervals = [];
   for (let i = 0; i < 5; i++) {
-    let val = max - (intervalWidth) * (i+1)
-    labelIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
+    let val = i == 0 ? max : (max - (intervalWidth) * (i))
+    labelIntervals.push( i != 4 ? (String(Number(val < 0 ? 0.0001 : val).toFixed(1)) + ' - '  + String((Number(val < 0 ? 0.0001 : val) - intervalWidth).toFixed(1))) : (String(Number(val < 0 ? 0.0001 : val).toFixed(1)) + ' - 0.0'))
     colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
   }
 
@@ -294,53 +294,6 @@ const UsaMap = (params) => {
           <td style={{width: '21%'}}>
             <table>
               <tr>
-                <td style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                <div style={{'fontWeight': 'bold'}} className="select-input">Select Drug Syndrome:</div>
-                <div className="select-input"><em>Click One</em></div>
-                <div>&nbsp;</div>
-                <div>
-                  {getDrugControls()}
-                </div>
-                  
-                </td>
-              </tr>
-              <br></br>
-              <tr>
-                <td>
-                  <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                    <tr>
-                      <td>
-                        <label style={{'fontSize':'16px'}}>Suspected Overdoses per</label>
-                        <label style={{'fontSize':'16px'}}>10,000 visits (Quantiles)</label>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                          <svg style={{ height: legendHeight - 390, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            {colorIntervals.map((value, idx) => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={idx == 0 ? 15 : (15 + (idx * 30))} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={idx == 0 ? 28 : (28 + (idx * 30))} fill="black" alignmentBaseline="middle">{value}</text>)}
-                        </svg>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
-                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
-
-                            <rect x={0} y={30} width={50} height={10} fill={unavailableColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
-                            <text x={60} y={35} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
-                            <text x={60} y={52} fill="black" alignmentBaseline="middle" fontSize={12}>not reported<tspan baselineShift="super" fontSize="8">1</tspan></text>
-
-                            <rect x={0} y={62} width={50} height={10} fill={unfundedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
-                            <text x={60} y={67} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
-                        </svg>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
                 <td>
                   <table>
                     <tr>
@@ -359,6 +312,56 @@ const UsaMap = (params) => {
                             <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Hover over any state to </text>
                             <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={fontSize}>see overdose-specific </text>
                             <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={fontSize}>visits</text>
+                        </svg>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+                <td style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                <div style={{'fontWeight': 'bold'}} className="select-input">Select Drug Syndrome:</div>
+                <div className="select-input"><em>Click One</em></div>
+                <div>&nbsp;</div>
+                <div>
+                  {getDrugControls()}
+                </div>
+                  
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+                <td>
+                  <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                    <tr>
+                      <td>
+                        <label style={{'fontSize':'16px'}}>Suspected Overdoses per</label>
+                        <label style={{'fontSize':'16px'}}>10,000 visits</label>
+                      </td>
+                    </tr>
+                    {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 
+                    <tr>
+                      <td>
+                          <svg style={{ height: legendHeight - 390, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            {colorIntervals.map((value, idx) => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={idx == 0 ? 15 : (15 + (idx * 30))} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={idx == 0 ? 28 : (28 + (idx * 30))} fill="black" alignmentBaseline="middle">{value}</text>)}
+                        </svg>
+                      </td>
+                    </tr>
+                    }
+                    <tr>
+                      <td>
+                        <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>Data suppressed</text>
+
+                            <rect x={0} y={30} width={50} height={10} fill={unavailableColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={35} fill="black" alignmentBaseline="middle" fontSize={12}>Data not available/</text>
+                            <text x={60} y={52} fill="black" alignmentBaseline="middle" fontSize={12}>not reported</text>
+
+                            <rect x={0} y={62} width={50} height={10} fill={unfundedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={67} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
                         </svg>
                       </td>
                     </tr>
