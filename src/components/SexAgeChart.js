@@ -327,8 +327,8 @@ function SexAgeChart(params) {
     const x1Pos = isNaN(d[x1Key]) ? xMaxHalf - 15 : x1Scale(d[x1Key]);
     const x2Pos = isNaN(d[x2Key]) ? xMaxHalf + 15 : x2Scale(d[x2Key]);
 
-    const x1Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${d[x1Key].toLocaleString()}</p></div>`;
-    const x2Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${d[x2Key].toLocaleString()}</p></div>`;
+    const x1Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${Number(d[x1Key]).toFixed(1)}</p></div>`;
+    const x2Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${Number(d[x2Key]).toFixed(1)}</p></div>`;
     const x1TipDS = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: *Data Suppressed</p></div>`;
     const x2TipDS = `<div class="tooltipTableLC"<p><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: *Data Suppressed</p></div>`;
 
@@ -346,7 +346,7 @@ function SexAgeChart(params) {
           textAnchor={'start'} 
           fill="#687697"
           fontWeight='bold'
-          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x1Key]?.toLocaleString()}</Text>
+          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x1Key])?.toFixed(1)}</Text>
 
 
         {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
@@ -357,7 +357,7 @@ function SexAgeChart(params) {
           textAnchor={'end'} 
           fill="#687697"
           fontWeight='bold' 
-          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x2Key]?.toLocaleString()}</Text>
+          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x2Key])?.toFixed(1)}</Text>
 
 
       </g>

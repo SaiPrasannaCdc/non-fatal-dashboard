@@ -203,10 +203,14 @@ export default function App({ dataUrl }) {
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
   const [jurisForDropDownLine, setJurisForDropDownLine] = useState([]);
   const [jurisForDropDownMap, setJurisForDropDownMap] = useState([]);
-  const [startUSMonthYearForSlider, setStartUSMonthYearForSlider] = useState('');
-  const [startMonthYearForSlider, setStartMonthYearForSlider] = useState('');
-  const [endUSMonthYearForSlider, setEndUSMonthYearForSlider] = useState('');
-  const [endMonthYearForSlider, setEndMonthYearForSlider] = useState('');
+  const [startUSMonthYearForSliderM, setStartUSMonthYearForSliderM] = useState('');
+  const [startMonthYearForSliderM, setStartMonthYearForSliderM] = useState('');
+  const [endUSMonthYearForSliderM, setEndUSMonthYearForSliderM] = useState('');
+  const [endMonthYearForSliderM, setEndMonthYearForSliderM] = useState('');
+  const [startUSMonthYearForSliderA, setStartUSMonthYearForSliderA] = useState('');
+  const [startMonthYearForSliderA, setStartMonthYearForSliderA] = useState('');
+  const [endUSMonthYearForSliderA, setEndUSMonthYearForSliderA] = useState('');
+  const [endMonthYearForSliderA, setEndMonthYearForSliderA] = useState('');
   const [sliderKey, setSliderKey] = useState(0);
   const [mapKey, setMapKey] = useState(0);
   
@@ -225,10 +229,15 @@ export default function App({ dataUrl }) {
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [showFootNotes, setShowFootNotes] = useState(false);
 
-  const [lookupPeriodStartYear, setLookupPeriodStartYear] = useState('');
-  const [lookupPeriodStartMonth, setLookupPeriodStartMonth] = useState('');
-  const [lookupPeriodEndYear, setLookupPeriodEndYear] = useState('');
-  const [lookupPeriodEndMonth, setLookupPeriodEndMonth] = useState('');
+  const [lookupPeriodStartYearM, setLookupPeriodStartYearM] = useState('');
+  const [lookupPeriodStartMonthM, setLookupPeriodStartMonthM] = useState('');
+  const [lookupPeriodEndYearM, setLookupPeriodEndYearM] = useState('');
+  const [lookupPeriodEndMonthM, setLookupPeriodEndMonthM] = useState('');
+
+  const [lookupPeriodStartYearA, setLookupPeriodStartYearA] = useState('');
+  const [lookupPeriodStartMonthA, setLookupPeriodStartMonthA] = useState('');
+  const [lookupPeriodEndYearA, setLookupPeriodEndYearA] = useState('');
+  const [lookupPeriodEndMonthA, setLookupPeriodEndMonthA] = useState('');
 
   const [hdrInfoFromMap, setDataFromMap] = useState('all');
   const [mapMonthly, setMapMonthly] = useState('Monthly');
@@ -484,6 +493,16 @@ export default function App({ dataUrl }) {
       }
     });
 
+    tempKeyedRawUSDataAnnual.sort((a, b) => {
+      if (a['YYYYMM'] < b['YYYYMM']) {
+        return -1;
+      } else if (a['YYYYMM'] === b['YYYYMM'] && a['YYYYMM'] < b['YYYYMM']) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+
     if (tempKeyedRawUSDataMonthly && tempKeyedRawUSDataMonthly.length > 0) {
       let cntUS = tempKeyedRawUSDataMonthly.length;
       setCurrentYear(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
@@ -503,14 +522,26 @@ export default function App({ dataUrl }) {
       setJurisForDropDown(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
       setJurisForDropDownLine(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
       setJurisForDropDownMap(getJurisInitial(tempKeyedRawDataMonthly, Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
-      setLookupPeriodStartYear('2023');
-      setLookupPeriodStartMonth('1');
-      setLookupPeriodEndYear(String(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
-      setLookupPeriodEndMonth(String(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-      setStartUSMonthYearForSlider(tempKeyedRawUSDataMonthly[0]['YYYYMM']); 
-      setEndUSMonthYearForSlider(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
-      setStartMonthYearForSlider(tempKeyedRawUSDataMonthly[0]['YYYYMM']); 
-      setEndMonthYearForSlider(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+      setLookupPeriodStartYearM('2023');
+      setLookupPeriodStartMonthM('1');
+      setLookupPeriodEndYearM(String(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
+      setLookupPeriodEndMonthM(String(Number(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+      setStartUSMonthYearForSliderM(tempKeyedRawUSDataMonthly[0]['YYYYMM']); 
+      setEndUSMonthYearForSliderM(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+      setStartMonthYearForSliderM(tempKeyedRawUSDataMonthly[0]['YYYYMM']); 
+      setEndMonthYearForSliderM(tempKeyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+    }
+
+    if (tempKeyedRawUSDataAnnual && tempKeyedRawUSDataAnnual.length > 0) {
+      let cntUS = tempKeyedRawUSDataAnnual.length;
+      setLookupPeriodStartYearA('2023');
+      setLookupPeriodStartMonthA('1');
+      setLookupPeriodEndYearA(String(tempKeyedRawUSDataAnnual[cntUS-1]['YYYYMM'].substring(0,4)));
+      setLookupPeriodEndMonthA(String(Number(tempKeyedRawUSDataAnnual[cntUS-1]['YYYYMM'].substring(4))));
+      setStartUSMonthYearForSliderA(tempKeyedRawUSDataAnnual[0]['YYYYMM']); 
+      setEndUSMonthYearForSliderA(tempKeyedRawUSDataAnnual[cntUS-1]['YYYYMM']); 
+      setStartMonthYearForSliderA(tempKeyedRawUSDataAnnual[0]['YYYYMM']); 
+      setEndMonthYearForSliderA(tempKeyedRawUSDataAnnual[cntUS-1]['YYYYMM']); 
     }
   };
 
@@ -757,20 +788,20 @@ const getMonthsYrChanged = (yr, freq) => {
 
 const didOnAfterChangeTriggerMonthly = (value) => {
 
-    var sliderStartYr = currentStateLine == 'US' ? startUSMonthYearForSlider.substring(0,4) : startMonthYearForSlider.substring(0,4);
-    var sliderStartMon = currentStateLine == 'US' ? String(Number(startUSMonthYearForSlider.substring(4))) : String(Number(startMonthYearForSlider.substring(4)));
-    var sliderEndYr = currentStateLine == 'US' ? endUSMonthYearForSlider.substring(0,4) : endMonthYearForSlider.substring(0,4);
-    var sliderEndMon = currentStateLine == 'US' ? String(Number(endUSMonthYearForSlider.substring(4))) : String(Number(endMonthYearForSlider.substring(4)));
+    var sliderStartYr = currentStateLine == 'US' ? startUSMonthYearForSliderM.substring(0,4) : startMonthYearForSliderM.substring(0,4);
+    var sliderStartMon = currentStateLine == 'US' ? String(Number(startUSMonthYearForSliderM.substring(4))) : String(Number(startMonthYearForSliderM.substring(4)));
+    var sliderEndYr = currentStateLine == 'US' ? endUSMonthYearForSliderM.substring(0,4) : endMonthYearForSliderM.substring(0,4);
+    var sliderEndMon = currentStateLine == 'US' ? String(Number(endUSMonthYearForSliderM.substring(4))) : String(Number(endMonthYearForSliderM.substring(4)));
 
     var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon));
 
     let stmonYr =  monthsArray[value[0] - 1];
     let endmonYr =  monthsArray[value[1] - 1];
 
-    setLookupPeriodStartYear(stmonYr.substring(0,4));
-    setLookupPeriodStartMonth(String(Number(stmonYr.substring(4))));
-    setLookupPeriodEndYear(endmonYr.substring(0,4));
-    setLookupPeriodEndMonth(String(Number(endmonYr.substring(4))));
+    setLookupPeriodStartYearM(stmonYr.substring(0,4));
+    setLookupPeriodStartMonthM(String(Number(stmonYr.substring(4))));
+    setLookupPeriodEndYearM(endmonYr.substring(0,4));
+    setLookupPeriodEndMonthM(String(Number(endmonYr.substring(4))));
 
     var monthsArraySel = UtilityFunctions.generateYYMMArray(Number(stmonYr.substring(0,4)), Number(stmonYr.substring(4)), Number(endmonYr.substring(0,4)), Number(endmonYr.substring(4)));
     var monthsArraySelCnt = Object.keys(monthsArraySel).length;
@@ -781,29 +812,43 @@ const didOnAfterChangeTriggerMonthly = (value) => {
     }
 
     let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
-    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4). timelineLine)));
+    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4)), timelineLine));
 
   };
 
   const didOnAfterChangeTriggerAnnual = (value) => {
 
-    var sliderStartYr = currentState == 'US' ? startUSMonthYearForSlider.substring(0,4) : startMonthYearForSlider.substring(0,4);
-    var monthsArray = UtilityFunctions.generateYYMMArray(Number(getYear(sliderStartYr, value[0])), 1, Number(getYear(sliderStartYr, value[1])), endUSMonthYearForSlider.includes(getYear(sliderStartYr, value[1])) ? Number(endMonthYearForSlider.substring(4)) : 12)
+    var sliderStartYr = currentStateLine == 'US' ? startUSMonthYearForSliderA.substring(0,4) : startMonthYearForSliderA.substring(0,4);
+    var sliderStartMon = currentStateLine == 'US' ? String(Number(startUSMonthYearForSliderA.substring(4))) : String(Number(startMonthYearForSliderA.substring(4)));
+    var sliderEndYr = currentStateLine == 'US' ? endUSMonthYearForSliderA.substring(0,4) : endMonthYearForSliderA.substring(0,4);
+    var sliderEndMon = currentStateLine == 'US' ? String(Number(endUSMonthYearForSliderA.substring(4))) : String(Number(endMonthYearForSliderA.substring(4)));
 
-    let cnt = monthsArray.length;
-    let stmonYr =  monthsArray[0];
-    let endmonYr =  monthsArray[cnt - 1];
+    var monthsArray = UtilityFunctions.generateYYMMArray(Number(sliderStartYr), Number(sliderStartMon), Number(sliderEndYr), Number(sliderEndMon));
 
-    setLookupPeriodStartYear(stmonYr.substring(0,4));
-    setLookupPeriodStartMonth(String(Number(stmonYr.substring(4))));
-    setLookupPeriodEndYear(endmonYr.substring(0,4));
-    setLookupPeriodEndMonth(String(Number(endmonYr.substring(4))));
+    let stmonYr =  monthsArray[value[0] - 1];
+    let endmonYr =  monthsArray[value[1] - 1];
+
+    setLookupPeriodStartYearA(stmonYr.substring(0,4));
+    setLookupPeriodStartMonthA(String(Number(stmonYr.substring(4))));
+    setLookupPeriodEndYearA(endmonYr.substring(0,4));
+    setLookupPeriodEndMonthA(String(Number(endmonYr.substring(4))));
+
+    var monthsArraySel = UtilityFunctions.generateYYMMArray(Number(stmonYr.substring(0,4)), Number(stmonYr.substring(4)), Number(endmonYr.substring(0,4)), Number(endmonYr.substring(4)));
+    var monthsArraySelCnt = Object.keys(monthsArraySel).length;
+
+    var jurisForDate = {};
+    for (let i=0; i<monthsArraySel.length;i++) {
+      jurisForDate[monthsArraySel[i]] = jurisCountData[monthsArraySel[i] + timelineLine];
+    }
+
+    let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
+    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4)), timelineLine));
 
   };
 
   const getMonthYear = ( startYear, value) => {
     let hdr = '12-month rolling averages from \n'
-    var rem = lookupPeriodStartMonth + '/' + lookupPeriodStartYear + ' - ' + lookupPeriodEndMonth + '/' + lookupPeriodEndYear;
+    var rem = lookupPeriodStartMonthA + '/' + lookupPeriodStartYearA + ' - ' + lookupPeriodEndMonthA + '/' + lookupPeriodEndYearA;
     if (timelineLine == 'Annual') {
       return hdr + rem;
     }
@@ -979,7 +1024,11 @@ const getYears = (startYrInp, endYrInp) => {
       var juris = {};
       var tmpJuris = [];
 
-      var monFinal = endUSMonthYearForSlider.includes(yr) ? Number(endUSMonthYearForSlider.substring(4)) : mon
+      var monFinal;
+      if (freq == 'Monthly')
+        monFinal = endUSMonthYearForSliderM.includes(yr) ? Number(endUSMonthYearForSliderM.substring(4)) : mon;
+      else
+        monFinal = endUSMonthYearForSliderA.includes(yr) ? Number(endUSMonthYearForSliderA.substring(4)) : mon;
 
       if (freq == 'Monthly') {
         for (let i=0;i<keyedRawDataMonthly.length;i++) {
@@ -1127,10 +1176,10 @@ const getYears = (startYrInp, endYrInp) => {
               currentMonth={currentMonth}
               width={width}
               el={lineChartRef}
-              lookupPeriodStartYear={lookupPeriodStartYear}
-              lookupPeriodStartMonth={lookupPeriodStartMonth}
-              lookupPeriodEndYear={lookupPeriodEndYear}
-              lookupPeriodEndMonth={lookupPeriodEndMonth}
+              lookupPeriodStartYear={timelineLine == 'Monthly' ? lookupPeriodStartYearM : lookupPeriodStartYearA}
+              lookupPeriodStartMonth={timelineLine == 'Monthly' ? lookupPeriodStartMonthM : lookupPeriodStartMonthA}
+              lookupPeriodEndYear={timelineLine == 'Monthly' ? lookupPeriodEndYearM : lookupPeriodEndYearA}
+              lookupPeriodEndMonth={timelineLine == 'Monthly' ? lookupPeriodEndMonthM : lookupPeriodEndMonthA}
               showPercent={showPercent}
               showOverall={showOverall}
               isPeriod={true}
@@ -1144,7 +1193,7 @@ const getYears = (startYrInp, endYrInp) => {
     
     </table>
   </>,
-  [timelineLine, currentDrug, currentStateLine, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth]);
+  [timelineLine, currentDrug, currentStateLine, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM, lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA]);
 
   const usaMapMemo = useMemo(() =>
       <>
@@ -1244,18 +1293,18 @@ const getYears = (startYrInp, endYrInp) => {
     ReactTooltip.rebuild();
   });
  
-  if (endUSMonthYearForSlider == null || endUSMonthYearForSlider?.length == 0) {
+  if (endUSMonthYearForSliderM == null || endUSMonthYearForSliderM?.length == 0) {
     return loading;
   }
 
   const getPriorMonth = () => {
 
-    if (endUSMonthYearForSlider) {
-        let mon = Number(endUSMonthYearForSlider.substring(4));
+    if (endUSMonthYearForSliderM) {
+        let mon = Number(endUSMonthYearForSliderM.substring(4));
         if (mon != 1)
-          return monthNames[mon] + ' ' + endUSMonthYearForSlider.substring(0,4);
+          return monthNames[mon] + ' ' + endUSMonthYearForSliderM.substring(0,4);
         else
-          return monthNames[12] + ' ' + endUSMonthYearForSlider.substring(0,4);
+          return monthNames[12] + ' ' + endUSMonthYearForSliderM.substring(0,4);
       }
       else
         return '';
@@ -1437,7 +1486,7 @@ const getYears = (startYrInp, endYrInp) => {
   function getMonthlyValueForCurrentDrug() {
     for(let i=0;i<keyedRawUSDataMonthly.length;i++)
     {
-      if (keyedRawUSDataMonthly[i].YYYYMM == endUSMonthYearForSlider)
+      if (keyedRawUSDataMonthly[i].YYYYMM == endUSMonthYearForSliderM)
       {
         if (keyedRawUSDataMonthly[i].Sex === 'Total' && keyedRawUSDataMonthly[i].Age_Group === 'Total' && keyedRawUSDataMonthly[i].geoid == 'US')
         {
@@ -1482,13 +1531,13 @@ const getYears = (startYrInp, endYrInp) => {
 
   function getPercentFromPriorMonth() {
 
-    var startYr = startUSMonthYearForSlider.substring(0,4);
-    var startMon =String(Number(startUSMonthYearForSlider.substring(4)));
-    var endYr = endUSMonthYearForSlider.substring(0,4);
-    var endMon = String(Number(endUSMonthYearForSlider.substring(4)));
+    var startYr = startUSMonthYearForSliderM.substring(0,4);
+    var startMon =String(Number(startUSMonthYearForSliderM.substring(4)));
+    var endYr = endUSMonthYearForSliderM.substring(0,4);
+    var endMon = String(Number(endUSMonthYearForSliderM.substring(4)));
 
     var monthsArray = UtilityFunctions.generateYYMMArray(Number(startYr), Number(startMon), Number(endYr), Number(endMon))
-    var idx = monthsArray.indexOf(endUSMonthYearForSlider);
+    var idx = monthsArray.indexOf(endUSMonthYearForSliderM);
     var priorMonth = monthsArray[idx - 1]
     var priorMon = 0;
     for(let i=0;i<keyedRawUSDataMonthly.length;i++)
@@ -1629,15 +1678,24 @@ const getYears = (startYrInp, endYrInp) => {
                     setJurisForDropDownLine(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
                     setJurisForDropDownMap(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
 
-                    setLookupPeriodStartYear('2023');
-                    setLookupPeriodStartMonth('1');
+                    setLookupPeriodStartYearM('2023');
+                    setLookupPeriodStartMonthM('1');
+
+                    setLookupPeriodStartYearA('2023');
+                    setLookupPeriodStartMonthA('1');
 
                     setLookupPeriodEndYear(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
                     setLookupPeriodEndMonth(String(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
-                    setStartUSMonthYearForSlider(keyedRawUSDataMonthly[0]['YYYYMM']); 
-                    setEndUSMonthYearForSlider(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
-                    setStartMonthYearForSlider(keyedRawUSDataMonthly[0]['YYYYMM']); 
-                    setEndMonthYearForSlider(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+
+                    setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']); 
+                    setEndUSMonthYearForSliderM(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+                    setStartMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']); 
+                    setEndMonthYearForSliderM(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+
+                    setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']); 
+                    setEndUSMonthYearForSliderA(keyedRawUSDataAnnual[cntUS-1]['YYYYMM']); 
+                    setStartMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']); 
+                    setEndMonthYearForSliderA(keyedRawUSDataAnnual[cntUS-1]['YYYYMM']);
 
                     setselectedDrugs(['all']);
                     setselectedDrugsBar(['benzodiazepine', 'opioids', 'fentanyl', 'heroin', 'stimulants', 'cocaine', 'methamphetamine']);
@@ -1945,31 +2003,32 @@ const getYears = (startYrInp, endYrInp) => {
              <tr>
               <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
               <td style={{'width': '84%'}}>
-                {/* {!showAnnualLine && */}
+                { !showAnnualLine &&
                   <div style={wrapperStyle}>
                     <Range 
                     min={1} 
-                    max={getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)}
-                    defaultValue={[61,getNumberofMonthsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)]} 
-                    step={1} marks={getMarksForRangeMonthly(startUSMonthYearForSlider, endUSMonthYearForSlider)} 
-                    tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSlider.substring(0,4)), value)}`} 
+                    max={getNumberofMonthsBetween(startUSMonthYearForSliderM, endUSMonthYearForSliderM)}
+                    defaultValue={[49, getNumberofMonthsBetween(startUSMonthYearForSliderM, endUSMonthYearForSliderM)]} 
+                    step={1} marks={getMarksForRangeMonthly(startUSMonthYearForSliderM, endUSMonthYearForSliderM)} 
+                    tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSliderM.substring(0,4)), value)}`} 
                     onAfterChange={didOnAfterChangeTriggerMonthly}
                     key={sliderKey}
                     />
                   </div>
-               {/*  } */}
-                {/* {showAnnualLine &&
+                }
+                { showAnnualLine &&
                   <div style={wrapperStyle}>
                     <Range 
                     min={1} 
-                    max={getNumberofYearsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)}
-                    defaultValue={[1, getNumberofYearsBetween(startUSMonthYearForSlider, endUSMonthYearForSlider)]} 
-                    step={1} marks={getMarksForRangeAnnual(startUSMonthYearForSlider, endUSMonthYearForSlider)} 
-                    tipFormatter={value => `${getYear(Number(startUSMonthYearForSlider.substring(0,4)), value)}`} 
+                    max={getNumberofMonthsBetween(startUSMonthYearForSliderA, endUSMonthYearForSliderA)}
+                    defaultValue={[38, getNumberofMonthsBetween(startUSMonthYearForSliderA, endUSMonthYearForSliderA)]} 
+                    step={1} marks={getMarksForRangeMonthly(startUSMonthYearForSliderA, endUSMonthYearForSliderA)} 
+                    tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSliderA.substring(0,4)), value)}`} 
                     onAfterChange={didOnAfterChangeTriggerAnnual}
+                    key={sliderKey}
                     />
                   </div>
-                }       */}
+                }
               </td>
               </tr>
             </table>
@@ -1998,6 +2057,9 @@ const getYears = (startYrInp, endYrInp) => {
                               setMonthlyToggleLine(false);
                               setTimelineLine('Monthly');
                               setPeriodToggle(true);
+                              setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']);
+                              setLookupPeriodStartYearM('2023');
+                              setLookupPeriodStartMonthM('1');
                             }} />
                           <label
                             htmlFor="radioUSMonthlyLine">Monthly</label>
@@ -2015,6 +2077,9 @@ const getYears = (startYrInp, endYrInp) => {
                             setMonthlyToggleLine(true);
                             setTimelineLine('Annual');
                             setPeriodToggle(false);
+                            setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']);
+                            setLookupPeriodStartYearA('2023');
+                            setLookupPeriodStartMonthA('1');
                           }} 
                           />
                           <label
@@ -2338,7 +2403,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
 
-      <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_SyS_Dashboard_Download_06-25-2025.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download the dataset</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
+      <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_SyS_Dashboard_Download_06-25-2025.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
 
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
 

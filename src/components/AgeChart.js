@@ -308,7 +308,7 @@ function AgeChart(params) {
                         }}
                         d={Utils.verticalBarPath(xScale(d.ageN), yScale(d.value), xScale.bandwidth(), adjustedHeight - yScale(d.value), xScale.bandwidth() * .1)}
                         fill={drugOptions[currentDrug].color}
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age: ${d.ageN}<br/><br/>Overdoses: ${Number(d.value).toLocaleString()}`}
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age: ${d.ageN}<br/><br/>Overdoses: ${Number(d.value).toFixed(1)}`}
                       ></path>
                     )}
                     {d.value == 0 && (
