@@ -309,8 +309,9 @@ export default function App({ dataUrl }) {
     let numericVal = isFloat ? parseFloat(val) : parseInt(val);
     if (isNaN(numericVal)) {
       if(val == 'not available' || val == 'NA')
-      return 'Data not available';
-      return 'Data suppressed*';
+        return 'Data not available';
+      
+      return 'InValid';
     } else {
       return (isFloat ? (Math.round(numericVal * 10) / 10).toFixed(1) : numericVal);
     }
@@ -650,8 +651,13 @@ export default function App({ dataUrl }) {
    const setYearSelected = (yr, freq) => {
       setCurrentYear(yr);
 
-      if (endUSMonthYearForSlider.includes(yr)) {
-        let mon = Number(endUSMonthYearForSlider.substring(4));
+      if (freq == "Monthly" && endUSMonthYearForSliderM.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderM.substring(4));
+        setMonthsForDropDown(getMonths(mon))
+        setMonthSelected(monthNames[Number(mon)]);
+      }
+      else if (freq == "Annual" && endUSMonthYearForSliderA.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderA.substring(4));
         setMonthsForDropDown(getMonths(mon))
         setMonthSelected(monthNames[Number(mon)]);
       }
@@ -676,8 +682,13 @@ export default function App({ dataUrl }) {
 
       setCurrentYearBar(yr);
 
-      if (endUSMonthYearForSlider.includes(yr)) {
-        let mon = Number(endUSMonthYearForSlider.substring(4));
+      if (freq == "Monthly" && endUSMonthYearForSliderM.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderM.substring(4));
+        setMonthsForDropDownBar(getMonths(mon))
+        setMonthSelectedBar(monthNames[Number(mon)]);
+      }
+      else if (freq == "Annual" && endUSMonthYearForSliderA.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderA.substring(4));
         setMonthsForDropDownBar(getMonths(mon))
         setMonthSelectedBar(monthNames[Number(mon)]);
       }
@@ -702,8 +713,13 @@ export default function App({ dataUrl }) {
 
       setCurrentYearMap(yr);
 
-      if (endUSMonthYearForSlider.includes(yr)) {
-        let mon = Number(endUSMonthYearForSlider.substring(4));
+      if (freq == "Monthly" && endUSMonthYearForSliderM.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderM.substring(4));
+        setMonthsForDropDownMap(getMonths(mon))
+        setMonthSelectedMap(monthNames[Number(mon)]);
+      }
+      else if (freq == "Annual" && endUSMonthYearForSliderA.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderA.substring(4));
         setMonthsForDropDownMap(getMonths(mon))
         setMonthSelectedMap(monthNames[Number(mon)]);
       }
@@ -727,8 +743,13 @@ export default function App({ dataUrl }) {
 
       setCurrentYearSexAge(yr);
 
-      if (endUSMonthYearForSlider.includes(yr)) {
-        let mon = Number(endUSMonthYearForSlider.substring(4));
+      if (freq == "Monthly" && endUSMonthYearForSliderM.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderM.substring(4));
+        setMonthsForDropDownSexAge(getMonths(mon))
+        setMonthSelectedSexAge(monthNames[Number(mon)]);
+      }
+      else if (freq == "Annual" && endUSMonthYearForSliderA.includes(yr)) {
+        let mon = Number(endUSMonthYearForSliderA.substring(4));
         setMonthsForDropDownSexAge(getMonths(mon))
         setMonthSelectedSexAge(monthNames[Number(mon)]);
       }
@@ -963,6 +984,7 @@ const getYears = (startYrInp, endYrInp) => {
   }; 
 
    const isValidStateData = (rec) => {
+
     if (rec.total_drug_OD_n == 7777.0 || rec.total_drug_OD_n == 8888.0)
       return false;
     if (rec.total_Benzo_OD_n == 7777.0 || rec.total_Benzo_OD_n == 8888.0)
@@ -1732,7 +1754,7 @@ const getYears = (startYrInp, endYrInp) => {
 
       <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            {getPriorMonth()} Suspected Nonfatal Overdose ED Visits for {drugOptions[currentDrug].titleAll} in Participating Jurisdictions ({jurisCount})<sup>[4]</sup>
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits in {jurisCount} Participating Jurisdictions<sup>[3]</sup>, {getPriorMonth()} 
           </h2>
         </div>
       </div>
@@ -1778,7 +1800,7 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{'color': drugColor}}>{jurisCount}</span>
           <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating</span>
+            <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating<sup>5</sup></span>
             <p>Funded states with reported Data</p>
           </div>
         </div>
@@ -1787,12 +1809,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
           </h2>
           }
         </div>
@@ -1877,12 +1899,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdose ED visits per 10,000 Total ED visits by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED visits by Drug Type in {currentState == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdose ED visits per 10,000 Total ED visits by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+             Suspected Nonfatal Overdose ED Visits per 10,000 Total ED visits by Drug Type in {currentState == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -1929,6 +1951,7 @@ const getYears = (startYrInp, endYrInp) => {
                               setTimelineBar('Monthly');
                               setPeriodToggle(true);
                               setYearSelectedBar(currentYearBar, 'Monthly');
+                              setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
                             }} />
                           <label
                             htmlFor="radioUSMonthlyBar">Monthly</label>
@@ -1947,6 +1970,7 @@ const getYears = (startYrInp, endYrInp) => {
                             setTimelineBar('Annual');
                             setPeriodToggle(false);
                             setYearSelectedBar(currentYearBar, 'Annual');
+                            setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Annual'));
                           }} 
                           />
                           <label
@@ -2007,13 +2031,20 @@ const getYears = (startYrInp, endYrInp) => {
 
       <section>
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
+            {timelineLine == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose per 10,000 total ED Visits<sup>†</sup>, {currentStateLine == 'US' ? stateNames[currentStateLine] + ' (' + Object.keys(jurisForDropDownLine).length + ' Jurisdictions)' : stateNames[currentStateLine]}
+            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' - ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
           </h2>
+          }
+          {timelineLine == 'Annual' &&
+          <h2 className="data-bite-header">
+            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' - ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
+          </h2>
+          }
         </div>
         <table>
              <tr>
-              <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
+              <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:<sup>**</sup></div></td>
               <td style={{'width': '84%'}}>
                 { !showAnnualLine &&
                   <div style={wrapperStyle}>
@@ -2126,8 +2157,6 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
           <br></br>
-          
-            
             
           { timelineLine == 'Annual' &&
             <table>
@@ -2146,8 +2175,8 @@ const getYears = (startYrInp, endYrInp) => {
             <tr>
               <td style={{width: '5%'}}></td>
               <td style={{width: '80%'}}>
-                <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented. *Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter [2].</i></small></span></div>
-                <div><span><small><i><sup>†</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
+                <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented. **Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter [2].</i></small></span></div>
+                <div><span><small><i><sup>†</sup><sup>†</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
               </td>
               <td style={{width: '15%'}}></td>
             </tr>
@@ -2157,9 +2186,16 @@ const getYears = (startYrInp, endYrInp) => {
 
       <section>
         <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
+          {mapMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            {mapMonthly} Suspected Nonfatal Overdose visits per 10,000 Total ED Visits<sup>†</sup>
+            Monthly Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
           </h2>
+          }
+          {mapMonthly == 'Annual' &&
+          <h2 className="data-bite-header">
+            Annual Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
+          </h2>
+          }
         </div>
           <table>
             <tr>
@@ -2168,12 +2204,12 @@ const getYears = (startYrInp, endYrInp) => {
                   <table style={{'width': '100%'}}>
                   <tr>
                       <td style={{'width': '30%'}}>
-                        <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value) }}>
+                        <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value);}}>
                           {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
                         </select>
                       </td>
                       <td style={{'width': '30%'}}>
-                      <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly); }}>
+                      <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly);}}>
                         {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                       </select>
                       </td>
@@ -2239,9 +2275,16 @@ const getYears = (startYrInp, endYrInp) => {
        <section>
 
         <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
+          {sexAgeMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal {drugOptions[selectedDrugsSexAge[0]].titleAll}-involved Overdose ED visits by Sex, Age, and Sex by Age, Overall &#40;{jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions&#41;, {sexAgeMonthly == 'Monthly' ? (monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge) : UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and Sex by Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
+          }
+          {sexAgeMonthly == 'Annual' &&
+          <h2 className="data-bite-header">
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and Sex by Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+          </h2>
+          }
         </div>
 
           <table>

@@ -354,11 +354,11 @@ const UsaMap = (params) => {
                       <td>
                         <svg style={{ height: 90, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
                             <rect x={0} y={15} width={50} height={10} fill={suppressedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
-                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>* Data suppressed</text>
+                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>Data suppressed</text>
 
                             <rect x={0} y={30} width={50} height={10} fill={unavailableColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
-                            <text x={60} y={35} fill="black" alignmentBaseline="middle" fontSize={12}>† Data not available/</text>
-                            <text x={60} y={52} fill="black" alignmentBaseline="middle" fontSize={12}>not reported<tspan baselineShift="super" fontSize="8">1</tspan></text>
+                            <text x={60} y={35} fill="black" alignmentBaseline="middle" fontSize={12}>Data not available/</text>
+                            <text x={60} y={52} fill="black" alignmentBaseline="middle" fontSize={12}>not reported</text>
 
                             <rect x={0} y={62} width={50} height={10} fill={unfundedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
                             <text x={60} y={67} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>

@@ -291,7 +291,7 @@ function StateChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}</text>
+              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">*</tspan></text>
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}

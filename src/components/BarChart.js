@@ -260,7 +260,7 @@ function BarChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight - 190} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}<tspan baselineShift="super" fontSize="10">*</tspan></text>
               <AxisTop
                 top={adjustedHeight - 140}
                 scale={xScale}
