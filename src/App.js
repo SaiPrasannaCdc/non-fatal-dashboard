@@ -2022,7 +2022,7 @@ const getYears = (startYrInp, endYrInp) => {
       </section>
 
       <section>
-        <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+        <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
           <h2 className="data-bite-header">
             {mapMonthly} Suspected Nonfatal Overdose ED visits per 10,000 Total ED Visits<sup>†</sup>
           </h2>
