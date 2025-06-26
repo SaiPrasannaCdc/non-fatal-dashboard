@@ -2044,7 +2044,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
         <table>
              <tr>
-              <td style={{'width': '16%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:<sup>**</sup></div></td>
+              <td style={{'width': '16.8%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:<sup>**</sup></div></td>
               <td style={{'width': '84%'}}>
                 { !showAnnualLine &&
                   <div style={wrapperStyle}>

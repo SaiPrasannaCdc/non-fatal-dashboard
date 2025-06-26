@@ -827,7 +827,7 @@ const adjustCrowdedLabels = () => {
                     dy: 5
                   })}
                 />
-                <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 ED Visits<tspan baselineShift="super" fontSize="10">*</tspan></text>
+                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 ED Visits<tspan baselineShift="super" fontSize="10">*</tspan></text>
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}
