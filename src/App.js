@@ -811,8 +811,14 @@ const didOnAfterChangeTriggerMonthly = (value) => {
       jurisForDate[monthsArraySel[i]] = jurisCountData[monthsArraySel[i] + timelineLine];
     }
 
-    let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
-    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4)), timelineLine));
+    let finalMonYr = Object.entries(jurisForDate)[monthsArraySelCnt-1][0];
+    let startMonYr = Object.entries(jurisForDate)[0][0];
+
+    let jurisF = getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4)), timelineLine);
+    let jurisS = getJuris(Number(startMonYr.substring(0,4)), Number(startMonYr.substring(4)), timelineLine);
+    let finalJuris = UtilityFunctions.getObjectWithCommonKeys(jurisF, jurisS); 
+
+    setJurisForDropDownLine(finalJuris);
 
   };
 
@@ -841,8 +847,14 @@ const didOnAfterChangeTriggerMonthly = (value) => {
       jurisForDate[monthsArraySel[i]] = jurisCountData[monthsArraySel[i] + timelineLine];
     }
 
-    let finalMonYr = Object.entries(jurisForDate).sort(([, a], [, b]) => a - b)[monthsArraySelCnt-1][0];
-    setJurisForDropDownLine(getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4)), timelineLine));
+    let finalMonYr = Object.entries(jurisForDate)[monthsArraySelCnt-1][0];
+    let startMonYr = Object.entries(jurisForDate)[0][0];
+
+    let jurisF = getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4)), timelineLine);
+    let jurisS = getJuris(Number(startMonYr.substring(0,4)), Number(startMonYr.substring(4)), timelineLine);
+    let finalJuris = Object.keys(jurisF).filter(key => jurisS.hasOwnProperty(key));
+
+    setJurisForDropDownLine(finalJuris);
 
   };
 
@@ -1775,12 +1787,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Jurisdictions), {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} Overall ({jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Jurisdictions), {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+            Suspected Nonfatal Overdose ED Visits involving {drugOptions[currentDrug].titleAll} in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
           </h2>
           }
         </div>
@@ -1865,12 +1877,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Drug Overdose ED visits per 10,000 Total ED visits by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Drug Overdoses<sup>†</sup> by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+            Suspected Drug Overdose ED visits per 10,000 Total ED visits by Drug Type<sup>†</sup><sup>†</sup>, {currentState == 'US' ? stateNames[currentState] + ' (' + jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Jurisdictions)' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -2146,7 +2158,7 @@ const getYears = (startYrInp, endYrInp) => {
       <section>
         <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
           <h2 className="data-bite-header">
-            {mapMonthly} Suspected Nonfatal Overdose ED visits per 10,000 Total ED Visits<sup>†</sup>
+            {mapMonthly} Suspected Nonfatal Overdose visits per 10,000 Total ED Visits<sup>†</sup>
           </h2>
         </div>
           <table>

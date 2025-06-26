@@ -7,7 +7,7 @@ import { UtilityFunctions } from '../utility'
 import Utils from '../shared/Utils';
 import '../css/StateChart.css';
 
-const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames) => {
+const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames, drugOptions) => {
 
   var finalData = {};
 
@@ -201,7 +201,7 @@ function StateChart(params) {
   }, [currentDrug, currentYear]);
 
   const getXAxisLabel = () => {
-      return 'Nonfatal Overdoses per 10,000 Total ED Visits';
+      return 'Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
   }
 
   return width > 0 && (

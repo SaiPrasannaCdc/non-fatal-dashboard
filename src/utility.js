@@ -641,6 +641,17 @@ export const UtilityFunctions = {
         }
       }
       return ret;
+  },
+
+  getObjectWithCommonKeys : (obj1, obj2) => {
+    const commonKeys = Object.keys(obj1).filter(key => Object.keys(obj2).includes(key));
+    const result = {};
+
+    for (const key of commonKeys) {
+      result[key] = obj1[key]; 
+    }
+
+    return result;
   }
 
 }
