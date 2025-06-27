@@ -153,7 +153,7 @@ function BarChart(params) {
   }, [selectedDrugs, currentYear]);
 
   const getXAxisTopLabel = () => {
-      return 'Nonfatal Overdoses per 10,000 ED Visits';
+      return 'Nonfatal Overdoses per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
