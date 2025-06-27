@@ -222,10 +222,10 @@ function LineChart(params) {
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
-  specs['height'] = 400;
+  specs['height'] = 450;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 85, left: (currentState != 'US' && !showOverall ? 125 : 75), right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = isPeriod ? { top: 15, bottom: 65, left: (currentState != 'US' && !showOverall ? 125 : 75), right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
@@ -805,7 +805,7 @@ const adjustCrowdedLabels = () => {
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '85%'}}>
-            <svg style={{height: (specs.height - 50), width: '100%'}}>
+            <svg style={{height: (specs.height - 30), width: '100%'}}>
               <Group top={specs.margin.top} left={specs.margin.left}>
                 {currentState !== 'US' && buildLineForDrug(currentDrug)}
                 {inp.selectedDrugs.includes('all') && currentState === 'US' && buildLineForDrug('all')}
@@ -827,7 +827,7 @@ const adjustCrowdedLabels = () => {
                     dy: 5
                   })}
                 />
-                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 ED Visits<tspan baselineShift="super" fontSize="10">*</tspan></text>
+                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 Total ED Visits<tspan baselineShift="super" fontSize="10">*</tspan></text>
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}

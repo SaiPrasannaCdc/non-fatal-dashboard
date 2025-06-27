@@ -1899,7 +1899,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED visits by Drug Type in {currentState == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED visits by Drug Type<sup>†</sup><sup>†</sup> in {currentState == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
@@ -2033,12 +2033,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
             {timelineLine == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' - ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
+            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' - ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
           </h2>
           }
           {timelineLine == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' - ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
+            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' - ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
           </h2>
           }
         </div>
@@ -2392,7 +2392,7 @@ const getYears = (startYrInp, endYrInp) => {
             <tr>
               <td>
                 <svg height={50}>
-                  <text x={width/2} y={20} fill={'#000066'} fontSize={16} textAnchor="middle">Nonfatal Overdoses per 10,000 ED visits<tspan baselineShift="super" fontSize="10">†</tspan></text>
+                  <text x={width/2} y={20} fill={'#000066'} fontSize={16} textAnchor="middle">Nonfatal Overdoses per 10,000 Total ED visits<tspan baselineShift="super" fontSize="10">†</tspan></text>
                   </svg>
               </td>
             </tr>
