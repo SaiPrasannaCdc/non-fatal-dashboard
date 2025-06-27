@@ -2458,7 +2458,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
 
-      <a download="DOSE_dashboard_output-download.xlsx" href={'https://www.cdc.gov/overdose-prevention/data-dashboards/dose-surveillance-dashboard/data/DOSE_SyS_Dashboard_Download_06-25-2025.xlsx'} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
+      <a download="DOSE_dashboard_output-download.xlsx" href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
 
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
 
