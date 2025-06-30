@@ -873,7 +873,7 @@ const didOnAfterChangeTriggerMonthly = (value) => {
 
     let jurisF = getJuris(Number(finalMonYr.substring(0,4)), Number(finalMonYr.substring(4)), timelineLine);
     let jurisS = getJuris(Number(startMonYr.substring(0,4)), Number(startMonYr.substring(4)), timelineLine);
-    let finalJuris = Object.keys(jurisF).filter(key => jurisS.hasOwnProperty(key));
+    let finalJuris = UtilityFunctions.getObjectWithCommonKeys(jurisF, jurisS); 
 
     setJurisForDropDownLine(finalJuris);
 
