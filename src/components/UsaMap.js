@@ -6,7 +6,6 @@ import { CustomProjection } from '@visx/geo';
 import { scaleLinear } from '@visx/scale';
 import ReactTooltip from 'react-tooltip';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
-import AngleArrow from './AngleArrow';
 import { UtilityFunctions } from '../utility'
 
 const { features: stateTopoPre2020 } = feature(topoJSONPre2020, topoJSONPre2020.objects.states)
@@ -156,7 +155,7 @@ const UsaMap = (params) => {
   let colorIntervals = [];
   for (let i = 0; i < 5; i++) {
     let val = i == 0 ? max : (max - (intervalWidth) * (i))
-    labelIntervals.push( i != 4 ? (String(Number(val < 0 ? 0.0001 : val).toFixed(1)) + ' - '  + String((Number(val < 0 ? 0.0001 : val) - intervalWidth).toFixed(1))) : (String(Number(val < 0 ? 0.0001 : val).toFixed(1)) + ' - 0.0'))
+    labelIntervals.push( i != 4 ? (String((Number(val < 0 ? 0.0001 : val) - intervalWidth).toFixed(1) + ' - ' + String(Number(val < 0 ? 0.0001 : val).toFixed(1)))) : ('0.0 - ' + String(Number(val < 0 ? 0.0001 : val).toFixed(1))))
     colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
   }
 
@@ -293,31 +292,6 @@ const UsaMap = (params) => {
           </td>
           <td style={{width: '21%'}}>
             <table>
-              <tr>
-                <td>
-                  <table>
-                    <tr>
-                      <td style={{ 'width' : '15%'}}>
-                         <AngleArrow
-                            width={15}
-                            height={30}
-                            colorScale={'#000000'}
-                            defaultValueIfEmpty={defaultValueIfEmpty}
-                            percentValue={1}
-                          ></AngleArrow>
-                      </td>
-                      <td>
-                          <svg style={{ height: 100, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            <text x={20} y={30} fill="black" alignmentBaseline="middle" fontSize={fontSize} fontWeight={'bold'}>Want to know more?</text>
-                            <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={fontSize}>Hover over any state to </text>
-                            <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={fontSize}>see overdose-specific </text>
-                            <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={fontSize}>visits</text>
-                        </svg>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
               <br></br>
               <tr>
                 <td style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>

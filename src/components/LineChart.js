@@ -620,11 +620,13 @@ const adjustCrowdedLabels = () => {
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
               fill={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : 'transparent'}
+              strokeWidth={UtilityFunctions.isCovidPeriod(d['year'])  ? 3 : null}
+              stroke={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : null}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
               width={(UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
               height={specs.yMax}
-              style={{outline: 'none'}}
+              style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') ? 'crispEdges' : ''}}
               data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
           })
         }
