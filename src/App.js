@@ -12,6 +12,7 @@ import AgeChart from './components/AgeChart';
 import SexChart from './components/SexChart';
 import SexAgeChart from './components/SexAgeChart';
 import UpDownArrow from './components/UpDownArrow';
+import AngleArrow from './components/AngleArrow';
 import ReactTooltip from 'react-tooltip';
 import Context from './context';
 import 'rc-slider/assets/index.css';
@@ -1764,7 +1765,7 @@ const getYears = (startYrInp, endYrInp) => {
           <span className="callout" style={{ 'color': drugColor }}>{isNaN(usRate) ? 'N/A' : `${Number(usRate).toFixed(1)}`}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>
-              {timeline} Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
+              Monthly Suspected Nonfatal Overdose Visits for {drugOptions[currentDrug].titleAll}</span>
               <p>Per 10,000 total ED visits</p>
           </div>
         </div>
@@ -1800,7 +1801,7 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{'color': drugColor}}>{jurisCount}</span>
           <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating<sup>5</sup></span>
+            <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating<sup>1</sup></span>
             <p>Funded states with reported Data</p>
           </div>
         </div>
@@ -2033,12 +2034,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
             {timelineLine == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' - ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
+            Suspected Nonfatal Overdose ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
           </h2>
           }
           {timelineLine == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' - ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
+            Suspected Nonfatal Overdose ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
           </h2>
           }
         </div>
@@ -2188,12 +2189,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
           {mapMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Monthly Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
+            Geographic distribution of Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
           </h2>
           }
           {mapMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-            Annual Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
+             Geographic distribution of Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
           </h2>
           }
         </div>
@@ -2255,7 +2256,29 @@ const getYears = (startYrInp, endYrInp) => {
                     </tr>
                   </table>
                 </td>
-                <td style={{'width': '28%'}}>
+                <td style={{'width': '10%'}}></td>
+                <td style={{'width': '18%'}}>
+                   <table>
+                    <tr>
+                      <td style={{ 'width' : '15%', 'textAlign': 'right'}}>
+                         <AngleArrow
+                            width={15}
+                            height={30}
+                            colorScale={'#000000'}
+                            defaultValueIfEmpty={defaultValueIfEmpty}
+                            percentValue={1}
+                          ></AngleArrow>
+                      </td>
+                      <td style={{ 'textAlign': 'right'}}>
+                          <svg style={{ height: 100, width: isSmallViewport ? width : 240, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            <text x={20} y={30} fill="black" alignmentBaseline="middle" fontSize={15} fontWeight={'bold'}>Want to know more?</text>
+                            <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={15}>Hover over any state to </text>
+                            <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={15}>see overdose-specific </text>
+                            <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={15}>visits</text>
+                        </svg>
+                      </td>
+                    </tr>
+                  </table>
                 </td>
             </tr>
           </table>
@@ -2277,12 +2300,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
           {sexAgeMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and Sex by Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
           }
           {sexAgeMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and Sex by Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
           }
         </div>
@@ -2428,6 +2451,7 @@ const getYears = (startYrInp, endYrInp) => {
             <div className="datatable-body">
              <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ol>
+                <li>We are excited to release the latest updates to this dashboard (effective June 2025). This iteration of the dashboard incorporates DOSE data from 2019 onward. Data from 2018 are excluded due to over 40% of jurisdictions reporting facility coverage below 70% [mean: 76.9%, median: 84.4%, range: 1.5%-100%]. Additionally, we have included facility coverage percentages supplied by the jurisdictions in the downloadable dataset for further clarity. Of the 47 jurisdictions who currently submit data to DOSE-SYS, 19 jurisdictions reported facility coverage less than 70% in 2018, and an additional 4 did not submit data to DOSE in 2018 (e.g., were not yet enrolled).</li>
                 <li>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions.</li>
                 <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
                 <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values <strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
