@@ -179,6 +179,7 @@ export default function App({ dataUrl }) {
   const [timelineBar, setTimelineBar] = useState('Monthly');
   const [timelineLine, setTimelineLine] = useState('Monthly');
   const [currentState, setCurrentState] = useState('US');
+  const [currentStateBar, setCurrentStateBar] = useState('US');
   const [currentStateLine, setCurrentStateLine] = useState('US')
   const [currentYear, setCurrentYear] = useState('');
   const [currentYearMap, setCurrentYearMap] = useState('');
@@ -1176,11 +1177,11 @@ const getYears = (startYrInp, endYrInp) => {
     <>
    <div id="bar-chart-container" className="chart-container" ref={drugsBarChartRef}>
       <BarChart
-        data={currentState === 'US' ? (timelineBar == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly) : (timelineBar == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly)}
+        data={currentStateBar === 'US' ? (timelineBar == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly) : (timelineBar == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly)}
         width={width} 
         height={850} 
         el={drugsBarChartRef}
-        currentState={currentState}
+        currentState={currentStateBar}
         selectedDrugs={selectedDrugsBar}
         currentYear={currentYearBar}
         currentMonth={currentMonthBar} 
@@ -1188,7 +1189,7 @@ const getYears = (startYrInp, endYrInp) => {
         />
     </div>
   </>,
-  [width, currentState, selectedDrugsBar, currentYearBar, currentMonthBar, timelineBar]);
+  [width, currentStateBar, selectedDrugsBar, currentYearBar, currentMonthBar, timelineBar]);
 
   const lineChartMemo = useMemo(() =>
   <>
@@ -1196,7 +1197,7 @@ const getYears = (startYrInp, endYrInp) => {
       <tr>
         <td>
           <div class="containerLC">
-            <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={lineChartRef}>
+            <div class={currentStateLine === 'US' ? "chartDivAll" : "chartDivAll"} ref={lineChartRef}>
               <LineChart 
               data={timelineLine == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
               dataOverall={timelineLine == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
@@ -1484,7 +1485,7 @@ const getYears = (startYrInp, endYrInp) => {
               index < 4 &&
                 <div class={`drugDiv-${drug[0]}`}>
                   <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
-                  <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                  <label key={drug[0]} class={(sexAgeMonthly == 'Monthly' && (drug[0] != 'all' && drug[0] != 'opioids' && drug[0] != 'stimulants')) ? "lblDrugGray" : "lblDrug"}>{drug[1].titleForDropDown}</label>
                 </div>
                 
             ))
@@ -1498,7 +1499,7 @@ const getYears = (startYrInp, endYrInp) => {
               index >= 4 &&
               <div class={`drugDiv-${drug[0]}`}>
                       <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
-                      <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                      <label key={drug[0]} class={(sexAgeMonthly == 'Monthly' && (drug[0] != 'all' && drug[0] != 'opioids' && drug[0] != 'stimulants')) ? "lblDrugGray" : "lblDrug"}>{drug[1].titleForDropDown}</label>
                     </div>
             ))
           }
@@ -1512,7 +1513,7 @@ const getYears = (startYrInp, endYrInp) => {
     return (
           <div>
             <table style={{ width: '100%' }}>
-              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
+              <tr style={{ textAlign: 'right', fontSize: '15px' }}><td><small><i><sup>*</sup>{'Data suppressed'}</i></small></td></tr>
             </table>
           </div>
     )
@@ -1632,6 +1633,9 @@ const getYears = (startYrInp, endYrInp) => {
 
     const getHeaderColor = (selDrugs) => {
 
+      if (selDrugs.length > 1)
+        return '#005EAA'
+
       var drugIndexes = [];
       for (var x=0;x<selDrugs.length;x++)
         drugIndexes.push(drugOptions[selDrugs[x]].barChartOrder)
@@ -1684,6 +1688,7 @@ const getYears = (startYrInp, endYrInp) => {
                     setCurrentDrug('all');
                     setselectedDrugs(['all'])
                     setCurrentState('US');
+                    setCurrentStateBar('US');
                     setTimeline('Monthly');
                     setTimelineBar('Monthly');
                     setTimelineLine('Monthly');
@@ -1719,8 +1724,11 @@ const getYears = (startYrInp, endYrInp) => {
                     setLookupPeriodStartYearA('2023');
                     setLookupPeriodStartMonthA('1');
 
-                    setLookupPeriodEndYear(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
-                    setLookupPeriodEndMonth(String(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                    setLookupPeriodEndYearM(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
+                    setLookupPeriodEndMonthM(String(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+
+                    setLookupPeriodEndYearA(String(keyedRawUSDataAnnual[cntUS-1]['YYYYMM'].substring(0,4)));
+                    setLookupPeriodEndMonthA(String(Number(keyedRawUSDataAnnual[cntUS-1]['YYYYMM'].substring(4))));
 
                     setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']); 
                     setEndUSMonthYearForSliderM(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
@@ -1755,7 +1763,7 @@ const getYears = (startYrInp, endYrInp) => {
 
       <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits in {jurisCount} Participating Jurisdictions<sup>[3]</sup>, {getPriorMonth()} 
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits in {jurisCount} Participating Jurisdictions<sup>3</sup>, {getPriorMonth()} 
           </h2>
         </div>
       </div>
@@ -1810,12 +1818,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction in {jurisCountData[currentYear + String(currentMonth).padStart(2, '0') + timeline]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
           </h2>
           }
         </div>
@@ -1900,12 +1908,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits per 10,000 Total ED visits by Drug Type<sup>†</sup><sup>†</sup> in {currentState == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentState]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Nonfatal Overdose ED Visits<sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-             Suspected Nonfatal Overdose ED Visits per 10,000 Total ED visits by Drug Type in {currentState == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentState]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+             Suspected Nonfatal Overdose ED Visits<sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -1916,8 +1924,8 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '4%'}}></td>
               <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '18%'}}>
-                <select id="jurisdiction-select" value={currentState || ''} onChange={(e) => { setCurrentState(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                <option value="US">Overall &#40;{Object.keys(jurisForDropDown).length} Jurisdictions&#41;</option>
+                <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                <option value="US">Overall</option>
                 {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
               </select>
               </td>
@@ -2017,13 +2025,14 @@ const getYears = (startYrInp, endYrInp) => {
         </div> 
        <br></br>
         {drugsBarChartMemo}
-        {getFootNotesForData()}
+        <br></br>
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '15%'}}></td>
             <td style={{width: '80%'}}>
+              <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
               <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented.</i></small></span></div>
-              <div><span><small><i><sup>†</sup><sup>†</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+              <div><span><small><i><sup>§</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
             </td>
             <td style={{width: '5%'}}></td>
           </tr>
@@ -2034,12 +2043,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
             {timelineLine == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
+            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
           </h2>
           }
           {timelineLine == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in {currentStateLine == 'US' ? Object.keys(jurisForDropDownLine).length + ' Participating Jurisdictions' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
+            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
           </h2>
           }
         </div>
@@ -2082,7 +2091,7 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
               <td style={{'width': '20%'}}>
                 <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                <option value="US">Overall &#40;{Object.keys(jurisForDropDownLine).length} Jurisdictions&#41;</option>
+                <option value="US">Overall</option>
                 {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
               </select>
               </td>
@@ -2171,13 +2180,16 @@ const getYears = (startYrInp, endYrInp) => {
           }
 
           {lineChartMemo}
-          {getFootNotesForData()}
+          <br></br>
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '5%'}}></td>
               <td style={{width: '80%'}}>
-                <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented. **Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter [2].</i></small></span></div>
-                <div><span><small><i><sup>†</sup><sup>†</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
+                <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+                <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented.</i></small></span></div>
+                 <div><span><small><i><sup>§</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
+                <div><span><small><i><sup>¶</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
+                
               </td>
               <td style={{width: '15%'}}></td>
             </tr>
@@ -2189,12 +2201,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
           {mapMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Geographic distribution of Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
+            Geographic distribution of Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
           </h2>
           }
           {mapMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-             Geographic distribution of Suspected Nonfatal Overdose ED Visits Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {Object.keys(jurisForDropDownMap).length - 4} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
+             Geographic distribution of Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
           </h2>
           }
         </div>
@@ -2256,8 +2268,8 @@ const getYears = (startYrInp, endYrInp) => {
                     </tr>
                   </table>
                 </td>
-                <td style={{'width': '10%'}}></td>
-                <td style={{'width': '18%'}}>
+                <td style={{'width': '6%'}}></td>
+                <td style={{'width': '22%'}}>
                    <table>
                     <tr>
                       <td style={{ 'width' : '15%', 'textAlign': 'right'}}>
@@ -2272,7 +2284,7 @@ const getYears = (startYrInp, endYrInp) => {
                       <td style={{ 'textAlign': 'right'}}>
                           <svg style={{ height: 100, width: isSmallViewport ? width : 240, display: isSmallViewport ? 'block' : 'inline-block' }}>
                             <text x={20} y={30} fill="black" alignmentBaseline="middle" fontSize={15} fontWeight={'bold'}>Want to know more?</text>
-                            <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={15}>Hover over any state to </text>
+                            <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={15}>Hover over any jurisdiction to </text>
                             <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={15}>see overdose-specific </text>
                             <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={15}>visits</text>
                         </svg>
@@ -2300,37 +2312,17 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
           {sexAgeMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
+            Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
           }
           {sexAgeMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
           }
         </div>
 
           <table>
-            <tr>
-              <td style={{'width': '8%'}}></td>
-              <td style={{'width': '84%'}}>
-                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                  <tr>
-                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
-                    </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
-                      {getDrugControlsSexAge()}
-                    </td>
-                  </tr>
-                  </table>
-              </td>
-              <td style={{'width': '8%'}}></td>
-            </tr>
-            <tr>
-              <td colspan='3'>&nbsp;</td>
-            </tr>
             <tr>
               <td></td>
               <td>
@@ -2398,24 +2390,56 @@ const getYears = (startYrInp, endYrInp) => {
           </table>
               </td>
             </tr>
+            <tr>
+              <td colspan={3}>
+                { sexAgeMonthly == 'Annual' &&
+                    <table>
+                      <tr>
+                        <td style={{'textAlign': 'center'}}>
+                          <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                        </td>
+                      </tr>
+                      <br></br>
+                    </table>
+                  }
+                  { sexAgeMonthly == 'Monthly' &&
+                    <table>
+                      <tr>
+                        <td style={{'textAlign': 'center'}}>
+                          <strong>Note: </strong><span>Due to data suppression rules for counts under 20 ED visits, monthly demographic figures are not available for Cocaine, Methamphetamine, Fentanyl, Heroin, and Benzodiazepine Drug Syndromes. These data can be viewed at the Annual level.</span>
+                        </td>
+                      </tr>
+                      <br></br>
+                    </table>
+                  }
+              </td>
+            </tr>
+            <tr>
+              <td style={{'width': '8%'}}></td>
+              <td style={{'width': '84%'}}>
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControlsSexAge()}
+                    </td>
+                  </tr>
+                  </table>
+              </td>
+              <td style={{'width': '8%'}}></td>
+            </tr>
           </table>
           <br></br>
-          { sexAgeMonthly == 'Annual' &&
-              <table>
-                <tr>
-                  <td style={{'textAlign': 'center'}}>
-                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
-                  </td>
-                </tr>
-                <br></br>
-              </table>
-            }
+          
           <br></br>
           <table>
             <tr>
               <td>
                 <svg height={50}>
-                  <text x={width/2} y={20} fill={'#000066'} fontSize={16} textAnchor="middle">Nonfatal Overdoses per 10,000 Total ED visits<tspan baselineShift="super" fontSize="10">†</tspan></text>
+                  <text x={width/2} y={20} fill={'#000066'} fontSize={16} textAnchor="middle">Nonfatal Overdoses Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED visits</text>
                   </svg>
               </td>
             </tr>
@@ -2437,12 +2461,11 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
-          {getFootNotesForData()}
       </section>
 
       <div className='data-tables'>
         <div className="datatable-container" id="impdataconsiderations">
-          <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleConsiderations}>
+          <button className="h2" style={{ backgroundColor: '#005EAA' }} onClick={toggleConsiderations}>
           Important Data Considerations
             {showConsiderations && <span>{String.fromCharCode(8722)}</span>}
             {!showConsiderations && <span>{String.fromCharCode(43)}</span>}
@@ -2456,7 +2479,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
                 <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values <strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
                 <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [4] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
-                <li><strong>These are suspected drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [5] and therefore may underreport specific drug types involved.</li>
+                <li><strong>These are suspected nonfatal drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [5] and therefore may underreport specific drug types involved.</li>
                 <li><strong>Data likely represent an undercount,</strong> given potential inaccuracies in preliminary coding and potentially incomplete clinical descriptions captured in chief complaint information.</li>
                 <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine poisonings during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and diagnosis codes to identify drug overdose cases. ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes, suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the drug-specific syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
                 <li><strong>Drug overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories and some drug overdose visits involved multiple substances (e.g., a given drug overdose ED visit could have involved both opioids and stimulants).</li>
@@ -2464,7 +2487,7 @@ const getYears = (startYrInp, endYrInp) => {
             </div>}
         </div>
         <div className="datatable-container">
-          <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleFootNotes}>
+          <button className="h2" style={{ backgroundColor: '#005EAA' }} onClick={toggleFootNotes}>
             Footnotes 
             {showFootNotes && <span>{String.fromCharCode(8722)}</span>}
             {!showFootNotes && <span>{String.fromCharCode(43)}</span>}

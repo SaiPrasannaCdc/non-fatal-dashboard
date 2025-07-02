@@ -106,27 +106,27 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
 
     switch (ageGroups[x]) {
       case '0 to 14':
-        ageN = '0-14';
+        ageN = '0–14';
         sortOrder = 1; 
         break;
       case '15 to 24':
-        ageN = '15-24'; 
+        ageN = '15–24'; 
         sortOrder = 2;
         break;
       case '25 to 34':
-        ageN = '25-34'; 
+        ageN = '25–34'; 
         sortOrder = 3; 
         break;
       case '35 to 44':
-        ageN = '35-44'; 
+        ageN = '35–44'; 
         sortOrder = 4; 
         break;
       case '45 to 54':
-        ageN = '45-54'; 
+        ageN = '45–54'; 
         sortOrder = 5; 
         break;
       case '55 to 64':
-        ageN = '55-64'; 
+        ageN = '55–64'; 
         sortOrder = 6; 
         break;
       case '65+':
@@ -329,8 +329,8 @@ function SexAgeChart(params) {
 
     const x1Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${Number(d[x1Key]).toFixed(1)}</p></div>`;
     const x2Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${Number(d[x2Key]).toFixed(1)}</p></div>`;
-    const x1TipDS = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: *Data Suppressed</p></div>`;
-    const x2TipDS = `<div class="tooltipTableLC"<p><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: *Data Suppressed</p></div>`;
+    const x1TipDS = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: Data Suppressed</p></div>`;
+    const x2TipDS = `<div class="tooltipTableLC"<p><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: Data Suppressed</p></div>`;
 
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
@@ -420,7 +420,8 @@ function SexAgeChart(params) {
           /> */}
          {/*  {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years) and Sex'}</text>} */}
           {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax+ 40} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
-          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 60 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
+          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 70 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
+          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 90 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
         </Group>
       </svg>
     </>
