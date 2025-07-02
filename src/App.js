@@ -2043,12 +2043,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
             {timelineLine == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
+            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
           </h2>
           }
           {timelineLine == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits in {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
+            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
           </h2>
           }
         </div>
