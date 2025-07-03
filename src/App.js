@@ -1259,7 +1259,7 @@ const getYears = (startYrInp, endYrInp) => {
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
                 width={width * 0.5}
-                height={600} //TODO
+                height={620} //TODO
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
                 drugOptions={drugOptions}
@@ -1284,7 +1284,7 @@ const getYears = (startYrInp, endYrInp) => {
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
                 width={width * 0.5}
-                height={600} //TODO
+                height={620} //TODO
                 header={false}
                 el={ageChartRef}
                 overallMax={100}
