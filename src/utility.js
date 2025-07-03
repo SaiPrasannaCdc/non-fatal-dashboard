@@ -588,16 +588,26 @@ export const UtilityFunctions = {
 
     let d = new Date(currentYear + '/' + currentMonth + '/' + '01');
     d.setMonth(d.getMonth() - 11);
-    return d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear() + ' – ' + monthNames[Number(currentMonth)].substring(0,3) + ' ' + currentYear; 
+    return d.toLocaleString('default', { month: 'long' }) + ' ' + d.getFullYear() + ' – ' + monthNames[Number(currentMonth)] + ' ' + currentYear; 
   },
 
   isCovidPeriod : (yearmon) => {
     return covidPeriod.includes(yearmon);
   },
   
-   doesEndWithCovidPeriod : (data, st) => {
+  doesEndWithCovidPeriod : (data, st) => {
     var cnt = data[st].length;
     return covidPeriod.includes(data[st][cnt - 1]['year']);
+  },
+
+  containsCovidPeriod : (stYr, stMon, endYr, endMon)  => {
+    var monthsArray = UtilityFunctions.generateYYMMArray(Number(stYr), Number(stMon), Number(endYr), Number(endMon));
+    var ret = false;
+    for(let j=0;j<monthsArray.length;j++) {
+      if (UtilityFunctions.isCovidPeriod(monthsArray[j]))
+        ret = true;
+    }
+    return ret;
   },
 
   getCovidPeriodIndex : (yr) => {

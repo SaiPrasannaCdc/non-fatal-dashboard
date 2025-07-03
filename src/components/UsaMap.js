@@ -149,13 +149,13 @@ const UsaMap = (params) => {
   const max = Math.max(...values.filter(val => !isNaN(val) && val > 0));
   const min = Math.min(...values.filter(val => !isNaN(val) && val > 0));
   const intervals = 5;
-  const intervalWidth = ((max - min) / intervals).toFixed(4);
+  const intervalWidth = ((max) / intervals).toFixed(4);
 
   let labelIntervals = [];
   let colorIntervals = [];
   for (let i = 0; i < 5; i++) {
     let val = i == 0 ? max : (max - (intervalWidth) * (i))
-    labelIntervals.push( i != 4 ? (String((Number(val < 0 ? 0.0001 : val) - intervalWidth).toFixed(1) + ' - ' + String(Number(val < 0 ? 0.0001 : val).toFixed(1)))) : ('0.0 - ' + String(Number(val < 0 ? 0.0001 : val).toFixed(1))))
+    labelIntervals.push( i != 4 ? (String((Number(val < 0 ? 0.0001 : val) - intervalWidth + 0.1).toFixed(1) + ' - ' + String(Number(val < 0 ? 0.0001 : val).toFixed(1)))) : ('0.0 - ' + String(Number(val < 0 ? 0.0001 : val).toFixed(1))))
     colorIntervals.push(Number(val < 0 ? 0.0001 : val).toFixed(1))
   }
 
@@ -178,7 +178,7 @@ const UsaMap = (params) => {
   }
 
   const getRateHTML = (geoId) => {
-    return '<span>' + (filteredData[stateFipsMapping[geoId.substring(0, 2)]]  == '0.0' ? '*Data Suppressed' : filteredData[stateFipsMapping[geoId.substring(0, 2)]]) + '</span></br>'
+    return '<span>' + (filteredData[stateFipsMapping[geoId.substring(0, 2)]]  == '0.0' ? 'Data Suppressed' : filteredData[stateFipsMapping[geoId.substring(0, 2)]]) + '</span></br>'
   }
 
   const getTooltipFragment = (geoId) => {
@@ -187,11 +187,13 @@ const UsaMap = (params) => {
     var heading = '<div class="alignCenterTT"><h2 class="borderBottomLine blackFont" style="margin: 0; padding: 0;"><strong>' + `${stateNames[presentState]}` + '</br></strong></h2></div>'; 
     var rateStr;
 
-    if (Number(filteredData[stateFipsMapping[geoId.substring(0, 2)]]) >= 0)
+    if (Number(filteredData[stateFipsMapping[geoId.substring(0, 2)]]) > 0)
        rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+    else if (Number(filteredData[stateFipsMapping[geoId.substring(0, 2)]]) == 0)
+       rateStr = `<table><tr><td><p><strong>` + getRateHTML(geoId) + `</strong>` + '</p></td></tr></table>';
     else {
       if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == '-1.0')
-        rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr><tr><td><span>overdoses per 10,000 ED visits</span></td></tr></table>';
+        rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr></table>';
       else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == '-2.0')
         rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
     }
@@ -238,6 +240,8 @@ const UsaMap = (params) => {
     return geographies.map(({ centroid, feature: geo, path = '' }) => {
     
       if (!geo.id
+        || geo.id.substring(0, 2) === '69' //Filters islands west coast
+        || geo.id.substring(0, 2) === '72' //Filters Puerto Rico
         || geo.id.substring(0, 2) === '72' //Filters Puerto Rico
         || geo.id.substring(0, 2) === '78' //Filters Virgin Islands
         || geo.id.substring(0, 2) === '66' //Filters Guam
@@ -288,7 +292,7 @@ const UsaMap = (params) => {
                 </CustomProjection>
               </g>
             </svg>
-            <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the chart may change based on the data selected. </i></small></span></div>
+            <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
           </td>
           <td style={{width: '21%'}}>
             <table>
@@ -310,8 +314,9 @@ const UsaMap = (params) => {
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
-                        <label style={{'fontSize':'16px'}}>Suspected Overdoses per</label>
-                        <label style={{'fontSize':'16px'}}>10,000 visits</label>
+                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal </label>
+                        <label style={{'fontSize':'16px'}}>Overdoses per 10,000 </label>
+                        <label style={{'fontSize':'16px'}}>Total ED Visits</label>
                       </td>
                     </tr>
                     {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 

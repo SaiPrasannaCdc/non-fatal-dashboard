@@ -509,40 +509,39 @@ const adjustCrowdedLabels = () => {
       for (var i in selectedDrugs) {
         if (selectedDrugs[i].includes(currentDrug)) {
           let rate = getRateforDrug(selectedDrugs[i], parmState, val);
-          leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : (rate == 0 ? '*Data Suppressed' : rate)) + '</span></br>'
+          leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : (rate == 0 ? 'Data Suppressed' : rate)) + '</span></br>'
         }
       }
     }
     else {
       let rate = getRateforDrug(currentDrug, parmState, val);
-        leftRateStr = leftRateStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : (rate == 0 ? '*Data Suppressed' : rate)) + '</span></br>'
+        leftRateStr = leftRateStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : (rate == 0 ? 'Data Suppressed' : rate)) + '</span></br>'
     }
     return leftRateStr;
   }
 
-  const getTooltipStateFragment = (param) => {
-    let val = isPeriod ? inp.monthNamesPeriod[param] : param; 
+  const getTooltipStateFragment = (d) => {
+    let val = isPeriod ? inp.monthNamesPeriod[d[[specs.xKey]]] : d[[specs.xKey]]; 
     let rate = getRateforDrug(inp.selectedDrugs[0], currentState, val)
     let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
-    let stStr = isPeriod ? `${inp.monthNamesPeriod[param]}` : (inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[param]} ${inp.currentYear}` : param);
-    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rate == 0 ? '*Data Suppressed' : rate}</p>`
+    let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4));
+    let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
+    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rate == 0 ? 'Data Suppressed' : rate}</p>`
     let parStr = `</strong></span>` + midStr + `</td></tr></table>`;
-    return str + stStr + parStr;
+    return str + stStr + `</td></tr><tr><td class='alignCenter'>` + msgStr + parStr;
   }
 
-  const getTooltipFragment = (param) => {
-
-    let val = isPeriod ? inp.monthNamesPeriod[param] : param;
-    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</p>';
-    var leftRateStr = `<p>` + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
-    var leftStr = leftComStr + leftRateStr;
-    var rightComStr = `<table><tr><td><p class='whSpace'><strong>` + inp.stateNames[inp.currentState] + '</strong>' + '</p>';
-    var rightRateStr = `<p>` + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
-    var rightStr = rightComStr + rightRateStr
-    var heading = '<div class="tooltipTableLCCenter alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? (val + ' </br>') : ((isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') ) + '</strong></h3><span>' + '</span></div>';
-    let midStr = `<div class="tooltipTableLCCenter alignCenter"><p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong></p></div>`
-
-    return heading + midStr + '<table class="tooltipTableLCCenter"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+  const getTooltipFragment = (d) => {
+    let val = isPeriod ? inp.monthNamesPeriod[d[[specs.xKey]]] : d[[specs.xKey]]; 
+    let rateSt = getRateforDrug(inp.selectedDrugs[0], currentState, val);
+    let rateUS = getRateforDrug(inp.selectedDrugs[0], 'US', val)
+    let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
+    let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4));
+    let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
+    let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateSt == 0 ? 'Data Suppressed' : rateUS} (${getJurisCount(d['year'])} Jurisdictions)</p>`
+    let midStr2 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rateSt == 0 ? 'Data Suppressed' : rateSt}</p>`
+    let parStr = `</strong></span>` + midStr1 + midStr2 + `</td></tr></table>`;
+    return str + stStr + `</td></tr><tr><td class='alignCenter'>` + msgStr + parStr;
   }
 
   const getTooltipFragmentPerc = (drug, yr, st) => {
@@ -587,7 +586,7 @@ const adjustCrowdedLabels = () => {
   }
 
   const getTooltipCovid = () => {
-    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>†</sup><sup>†</sup>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
+    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>¶</sup>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
   }
 
   const getJurisCount = (yearmon) => {
@@ -595,8 +594,20 @@ const adjustCrowdedLabels = () => {
   }
 
   const getDataTip = (d, tooltipValuesSorted) => {
-    return (UtilityFunctions.isCovidPeriod(d['year']) ? getTooltipCovid() : ((inp.currentState !== 'US') ? (!showOverall ? getTooltipStateFragment(d[specs.xKey]) : getTooltipFragment(d[specs.xKey])) : `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
-                `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`));
+    if (UtilityFunctions.isCovidPeriod(d['year']))
+      return getTooltipCovid();
+
+    if (inp.currentState !== 'US') {
+      if (!showOverall)
+        return getTooltipStateFragment(d);
+      else
+        return getTooltipFragment(d);
+    }
+    else
+    {
+        return `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
+                `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`;
+    }
   }
   
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
@@ -610,7 +621,7 @@ const adjustCrowdedLabels = () => {
               var tooltipValues = [];
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
-                      tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == 0 ? '*Data Suppressed' : d[inp.selectedDrugs[i]]}</span></div>`);
+                      tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == 0 ? 'Data Suppressed' : d[inp.selectedDrugs[i]]}</span></div>`);
                     }
                   }
               }
@@ -829,7 +840,7 @@ const adjustCrowdedLabels = () => {
                     dy: 5
                   })}
                 />
-                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 Total ED Visits<tspan baselineShift="super" fontSize="10">*</tspan></text>
+                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 Total ED Visits</text>
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}

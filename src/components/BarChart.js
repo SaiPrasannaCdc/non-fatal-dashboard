@@ -197,7 +197,7 @@ function BarChart(params) {
                         dy="20"
                         dx={rate == 0 ? "0" : "15"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: *Data Suppressed`}>*
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Suppressed`}>*
                         </text>
                     }
                     {
@@ -209,7 +209,7 @@ function BarChart(params) {
                         dy="20"
                         dx={rate == 0 ? "0" : "15"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: *Data Not Available/Not Reported`}>**
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>**
                         </text>
                     }
                     {
@@ -221,7 +221,7 @@ function BarChart(params) {
                         dy="20"
                         dx={rate == 0 ? "0" : "15"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: ***Not Funded`}>***
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: Not Funded`}>***
                         </text>
                     }
                     {
@@ -260,7 +260,7 @@ function BarChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight - 190} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}<tspan baselineShift="super" fontSize="10">*</tspan></text>
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
               <AxisTop
                 top={adjustedHeight - 140}
                 scale={xScale}

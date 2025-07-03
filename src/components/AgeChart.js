@@ -90,27 +90,27 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
 
     switch (ageGroups[x]) {
       case '0 to 14':
-        ageN = '0-14';
+        ageN = '0–14';
         sortOrder = 1; 
         break;
       case '15 to 24':
-        ageN = '15-24'; 
+        ageN = '15–24'; 
         sortOrder = 2;
         break;
       case '25 to 34':
-        ageN = '25-34'; 
+        ageN = '25–34'; 
         sortOrder = 3; 
         break;
       case '35 to 44':
-        ageN = '35-44'; 
+        ageN = '35–44'; 
         sortOrder = 4; 
         break;
       case '45 to 54':
-        ageN = '45-54'; 
+        ageN = '45–54'; 
         sortOrder = 5; 
         break;
       case '55 to 64':
-        ageN = '55-64'; 
+        ageN = '55–64'; 
         sortOrder = 6; 
         break;
       case '65+':
@@ -315,19 +315,19 @@ function AgeChart(params) {
                       <text
                         x={xScale(d.ageN) + halfBandwidth}
                         y={adjustedHeight - 10}
-                        fill="#687697"
-                        fontWeight='bold'
+                        fill="#000000"
+                        fontWeight='normal'
                         textAnchor="middle"
                         cursor="default"
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age Group: ${d.ageN}<br/><br/>Overdoses: *Data Suppressed`}
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age Group: ${d.ageN}<br/><br/>Overdoses: Data Suppressed`}
                       >*</text>
                     )}
                     {d.value > 0 && (
                         <text
                           x={xScale(d.ageN) + halfBandwidth}
                           y={yScale(d.value) - 10}
-                          fill="#687697"
-                          fontWeight='bold'
+                          fill="#000000"
+                          fontWeight='normal'
                           textAnchor="middle"
                           cursor="default"
                         >{d.value}</text>
@@ -351,7 +351,8 @@ function AgeChart(params) {
 
            {/*  {<text x={adjustedWidth/2} y={height - 70} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years)'}</text>} */}
             {!UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 90} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
-            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 70 : 90)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 60 : 90)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 40 : 70)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
 
           </Group>
         </svg>

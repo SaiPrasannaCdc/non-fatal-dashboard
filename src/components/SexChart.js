@@ -287,19 +287,19 @@ function SexChart(params) {
                       <text
                         x={xScale(d.sex) + halfBandwidth}
                         y={adjustedHeight - 10}
-                        fill="#687697"
-                        fontWeight='bold'
+                        fill="#000000"
+                        fontWeight='normal'
                         textAnchor="middle"
                         cursor="default"
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: *Data Suppressed`}
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: Data Suppressed`}
                       >*</text>
                     )}
                     {d.value > 0 && (
                         <text
                           x={xScale(d.sex) + halfBandwidth}
                           y={yScale(d.value) - 10}
-                          fill="#687697"
-                          fontWeight='bold'
+                          fill="#000000"
+                          fontWeight='normal'
                           textAnchor="middle"
                           cursor="default"
                         >{d.value}</text>
@@ -322,7 +322,8 @@ function SexChart(params) {
             )
 {/*             {<text x={adjustedWidth/2} y={height - 70} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Sex'}</text>} */}
             {!UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 90} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
-            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 70 : 90)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 60 : 90)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 40 : 70)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
           </Group>
         </svg>
       </div>

@@ -252,7 +252,7 @@ function StateChart(params) {
                         y={yScale(name)}
                         dy="12"
                         dx="5"
-                        data-tip={`<strong>${name}</strong><br/><br/>Rate: *Data Suppressed`}>
+                        data-tip={`<strong>${name}</strong><br/><br/>Rate: Data Suppressed`}>
                         {'*'}
                       </text>
                     }
@@ -291,7 +291,7 @@ function StateChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">*</tspan></text>
+              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}</text>
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}
