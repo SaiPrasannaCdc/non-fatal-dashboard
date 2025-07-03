@@ -349,10 +349,10 @@ function AgeChart(params) {
               </>
             )
 
-           {/*  {<text x={adjustedWidth/2} y={height - 70} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years)'}</text>} */}
-            {!UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 90} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
-            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 60 : 90)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 40 : 70)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
+            <text x={adjustedWidth/2} y={height - 90} fill={'#000066'} fontSize={13} textAnchor="middle">Nonfatal Overdoses Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>
+            {!UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 60} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
 
           </Group>
         </svg>

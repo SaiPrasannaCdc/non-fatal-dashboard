@@ -2434,17 +2434,6 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
           <br></br>
-          
-          <br></br>
-          <table>
-            <tr>
-              <td>
-                <svg height={50}>
-                  <text x={width/2} y={20} fill={'#000066'} fontSize={16} textAnchor="middle">Nonfatal Overdoses Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED visits</text>
-                  </svg>
-              </td>
-            </tr>
-          </table>
           <table>
             <tr>
               <td style={{width: '50%'}}>
