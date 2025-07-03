@@ -595,9 +595,19 @@ export const UtilityFunctions = {
     return covidPeriod.includes(yearmon);
   },
   
-   doesEndWithCovidPeriod : (data, st) => {
+  doesEndWithCovidPeriod : (data, st) => {
     var cnt = data[st].length;
     return covidPeriod.includes(data[st][cnt - 1]['year']);
+  },
+
+  containsCovidPeriod : (stYr, stMon, endYr, endMon)  => {
+    var monthsArray = UtilityFunctions.generateYYMMArray(Number(stYr), Number(stMon), Number(endYr), Number(endMon));
+    var ret = false;
+    for(let j=0;j<monthsArray.length;j++) {
+      if (UtilityFunctions.isCovidPeriod(monthsArray[j]))
+        ret = true;
+    }
+    return ret;
   },
 
   getCovidPeriodIndex : (yr) => {

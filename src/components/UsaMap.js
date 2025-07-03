@@ -292,7 +292,7 @@ const UsaMap = (params) => {
                 </CustomProjection>
               </g>
             </svg>
-            <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the chart may change based on the data selected. </i></small></span></div>
+            <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
           </td>
           <td style={{width: '21%'}}>
             <table>

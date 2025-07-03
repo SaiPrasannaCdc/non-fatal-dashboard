@@ -339,24 +339,24 @@ function SexAgeChart(params) {
       <g key={d[yKey]}>
 
         {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
-        {d[x1Key] == 0 && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={d[x1Key] == 0 ? x1TipDS : x1Tip}>{d[x1Key] == 0 ? '*' : '†'}</Text>}
+        {d[x1Key] == 0 && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} textAnchor="middle" alignmentBaseline="end" fill={'#000000'} fontSize={isSmallViewport ? fontSize : fontSize} data-tip={d[x1Key] == 0 ? x1TipDS : x1Tip}>{d[x1Key] == 0 ? '*' : '†'}</Text>}
         <Text 
           x={(x1Pos) - (d[x2Key] > 99 ? 48 : 40)} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'start'} 
-          fill="#687697"
-          fontWeight='bold'
+          fill="#000000"
+          fontWeight='normal'
           fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x1Key])?.toFixed(1)}</Text>
 
 
         {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
-        {d[x1Key] == 0 && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={d[x2Key] == 0 ? x2TipDS : x2Tip}>{d[x2Key] == 0  ? '*' : '†'}</Text>}
+        {d[x1Key] == 0 && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} textAnchor="middle" alignmentBaseline="end" fill={'#000000'} fontSize={isSmallViewport ? fontSize : fontSize} data-tip={d[x2Key] == 0 ? x2TipDS : x2Tip}>{d[x2Key] == 0  ? '*' : '†'}</Text>}
         <Text 
           x={(x2Pos) + (d[x2Key] > 99 ? 48 : 40)} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
-          fill="#687697"
-          fontWeight='bold' 
+          fill="#000000"
+          fontWeight='normal' 
           fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x2Key])?.toFixed(1)}</Text>
 
 
@@ -421,7 +421,7 @@ function SexAgeChart(params) {
          {/*  {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} fontWeight={'bold'} fill={'#000066'} textAnchor="middle">{'Age (In years) and Sex'}</text>} */}
           {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax+ 40} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
           {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 70 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
-          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 90 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the chart may change based on the data selected.'}</text>} 
+          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 90 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
         </Group>
       </svg>
     </>

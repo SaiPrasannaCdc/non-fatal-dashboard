@@ -1110,7 +1110,7 @@ const getYears = (startYrInp, endYrInp) => {
                     <td style={{width: '12%', textAlign: 'right'}}>
                       {currentStateLine != 'US' &&
                         <div style={{float: 'right'}}>
-                            <label class="toggleD" title={'Toggle to compare with overall.'}>
+                            <label class="toggleD" title={'Toggle to compare with overall ' + drugOptions[selectedDrugsLine[0]].titleForDropDown +  ' (' + Object.keys(jurisForDropDownLine).length + ' Jurisdictions)'}>
                                 <input id="toggleOverall" class="toggleD-input" type="checkbox" checked={showOverall}
                                 onChange={(e) => {
                                   if(e.target.checked) {
@@ -1763,7 +1763,7 @@ const getYears = (startYrInp, endYrInp) => {
 
       <div style={{'width':'100%', 'backgroundColor': drugColor}}>
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits in {jurisCount} Participating Jurisdictions<sup>3</sup>, {getPriorMonth()} 
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits in {jurisCount} Participating Jurisdictions, {getPriorMonth()} 
           </h2>
         </div>
       </div>
@@ -1809,7 +1809,7 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{'color': drugColor}}>{jurisCount}</span>
           <div>
-            <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating<sup>1</sup></span>
+            <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating</span>
             <p>Funded states with reported Data</p>
           </div>
         </div>
@@ -2031,7 +2031,7 @@ const getYears = (startYrInp, endYrInp) => {
             <td style={{width: '15%'}}></td>
             <td style={{width: '80%'}}>
               <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-              <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented.</i></small></span></div>
+              <div><span><small><i><sup>†</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
               <div><span><small><i><sup>§</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
             </td>
             <td style={{width: '5%'}}></td>
@@ -2185,10 +2185,12 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '5%'}}></td>
               <td style={{width: '80%'}}>
                 <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                <div><span><small><i><sup>†</sup>Scale of the chart may change based on the data presented.</i></small></span></div>
+                <div><span><small><i><sup>†</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
                  <div><span><small><i><sup>§</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
-                <div><span><small><i><sup>¶</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
-                
+                {((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
+                 (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
+                  <div><span><small><i><sup>¶</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
+                }
               </td>
               <td style={{width: '15%'}}></td>
             </tr>
@@ -2474,14 +2476,16 @@ const getYears = (startYrInp, endYrInp) => {
              <p><strong>Important caveats to consider when interpreting the data include:</strong></p>
               <ol>
                 <li>We are excited to release the latest updates to this dashboard (effective June 2025). This iteration of the dashboard incorporates DOSE data from 2019 onward. Data from 2018 are excluded due to over 40% of jurisdictions reporting facility coverage below 70% [mean: 76.9%, median: 84.4%, range: 1.5%-100%]. Additionally, we have included facility coverage percentages supplied by the jurisdictions in the downloadable dataset for further clarity. Of the 47 jurisdictions who currently submit data to DOSE-SYS, 19 jurisdictions reported facility coverage less than 70% in 2018, and an additional 4 did not submit data to DOSE in 2018 (e.g., were not yet enrolled).</li>
-                <li>All data previously available on this dashboard (i.e., for the years 2018–2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions.</li>
+                <li>All data previously available on this dashboard (i.e., through 2023) have been updated to reflect revisions in syndrome definitions. Datasets downloaded before March 2024 used older syndrome definitions, and data collected prior to August 2023 have been updated with the new syndrome definitions.</li>
                 <li><strong>Some data may be missing.</strong> Data sent from emergency departments (EDs) to health departments may be delayed or paused for a period of time.  Missing data are noted in footnotes, where applicable.</li>
                 <li>Nonfatal Drug Overdose Surveillance and Epidemiology – Syndromic Data (DOSE-SYS) Dashboard values <strong>may differ from data accessible through the National Syndromic Surveillance Program (NSSP) BioSense Platform.</strong> Many jurisdictions extract data from NSSP’s Electronic Surveillance System for the Early Notification of Community-based Epidemics (ESSENCE) database as part of their data submission process. However, DOSE-SYS data may differ from NSSP ESSENCE data due to differences in jurisdiction data preparation as well as the dynamic nature of NSSP’s progressively updating data.</li>
-                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic. [4] Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
-                <li><strong>These are suspected nonfatal drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data [5] and therefore may underreport specific drug types involved.</li>
+                <li><strong>Reporting facilities and the data they report can change.</strong> Several jurisdictions continue efforts to onboard new facilities that can begin to share data in syndromic surveillance systems, and some facilities experience periodic interruptions in, or might stop, syndromic surveillance data feeds. Some of these issues became more pronounced during the earlier phase of the COVID-19 pandemic<sup>2</sup>. Syndromic data also can be updated with new information over time, for example, with additional diagnosis codes. Therefore, estimates reported might change over time as more facilities begin sharing data or sharing higher quality data or stop sharing data for a period of time. Some EDs might also have increases in the proportion of ED visits in syndromic data that contain diagnosis codes, which facilitates the identification of drug overdose-related visits. The reason a patient seeks medical care (called the chief complaint) is available in NSSP often within 24 hours for ~80% of ED visits. DOSE-SYS data are reported with a two-month time lag and not typically updated.</li>
+                <li><strong>These are suspected nonfatal drug overdose-related ED visits.</strong> Because data used to identify suspected nonfatal drug overdose visits are based on ED visit chief complaints and diagnosis codes from initial clinical impressions or observations, syndromic data may not represent the final, most updated information about the ED visit. Additionally, toxicological testing is not uniformly captured in these data<sup>3</sup> and therefore may underreport specific drug types involved.</li>
                 <li><strong>Data likely represent an undercount,</strong> given potential inaccuracies in preliminary coding and potentially incomplete clinical descriptions captured in chief complaint information.</li>
                 <li><strong>New ICD-10-CM codes were added for fentanyl and methamphetamine poisonings during the data collection period:</strong> Syndromic surveillance definitions use information from both the chief complaint and diagnosis codes to identify drug overdose cases. ICD-10-CM diagnosis codes were introduced to address gaps in the classification of fentanyl poisonings (T40.41, effective October 1, 2020) and methamphetamine poisonings (T43.65, effective October 1, 2022). Prior to the availability of these codes, suspected fentanyl or methamphetamine poisonings may have been classified under a broader drug overdose or poisoning code, decreasing the likelihood that the visit would be captured by the drug-specific syndrome definition. Additionally, incorporation of new ICD-10-CM codes into routine use at healthcare facilities may vary between facilities or jurisdictions. Due to these limitations, comparisons of data collected before and after the introduction of the respective codes should be interpreted with caution.</li>
                 <li><strong>Drug overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories and some drug overdose visits involved multiple substances (e.g., a given drug overdose ED visit could have involved both opioids and stimulants).</li>
+                <li>DOSE-SYS data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>.  Additionally, data are shown for the time period beginning January 2019 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
+                <li>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, query syntax, and technical briefs, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a>.</li>
               </ol>
             </div>}
         </div>
@@ -2494,11 +2498,9 @@ const getYears = (startYrInp, endYrInp) => {
           {showFootNotes &&
             <div className="datatable-body">
             <ul id='noBullets'>
-              <li><strong><sup>1</sup></strong>Data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>.  Additionally, data are shown for the time period beginning January 2019 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
-              <li><strong><sup>2</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
-              <li><strong><sup>3</sup></strong>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, query syntax, and technical briefs, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a></li>
-              <li><strong><sup>4</sup></strong>Holland KM, Jones C, Vivolo-Kantor AM, et al. Trends in US Emergency Department Visits for Mental Health, Overdose, and Violence Outcomes Before and During the COVID-19 Pandemic. JAMA Psychiatry. 2021;78(4):372–379. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/33533876/">doi:10.1001/jamapsychiatry.2020.4402</a>.</li>
-              <li><strong><sup>5</sup></strong>Morrow JB, Ropero-Miller JD, Catlin ML, et al. The Opioid Epidemic: Moving Toward an Integrated, Holistic Analytical Response. Journal of Analytical Toxicology. 2019; 43(1); 1–9. <a target="_blank" href="https://doi.org/10.1093/jat/bky049">https://doi.org/10.1093/jat/bky049</a>.</li>
+              <li><strong><sup>1</sup></strong>Vivolo-Kantor AM, Smith H, Scholl L, Differences and similarities between emergency department syndromic surveillance and hospital discharge data for nonfatal drug overdose. Annals of Epidemiology. 2021; 62; 43-50. <a target="_blank" href="https://doi.org/10.1016/j.annepidem.2021.05.008">https://doi.org/10.1016/j.annepidem.2021.05.008</a>.</li>
+              <li><strong><sup>2</sup></strong>Holland KM, Jones C, Vivolo-Kantor AM, et al. Trends in US Emergency Department Visits for Mental Health, Overdose, and Violence Outcomes Before and During the COVID-19 Pandemic. JAMA Psychiatry. 2021;78(4):372–379. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/33533876/">doi:10.1001/jamapsychiatry.2020.4402</a>.</li>
+              <li><strong><sup>3</sup></strong>Morrow JB, Ropero-Miller JD, Catlin ML, et al. The Opioid Epidemic: Moving Toward an Integrated, Holistic Analytical Response. Journal of Analytical Toxicology. 2019; 43(1); 1–9. <a target="_blank" href="https://doi.org/10.1093/jat/bky049">https://doi.org/10.1093/jat/bky049</a>.</li>
               </ul>
           </div>}
         </div>
