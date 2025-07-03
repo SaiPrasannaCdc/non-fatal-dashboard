@@ -177,6 +177,12 @@ const UsaMap = (params) => {
     return colorScale(filteredData[stateFipsMapping[id]]);
   }
 
+  const getDCCordinates = (proj) => {
+    var dcCoordinates = [-77.009056, 38.889805]; 
+    var projectedCoordinates = proj(dcCoordinates);
+    return projectedCoordinates;
+  }
+
   const getRateHTML = (geoId) => {
     return '<span>' + (filteredData[stateFipsMapping[geoId.substring(0, 2)]]  == '0.0' ? 'Data Suppressed' : filteredData[stateFipsMapping[geoId.substring(0, 2)]]) + '</span></br>'
   }
@@ -248,6 +254,28 @@ const UsaMap = (params) => {
         || geo.id.substring(0, 2) === '60' //Filters American Somoa
         || (currentState !== 'US' && stateFipsMapping[geo.id.substring(0, 2)] !== currentState)) return;
 
+      if (geo.id == '11')
+        return (
+      <g
+          key={geo.id}
+          className="geo-group"
+        >
+         <circle cx={getDCCordinates(projection)[0]} cy={getDCCordinates(projection)[1]} r="5" stroke="#000000" stroke-width="2.1" fill={'none'}/>
+          <path
+            tabIndex={-1}
+            className='single-geo'
+            stroke={'#000'}
+            strokeWidth={state ? 5 : currentState === 'US' && isSmallViewport ? 0.1 : .5}
+            fill= {getColor(geo.id)}
+            d={path}
+            style={{ pointerEvents: geo.id.length <= 2 ? 'default' : 'default' }}
+            data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : getTooltipFragment(geo.id)}
+          />
+          <line x1={getDCCordinates(projection)[0] - 5} y1={getDCCordinates(projection)[1] + 2} x2={getDCCordinates(projection)[0] + 70} y2={getDCCordinates(projection)[1]} stroke="black" stroke-width="1"/>
+          <text x={getDCCordinates(projection)[0] + 75} y={getDCCordinates(projection)[1]} fill="black" alignmentBaseline="middle" fontWeight={'bold'} fontSize={12}>DC</text>
+        </g>
+      )
+
       return (
         <g
           key={geo.id}
@@ -291,6 +319,7 @@ const UsaMap = (params) => {
                   {({ features, projection }) => constructGeoJsx(features, projection, true)}
                 </CustomProjection>
               </g>
+              
             </svg>
             <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
           </td>
