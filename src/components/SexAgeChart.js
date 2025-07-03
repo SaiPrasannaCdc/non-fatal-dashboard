@@ -368,8 +368,8 @@ function SexAgeChart(params) {
     <>
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
-          <Text x={x1Scale(0) - 15} y={0} textAnchor="end">Female</Text>
-          <Text x={x2Scale(0) + 15} y={0}>Male</Text>
+          <Text x={x1Scale(0) - 15} y={0} fill={'#000066'} textAnchor="end">Female</Text>
+          <Text x={x2Scale(0) + 15} y={0} fill={'#000066'} >Male</Text>
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
