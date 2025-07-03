@@ -260,18 +260,18 @@ const UsaMap = (params) => {
           key={geo.id}
           className="geo-group"
         >
-         <circle cx={getDCCordinates(projection)[0]} cy={getDCCordinates(projection)[1]} r="5" stroke="#000000" stroke-width="2.1" fill={'none'}/>
+         <circle cx={getDCCordinates(projection)[0]} cy={getDCCordinates(projection)[1]} r="5" stroke={drugOptions[selectedDrugsMap[0]].color} stroke-width="2.1" fill={'none'}/>
           <path
             tabIndex={-1}
             className='single-geo'
-            stroke={'#000'}
+            stroke={''}
             strokeWidth={state ? 5 : currentState === 'US' && isSmallViewport ? 0.1 : .5}
             fill= {getColor(geo.id)}
             d={path}
             style={{ pointerEvents: geo.id.length <= 2 ? 'default' : 'default' }}
             data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : getTooltipFragment(geo.id)}
           />
-          <line x1={getDCCordinates(projection)[0] - 5} y1={getDCCordinates(projection)[1] + 2} x2={getDCCordinates(projection)[0] + 70} y2={getDCCordinates(projection)[1]} stroke="black" stroke-width="1"/>
+          <line x1={getDCCordinates(projection)[0] + 6} y1={getDCCordinates(projection)[1] + 2} x2={getDCCordinates(projection)[0] + 70} y2={getDCCordinates(projection)[1]} stroke="black" stroke-width="1"/>
           <text x={getDCCordinates(projection)[0] + 75} y={getDCCordinates(projection)[1]} fill="black" alignmentBaseline="middle" fontWeight={'bold'} fontSize={12}>DC</text>
         </g>
       )
