@@ -2145,8 +2145,18 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '22%'}}></td>
             </tr>
             </table>
+            <br></br>
           {getToggleControls()}
-          <br></br>
+          { timelineLine == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                </td>
+              </tr>
+              <br></br>
+            </table>
+          }
         <table>
             <tr>
               <td style={{'width': '8%'}}></td>
@@ -2167,17 +2177,6 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
           <br></br>
-            
-          { timelineLine == 'Annual' &&
-            <table>
-              <tr>
-                <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
-                </td>
-              </tr>
-              <br></br>
-            </table>
-          }
 
           {lineChartMemo}
           <br></br>
