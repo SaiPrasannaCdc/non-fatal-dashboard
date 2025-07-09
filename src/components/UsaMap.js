@@ -351,9 +351,9 @@ const UsaMap = (params) => {
                     {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 
                     <tr>
                       <td>
-                          <svg style={{ height: legendHeight - 390, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            {colorIntervals.map((value, idx) => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={idx == 0 ? 15 : (15 + (idx * 30))} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={idx == 0 ? 28 : (28 + (idx * 30))} fill="black" alignmentBaseline="middle">{value}</text>)}
+                          <svg style={{ height: (legendHeight * 0.3) + 10, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            {colorIntervals.map((value, idx) => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={idx == 0 ? 15 : (15 + (idx * 30))} width={50} height={(legendHeight * 0.3) / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={idx == 0 ? 30 : (30 + (idx * 30))} fill="black" alignmentBaseline="middle">{value}</text>)}
                         </svg>
                       </td>
                     </tr>
