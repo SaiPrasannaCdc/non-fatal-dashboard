@@ -401,7 +401,7 @@ padding: 15px;
 }
 
 .callouts {
-display: grid;
+display: flex;
 gap: 1em;
 margin-bottom: 1em;
 
@@ -417,6 +417,7 @@ min-height: 126px;
 padding: .5em;
 display: flex;
 align-items: center;
+min-width: 30%;
 
 svg {
 flex-shrink: 0;
@@ -1742,6 +1743,7 @@ display: inline-block;
 .topPos
 {
     vertical-align: top!important;
+    min-width: 17px!important;
 }
 
 .bgBlue {
