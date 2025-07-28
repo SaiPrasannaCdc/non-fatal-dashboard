@@ -192,10 +192,10 @@ function BarChart(params) {
                       rate == 0 &&
                        <text 
                         className="bar-label"
-                        x={rate < 0 ? 10 : xScale(rate)}
+                        x={5}
                         y={yScale(name)}
-                        dy="20"
-                        dx={rate == 0 ? "0" : "15"}
+                        dy="22"
+                        dx={rate == 0 ? "0" : "5"}
                         fill="black"
                         data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Suppressed`}>*
                         </text>
@@ -204,10 +204,10 @@ function BarChart(params) {
                       rate == -1 &&
                        <text 
                         className="bar-label"
-                        x={rate < 0 ? 10 : xScale(rate)}
+                        x={5}
                         y={yScale(name)}
-                        dy="20"
-                        dx={rate == 0 ? "0" : "15"}
+                        dy="22"
+                        dx={"0"}
                         fill="black"
                         data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>**
                         </text>
@@ -216,10 +216,10 @@ function BarChart(params) {
                       rate == -2 &&
                        <text 
                         className="bar-label"
-                        x={rate < 0 ? 10 : xScale(rate)}
+                        x={5}
                         y={yScale(name)}
-                        dy="20"
-                        dx={rate == 0 ? "0" : "15"}
+                        dy="22"
+                        dx={"0"}
                         fill="black"
                         data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: Not Funded`}>***
                         </text>

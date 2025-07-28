@@ -248,10 +248,10 @@ function StateChart(params) {
                       rate == 0 &&
                         <text 
                         className="bar-label"
-                        x={rate < 0 ? 10 : xScale(rate)}
+                        x={rate < 0 ? 0 : xScale(rate)}
                         y={yScale(name)}
-                        dy="12"
-                        dx="5"
+                        dy="16"
+                        dx="0"
                         data-tip={`<strong>${name}</strong><br/><br/>Rate: Data Suppressed`}>
                         {'*'}
                       </text>
@@ -271,10 +271,10 @@ function StateChart(params) {
                       rate == -1 &&
                         <text 
                         className="bar-label"
-                        x={rate < 0 ? 10 : xScale(rate)}
+                        x={rate < 0 ? 0 : xScale(rate)}
                         y={yScale(name)}
-                        dy="12"
-                        dx="5"
+                        dy="16"
+                        dx="0"
                         data-tip={`<strong>${name}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>
                         {'**'}
                       </text>
