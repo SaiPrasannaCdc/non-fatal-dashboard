@@ -987,21 +987,21 @@ const getYears = (startYrInp, endYrInp) => {
 
    const isValidStateData = (rec) => {
 
-    if (rec.total_drug_OD_n == 7777.0 || rec.total_drug_OD_n == 8888.0)
+    if (rec.total_drug_OD_n == 7777.0)
       return false;
-    if (rec.total_Benzo_OD_n == 7777.0 || rec.total_Benzo_OD_n == 8888.0)
+    if (rec.total_Benzo_OD_n == 7777.0)
       return false;
-    if (rec.total_opioid_OD_n == 7777.0 || rec.total_opioid_OD_n == 8888.0)
+    if (rec.total_opioid_OD_n == 7777.0)
       return false;
-    if (rec.total_Fentanyl_OD_n == 7777.0 || rec.total_Fentanyl_OD_n == 8888.0)
+    if (rec.total_Fentanyl_OD_n == 7777.0)
       return false;
-    if (rec.total_heroin_OD_n == 7777.0 || rec.total_heroin_OD_n == 8888.0)
+    if (rec.total_heroin_OD_n == 7777.0)
       return false;
-    if (rec.total_stimulant_OD_n == 7777.0 || rec.total_stimulant_OD_n == 8888.0)
+    if (rec.total_stimulant_OD_n == 7777.0)
       return false;
-    if (rec.total_Cocaine_OD_n == 7777.0 || rec.total_Cocaine_OD_n == 8888.0)
+    if (rec.total_Cocaine_OD_n == 7777.0)
       return false;
-    if (rec.total_Methamphetamine_OD_n == 7777.0 || rec.total_Methamphetamine_OD_n == 8888.0)
+    if (rec.total_Methamphetamine_OD_n == 7777.0)
       return false;
 
     return true;
@@ -1516,7 +1516,11 @@ const getYears = (startYrInp, endYrInp) => {
               <tr style={{ textAlign: 'left', fontSize: '15px'}}>
                 <td style={{ width: '10%' }}></td>
                 <td style={{ width: '95%' }}><small><i><sup>*</sup>{'Data suppressed'}</i></small></td>
-                </tr>
+              </tr>
+              <tr style={{ textAlign: 'left', fontSize: '15px'}}>
+                <td style={{ width: '10%' }}></td>
+                <td style={{ width: '95%' }}><small><i><sup>**</sup>{'Data not available/not reported'}</i></small></td>
+              </tr>
             </table>
           </div>
     )
@@ -2034,6 +2038,7 @@ const getYears = (startYrInp, endYrInp) => {
             <td style={{width: '15%'}}></td>
             <td style={{width: '80%'}}>
               <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+              <div><span><small><i><sup>**</sup>Data not available/not reported.</i></small></span></div>
               <div><span><small><i><sup>†</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
               <div><span><small><i><sup>§</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
             </td>
