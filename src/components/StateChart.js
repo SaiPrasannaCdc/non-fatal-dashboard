@@ -267,7 +267,18 @@ function StateChart(params) {
                         {rate}
                       </text>
                     }
-                    
+                    {
+                      rate == -1 &&
+                        <text 
+                        className="bar-label"
+                        x={rate < 0 ? 10 : xScale(rate)}
+                        y={yScale(name)}
+                        dy="12"
+                        dx="5"
+                        data-tip={`<strong>${name}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>
+                        {'**'}
+                      </text>
+                    }
                     
                   </Group>
                 )}

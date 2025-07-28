@@ -576,7 +576,7 @@ export const UtilityFunctions = {
 
   deleteStateKeys : (obj) => {
     for (let key in obj) {
-      if (obj[key].rate < 0) {
+      if (obj[key].rate == -2) {
         delete obj[key];
       }
     }

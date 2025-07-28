@@ -987,21 +987,21 @@ const getYears = (startYrInp, endYrInp) => {
 
    const isValidStateData = (rec) => {
 
-    if (rec.total_drug_OD_n == 7777.0 || rec.total_drug_OD_n == 8888.0)
+    if (rec.total_drug_OD_n == 7777.0)
       return false;
-    if (rec.total_Benzo_OD_n == 7777.0 || rec.total_Benzo_OD_n == 8888.0)
+    if (rec.total_Benzo_OD_n == 7777.0)
       return false;
-    if (rec.total_opioid_OD_n == 7777.0 || rec.total_opioid_OD_n == 8888.0)
+    if (rec.total_opioid_OD_n == 7777.0)
       return false;
-    if (rec.total_Fentanyl_OD_n == 7777.0 || rec.total_Fentanyl_OD_n == 8888.0)
+    if (rec.total_Fentanyl_OD_n == 7777.0)
       return false;
-    if (rec.total_heroin_OD_n == 7777.0 || rec.total_heroin_OD_n == 8888.0)
+    if (rec.total_heroin_OD_n == 7777.0)
       return false;
-    if (rec.total_stimulant_OD_n == 7777.0 || rec.total_stimulant_OD_n == 8888.0)
+    if (rec.total_stimulant_OD_n == 7777.0)
       return false;
-    if (rec.total_Cocaine_OD_n == 7777.0 || rec.total_Cocaine_OD_n == 8888.0)
+    if (rec.total_Cocaine_OD_n == 7777.0)
       return false;
-    if (rec.total_Methamphetamine_OD_n == 7777.0 || rec.total_Methamphetamine_OD_n == 8888.0)
+    if (rec.total_Methamphetamine_OD_n == 7777.0)
       return false;
 
     return true;
