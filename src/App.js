@@ -2215,7 +2215,6 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '15%'}}></td>
             </tr>
           </table>
-
       </section>
 
       <section>
