@@ -1519,7 +1519,7 @@ const getYears = (startYrInp, endYrInp) => {
               </tr>
               <tr style={{ textAlign: 'left', fontSize: '15px'}}>
                 <td style={{ width: '10%' }}></td>
-                <td style={{ width: '95%' }}><small><i><sup>**</sup>{'Data not available/not reported'}</i></small></td>
+                <td style={{ width: '95%' }}><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></td>
               </tr>
             </table>
           </div>
@@ -2038,9 +2038,9 @@ const getYears = (startYrInp, endYrInp) => {
             <td style={{width: '15%'}}></td>
             <td style={{width: '80%'}}>
               <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-              <div><span><small><i><sup>**</sup>Data not available/not reported.</i></small></span></div>
-              <div><span><small><i><sup>†</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
-              <div><span><small><i><sup>§</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+              <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
+              <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
+              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
             </td>
             <td style={{width: '5%'}}></td>
           </tr>
@@ -2062,7 +2062,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
         <table>
              <tr>
-              <td style={{'width': '16.8%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:<sup>**</sup></div></td>
+              <td style={{'width': '16.8%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
               <td style={{'width': '84%'}}>
                 { !showAnnualLine &&
                   <div style={wrapperStyle}>
@@ -2185,7 +2185,18 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
           <br></br>
-
+          {
+            currentStateLine == 'IL' && (selectedDrugsLine.includes('fentanyl') || selectedDrugsLine.includes('heroin')) &&
+             <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Fentanyl and Heroin data are not available / not reported for Illinois.</span>
+                </td>
+              </tr>
+              <br></br>
+            </table>
+            
+          }
           {lineChartMemo}
           <br></br>
           <table style={{width: '100%'}}>
@@ -2193,17 +2204,17 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '5%'}}></td>
               <td style={{width: '80%'}}>
                 <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                <div><span><small><i><sup>†</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
-                 <div><span><small><i><sup>§</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
+                <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
+                <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
+                 <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
                 {((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
                  (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
-                  <div><span><small><i><sup>¶</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
+                  <div><span><small><i><sup>‡</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
                 }
               </td>
               <td style={{width: '15%'}}></td>
             </tr>
           </table>
-
       </section>
 
       <section>

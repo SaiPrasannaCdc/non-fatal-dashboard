@@ -209,7 +209,7 @@ function BarChart(params) {
                         dy="22"
                         dx={"0"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>**
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>†
                         </text>
                     }
                     {

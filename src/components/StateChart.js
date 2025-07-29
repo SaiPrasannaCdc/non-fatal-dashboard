@@ -276,7 +276,7 @@ function StateChart(params) {
                         dy="16"
                         dx="0"
                         data-tip={`<strong>${name}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>
-                        {'**'}
+                        {'†'}
                       </text>
                     }
                     
