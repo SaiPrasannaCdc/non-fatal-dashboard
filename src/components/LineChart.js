@@ -587,7 +587,7 @@ const adjustCrowdedLabels = () => {
   }
 
   const getTooltipCovid = () => {
-    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>¶</sup>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
+    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
   }
 
   const getJurisCount = (yearmon) => {

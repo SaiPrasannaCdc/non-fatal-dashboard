@@ -1513,11 +1513,11 @@ const getYears = (startYrInp, endYrInp) => {
     return (
           <div>
             <table style={{ width: '100%' }}>
-              <tr style={{ textAlign: 'left', fontSize: '15px'}}>
+              <tr style={{ textAlign: 'left'}}>
                 <td style={{ width: '10%' }}></td>
                 <td style={{ width: '95%' }}><small><i><sup>*</sup>{'Data suppressed'}</i></small></td>
               </tr>
-              <tr style={{ textAlign: 'left', fontSize: '15px'}}>
+              <tr style={{ textAlign: 'left'}}>
                 <td style={{ width: '10%' }}></td>
                 <td style={{ width: '95%' }}><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></td>
               </tr>
