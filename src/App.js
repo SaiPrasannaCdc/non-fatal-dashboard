@@ -602,195 +602,203 @@ const getToggleControls = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const binaryData = await (await fetch(dataUrl)).arrayBuffer();
-      const wb = XLSX.read(binaryData);
 
-      let supportedStates = {};
-      let supportedJurisdictions = {};
+        let supportedStates = {};
+        let supportedJurisdictions = {};
+        let stateData = {};
+        let yearData = {};
+        let sexData = {};
+        let countyData = {};
 
-      const stateSheet = wb.Sheets['Jurisdiction Counts & Rates'];
-      let columnInfo = getColumnsInfo(stateSheet);
-      let columnHeaders = columnInfo.columnHeaders;
-      let columns = columnInfo.columns;
-      let getValue = (key, i) => stateSheet[columnHeaders[key] + i].v;
+       await fetch('data/Jurisdiction_Counts_Rates.json')
+          .then(res => res.json())
+          .then(data => {
 
-      let stateData = {};
-      let yearData = {};
-      let datasetNode;
-      for (let i = 2; i <= columns; i++) {
-        //Populate state data
-        if (!stateData[getValue('dataset', i)]) {
-          stateData[getValue('dataset', i)] = createNewDrugObject();
-        }
-        Object.keys(drugOptions).forEach(drug => {
-          datasetNode = stateData[getValue('dataset', i)];
-          //Drug rate
-          let monthNode = createIfUndefined(datasetNode[drugOptions[drug].rateColumn], getValue('month', i), []);
-          let monthDatum;
-          monthNode.forEach(node => { if (node.state === getValue('jurisdiction', i)) monthDatum = node; });
-          if (!monthDatum) {
-            let state = getValue('jurisdiction', i);
-            monthDatum = { state };
-            monthNode.push(monthDatum);
-          }
-          monthDatum[getValue('year', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
-
-          //Drug overdoses
-          datasetNode = stateData[getValue('dataset', i)];
-          monthNode = createIfUndefined(datasetNode[drug], getValue('month', i), []);
-          monthDatum = undefined;
-          monthNode.forEach(node => { if (node.state === getValue('jurisdiction', i)) monthDatum = node; });
-          if (!monthDatum) {
-            monthDatum = { state: getValue('jurisdiction', i) };
-            monthNode.push(monthDatum);
-          }
-          monthDatum[getValue('year', i)] = formatNumber(getValue('count_' + drug, i), false);
-        });
-
-        //Populate year data
-        datasetNode = createIfUndefined(yearData, getValue('dataset', i), {});
-        datasetNode = createIfUndefined(datasetNode, getValue('jurisdiction', i), {});
-        datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
-        let yearDatum = { year: getValue('year', i) };
-        Object.keys(drugOptions).forEach(drug => {
-          yearDatum[drug] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
-        });
-        datasetNode.push(yearDatum);
-
-        //prepare jurisdictions data
-        let ds = getValue('dataset', i);
-        let yr = getValue('year', i);
-        let tmp = getValue('month', i);
-        let st = getValue('jurisdiction', i);
-        let mon = tmp == 'all' ? '00' : String(tmp).padStart(2, '0');
-        let key = ds + '_' + yr + mon;
-        if(supportedJurisdictions[key])
-          supportedJurisdictions[key] = supportedJurisdictions[key] + ',' + st;
-        else
-          supportedJurisdictions[key] = st;
-      }
-
-      let yearMaxes = {}
-      Object.keys(yearData).forEach(dataSource => {
-        Object.keys(yearData[dataSource]).forEach(state => {
-          Object.keys(yearData[dataSource][state]).forEach(month => {
-            const timeframe = month === 'all' ? 'Annual' : 'Monthly';
-            if(!yearMaxes[timeframe]) yearMaxes[timeframe] = {};
-            yearData[dataSource][state][month].forEach(row => {
+            let columns = data.Data.length;
+            let getValue = (key, i) => data.Data[i][key];
+           
+            let datasetNode;
+            for (let i = 0; i < columns; i++) {
+              //Populate state data
+              if (!stateData[getValue('dataset', i)]) {
+                stateData[getValue('dataset', i)] = createNewDrugObject();
+              }
               Object.keys(drugOptions).forEach(drug => {
-                const rowVal = parseFloat(row[drug])
-                if(!isNaN(rowVal) && (!yearMaxes[timeframe][drug] || yearMaxes[timeframe][drug] < rowVal)){
-                  yearMaxes[timeframe][drug] = rowVal
+                datasetNode = stateData[getValue('dataset', i)];
+                //Drug rate
+                let monthNode = createIfUndefined(datasetNode[drugOptions[drug].rateColumn], getValue('month', i), []);
+                let monthDatum;
+                monthNode.forEach(node => { if (node.state === getValue('jurisdiction', i)) monthDatum = node; });
+                if (!monthDatum) {
+                  let state = getValue('jurisdiction', i);
+                  monthDatum = { state };
+                  monthNode.push(monthDatum);
+                }
+                monthDatum[getValue('year', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
+
+                //Drug overdoses
+                datasetNode = stateData[getValue('dataset', i)];
+                monthNode = createIfUndefined(datasetNode[drug], getValue('month', i), []);
+                monthDatum = undefined;
+                monthNode.forEach(node => { if (node.state === getValue('jurisdiction', i)) monthDatum = node; });
+                if (!monthDatum) {
+                  monthDatum = { state: getValue('jurisdiction', i) };
+                  monthNode.push(monthDatum);
+                }
+                monthDatum[getValue('year', i)] = formatNumber(getValue('count_' + drug, i), false);
+              });
+
+              //Populate year data
+              datasetNode = createIfUndefined(yearData, getValue('dataset', i), {});
+              datasetNode = createIfUndefined(datasetNode, getValue('jurisdiction', i), {});
+              datasetNode = createIfUndefined(datasetNode, getValue('month', i), []);
+              let yearDatum = { year: Number(getValue('year', i)) };
+              Object.keys(drugOptions).forEach(drug => {
+                yearDatum[drug] = formatNumber(getValue(drugOptions[drug].rateColumn, i));
+              });
+              datasetNode.push(yearDatum);
+
+              //prepare jurisdictions data
+              let ds = getValue('dataset', i);
+              let yr = getValue('year', i);
+              let tmp = getValue('month', i);
+              let st = getValue('jurisdiction', i);
+              let mon = tmp == 'all' ? '00' : String(tmp).padStart(2, '0');
+              let key = ds + '_' + yr + mon;
+              if(supportedJurisdictions[key])
+                supportedJurisdictions[key] = supportedJurisdictions[key] + ',' + st;
+              else
+                supportedJurisdictions[key] = st;
+            }
+
+            let yearMaxes = {}
+            Object.keys(yearData).forEach(dataSource => {
+              Object.keys(yearData[dataSource]).forEach(state => {
+                Object.keys(yearData[dataSource][state]).forEach(month => {
+                  const timeframe = month === 'all' ? 'Annual' : 'Monthly';
+                  if(!yearMaxes[timeframe]) yearMaxes[timeframe] = {};
+                  yearData[dataSource][state][month].forEach(row => {
+                    Object.keys(drugOptions).forEach(drug => {
+                      const rowVal = parseFloat(row[drug])
+                      if(!isNaN(rowVal) && (!yearMaxes[timeframe][drug] || yearMaxes[timeframe][drug] < rowVal)){
+                        yearMaxes[timeframe][drug] = rowVal
+                      }
+                    });
+                  })
+                })
+              })
+            });
+            yearData['maxes'] = yearMaxes;
+
+        //supported jurisdictions
+        let key = currentDataSource + '_' + supportedYearsLatest + '00';
+        let strStates = supportedJurisdictions[key]?.split(',');
+        for (const st of strStates) {
+          if (!supportedStates[st]) 
+            supportedStates[st] = stateNames[st]; 
+        }
+        setStateDropdownOptions(Object.keys(supportedStates))
+
+        });
+
+        await fetch('data/Overall_By_Sex_Age.json')
+          .then(res => res.json())
+          .then(data => {
+            let columns = data.Data.length;
+            let getValue = (key, i) => data.Data[i][key];
+
+            //Populate sex data
+            for (let i = 0; i <columns; i++) {
+              createIfUndefined(sexData, getValue('dataset', i), createNewDrugObject(false));
+              Object.keys(drugOptions).forEach(drug => {
+                let datasetNode = sexData[getValue('dataset', i)];
+                datasetNode = createIfUndefined(datasetNode[drug], getValue('year', i), {});
+                datasetNode = createIfUndefined(datasetNode, getValue('month', i), {});
+                let datasetNodeCount = createIfUndefined(datasetNode, 'count', []);
+                let datasetNodeRate = createIfUndefined(datasetNode, 'rate', []);
+                if (getValue('sex', i) !== 'Missing' && getValue('age', i) !== 'Missing') {
+                  let datasetDatumCount = datasetNodeCount.find(datum => datum.age === getValue('age', i));
+                  if (!datasetDatumCount) {
+                    datasetDatumCount = { age: getValue('age', i) }
+                    datasetNodeCount.push(datasetDatumCount);
+                  }
+                  datasetDatumCount[getValue('sex', i)] = formatNumber(getValue('count_' + drug, i), false);
+
+                  let datasetDatumRate = datasetNodeRate.find(datum => datum.age === getValue('age', i));
+                  if (!datasetDatumRate) {
+                    datasetDatumRate = { age: getValue('age', i) }
+                    datasetNodeRate.push(datasetDatumRate);
+                  }
+                  datasetDatumRate[getValue('sex', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i), true);
                 }
               });
-            })
-          })
-        })
-      });
-      yearData['maxes'] = yearMaxes;
-      
-      const sexSheet = wb.Sheets['Overall by Sex & Age'];
-      columnInfo = getColumnsInfo(sexSheet);
-      columnHeaders = columnInfo.columnHeaders;
-      columns = columnInfo.columns;
-      getValue = (key, i) => sexSheet[columnHeaders[key] + i].v;
-
-      //Populate sex data
-      let sexData = {};
-      for (let i = 2; i <= columns; i++) {
-        createIfUndefined(sexData, getValue('dataset', i), createNewDrugObject(false));
-        Object.keys(drugOptions).forEach(drug => {
-          let datasetNode = sexData[getValue('dataset', i)];
-          datasetNode = createIfUndefined(datasetNode[drug], getValue('year', i), {});
-          datasetNode = createIfUndefined(datasetNode, getValue('month', i), {});
-          let datasetNodeCount = createIfUndefined(datasetNode, 'count', []);
-          let datasetNodeRate = createIfUndefined(datasetNode, 'rate', []);
-          if (getValue('sex', i) !== 'Missing' && getValue('age', i) !== 'Missing') {
-            let datasetDatumCount = datasetNodeCount.find(datum => datum.age === getValue('age', i));
-            if (!datasetDatumCount) {
-              datasetDatumCount = { age: getValue('age', i) }
-              datasetNodeCount.push(datasetDatumCount);
             }
-            datasetDatumCount[getValue('sex', i)] = formatNumber(getValue('count_' + drug, i), false);
 
-            let datasetDatumRate = datasetNodeRate.find(datum => datum.age === getValue('age', i));
-            if (!datasetDatumRate) {
-              datasetDatumRate = { age: getValue('age', i) }
-              datasetNodeRate.push(datasetDatumRate);
-            }
-            datasetDatumRate[getValue('sex', i)] = formatNumber(getValue(drugOptions[drug].rateColumn, i), true);
+            Object.keys(sexData).forEach(dataSource => Object.keys(sexData[dataSource]).forEach(drug => {
+            let annualMax = {'count': 0, 'rate': 0};
+            let monthlyMax = {'count': 0, 'rate': 0};
+            Object.keys(sexData[dataSource][drug]).forEach(year => {
+              if(sexData[dataSource][drug][year]['all']){
+                sexData[dataSource][drug][year]['all']['count'].forEach(d => {
+                  if(d['M'] > annualMax['count']) annualMax['count'] = d['M'];
+                  if(d['F'] > annualMax['count']) annualMax['count'] = d['F'];
+                });
+                sexData[dataSource][drug][year]['all']['rate'].forEach(d => {
+                  const dM = parseFloat(d['M']);
+                  const dF = parseFloat(d['F']);
+                  if(dM > annualMax['rate']) annualMax['rate'] = dM;
+                  if(dF > annualMax['rate']) annualMax['rate'] = dF;
+                });
+                Object.keys(sexData[dataSource][drug][year]).forEach(month => {
+                  if(month === 'all') return;
+                  sexData[dataSource][drug][year][month]['count'].forEach(d => {
+                    if(d['M'] > monthlyMax['count']) monthlyMax['count'] = d['M'];
+                    if(d['F'] > monthlyMax['count']) monthlyMax['count'] = d['F'];
+                  });
+                  sexData[dataSource][drug][year][month]['rate'].forEach(d => {
+                    const dM = parseFloat(d['M']);
+                    const dF = parseFloat(d['F']);
+                    if(dM > monthlyMax['rate']) monthlyMax['rate'] = dM;
+                    if(dF > monthlyMax['rate']) monthlyMax['rate'] = dF;
+                  });
+                });
+              }
+            });
+            sexData[dataSource][drug].maxAnnual = annualMax;
+            sexData[dataSource][drug].maxMonthly = monthlyMax;
+          }));
+        });
+
+       await fetch('data/US_Jurisdiction_Submission.json')
+          .then(res => res.json())
+          .then(data => {
+        });
+
+        fetch('data/County_Counts_Rates.json')
+          .then(res => res.json())
+          .then(data => {
+
+            let columns = data.Data.length;
+            let getValue = (key, i) => data.Data[i][key];
+
+            for (let i = 0; i <columns; i++) {
+              let year = getValue('year', i).length == 4 ? getValue('year', i) : 'all';
+              createIfUndefined(countyData, year, {});
+              countyData[year][getValue('fips', i)] = {
+                fips: getValue('fips', i),
+                county: getValue('county', i),
+                state: getValue('jurisdiction', i),
+                rate: formatNumber(getValue('rate_alldrug', i)),
+                count: formatNumber(getValue('count_alldrug', i))  
+              };
           }
         });
-      }
 
-      const countySheet = wb.Sheets['County Counts & Rates'];
-      columnInfo = getColumnsInfo(countySheet);
-      columnHeaders = columnInfo.columnHeaders;
-      columns = columnInfo.columns;
-      getValue = (key, i) => countySheet[columnHeaders[key] + i].v;
+        //set data
+        setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedJurisdictions });
 
-      //Populate sex data
-      let countyData = {};
-      for (let i = 2; i <= columns; i++) {
-        let year = countySheet[columnHeaders['year'] + i] ? getValue('year', i) : 'all';
-        createIfUndefined(countyData, year, {});
-        countyData[year][getValue('fips', i)] = {
-          fips: getValue('fips', i),
-          county: getValue('county', i),
-          state: getValue('jurisdiction', i),
-          rate: formatNumber(getValue('rate_alldrug', i)),
-          count: formatNumber(getValue('count_alldrug', i))  
-        };
-      }
+        setOnlyCurrentDrug(false);
 
-      Object.keys(sexData).forEach(dataSource => Object.keys(sexData[dataSource]).forEach(drug => {
-        let annualMax = {'count': 0, 'rate': 0};
-        let monthlyMax = {'count': 0, 'rate': 0};
-        Object.keys(sexData[dataSource][drug]).forEach(year => {
-          if(sexData[dataSource][drug][year]['all']){
-            sexData[dataSource][drug][year]['all']['count'].forEach(d => {
-              if(d['M'] > annualMax['count']) annualMax['count'] = d['M'];
-              if(d['F'] > annualMax['count']) annualMax['count'] = d['F'];
-            });
-            sexData[dataSource][drug][year]['all']['rate'].forEach(d => {
-              const dM = parseFloat(d['M']);
-              const dF = parseFloat(d['F']);
-              if(dM > annualMax['rate']) annualMax['rate'] = dM;
-              if(dF > annualMax['rate']) annualMax['rate'] = dF;
-            });
-            Object.keys(sexData[dataSource][drug][year]).forEach(month => {
-              if(month === 'all') return;
-              sexData[dataSource][drug][year][month]['count'].forEach(d => {
-                if(d['M'] > monthlyMax['count']) monthlyMax['count'] = d['M'];
-                if(d['F'] > monthlyMax['count']) monthlyMax['count'] = d['F'];
-              });
-              sexData[dataSource][drug][year][month]['rate'].forEach(d => {
-                const dM = parseFloat(d['M']);
-                const dF = parseFloat(d['F']);
-                if(dM > monthlyMax['rate']) monthlyMax['rate'] = dM;
-                if(dF > monthlyMax['rate']) monthlyMax['rate'] = dF;
-              });
-            });
-          }
-        });
-        sexData[dataSource][drug].maxAnnual = annualMax;
-        sexData[dataSource][drug].maxMonthly = monthlyMax;
-      }));
-
-      //supported jurisdictions
-      let key = currentDataSource + '_' + supportedYearsLatest + '00';
-      let strStates = supportedJurisdictions[key]?.split(',');
-      for (const st of strStates) {
-        if (!supportedStates[st]) 
-          supportedStates[st] = stateNames[st]; 
-      }
-      setStateDropdownOptions(Object.keys(supportedStates))
-
-      //set data
-      setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedJurisdictions });
-
-      setOnlyCurrentDrug(false);
-      
     }
 
     fetchData();
