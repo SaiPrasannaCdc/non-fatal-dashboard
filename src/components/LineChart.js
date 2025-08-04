@@ -4,7 +4,9 @@ import { scaleLinear } from '@visx/scale';
 import { Text } from '@visx/text';
 import { Circle } from '@visx/shape';
 import { AxisLeft, AxisBottom } from '@visx/axis';
-import { UtilityFunctions } from '../utility'
+import { UtilityFunctions } from '../utility';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 import QuickStat from './quickStat';
 import ReactDOMServer from 'react-dom/server';
 
@@ -190,16 +192,16 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
   const filteredData = {
-    [currentState]: isPeriod ? getFilteredDataPeriod(data, currentDataSource, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, currentState, currentYear)
+    [currentState]: isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, currentState, currentYear)
   }
 
   if (currentState !== 'US') 
-    filteredData['US'] = isPeriod ? getFilteredDataPeriod(data, currentDataSource, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
+    filteredData['US'] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
 
   const countsDataYearly = getCountsYearly(data.sex, currentDataSource, drugOptions);
   const countsDataMonthly = getCountsMonthly(data.sex, currentDataSource, drugOptions);
@@ -917,6 +919,27 @@ function LineChart({ params }) {
 
   return (
     <>
+    {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames)}
+          labelOverrides={{
+            'alldrug': 'All Drugs',
+            'benzodiazepine': 'Benzodiazepine',
+            'cocaine': 'Cocaine',
+            'heroin': 'Heroin',
+            'methamphetamine': 'Methamphetamine',
+            'opioid': 'All Opioids',
+            'stimulant': 'All Stimulants',
+          }}
+          xAxisKey={'Year/Month'}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+          width={width}
+        />
+        </>        
+      ) : (
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '85%'}}>
@@ -984,7 +1007,8 @@ function LineChart({ params }) {
         </td>
       </tr>
       </table>
-      {specs.isSmallViewport && (
+      )}
+      {(!accessible && specs.isSmallViewport) && (
         <div id="line-chart-legend-container">
           <div id="line-chart-legend">
             {Object.keys(filteredData).map((key, i) =>

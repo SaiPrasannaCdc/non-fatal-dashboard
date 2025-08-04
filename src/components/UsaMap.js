@@ -6,6 +6,8 @@ import { CustomProjection } from '@visx/geo';
 import { scaleLinear } from '@visx/scale';
 import ReactTooltip from 'react-tooltip';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 
 const { features: countyTopoPre2020 } = feature(topoJSONPre2020, topoJSONPre2020.objects.counties)
 const { features: stateTopoPre2020 } = feature(topoJSONPre2020, topoJSONPre2020.objects.states)
@@ -17,7 +19,7 @@ const statePositions = { 'US': { scale: 1, x: 0, y: 0 }, 'CA': { scale: 2.2, x: 
 
 const UsaMap = ({ params }) => {
 
-  const { data, stateNames, currentState, currentYear, currentYearGroup, supportedYears, width } = params;
+  const { data, stateNames, currentState, currentYear, currentYearGroup, supportedYears, width, accessible } = params;
 
   if (width === 0) return <></>;
 
@@ -211,37 +213,58 @@ const UsaMap = ({ params }) => {
 
   return (
     <>
-      <ReactTooltip
-        place="top"
-        type="light"
-        html={true}
-        className="tooltip"
-      />
-      <br></br>
-      <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
-        <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
-          <CustomProjection data={currentYearGroup !== 'all' && currentYear > 2020 ? countyTopoPre2020 : countyTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} projection={geoAlbersUsaTerritories}>
-            {({ features, projection }) => constructGeoJsx(features, projection)}
-          </CustomProjection>
-          <CustomProjection data={currentYearGroup !== 'all' && currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
-            {({ features, projection }) => constructGeoJsx(features, projection, true)}
-          </CustomProjection>
-        </g>
-      </svg>
-      <svg style={{ height: legendHeight, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
-        {currentYearGroup === 'one' && <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={fontSize}>ED Visits per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
-        {currentYearGroup !== 'one' && <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={fontSize}>ED Visits per 100,000 person-years</text>}
-        
-        {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
-        {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
+    {accessible ? (
+          <>
+          <DataTable508
+            data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+            labelOverrides={{
+              'county': 'County',
+              'rate': 'Rate',
+              'count': 'Count'
+            }}
+            xAxisKey={'Jurisdiction'}
+            highlight={stateNames[currentState]}
+            transforms={{
+              rate: num => (isNaN(num) ? num : num)
+            }}
+              width={width}
+          />
+          </>        
+        ) : (
+                <div>
+            <ReactTooltip
+              place="top"
+              type="light"
+              html={true}
+              className="tooltip"
+            />
+            <br></br>
+            <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
+              <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
+                <CustomProjection data={currentYearGroup !== 'all' && currentYear > 2020 ? countyTopoPre2020 : countyTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} projection={geoAlbersUsaTerritories}>
+                  {({ features, projection }) => constructGeoJsx(features, projection)}
+                </CustomProjection>
+                <CustomProjection data={currentYearGroup !== 'all' && currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
+                  {({ features, projection }) => constructGeoJsx(features, projection, true)}
+                </CustomProjection>
+              </g>
+            </svg>
+            <svg style={{ height: legendHeight, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+              {currentYearGroup === 'one' && <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={fontSize}>ED Visits per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {currentYearGroup !== 'one' && <text x={0} y={halfHeight - colorScaleHalfHeight - 35} fill="black" fontSize={fontSize}>ED Visits per 100,000 person-years</text>}
+              
+              {colorIntervals.map(value => <rect key={`color-interval-${value}`} x={0} y={colorLegendScale(value)} width={50} height={150 / colorIntervals.length} fill={colorScale(value)} />)}
+              {labelIntervals.map(value => <text key={`label-interval-${value}`} x={60} y={colorLegendScale(value)} fill="black" alignmentBaseline="middle">{Math.round(value / 10) * 10}</text>)}
 
-        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5))} width={50} height={150 / colorIntervals.length} fill={suppressedColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>* Data suppressed<tspan baselineShift="super" fontSize="10">3</tspan></text>
+              <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5))} width={50} height={150 / colorIntervals.length} fill={suppressedColor} />
+              <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 5)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>* Data suppressed<tspan baselineShift="super" fontSize="10">3</tspan></text>
 
-        <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8))} width={50} height={150 / colorIntervals.length} fill={unavailableColor} />
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>† Data not available/</text>
-        <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 25} fill="black" alignmentBaseline="middle" fontSize={fontSize}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">4</tspan></text>
-      </svg>
+              <rect x={0} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8))} width={50} height={150 / colorIntervals.length} fill={unavailableColor} />
+              <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 5} fill="black" alignmentBaseline="middle" fontSize={fontSize}>† Data not available/</text>
+              <text x={60} y={colorLegendScale(colorIntervals[colorIntervals.length - 1] - (colorIntervalWidth * 8)) + 25} fill="black" alignmentBaseline="middle" fontSize={fontSize}>&nbsp;&nbsp;not reported<tspan baselineShift="super" fontSize="10">4</tspan></text>
+            </svg>
+        </div>
+      )}
     </>
   )
 }

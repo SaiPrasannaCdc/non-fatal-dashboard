@@ -4,10 +4,13 @@ import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom,AxisLeft } from '@visx/axis';
 import Utils from '../shared/Utils';
+import DataTable508 from './DataTable508';
+import { UtilityFunctions } from '../utility';
+import { AccessibilityFunctions } from '../accessibility';
 
 function SexAgeCharts({ params }) {
 
-  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions } = params;
+  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions, accessible } = params;
 
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'][currentDataType];
 
@@ -79,6 +82,22 @@ function SexAgeCharts({ params }) {
 
   return (
     <>
+    {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateSexChartData(filteredData)}
+          labelOverrides={{
+            'rate1': 'Rate1 of nonfatal all drug visits per 100,000 persons',
+            'rate2': 'Rate2 of nonfatal all drug visits per 100,000 persons'
+          }}
+          xAxisKey={'Age Group'}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+           width={width}
+        />
+        </>        
+      ) : (
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
           <Text x={x1Scale(0) - 15} y={0} textAnchor="end">Male</Text>
@@ -132,6 +151,7 @@ function SexAgeCharts({ params }) {
           {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} textAnchor="middle">{'Rate per 100,000 persons'}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
         </Group>
       </svg>
+      )}
     </>
   )
 }

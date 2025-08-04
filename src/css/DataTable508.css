@@ -1,0 +1,105 @@
+.table-container-MY {
+    width: 100%;
+    overflow-y: visible;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+.table-container-MY table {
+    min-width: calc(100% - 5px);
+    /* border-collapse: collapse; */
+    border-spacing: 0;
+}
+
+.table-container-MY table th,
+.table-container-MY table td {
+    padding: 0.25em 1em;
+    white-space: pre;
+    text-align: right;
+}
+
+.table-container-MY thead th:first-child,
+.table-container-MY tbody th:first-child {
+    text-align: left;
+}
+
+.table-container-MY thead th,
+.table-container-MY tbody th {
+    text-align: right;
+}
+
+.table-container-MY table thead th {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+/*     border-right: 1px solid black;
+    border-left: 1px solid black; */
+}
+
+.table-container-MY.demographics-table table thead th {
+    max-width: 165px;
+    min-width: 125px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.table-container-MY table tr.highlight th {
+    border-top: 3px solid rgb(113, 33, 119);
+    border-left: 3px solid rgb(113, 33, 119);
+    border-bottom: 3px solid rgb(113, 33, 119); 
+}
+
+.table-container-MY table tr.highlight td {
+    border-top: 3px solid rgb(113, 33, 119);
+    border-bottom: 3px solid rgb(113, 33, 119);
+    border-right: 3px solid rgb(113, 33, 119);
+}
+
+.table-container-MY table tr.highlight td:last-child {
+    border-right: 3px solid rgb(113, 33, 119);
+}
+
+.table-container-MY table tbody th,
+.table-container-MY table thead th:first-child {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    background-color: white;
+}
+
+.noSticky{
+    position:inherit!important;
+}
+
+.table-container-MY.non-custom-background table tr:nth-child(odd),
+.table-container-MY.non-custom-background table tbody tr:nth-child(odd) th,
+.table-container-MY table tr.background,
+.table-container-MY table tbody tr.background th {
+    background-color: rgb(230, 230, 230);
+}
+
+.table-container-MY.non-custom-background table thead tr:nth-child(1) {
+    background-color: white;
+}
+
+.App.small-vp .table-container-MY table tbody th,
+.App.small-vp .table-container-MY table thead th:first-child {
+    max-width: 165px;
+    white-space: normal;
+}
+
+.centerAlign
+{
+    text-align: center!important;
+}
+
+.extraColsClass
+{
+    min-width: 250px!important;
+    text-wrap: wrap!important;
+}
+
+.rightAlign{
+    text-align: right!important;
+}
