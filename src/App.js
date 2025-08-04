@@ -168,7 +168,7 @@ const formatNumber = (val, isFloat = true) => {
   }
 };
 
-export default function App({ dataUrl }) {
+export default function App({ params }) {
 
   const [data, setData] = useState();
   const [stateDropdownOptions, setStateDropdownOptions] = useState(false);
@@ -198,8 +198,9 @@ export default function App({ dataUrl }) {
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
   const [activeTab, setActiveTab] = useState(0);
+  const { accessible } = params;
 
-  const dataPath = window.location.origin.includes('localhost') ? '/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
+  const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
 
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
@@ -500,7 +501,7 @@ export default function App({ dataUrl }) {
               <table>
                 <tr>
                   <td style={{ width: '76%', textAlign: 'right' }}>
-                    {(currentTimeframe === 'Annual') &&
+                    {(!accessible && currentTimeframe === 'Annual') &&
                       <div style={{ float: 'right' }}>
                         <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
                           <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent}
@@ -521,6 +522,7 @@ export default function App({ dataUrl }) {
                     }
                   </td>
                   <td style={{ width: '28%', textAlign: 'right' }}>
+                    {(!accessible) &&
                     <div style={{ float: 'right' }}>
                       <label class="toggle" title={'Toggle to see values of a data point.'}>
                         <input id="toggleLabel" class="toggle-input" type="checkbox" checked={showLabels}
@@ -536,6 +538,7 @@ export default function App({ dataUrl }) {
                         <span class="toggle-handle"></span>
                       </label>
                     </div>
+                    }
                   </td>
                 </tr>
               </table>
@@ -548,7 +551,7 @@ export default function App({ dataUrl }) {
                 getDrugControls()
               }
             </td>
-            {(currentTimeframe === 'Annual') &&
+            {(!accessible && currentTimeframe === 'Annual') &&
               <td>
                 <label className="subLabel">When "% Chg" is on, hover over a data point on the line chart to view percent change for the selected year compared to the previous year.&nbsp;&nbsp;</label>
               </td>
@@ -597,9 +600,7 @@ export default function App({ dataUrl }) {
     )
   }
 
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
 
       let supportedStates = {};
       let supportedJurisdictions = {};
@@ -767,12 +768,7 @@ export default function App({ dataUrl }) {
           }));
         });
 
-      await fetch(dataPath + 'US_Jurisdiction_Submission.json')
-        .then(res => res.json())
-        .then(data => {
-        });
-
-      fetch(dataPath + 'County_Counts_Rates.json')
+      await fetch(dataPath + 'County_Counts_Rates.json')
         .then(res => res.json())
         .then(data => {
 
@@ -797,7 +793,9 @@ export default function App({ dataUrl }) {
 
       setOnlyCurrentDrug(false);
 
-    }
+  }
+
+  useEffect(() => {
 
     fetchData();
 
@@ -879,6 +877,7 @@ export default function App({ dataUrl }) {
           drugOptions={drugOptions}
           stateNames={stateNames}
           setCurrentState={setCurrentState}
+          accessible={accessible}
         />
       </div>
     </>,
@@ -893,7 +892,7 @@ export default function App({ dataUrl }) {
           <td>
             <div class="containerLC">
               <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"}>
-                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs }} />
+                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
               </div>
             </div>
           </td>
@@ -915,7 +914,7 @@ export default function App({ dataUrl }) {
       <br></br>
       <div className='subsection marked'>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age and Sex</span>
-        <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width, drugOptions }} />
+        <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width, drugOptions, accessible }} />
       </div>
     </>,
     [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
@@ -927,7 +926,7 @@ export default function App({ dataUrl }) {
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true" />
       5 Year Rate
-      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width }} />
+      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width, accessible }} />
     </> : <></>,
     [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width]);
 
@@ -1133,19 +1132,23 @@ export default function App({ dataUrl }) {
 
             <section className="first-section">
               {lineChartMemo}
+              <br></br>
+              {accessible && getFootNotesForData()}
             </section>
 
             <section>
               {stateBarChartMemo}
+              {accessible && getFootNotesForData()}
             </section>
 
             <section>
               {sexAgeChartsMemo}
-              {getFootNotesForData()}
+              {accessible && getFootNotesForData()}
             </section>
 
             <section>
               {usaMapMemo}
+              {(accessible && currentDataSource === 'ED' && currentDrug === 'alldrug') && getFootNotesForData()}
             </section>
           </>
         )}

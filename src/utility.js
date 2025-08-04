@@ -331,6 +331,18 @@ export const UtilityFunctions = {
           if (arr[i]?.length === val)
               indexes.push(i);
       return indexes;
+  },
+
+  toFixed: (num, places = 1) => {
+    if (num !== undefined) {
+      if (num.toFixed) {
+        return num.toFixed(places);
+      }
+      if (!isNaN(parseFloat(num))) {
+        return parseFloat(num).toFixed(places)
+      }
+    }
+    return num;
   }
 
 }
