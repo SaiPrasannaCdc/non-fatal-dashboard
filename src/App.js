@@ -613,8 +613,8 @@ export default function App(params) {
       .then(res => res.json())
       .then(data => {
 
-        let columns = data.Data.length;
-        let getValue = (key, i) => data.Data[i][key];
+        let columns = data.length;
+        let getValue = (key, i) => data[i][key];
 
         let datasetNode;
         for (let i = 0; i < columns; i++) {
@@ -703,8 +703,8 @@ export default function App(params) {
     await fetch(dataPath + 'Overall_By_Sex_Age.json')
       .then(res => res.json())
       .then(data => {
-        let columns = data.Data.length;
-        let getValue = (key, i) => data.Data[i][key];
+        let columns = data.length;
+        let getValue = (key, i) => data[i][key];
 
         //Populate sex data
         for (let i = 0; i < columns; i++) {
@@ -772,8 +772,8 @@ export default function App(params) {
       .then(res => res.json())
       .then(data => {
 
-        let columns = data.Data.length;
-        let getValue = (key, i) => data.Data[i][key];
+        let columns = data.length;
+        let getValue = (key, i) => data[i][key];
 
         for (let i = 0; i < columns; i++) {
           let year = getValue('year', i).length == 4 ? getValue('year', i) : 'all';

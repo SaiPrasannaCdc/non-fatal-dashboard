@@ -1,4 +1,4 @@
-{"Data": [{"jurisdiction":"AZ","county":"Apache County","fips":"04001","year":"2018","dataset":"ED","count_alldrug":"55","population":"71819","rate_alldrug":"76.6","type":"1 year","person_years":"."},
+[{"jurisdiction":"AZ","county":"Apache County","fips":"04001","year":"2018","dataset":"ED","count_alldrug":"55","population":"71819","rate_alldrug":"76.6","type":"1 year","person_years":"."},
 {"jurisdiction":"AZ","county":"Apache County","fips":"04001","year":"2019","dataset":"ED","count_alldrug":"54","population":"71920","rate_alldrug":"75.1","type":"1 year","person_years":"."},
 {"jurisdiction":"AZ","county":"Apache County","fips":"04001","year":"2020","dataset":"ED","count_alldrug":"57","population":"65913","rate_alldrug":"86.5","type":"1 year","person_years":"."},
 {"jurisdiction":"AZ","county":"Apache County","fips":"04001","year":"2021","dataset":"ED","count_alldrug":"66","population":"65389","rate_alldrug":"100.9","type":"1 year","person_years":"."},
@@ -14193,4 +14193,4 @@
 {"jurisdiction":"WI","county":"Wood County","fips":"55141","year":"2021","dataset":"ED","count_alldrug":"67","population":"74005","rate_alldrug":"90.5","type":"1 year","person_years":"."},
 {"jurisdiction":"WI","county":"Wood County","fips":"55141","year":"2022","dataset":"ED","count_alldrug":"78","population":"73778","rate_alldrug":"105.7","type":"1 year","person_years":"."},
 {"jurisdiction":"WI","county":"Wood County","fips":"55141","year":"2023","dataset":"ED","count_alldrug":"78","population":"73939","rate_alldrug":"105.5","type":"1 year","person_years":"."},
-{"jurisdiction":"WI","county":"Wood County","fips":"55141","year":"2019-2023","dataset":"ED","count_alldrug":"350","population":".","rate_alldrug":"94.9","type":"5 year","person_years":"368716"}]}
+{"jurisdiction":"WI","county":"Wood County","fips":"55141","year":"2019-2023","dataset":"ED","count_alldrug":"350","population":".","rate_alldrug":"94.9","type":"5 year","person_years":"368716"}]
