@@ -173,7 +173,10 @@ const drugOptions = {
   }
 }
 
-export default function App({ dataUrl }) {
+export default function App( params ) {
+
+  const { accessible, dataUrl } = params;
+
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugOptions)[0]);
   const [timeline, setTimeline] = useState('Monthly');
   const [timelineBar, setTimelineBar] = useState('Monthly');
@@ -251,7 +254,7 @@ export default function App({ dataUrl }) {
 
   const isSmallViewport = width < 500;
 
-  const accessible = true;
+
 
   const stateBarChartRef = useRef();
   const drugsBarChartRef = useRef();
