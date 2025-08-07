@@ -3,7 +3,9 @@ import { Text } from '@visx/text';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { AxisBottom,AxisLeft } from '@visx/axis';
-import { UtilityFunctions } from '../utility'
+import { UtilityFunctions } from '../utility';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 import Utils from '../shared/Utils';
 
 const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth) => {
@@ -280,7 +282,7 @@ const getAgeGroups = (data, currentTimeLine, currentYear, currentMonth) => {
 
 function SexAgeChart(params) {
 
-  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions } = params;
+  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions, accessible } = params;
 
   const ageGroups = getAgeGroups(data, currentTimeframe, currentYear, currentMonth)
   const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth);
@@ -366,6 +368,22 @@ function SexAgeChart(params) {
 
   return (
     <>
+    {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
+          labelOverrides={{
+            'rate1': 'Rate1 of nonfatal all drug visits per 100,000 persons',
+            'rate2': 'Rate2 of nonfatal all drug visits per 100,000 persons'
+          }}
+          xAxisKey={'Age Group'}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+          height={300}
+        />
+        </>        
+      ) : (
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
           <Text x={x1Scale(0) - 15} y={0} fill={'#000066'} textAnchor="end">Female</Text>
@@ -424,6 +442,7 @@ function SexAgeChart(params) {
           {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 120 : 90)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
         </Group>
       </svg>
+      )}
     </>
   )
 }

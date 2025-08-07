@@ -7,6 +7,8 @@ import { AxisLeft, AxisBottom } from '@visx/axis';
 import { UtilityFunctions } from '../utility'
 import QuickStat from './quickStat';
 import ReactDOMServer from 'react-dom/server';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 
 const monthNamesShort = { '1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
 
@@ -194,7 +196,7 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
 
 function LineChart(params) {
 
-  const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource } = params;
+  const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, accessible } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -817,6 +819,27 @@ const adjustCrowdedLabels = () => {
 
   return (
     <>
+    {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames)}
+          labelOverrides={{
+            'all': 'All Drugs',
+            'benzodiazepine': 'Benzodiazepine',
+            'cocaine': 'Cocaine',
+            'heroin': 'Heroin',
+            'methamphetamine': 'Methamphetamine',
+            'opioids': 'All Opioids',
+            'stimulants': 'All Stimulants',
+          }}
+          xAxisKey={'Year/Month'}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+          width={width}
+        />
+        </>        
+      ) : (
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '85%'}}>
@@ -866,7 +889,8 @@ const adjustCrowdedLabels = () => {
         </td>
       </tr>
       </table>
-      {specs.isSmallViewport && (
+      )}
+      {(!accessible && specs.isSmallViewport) && (
         <div id="line-chart-legend-container">
           <div id="line-chart-legend">
             {Object.keys(filteredData).map((key, i) =>

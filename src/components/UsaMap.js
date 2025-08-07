@@ -6,7 +6,9 @@ import { CustomProjection } from '@visx/geo';
 import { scaleLinear } from '@visx/scale';
 import ReactTooltip from 'react-tooltip';
 import { geoAlbersUsaTerritories } from 'd3-composite-projections';
-import { UtilityFunctions } from '../utility'
+import { UtilityFunctions } from '../utility';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 
 const { features: stateTopoPre2020 } = feature(topoJSONPre2020, topoJSONPre2020.objects.states)
 const { features: stateTopoPost2020 } = feature(topoJSONPost2020, topoJSONPost2020.objects.states)
@@ -121,7 +123,7 @@ const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, curre
 
 const UsaMap = (params) => {
 
-  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData } = params;
+  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData, accessible } = params;
   
   const [selectedDrugsMap, setselectedDrugsMap] = useState(['all']);
 
@@ -307,21 +309,40 @@ const UsaMap = (params) => {
       <br></br>
       <table style={{width: '100%'}}>
         <tr>
-          <td style={{width: '79%', verticalAlign: 'top'}} >
-              <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
-                <defs>
-                  <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
-                    <line x1="0" y="0" x2="0" y2="9.5" stroke="#0C0824" style={{ strokeWidth: 2 }} />
-                  </pattern>
-                </defs>
-              <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
-                <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
-                  {({ features, projection }) => constructGeoJsx(features, projection, true)}
-                </CustomProjection>
-              </g>
-              
-            </svg>
-            <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
+          <td style={{width: '79%', verticalAlign: 'top', height: '800'}} >
+            {!accessible && 
+              <div>
+                <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
+                  <defs>
+                    <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
+                      <line x1="0" y="0" x2="0" y2="9.5" stroke="#0C0824" style={{ strokeWidth: 2 }} />
+                    </pattern>
+                  </defs>
+                <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
+                  <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
+                    {({ features, projection }) => constructGeoJsx(features, projection, true)}
+                  </CustomProjection>
+                </g>
+                
+              </svg>
+              <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
+            </div>
+          }
+          {accessible && 
+            <DataTable508
+                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                labelOverrides={{
+                  'rate': 'Rate',
+                  'count': 'Count'
+                }}
+                xAxisKey={'Jurisdiction'}
+                highlight={stateNames[currentState]}
+                transforms={{
+                  rate: num => (isNaN(num) ? num : num)
+                }}
+                height={400}
+              />
+          }
           </td>
           <td style={{width: '21%'}}>
             <table>
@@ -340,6 +361,7 @@ const UsaMap = (params) => {
               <br></br>
               <tr>
                 <td>
+                  {!accessible &&
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
@@ -374,6 +396,7 @@ const UsaMap = (params) => {
                       </td>
                     </tr>
                   </table>
+                  }
                 </td>
               </tr>
             </table>

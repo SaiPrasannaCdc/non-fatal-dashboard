@@ -4,7 +4,9 @@ import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import Utils from '../shared/Utils';
-import { UtilityFunctions } from '../utility'
+import { UtilityFunctions } from '../utility';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 import { countCutoff } from '../constants.json';
 
 import '../css/AgeChart.css';
@@ -228,7 +230,7 @@ function AgeChart(params) {
 
   const viewportCutoff = 600;
 
-  const { data, year, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth } = params;
+  const { data, year, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, accessible } = params;
   const [ animated, setAnimated ] = useState(false);
 
   const ageGroups = getAgeGroups(data, currentTimeLine, currentYear, currentMonth)
@@ -275,6 +277,22 @@ function AgeChart(params) {
   return width > 0 && 
       (
         <div id="age-chart">
+          {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateAgeChartData(filteredData)}
+          labelOverrides={{
+            'rate1': 'Rate1 of nonfatal all drug visits per 100,000 persons',
+            'rate2': 'Rate2 of nonfatal all drug visits per 100,000 persons'
+          }}
+          xAxisKey={'Sex'}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+          height={300}
+        />
+        </>        
+      ) : (
         <svg width={width} height={height}>
           <Group top={margin.top} left={margin.left}>
             (
@@ -356,6 +374,7 @@ function AgeChart(params) {
 
           </Group>
         </svg>
+      )}
       </div>
     );
 }

@@ -4,7 +4,9 @@ import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import Utils from '../shared/Utils';
-import { UtilityFunctions } from '../utility'
+import { UtilityFunctions } from '../utility';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 import { countCutoff } from '../constants.json';
 
 import '../css/AgeChart.css';
@@ -199,7 +201,7 @@ function SexChart(params) {
 
   const viewportCutoff = 600;
 
-  const { data, width, height, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth } = params;
+  const { data, width, height, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, accessible } = params;
   const [ animated, setAnimated ] = useState(false);
 
   const filteredData = getFilteredData(data, currentDrug, currentYear, currentMonth);
@@ -246,6 +248,22 @@ function SexChart(params) {
   return width > 0 && 
       (
         <div id="age-chart">
+          {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateSexChartData(filteredData)}
+          labelOverrides={{
+            'rate1': 'Rate1 of nonfatal all drug visits per 100,000 persons',
+            'rate2': 'Rate2 of nonfatal all drug visits per 100,000 persons'
+          }}
+          xAxisKey={'Sex'}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+          height={300}
+        />
+        </>        
+      ) : (
         <svg width={width} height={height}>
           <Group top={margin.top} left={margin.left}>
             (
@@ -326,6 +344,7 @@ function SexChart(params) {
             {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
           </Group>
         </svg>
+      )}
       </div>
     );
 }

@@ -6,6 +6,8 @@ import { Text } from '@visx/text';
 import { UtilityFunctions } from '../utility'
 import Utils from '../shared/Utils';
 import '../css/BarChart.css';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 
 const getData = (data, currentState, currentYear, currentMonth, selectedDrugs) => {
 
@@ -87,7 +89,7 @@ function BarChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions } = params;
+  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions, accessible } = params;
  
   const dataRates = getData(data, currentState, currentYear, currentMonth, selectedDrugs);
 
@@ -158,6 +160,28 @@ function BarChart(params) {
 
   return width > 0 && (
     <>
+    {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateBarChartData(dataRates)}
+          labelOverrides={{
+            'all': 'All Drugs',
+            'benzodiazepine': 'Benzodiazepine',
+            'cocaine': 'Cocaine',
+            'heroin': 'Heroin',
+            'methamphetamine': 'Methamphetamine',
+            'opioids': 'All Opioids',
+            'stimulants': 'All Stimulants',
+            'rate': 'Rate of nonfatal visits per 100,000 persons'
+          }}
+          xAxisKey={'Drug'}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+           width={width}
+        />
+        </>        
+      ) : (
         <svg
           id="drug-bar-chart" 
           width={width} 
@@ -279,6 +303,7 @@ function BarChart(params) {
               />
             </Group>
         </svg>
+      )}
     </>
   );
 }

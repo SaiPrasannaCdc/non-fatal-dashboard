@@ -3,9 +3,11 @@ import { Group } from '@visx/group';
 import { scaleLinear, scaleBand } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Text } from '@visx/text';
-import { UtilityFunctions } from '../utility'
 import Utils from '../shared/Utils';
 import '../css/StateChart.css';
+import { UtilityFunctions } from '../utility';
+import { AccessibilityFunctions } from '../accessibility';
+import DataTable508 from './DataTable508';
 
 const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames, drugOptions) => {
 
@@ -135,7 +137,7 @@ function StateChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, dataOverall, width, height, el, currentState, currentDrug, currentTimeframe, currentMonth, currentYear, drugOptions, stateNames, setCurrentState } = params;
+  const { data, dataOverall, width, height, el, currentState, currentDrug, currentTimeframe, currentMonth, currentYear, drugOptions, stateNames, setCurrentState, accessible } = params;
 
   const dataRates = getData(data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames);
 
@@ -206,6 +208,22 @@ function StateChart(params) {
 
   return width > 0 && (
     <>
+    {accessible ? (
+        <>
+        <DataTable508
+          data={AccessibilityFunctions.generateStateChartData(dataRates)}
+          labelOverrides={{
+            'rate': 'Rate of nonfatal ' + drugOptions[currentDrug].titleForDropDown + ' visits per 100,000 persons'
+          }}
+          xAxisKey={'Jurisdiction'}
+          highlight={stateNames[currentState]}
+          transforms={{
+            rate: num => UtilityFunctions.toFixed(num)
+          }}
+           width={width}
+        />
+        </>        
+      ) : (
         <svg
           id="state-chart" 
           width={width} 
@@ -321,6 +339,7 @@ function StateChart(params) {
               />
             </Group>
         </svg>
+      )}
     </>
   );
 }

@@ -251,6 +251,8 @@ export default function App({ dataUrl }) {
 
   const isSmallViewport = width < 500;
 
+  const accessible = true;
+
   const stateBarChartRef = useRef();
   const drugsBarChartRef = useRef();
   const lineChartRef = useRef();
@@ -1168,6 +1170,7 @@ const getYears = (startYrInp, endYrInp) => {
         drugOptions={drugOptions}
         stateNames={stateNames}
         setCurrentState={setCurrentState}
+        accessible={accessible}
         />
     </div>
   </>,
@@ -1186,6 +1189,7 @@ const getYears = (startYrInp, endYrInp) => {
         currentYear={currentYearBar}
         currentMonth={currentMonthBar} 
         drugOptions={drugOptions}
+        accessible={accessible}
         />
     </div>
   </>,
@@ -1221,6 +1225,7 @@ const getYears = (startYrInp, endYrInp) => {
               isPeriod={true}
               selectedDrugs={selectedDrugsLine} 
               currentDataSource={'ED'}
+              accessible={accessible}
               />
             </div>
           </div>
@@ -1245,6 +1250,7 @@ const getYears = (startYrInp, endYrInp) => {
         jurisdictions={jurisForDropDownMap}
         onData={handleData}
         key={mapKey}
+        accessible={accessible}
         />
   </>,
   [currentYearMap, currentMonthMap, width, mapMonthly, mapKey]);
@@ -1252,7 +1258,7 @@ const getYears = (startYrInp, endYrInp) => {
   const sexChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + selectedDrugsSexAge[0] + 'ToolTip'}>
+        <div className={"subsection marked " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           <span className="individual-header margin-top">By Sex</span>
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={sexChartRef}>
             <SexChart
@@ -1266,6 +1272,7 @@ const getYears = (startYrInp, endYrInp) => {
                 currentTimeLine={sexAgeMonthly}
                 currentYear={currentYearSexAge}
                 currentMonth={currentMonthSexAge}
+                accessible={accessible}
               />
           </div>
         </div>
@@ -1276,7 +1283,7 @@ const getYears = (startYrInp, endYrInp) => {
   const ageChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + selectedDrugsSexAge[0] + 'ToolTip'}>
+        <div className={"subsection marked " + + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           <span className="individual-header margin-top">By Age (In years)</span>
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={ageChartRef}>
             <AgeChart
@@ -1293,6 +1300,7 @@ const getYears = (startYrInp, endYrInp) => {
                 currentTimeLine={sexAgeMonthly}
                 currentYear={currentYearSexAge}
                 currentMonth={currentMonthSexAge}
+                accessible={accessible}
               />
           </div>
         </div>
@@ -1303,7 +1311,7 @@ const getYears = (startYrInp, endYrInp) => {
   const sexAgeChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + selectedDrugsSexAge[0] + 'ToolTip'}>
+        <div className={"subsection marked " + + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           <span className="individual-header margin-top">By Age (In years) and Sex</span>
           <div class='' ref={sexAgeChartRef}>
             <SexAgeChart 
@@ -1314,7 +1322,9 @@ const getYears = (startYrInp, endYrInp) => {
             currentDataType={'rate'}
             width={width * 0.5} 
             currentDrug={selectedDrugsSexAge[0]} 
-            drugOptions={drugOptions} />
+            drugOptions={drugOptions} 
+            accessible={accessible}
+            />
           </div>
         </div>
        </div> 
@@ -2290,6 +2300,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </td>
                 <td style={{'width': '6%'}}></td>
                 <td style={{'width': '22%'}}>
+                  {!accessible && 
                    <table>
                     <tr>
                       <td style={{ 'width' : '15%', 'textAlign': 'right'}}>
@@ -2311,6 +2322,7 @@ const getYears = (startYrInp, endYrInp) => {
                       </td>
                     </tr>
                   </table>
+                  }
                 </td>
             </tr>
           </table>
@@ -2325,6 +2337,7 @@ const getYears = (startYrInp, endYrInp) => {
               </table>
             }
           {usaMapMemo}
+          {accessible && getFootNotesForData()}
       </section>
 
        <section>
@@ -2457,14 +2470,17 @@ const getYears = (startYrInp, endYrInp) => {
             <tr>
               <td style={{width: '50%'}}>
                 {sexChartMemo}
+                {accessible && getFootNotesForData()}
               </td>
               <td style={{width: '50%'}}>
                 {ageChartMemo}
+                {accessible && getFootNotesForData()}
               </td>
             </tr>
             <tr>
               <td style={{width: '50%'}}>
                 {sexAgeChartMemo}
+                {accessible && getFootNotesForData()}
               </td>
               <td style={{width: '50%'}}>
               </td>
