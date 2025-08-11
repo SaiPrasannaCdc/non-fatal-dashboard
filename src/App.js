@@ -160,7 +160,7 @@ const createIfUndefined = (object, key, value) => {
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
   if (isNaN(numericVal)) {
-    if (val == 'not available' || val == 'NA')
+    if (val == 'NA')
       return 'Data not available';
     return 'Data suppressed*';
   } else {
@@ -851,12 +851,25 @@ export default function App(params) {
     setStateDropdownOptions(Object.keys(supportedStates))
   }
 
+  function isStateInSupportedStates(ds, yr, mon, tframe) {
+    let monMain = tframe != 'Monthly' ? '00' : String(mon).padStart(2, '0');
+    let key = ds + '_' + yr + monMain;
+
+    let strStates = data.supportedJurisdictions[key]?.split(',');
+    return strStates.includes(currentState);
+  }
+
   const handleTabClick = (index) => {
     let ds;
     setActiveTab(index);
     ds = index == 0 ? 'ED' : 'HOSP';
     setCurrentDataSource(ds)
     getSupportedStates(ds, currentYear, currentMonth, currentTimeframe);
+
+    if (!isStateInSupportedStates(ds, currentYear, currentMonth, currentTimeframe)){
+      setCurrentState('US');
+      setOnlyCurrentDrug(false);
+    }
   };
 
   const stateBarChartMemo = useMemo(() =>
@@ -1001,6 +1014,11 @@ export default function App(params) {
                     }
 
                     setPeriodToggle(false);
+
+                    if (!isStateInSupportedStates(currentDataSource, currentYear, currentMonth, val)){
+                      setCurrentState('US');
+                      setOnlyCurrentDrug(false);
+                    }
                   },
                   options: ['Monthly', 'Annual'],
                   optionLabel: (key) => key
@@ -1025,6 +1043,11 @@ export default function App(params) {
                     if (currentTimeframe === 'Monthly') {
                       resetPeriodDates(param)
                     }
+
+                    if (!isStateInSupportedStates(currentDataSource, param, currentMonth, currentTimeframe)){
+                      setCurrentState('US');
+                      setOnlyCurrentDrug(false);
+                    }
                   },
                   options: supportedYears,
                   optionLabel: (key) => key
@@ -1038,6 +1061,11 @@ export default function App(params) {
                     getSupportedStates(currentDataSource, currentYear, param, currentTimeframe);
                     resetPeriodDates(currentYear);
                     setPeriodToggle(false);
+
+                    if (!isStateInSupportedStates(currentDataSource, currentYear, param, currentTimeframe)) {
+                      setCurrentState('US');
+                      setOnlyCurrentDrug(false);
+                    }
                   },
                   options: Object.keys(monthNames).filter(key => key !== 'all'),
                   optionLabel: (key) => monthNames[key],
@@ -1133,22 +1161,21 @@ export default function App(params) {
             <section className="first-section">
               {lineChartMemo}
               <br></br>
-              {accessible && getFootNotesForData()}
+              {!accessible && getFootNotesForData()}
             </section>
 
             <section>
               {stateBarChartMemo}
-              {accessible && getFootNotesForData()}
+              {!accessible && getFootNotesForData()}
             </section>
 
             <section>
               {sexAgeChartsMemo}
-              {accessible && getFootNotesForData()}
+              {!accessible && getFootNotesForData()}
             </section>
 
             <section>
               {usaMapMemo}
-              {(accessible && currentDataSource === 'ED' && currentDrug === 'alldrug') && getFootNotesForData()}
             </section>
           </>
         )}
