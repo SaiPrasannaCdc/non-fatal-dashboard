@@ -46,13 +46,22 @@ function SexAgeCharts({ params }) {
     padding: .2,
   });
 
+  const formatToolTip = (val) => {
+      if (val.includes('Data suppressed'))
+          return 'Data suppressed';
+      else if (val.includes('Data not available'))
+        return 'Data not available/not reported';
+      else
+        return ''
+  }
+
   const getBar = (d) => {
 
     const x1Pos = isNaN(d[x1Key]) ? xMaxHalf - 15 : x1Scale(d[x1Key]);
     const x2Pos = isNaN(d[x2Key]) ? xMaxHalf + 15 : x2Scale(d[x2Key]);
 
-    const x1Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x1Key].toLocaleString()}</p></div>`;
-    const x2Tip = `<div class="tooltipTableLC"<p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${d[x2Key].toLocaleString()}</p></div>`;
+    const x1Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${isNaN(d[x1Key]) ? formatToolTip(d[x1Key]) : d[x1Key].toLocaleString()}</p></div>`;
+    const x2Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${isNaN(d[x2Key]) ? formatToolTip(d[x2Key]) : d[x2Key].toLocaleString()}</p></div>`;
 
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
@@ -66,7 +75,7 @@ function SexAgeCharts({ params }) {
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={alignEndFirst ? 'end' : 'start'} 
           fill="black" 
-          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x1Key]?.toLocaleString()}</Text>
+          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{isNaN(d[x1Key]) ? '' : (d[x1Key])?.toLocaleString()}</Text>
 
         {!isNaN(d[x2Key]) && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x2Tip} />}
         {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
@@ -75,7 +84,7 @@ function SexAgeCharts({ params }) {
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={alignEndSecond ? 'end' : 'start'} 
           fill={!isNaN(d[x2Key]) && alignEndSecond ? 'white' : 'black'} 
-          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{d[x2Key]?.toLocaleString()}</Text>
+          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{isNaN(d[x2Key]) ? '' : (d[x2Key])?.toLocaleString()}</Text>
       </g>
     )
   }

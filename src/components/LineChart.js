@@ -44,15 +44,19 @@ const getCountsYearly = (data, currentDataSource, drugOptions) => {
     Object.keys(data[currentDataSource][drug]).forEach(year => {
       if (!isNaN(year)) {
         var cnt = 0;
+        var cntText = '';
         Object.keys(data[currentDataSource][drug][year]['all']['count']).forEach(rec => {
-          var femCnt = isNaN(data[currentDataSource][drug][year]['all']['count'][rec]['F']) ? 0 : Number(data[currentDataSource][drug][year]['all']['count'][rec]['F']);
-          var maleCnt = isNaN(data[currentDataSource][drug][year]['all']['count'][rec]['M']) ? 0 : Number(data[currentDataSource][drug][year]['all']['count'][rec]['M']);
-          cnt = Number(cnt) + Number(femCnt) + Number(maleCnt);
+          var femCnt = data[currentDataSource][drug][year]['all']['count'][rec]['F'];
+          var maleCnt = data[currentDataSource][drug][year]['all']['count'][rec]['M'];
+
+          cnt = Number(cnt) + (isNaN(femCnt) ? 0 : Number(femCnt)) + (isNaN(maleCnt) ? 0 : Number(maleCnt));
+            if (isNaN(femCnt) && isNaN(maleCnt))
+              cntText = femCnt;
         })
         arr.push({
           year: year,
           drug: drug,
-          count: cnt,
+          count: ((cnt == 0 && cntText.length > 0) ? cntText : cnt),
         });
       }
     })
@@ -69,16 +73,19 @@ const getCountsMonthly = (data, currentDataSource, drugOptions) => {
         for (var mon=1;mon<=12;mon++)
         {
           var cnt = 0;
+          var cntText = '';
           Object.keys(data[currentDataSource][drug][year][mon]['count']).forEach(rec => {
-            var femCnt = isNaN(data[currentDataSource][drug][year][mon]['count'][rec]['F']) ? 0 : Number(data[currentDataSource][drug][year][mon]['count'][rec]['F']);
-            var maleCnt = isNaN(data[currentDataSource][drug][year][mon]['count'][rec]['M']) ? 0 : Number(data[currentDataSource][drug][year][mon]['count'][rec]['M']);
-            cnt = Number(cnt) + Number(femCnt) + Number(maleCnt);
+            var femCnt = data[currentDataSource][drug][year][mon]['count'][rec]['F'];
+            var maleCnt = data[currentDataSource][drug][year][mon]['count'][rec]['M'];
+            cnt = Number(cnt) + (isNaN(femCnt) ? 0 : Number(femCnt)) + (isNaN(maleCnt) ? 0 : Number(maleCnt));
+            if (isNaN(femCnt) && isNaN(maleCnt))
+              cntText = femCnt;
           })
           arr.push({
             year: year,
             month: mon,
             drug: drug,
-            count: cnt,
+            count: ((cnt == 0 && cntText.length > 0) ? cntText : cnt),
           });
         }
       }
@@ -614,19 +621,28 @@ function LineChart({ params }) {
     return cnt;
   }
 
+  const getText = (val) => {
+    if (val == 'Data not available')
+      return 'Data not available/not reported';
+    else if (val == 'Data suppressed*')
+      return 'Data suppressed';
+    else
+      return '';
+  }
+
   const getRateHTMLforDrug = (selectedDrugs, parmState, val) => {
     var leftRateStr = '';
     if (parmState == 'US') {
       for (var i in selectedDrugs) {
         if (selectedDrugs[i].includes(currentDrug)) {
           let rate = getRateforDrug(selectedDrugs[i], parmState, val);
-          leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+          leftRateStr = leftRateStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(rate) ? getText(rate) : rate) + '</span></br>'
         }
       }
     }
     else {
       let rate = getRateforDrug(currentDrug, parmState, val);
-        leftRateStr = leftRateStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+      leftRateStr = leftRateStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(rate) ? getText(rate) : rate) + '</span></br>'
     }
     return leftRateStr;
   }
@@ -638,13 +654,13 @@ function LineChart({ params }) {
       for (var i in selectedDrugs) {
         if (selectedDrugs[i].includes(currentDrug)) {
           let cnt = getCountforDrug(selectedDrugs[i], parmState, val);
-          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
+          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
         }
       }
     }
     else {
       let cnt = getCountforDrug(currentDrug, parmState, val);
-      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
+      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
     }
     return leftCntStr;
   }
@@ -807,6 +823,15 @@ function LineChart({ params }) {
     return val;
   }
 
+  function getSymbol(val) {
+    if (val == 'Data not available')
+      return '†';
+    else if (val == 'Data suppressed*')
+      return '*';
+    else
+      return '';
+  }
+
   const buildLineForDrug = (currentDrug) => {
 
     const sectionWidth = specs.xMax / specs.xValues.length;
@@ -837,9 +862,12 @@ function LineChart({ params }) {
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColor(currentDrug, key)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
+                          {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={12} textAnchor={'middle'} fontWeight={'bold'}>{getSymbol(d[currentDrug])}</text>}
+                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
+                          {(isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={'middle'} fontWeight={'bold'}>{getSymbol(d[currentDrug])}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColor(currentDrug, key)} />}
                         </Group>
                       )
                     })}

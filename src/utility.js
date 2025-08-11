@@ -343,6 +343,14 @@ export const UtilityFunctions = {
       }
     }
     return num;
-  }
+  },
+
+  isStateInSupportedStates: (supportedJuris, ds, yr, mon, tframe, state) => {
+    let monMain = tframe != 'Monthly' ? '00' : String(mon).padStart(2, '0');
+    let key = ds + '_' + yr + monMain;
+
+    let strStates = supportedJuris[key]?.split(',');
+    return strStates.includes(state);
+  },
 
 }
