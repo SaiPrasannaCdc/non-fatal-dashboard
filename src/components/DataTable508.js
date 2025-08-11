@@ -62,10 +62,10 @@ function DataTable508(params) {
     var ret = val;
 
     if (String(val).indexOf('Data suppressed') >= 0)
-      ret = '*';
+      ret = 'Data suppressed';
 
     if (String(val).indexOf('Data not available') >= 0)
-      ret = '†';
+      ret = 'Data not available/not reported';
 
     return ret;
   }

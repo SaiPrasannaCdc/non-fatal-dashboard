@@ -94,49 +94,97 @@ export const AccessibilityFunctions = {
           let obj = {};
           if (currentDrug == 'alldrug') {
             obj['Overall'] = data['US'][i].alldrug;
-            obj[stateNames[state]] = data[state][i].alldrug;
+             obj[stateNames[state]] = '';
+            for (var j=0;j<Object.keys(data[state]).length;j++)
+            {
+              if (data['US'][i].year == data[state][j].year) {
+                obj[stateNames[state]] = data[state][j].alldrug;
+              }
+            }
           }
 
           if (currentDrug == 'benzodiazepine') {
-             obj['Overall'] = data['US'][i].benzodiazepine;
-            obj[stateNames[state]] = data[state][i].benzodiazepine;
+            obj['Overall'] = data['US'][i].benzodiazepine;
+            obj[stateNames[state]] = '';
+              for (var j=0;j<Object.keys(data[state]).length;j++)
+              {
+                if (data['US'][i].year == data[state][j].year) {
+                  obj[stateNames[state]] = data[state][j].benzodiazepine;
+                }
+              }
           }
 
           if (currentDrug == 'cocaine') {
             obj['Overall'] = data['US'][i].cocaine;
-            obj[stateNames[state]] = data[state][i].cocaine;
+             obj[stateNames[state]] = '';
+              for (var j=0;j<Object.keys(data[state]).length;j++)
+              {
+                if (data['US'][i].year == data[state][j].year) {
+                  obj[stateNames[state]] = data[state][j].cocaine;
+                }
+              }
           }
 
           if (currentDrug == 'fentanyl') {
              obj['Overall'] = data['US'][i].fentanyl;
-            obj[stateNames[state]] = data[state][i].fentanyl;
+              obj[stateNames[state]] = '';
+              for (var j=0;j<Object.keys(data[state]).length;j++)
+              {
+                if (data['US'][i].year == data[state][j].year) {
+                  obj[stateNames[state]] = data[state][j].fentanyl;
+                }
+              }
           }
 
           if (currentDrug == 'heroin') {
              obj['Overall'] = data['US'][i].heroin;
-            obj[stateNames[state]] = data[state][i].heroin;
+              obj[stateNames[state]] = '';
+              for (var j=0;j<Object.keys(data[state]).length;j++)
+              {
+                if (data['US'][i].year == data[state][j].year) {
+                  obj[stateNames[state]] = data[state][j].heroin;
+                }
+              }
           }
 
           if (currentDrug == 'methamphetamine') {
             obj['Overall'] = data['US'][i].methamphetamine;
-            obj[stateNames[state]] = data[state][i].methamphetamine;
+            obj[stateNames[state]] = '';
+              for (var j=0;j<Object.keys(data[state]).length;j++)
+              {
+                if (data['US'][i].year == data[state][j].year) {
+                  obj[stateNames[state]] = data[state][j].methamphetamine;
+                }
+              }
           }
 
           if (currentDrug == 'opioid') {
              obj['Overall'] = data['US'][i].opioid;
-            obj[stateNames[state]] = data[state][i].opioid;
+              obj[stateNames[state]] = '';
+              for (var j=0;j<Object.keys(data[state]).length;j++)
+              {
+                if (data['US'][i].year == data[state][j].year) {
+                  obj[stateNames[state]] = data[state][j].opioid;
+                }
+              }
           }
 
           if (currentDrug == 'stimulant') {
              obj['Overall'] = data['US'][i].stimulant;
-            obj[stateNames[state]] = data[state][i].stimulant;
+              obj[stateNames[state]] = '';
+              for (var j=0;j<Object.keys(data[state]).length;j++)
+              {
+                if (data['US'][i].year == data[state][j].year) {
+                  obj[stateNames[state]] = data[state][j].stimulant;
+                }
+              }
           }
 
           let monyr = data['US'][i].year;
           myData[monyr] = obj;
         }
       }
-
+            
       return myData;
   
     },  
