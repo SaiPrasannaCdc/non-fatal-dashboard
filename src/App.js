@@ -1007,6 +1007,28 @@ const getYears = (startYrInp, endYrInp) => {
     return true;
    }
 
+   const isParticipatingStateData = (rec) => {
+
+    if (currentDrug == 'all' && rec.total_drug_OD_n == 8888.0)
+      return false;
+    if (currentDrug == 'benzodiazepine' && rec.total_Benzo_OD_n == 8888.0)
+      return false;
+    if (currentDrug == 'opioids' && rec.total_opioid_OD_n == 8888.0)
+      return false;
+    if (currentDrug == 'fentanyl' && rec.total_Fentanyl_OD_n == 8888.0)
+      return false;
+    if (currentDrug == 'heroin' && rec.total_heroin_OD_n == 8888.0)
+      return false;
+    if (currentDrug == 'stimulants' && rec.total_stimulant_OD_n == 8888.0)
+      return false;
+    if (currentDrug == 'cocaine' && rec.total_Cocaine_OD_n == 8888.0)
+      return false;
+    if (currentDrug == 'methamphetamine' && rec.total_Methamphetamine_OD_n == 8888.0)
+      return false;
+
+    return true;
+   }
+
    const getJurisCount = (stateData, yr, mon) => {
 
       var juris = {};
@@ -1014,7 +1036,7 @@ const getYears = (startYrInp, endYrInp) => {
 
       for (let i=0;i<stateData.length;i++) {
         if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0')) {
-          if (isValidStateData(stateData[i]))
+          if (isValidStateData(stateData[i]) && isParticipatingStateData(stateData[i]))
             tmpJuris.push(stateData[i].geoid)
         }
       }
