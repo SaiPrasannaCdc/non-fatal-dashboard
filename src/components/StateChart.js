@@ -19,8 +19,8 @@ const getData = (data, currentDataSource, currentTimeframe, currentMonth, curren
         var key = Object.keys(data.year[currentDataSource])[i];
         if (data.year[currentDataSource][key]){
           let rec = data.year[currentDataSource][key]['all'].find(d => d.year == String(currentYear));
-          if (rec)
-            finalData[stateNames[key]] = {rate: isNaN(rec[currentDrug]) ? '-1' : rec[currentDrug], stateKey: key, forTooltip: rec[currentDrug]};
+          if (rec && UtilityFunctions.isStateInSupportedStates(data.supportedJurisdictions, currentDataSource, currentYear, currentMonth, currentTimeframe, key))
+            finalData[stateNames[key]] = {rate: rec[currentDrug], stateKey: key, forTooltip: rec[currentDrug]};
           }
         }
         return finalData;
@@ -34,7 +34,7 @@ const getData = (data, currentDataSource, currentTimeframe, currentMonth, curren
     if(data && data.year[currentDataSource]) {
         for (let i = 0; i <= Object.keys(data.year[currentDataSource]).length - 1; i++) {
           var state = Object.keys(data.year[currentDataSource])[i]
-          var val = -1
+          var val;
           for (var x=0;x<=Object.keys(data.year[currentDataSource][state][currentMonth]).length - 1; x++)
           {
             if (data.year[currentDataSource][state][[currentMonth]][x].year === Number(currentYear))
@@ -67,7 +67,8 @@ const getData = (data, currentDataSource, currentTimeframe, currentMonth, curren
                 }
             }
 
-            finalData[stateNames[state]] = {rate: val, stateKey: state, forTooltip: String(val)};
+            if (UtilityFunctions.isStateInSupportedStates(data.supportedJurisdictions, currentDataSource, currentYear, currentMonth, currentTimeframe, state))
+              finalData[stateNames[state]] = {rate: val, stateKey: state, forTooltip: String(val)};
           }
 
       }
@@ -161,6 +162,15 @@ function StateChart(params) {
         return ''
   }
 
+  const formatToolTip = (val) => {
+      if (val.includes('Data suppressed'))
+          return 'Data suppressed';
+      else if (val.includes('Data not available'))
+        return 'Data not available/not reported';
+      else
+        return ''
+  }
+
   return width > 0 && (
     <>
     {accessible ? (
@@ -188,7 +198,7 @@ function StateChart(params) {
                 const name = d;
                 const rate = dataRates[name].rate;
                 const stateKey = dataRates[name].stateKey;
-                const toolTip = dataRates[name].forTooltip;
+                const toolTip = isNaN(dataRates[name].forTooltip) ? formatToolTip(dataRates[name].forTooltip) : dataRates[name].forTooltip;
 
                 return (
                   <Group key={`bar-${name}`}>
@@ -212,15 +222,16 @@ function StateChart(params) {
                         }
                       }}
                       data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                      Rate: ${rate < 0 ? toolTip : Number(rate).toLocaleString()}</div>`}
+                      Rate: ${isNaN(rate) ? toolTip : Number(rate).toFixed(1)}</div>`}
                     ></path>
                     <text 
                       className="bar-label"
-                      x={rate < 0 ? 10 : xScale(rate)}
+                      x={isNaN(rate) ? 0 : xScale(rate)}
                       y={yScale(name)}
-                      dy="12"
-                      dx="5">
-                        {rate < 0 ? (toolTip?.includes('Data suppressed') ? '*' : '†') : rate}
+                      dy={isNaN(rate) ? 15 : 12}
+                      dx={isNaN(rate) ? 0 : 5}
+                      data-tip={`<strong>${name}</strong><br/><br/>Rate: ${toolTip}`}>
+                        {isNaN(rate) ? (toolTip?.includes('Data suppressed') ? '*' : '†') : rate}
                     </text>
                   </Group>
                 )}
