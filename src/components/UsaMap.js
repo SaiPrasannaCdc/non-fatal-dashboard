@@ -67,6 +67,15 @@ const UsaMap = ({ params }) => {
     range: [halfHeight + colorScaleHalfHeight, halfHeight - colorScaleHalfHeight]
   })
 
+  const getText = (val) => {
+    if (val == 'Data not available')
+      return 'Data not available/not reported';
+    else if (val == 'Data suppressed*')
+      return 'Data suppressed';
+    else
+      return '';
+  }
+
   const getColor = (id) => {
     if(id.length < 3) return 'transparent';
     if(!filteredData[id]) return unavailableColor;
@@ -123,7 +132,7 @@ const UsaMap = ({ params }) => {
 
   const getCountforED = (geoId, presentState, flag) => {
     var cnt = flag == 'C' ? filteredData[geoId].count : getCountforState(presentState, currentYear);
-    return Math.trunc(cnt);
+    return isNaN(cnt) ? cnt : Math.trunc(cnt);
   }
 
   const getCountAllYearsForED = (presentState) => {
@@ -131,7 +140,7 @@ const UsaMap = ({ params }) => {
     for (var i=0; i<supportedYears.length;i++) {
       cnt = cnt + (getCountforState(presentState, supportedYears[i]) === undefined ? 0 : Number(getCountforState(presentState, supportedYears[i])))
     }
-    return Math.trunc(cnt);
+    return isNaN(cnt) ? cnt : Math.trunc(cnt);
   }
 
   const getRateHTMLforED = (geoId, presentState, flag) => {
@@ -144,7 +153,7 @@ const UsaMap = ({ params }) => {
     {
       rate = getRateforED(geoId, presentState, flag);
     }
-    leftRateStr = leftRateStr + '<span>' + (isNaN(rate) ? 0 : rate) + '</span></br>'
+    leftRateStr = leftRateStr + '<span>' + (isNaN(rate) ? getText(rate) : rate) + '</span></br>'
     return leftRateStr;
   }
 
@@ -158,7 +167,7 @@ const UsaMap = ({ params }) => {
     {
       cnt = getCountforED(geoId, presentState, flag);
     }
-    leftCntStr = leftCntStr + '<span>' + (isNaN(cnt) ? 0 : cnt) + '</span></br>'
+    leftCntStr = leftCntStr + '<span>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
     return leftCntStr;
   }
 
