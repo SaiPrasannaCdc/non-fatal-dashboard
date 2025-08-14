@@ -1173,7 +1173,7 @@ export default function App(params) {
         )}
       </div>
       <div className='data-tables'>
-        <div className="datatable-container">
+        {/* <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleDatatable}>
             Data tables, {drugOptions[currentDrug]['titleForDropDown']}
             {showDatatable && <span>{String.fromCharCode(8722)}</span>}
@@ -1183,7 +1183,7 @@ export default function App(params) {
             <div className="datatable-body">
               <Datatable params={{ data, stateNames, monthNames, supportedYears, dataSourceOptions, drugOptions, currentDataSource, currentDrug, currentState, currentTimeframe, currentMonth, currentYear, currentDataType, currentYearCompare, currentYearGroup, stateDropdownOptions }} />
             </div>}
-        </div>
+        </div> */}
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: drugColor }} onClick={toggleFootnotes}>
             Footnotes
