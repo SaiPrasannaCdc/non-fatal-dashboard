@@ -63,10 +63,13 @@ function DataTable508(params) {
     var ret = val;
 
     if (val == -1)
-      ret = '*';
+      ret = 'Data not available/not reported';
+
+    if (val == -2)
+      ret = 'Unfunded State';
 
     if (val == 0)
-      ret = '†';
+      ret = 'Data Suppressed';
 
     return ret;
   }
@@ -78,7 +81,7 @@ function DataTable508(params) {
           <caption>{caption}</caption>
           <thead>
           <tr>
-              <th scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
+              <th className={'keepSticky'} scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
             </tr>
             <tr>
               {!isArray && [data].map((d, index) => 

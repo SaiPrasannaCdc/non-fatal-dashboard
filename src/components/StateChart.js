@@ -213,7 +213,7 @@ function StateChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateStateChartData(dataRates)}
           labelOverrides={{
-            'rate': 'Rate of nonfatal ' + drugOptions[currentDrug].titleForDropDown + ' visits per 100,000 persons'
+            'rate': 'Rate*'
           }}
           xAxisKey={'Jurisdiction'}
           highlight={stateNames[currentState]}

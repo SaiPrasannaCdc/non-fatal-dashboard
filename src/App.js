@@ -1283,14 +1283,14 @@ const getYears = (startYrInp, endYrInp) => {
   const sexChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          <span className="individual-header margin-top">By Sex</span>
+        <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
+          {!accessible && <span className="individual-header margin-top">By Sex</span>}
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={sexChartRef}>
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
                 width={width * 0.5}
-                height={620} //TODO
+                height={!accessible ? 620 : 100} //TODO
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
                 drugOptions={drugOptions}
@@ -1308,8 +1308,8 @@ const getYears = (startYrInp, endYrInp) => {
   const ageChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          <span className="individual-header margin-top">By Age (In years)</span>
+        <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
+          {!accessible && <span className="individual-header margin-top">By Age (In years)</span>}
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={ageChartRef}>
             <AgeChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
@@ -1336,8 +1336,8 @@ const getYears = (startYrInp, endYrInp) => {
   const sexAgeChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          <span className="individual-header margin-top">By Age (In years) and Sex</span>
+        <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
+          {!accessible && <span className="individual-header margin-top">By Age (In years) and Sex</span>}
           <div class='' ref={sexAgeChartRef}>
             <SexAgeChart 
             data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
@@ -1943,7 +1943,17 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
           }
           {stateBarChartMemo}
-          {getFootNotesForData()}
+          {!accessible && getFootNotesForData()}
+          
+          {accessible &&
+            <table style={{width: '100%'}}>
+              <tr>
+                <td style={{width: '100%'}}>
+                  <div><span><small><i><sup>*</sup>Rate of nonfatal {drugOptions[currentDrug].titleForDropDown} overdoses per 100,000 Total ED Visits.</i></small></span></div>
+                </td>
+              </tr>
+            </table>
+          }
 
       <section>
 
@@ -2068,6 +2078,7 @@ const getYears = (startYrInp, endYrInp) => {
        <br></br>
         {drugsBarChartMemo}
         <br></br>
+        {!accessible &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '15%'}}></td>
@@ -2080,6 +2091,17 @@ const getYears = (startYrInp, endYrInp) => {
             <td style={{width: '5%'}}></td>
           </tr>
         </table>
+        }
+        {accessible &&
+        <table style={{width: '100%'}}>
+          <tr>
+            <td style={{width: '100%'}}>
+              <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses per 100,000 Total ED Visits.</i></small></span></div>
+              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+            </td>
+          </tr>
+        </table>
+        }
       </section>
 
       <section>
@@ -2234,6 +2256,7 @@ const getYears = (startYrInp, endYrInp) => {
           }
           {lineChartMemo}
           <br></br>
+          {!accessible &&
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '5%'}}></td>
@@ -2250,6 +2273,17 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '15%'}}></td>
             </tr>
           </table>
+        }
+        {accessible &&
+          <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '100%'}}>
+                  <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses per 100,000 Total ED Visits.</i></small></span></div>
+                 <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
+              </td>
+            </tr>
+          </table>
+        }
       </section>
 
       <section>
@@ -2362,7 +2396,15 @@ const getYears = (startYrInp, endYrInp) => {
               </table>
             }
           {usaMapMemo}
-          {accessible && getFootNotesForData()}
+          {accessible &&
+          <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '100%'}}>
+                  <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses per 100,000 Total ED Visits.</i></small></span></div>
+              </td>
+            </tr>
+          </table>
+        }
       </section>
 
        <section>
@@ -2491,26 +2533,44 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
           <br></br>
-          <table>
-            <tr>
-              <td style={{width: '50%'}}>
-                {sexChartMemo}
-                {accessible && getFootNotesForData()}
-              </td>
-              <td style={{width: '50%'}}>
-                {ageChartMemo}
-                {accessible && getFootNotesForData()}
-              </td>
-            </tr>
-            <tr>
-              <td style={{width: '50%'}}>
-                {sexAgeChartMemo}
-                {accessible && getFootNotesForData()}
-              </td>
-              <td style={{width: '50%'}}>
-              </td>
-            </tr>
-          </table>
+          {!accessible &&
+            <table>
+              <tr>
+                <td style={{width: '50%'}}>
+                  {sexChartMemo}
+                </td>
+                <td style={{width: '50%'}}>
+                  {ageChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '50%'}}>
+                  {sexAgeChartMemo}
+                </td>
+                <td style={{width: '50%'}}>
+                </td>
+              </tr>
+            </table>
+          }
+          {accessible &&
+            <table>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ageChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '0%'}}>
+                  {sexAgeChartMemo}
+                </td>
+              </tr>
+            </table>
+          }
       </section>
 
       <div className='data-tables'>

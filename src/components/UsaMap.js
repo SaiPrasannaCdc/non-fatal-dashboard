@@ -309,7 +309,7 @@ const UsaMap = (params) => {
       <br></br>
       <table style={{width: '100%'}}>
         <tr>
-          <td style={{width: '79%', verticalAlign: 'top', height: '800'}} >
+          <td style={{width: '79%', verticalAlign: 'top', height: !accessible ? '800' : 'auto'}} >
             {!accessible && 
               <div>
                 <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
@@ -332,19 +332,18 @@ const UsaMap = (params) => {
             <DataTable508
                 data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
-                  'rate': 'Rate',
-                  'count': 'Count'
+                  'rate': 'Rate*',
+                  'count': 'Count*'
                 }}
                 xAxisKey={'Jurisdiction'}
                 highlight={stateNames[currentState]}
                 transforms={{
                   rate: num => (isNaN(num) ? num : num)
                 }}
-                height={400}
               />
           }
           </td>
-          <td style={{width: '21%'}}>
+          <td style={{width: '21%', verticalAlign: 'top'}}>
             <table>
               <br></br>
               <tr>

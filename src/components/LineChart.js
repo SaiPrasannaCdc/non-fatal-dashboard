@@ -824,13 +824,14 @@ const adjustCrowdedLabels = () => {
         <DataTable508
           data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames)}
           labelOverrides={{
-            'all': 'All Drugs',
-            'benzodiazepine': 'Benzodiazepine',
-            'cocaine': 'Cocaine',
-            'heroin': 'Heroin',
-            'methamphetamine': 'Methamphetamine',
-            'opioids': 'All Opioids',
-            'stimulants': 'All Stimulants',
+            'all': 'All Drugs*',
+            'benzodiazepine': 'Benzodiazepine*',
+            'cocaine': 'Cocaine*',
+            'heroin': 'Heroin*',
+            'fentanyl': 'Fentanyl*',
+            'methamphetamine': 'Methamphetamine*',
+            'opioids': 'All Opioids*',
+            'stimulants': 'All Stimulants*',
           }}
           xAxisKey={'Year/Month'}
           transforms={{

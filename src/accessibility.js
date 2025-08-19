@@ -80,7 +80,7 @@ export const AccessibilityFunctions = {
           if (selDrugs.includes('stimulants'))
             obj['stimulants'] = data['US'][i].stimulants;
 
-          let monyr = data['US'][i].year;
+          let monyr = data['US'][i].year.substring(0,4) + '/' + data['US'][i].year.substring(4);
           myData[monyr] = obj;
         }
       }
@@ -89,7 +89,7 @@ export const AccessibilityFunctions = {
         for (var i=0;i<Object.keys(data['US']).length;i++)
         {
           let obj = {};
-          if (currentDrug == 'alldrug') {
+          if (currentDrug == 'all') {
             obj['Overall'] = data['US'][i].all;
             obj[stateNames[state]] = data[state][i].all;
           }
@@ -129,7 +129,7 @@ export const AccessibilityFunctions = {
             obj[stateNames[state]] = data[state][i].stimulants;
           }
 
-          let monyr = data['US'][i].year;
+          let monyr = data['US'][i].year.substring(0,4) + '/' + data['US'][i].year.substring(4);
           myData[monyr] = obj;
         }
       }

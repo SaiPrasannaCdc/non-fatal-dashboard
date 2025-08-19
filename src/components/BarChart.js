@@ -172,7 +172,7 @@ function BarChart(params) {
             'methamphetamine': 'Methamphetamine',
             'opioids': 'All Opioids',
             'stimulants': 'All Stimulants',
-            'rate': 'Rate of nonfatal visits per 100,000 persons'
+            'rate': 'Rate*'
           }}
           xAxisKey={'Drug'}
           transforms={{

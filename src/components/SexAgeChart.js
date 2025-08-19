@@ -373,8 +373,8 @@ function SexAgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
-            'rate1': 'Rate1 of nonfatal all drug visits per 100,000 persons',
-            'rate2': 'Rate2 of nonfatal all drug visits per 100,000 persons'
+            'rate': 'Rate*',
+            'Age Group': 'By Age (In years) and Sex'
           }}
           xAxisKey={'Age Group'}
           transforms={{
@@ -382,6 +382,20 @@ function SexAgeChart(params) {
           }}
           height={300}
         />
+        <table>
+          <tr>
+            <td>
+              <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses involving {drugOptions[currentDrug].titleAll} per 100,000 Total ED Visits.</i></small></span></div>
+            </td>
+          </tr>
+          {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) &&
+          <tr>
+            <td>
+              <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
+            </td>
+          </tr>
+          }
+        </table>
         </>        
       ) : (
       <svg style={{ height }}>
