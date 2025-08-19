@@ -144,7 +144,7 @@ export const AccessibilityFunctions = {
       for (var i=0;i<data.length;i++)
       {
         let obj = {};
-        let age = data[i].age;
+        let age = data[i].ageN;
         obj['Female'] = data[i].F;
         obj['Male'] = data[i].M;
         myData[age] = obj;
@@ -175,7 +175,7 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         obj['rate'] = data[i].value;
-        myData[data[i].age] = obj;
+        myData[data[i].ageN] = obj;
       }
 
 

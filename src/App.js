@@ -1949,7 +1949,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table style={{width: '100%'}}>
               <tr>
                 <td style={{width: '100%'}}>
-                  <div><span><small><i><sup>*</sup>Rate of nonfatal {drugOptions[currentDrug].titleForDropDown} overdoses per 100,000 Total ED Visits.</i></small></span></div>
+                  <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses involving {drugOptions[currentDrug].titleForDropDown} per 100,000 Total ED Visits.</i></small></span></div>
                 </td>
               </tr>
             </table>
@@ -2400,7 +2400,7 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
-                  <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses per 100,000 Total ED Visits.</i></small></span></div>
+                  <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 100,000 Total ED Visits.</i></small></span></div>
               </td>
             </tr>
           </table>

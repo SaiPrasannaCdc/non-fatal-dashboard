@@ -374,7 +374,10 @@ function SexAgeChart(params) {
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
             'rate': 'Rate*',
-            'Age Group': 'By Age (In years) and Sex'
+            'Age Group': 'By Age (In years) and Sex',
+            'Female': 'Female*',
+            'Male': 'Male*',
+            '0–14': '<15'
           }}
           xAxisKey={'Age Group'}
           transforms={{
