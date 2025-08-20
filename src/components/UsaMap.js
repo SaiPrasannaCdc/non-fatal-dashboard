@@ -218,26 +218,63 @@ const UsaMap = (params) => {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
 
-    return (
-      <Fragment>
+    if (!accessible)
+    {
+      return (
         <Fragment>
-          <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
-          {
-            entries.map((drug, index) => (
-              <div>
-                <div class={`drugDiv-${drug[0]}`}>
-                  <span class={(selectedDrugsMap.includes(drug[0])) ? drug[0] : 'notSelectedMap'} onClick={(event) => { handleDrugSelectionsMapChange(event, drug[0]) }}></span>
-                  <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
-                </div>
-                <br></br>
-                </div>
-                
-            ))
-          }
-          </div>
+          <Fragment>
+            <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+            {
+              entries.map((drug, index) => (
+                <div>
+                  <div class={`drugDiv-${drug[0]}`}>
+                    <span class={(selectedDrugsMap.includes(drug[0])) ? drug[0] : 'notSelectedMap'} onClick={(event) => { handleDrugSelectionsMapChange(event, drug[0]) }}></span>
+                    <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                  </div>
+                  <br></br>
+                  </div>
+                  
+              ))
+            }
+            </div>
+          </Fragment>
         </Fragment>
-      </Fragment>
-    )
+      )
+    }
+    else
+    {
+      return (
+        <Fragment>
+          <Fragment>
+            <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+            {
+              entries.map((drug, index) => (
+                index < 4 &&
+                  <div class={`drugDiv-${drug[0]}`}>
+                    <span class={(selectedDrugsMap.includes(drug[0])) ? drug[0] : 'notSelectedMap'} onClick={(event) => { handleDrugSelectionsMapChange(event, drug[0]) }}></span>
+                    <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                  </div>
+                  
+              ))
+            }
+            </div>
+          </Fragment>
+          <Fragment>
+          <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+            {
+              entries.map((drug, index) => (
+                index >= 4 &&
+                <div class={`drugDiv-${drug[0]}`}>
+                        <span class={(selectedDrugsMap.includes(drug[0])) ? drug[0] : 'notSelectedMap'} onClick={(event) => { handleDrugSelectionsMapChange(event, drug[0]) }}></span>
+                        <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                      </div>
+              ))
+            }
+            </div>
+          </Fragment>
+        </Fragment>
+      )
+    }
   }
 
   const constructGeoJsx = (geographies, projection, state = false) => {
@@ -307,9 +344,10 @@ const UsaMap = (params) => {
         className="tooltip"
       />
       <br></br>
+      {!accessible &&
       <table style={{width: '100%'}}>
         <tr>
-          <td style={{width: '79%', verticalAlign: 'top', height: !accessible ? '800' : 'auto'}} >
+          <td style={{width: '79%', verticalAlign: 'top', height: '800'}} >
             {!accessible && 
               <div>
                 <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
@@ -327,20 +365,6 @@ const UsaMap = (params) => {
               </svg>
               <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
             </div>
-          }
-          {accessible && 
-            <DataTable508
-                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
-                labelOverrides={{
-                  'rate': 'Rate*',
-                  'count': 'Count*'
-                }}
-                xAxisKey={'Jurisdiction'}
-                highlight={stateNames[currentState]}
-                transforms={{
-                  rate: num => (isNaN(num) ? num : num)
-                }}
-              />
           }
           </td>
           <td style={{width: '21%', verticalAlign: 'top'}}>
@@ -360,7 +384,6 @@ const UsaMap = (params) => {
               <br></br>
               <tr>
                 <td>
-                  {!accessible &&
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
@@ -395,7 +418,6 @@ const UsaMap = (params) => {
                       </td>
                     </tr>
                   </table>
-                  }
                 </td>
               </tr>
             </table>
@@ -403,6 +425,42 @@ const UsaMap = (params) => {
           </td>
         </tr>
       </table>
+      }
+      {accessible &&
+      <table style={{width: '100%'}}>
+          <tr>
+            <td style={{width: '21%', verticalAlign: 'top'}}>
+              <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControls()}
+                    </td>
+                  </tr>
+                  </table>
+            </td>
+          </tr>
+          <tr>
+          <td style={{width: '100%', verticalAlign: 'top', height: 'auto'}} >
+            <DataTable508
+                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                labelOverrides={{
+                  'rate': 'Rate*',
+                  'count': 'Count*'
+                }}
+                xAxisKey={'Jurisdiction'}
+                highlight={stateNames[currentState]}
+                transforms={{
+                  rate: num => (isNaN(num) ? num : num)
+                }}
+              />
+          </td>
+          </tr>
+      </table>
+      }
       
       
     </>
