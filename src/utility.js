@@ -564,11 +564,11 @@ export const UtilityFunctions = {
   },
 
   convertValue : (val) => {
-    if (val == 8888)
+    if (val == 8888) //data not available
       return -1;
-    else if (val == 7777)
+    else if (val == 7777) //unfunded
       return -2;
-   else if (val == 9999)
+   else if (val == 9999) //data supressed
       return 0;
   else
       return val;

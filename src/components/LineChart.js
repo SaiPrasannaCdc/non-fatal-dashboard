@@ -225,7 +225,7 @@ function LineChart(params) {
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 500;
   specs['fontSize'] = 16;
-  specs['height'] = 450;
+  specs['height'] = 500;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
   specs['margin'] = isPeriod ? { top: 15, bottom: 65, left: (currentState != 'US' && !showOverall ? 125 : 75), right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
@@ -529,7 +529,7 @@ const adjustCrowdedLabels = () => {
     let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
     let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4));
     let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
-    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rate == 0 ? 'Data Suppressed' : (rate == '-1.0' ? 'Data not available/not reported' : rate)}</p>`
+    let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rate == 0 ? 'Data Suppressed' : (rate == '-1.0' ? 'Data not available/not reported' : (rate == '-2.0' ? 'Unfunded State' : rate))}</p>`
     let parStr = `</strong></span>` + midStr + `</td></tr></table>`;
     return str + stStr + `</td></tr><tr><td class='alignCenter'>` + msgStr + parStr;
   }
@@ -741,6 +741,8 @@ const adjustCrowdedLabels = () => {
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] > 0 && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == 0 && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-1.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '†' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-2.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '^' : ''}</text>}
+
                         </Group>
                         )
                     })}
@@ -822,15 +824,17 @@ const adjustCrowdedLabels = () => {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames)}
+          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, showOverall)}
           labelOverrides={{
-            'all': 'All Drugs',
-            'benzodiazepine': 'Benzodiazepine',
-            'cocaine': 'Cocaine',
-            'heroin': 'Heroin',
-            'methamphetamine': 'Methamphetamine',
-            'opioids': 'All Opioids',
-            'stimulants': 'All Stimulants',
+            'all': 'All Drugs*',
+            'benzodiazepine': 'Benzodiazepine*',
+            'cocaine': 'Cocaine*',
+            'heroin': 'Heroin*',
+            'fentanyl': 'Fentanyl*',
+            'methamphetamine': 'Methamphetamine*',
+            'opioids': 'All Opioids*',
+            'stimulants': 'All Stimulants*',
+            'Overall': 'Overall*',
           }}
           xAxisKey={'Year/Month'}
           transforms={{
@@ -865,7 +869,7 @@ const adjustCrowdedLabels = () => {
                     dy: 5
                   })}
                 />
-                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Nonfatal Overdoses per 10,000 Total ED Visits</text>
+                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</text>
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}

@@ -155,7 +155,7 @@ function BarChart(params) {
   }, [selectedDrugs, currentYear]);
 
   const getXAxisTopLabel = () => {
-      return 'Nonfatal Overdoses per 10,000 Total ED Visits';
+      return 'Suspected Nonfatal Overdoses per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
@@ -172,7 +172,7 @@ function BarChart(params) {
             'methamphetamine': 'Methamphetamine',
             'opioids': 'All Opioids',
             'stimulants': 'All Stimulants',
-            'rate': 'Rate of nonfatal visits per 100,000 persons'
+            'rate': 'Rate*'
           }}
           xAxisKey={'Drug'}
           transforms={{
@@ -245,7 +245,7 @@ function BarChart(params) {
                         dy="22"
                         dx={"0"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: Not Funded`}>***
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: Not Funded`}>^
                         </text>
                     }
                     {

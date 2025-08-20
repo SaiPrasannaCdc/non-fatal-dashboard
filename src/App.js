@@ -1063,9 +1063,9 @@ const getYears = (startYrInp, endYrInp) => {
       for (let i=0;i<stateData.length;i++) {
         if (!tmpJuris.includes(stateData[i].geoid) && stateData[i].geoid.length > 0 && stateData[i].YYYYMM == String(yr) + String(mon).padStart(2, '0'))
           if (!isMap) {
-            if (isValidStateData(stateData[i])) {
+            //if (isValidStateData(stateData[i])) {
               tmpJuris.push(stateData[i].geoid)
-            }
+            //}
           }
           else
           {
@@ -1096,7 +1096,7 @@ const getYears = (startYrInp, endYrInp) => {
       if (freq == 'Monthly') {
         for (let i=0;i<keyedRawDataMonthly.length;i++) {
           if (!tmpJuris.includes(keyedRawDataMonthly[i].geoid) && keyedRawDataMonthly[i].geoid.length > 0 && keyedRawDataMonthly[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
-            if (isValidStateData(keyedRawDataMonthly[i]))
+            //if (isValidStateData(keyedRawDataMonthly[i]))
               tmpJuris.push(keyedRawDataMonthly[i].geoid)
         }
       }
@@ -1104,7 +1104,7 @@ const getYears = (startYrInp, endYrInp) => {
       {
         for (let i=0;i<keyedRawDataAnnual.length;i++) {
           if (!tmpJuris.includes(keyedRawDataAnnual[i].geoid) && keyedRawDataAnnual[i].geoid.length > 0 && keyedRawDataAnnual[i].YYYYMM == String(yr) + String(monFinal).padStart(2, '0'))
-            if (isValidStateData(keyedRawDataAnnual[i]))
+            //if (isValidStateData(keyedRawDataAnnual[i]))
               tmpJuris.push(keyedRawDataAnnual[i].geoid)
         }
       }
@@ -1207,7 +1207,7 @@ const getYears = (startYrInp, endYrInp) => {
       <BarChart
         data={currentStateBar === 'US' ? (timelineBar == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly) : (timelineBar == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly)}
         width={width} 
-        height={850} 
+        height={830} 
         el={drugsBarChartRef}
         currentState={currentStateBar}
         selectedDrugs={selectedDrugsBar}
@@ -1283,14 +1283,14 @@ const getYears = (startYrInp, endYrInp) => {
   const sexChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          <span className="individual-header margin-top">By Sex</span>
+        <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
+          {!accessible && <span className="individual-header margin-top">By Sex</span>}
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={sexChartRef}>
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
                 width={width * 0.5}
-                height={620} //TODO
+                height={640} //TODO
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
                 drugOptions={drugOptions}
@@ -1308,15 +1308,15 @@ const getYears = (startYrInp, endYrInp) => {
   const ageChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          <span className="individual-header margin-top">By Age (In years)</span>
+        <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
+          {!accessible && <span className="individual-header margin-top">By Age (In years)</span>}
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={ageChartRef}>
             <AgeChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
                 width={width * 0.5}
-                height={620} //TODO
+                height={640} //TODO
                 header={false}
                 el={ageChartRef}
                 overallMax={100}
@@ -1336,8 +1336,8 @@ const getYears = (startYrInp, endYrInp) => {
   const sexAgeChartMemo = useMemo(() =>
     <>
     <div className="column column-right">
-        <div className={"subsection marked " + + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          <span className="individual-header margin-top">By Age (In years) and Sex</span>
+        <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
+          {!accessible && <span className="individual-header margin-top">By Age (In years) and Sex</span>}
           <div class='' ref={sexAgeChartRef}>
             <SexAgeChart 
             data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
@@ -1943,19 +1943,29 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
           }
           {stateBarChartMemo}
-          {getFootNotesForData()}
+          {!accessible && getFootNotesForData()}
+          
+          {accessible &&
+            <table style={{width: '100%'}}>
+              <tr>
+                <td style={{width: '100%'}}>
+                  <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[currentDrug].titleForDropDown} per 10,000 Total ED Visits.</i></small></span></div>
+                </td>
+              </tr>
+            </table>
+          }
 
       <section>
 
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Nonfatal Overdose ED Visits<sup>§</sup><sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup><sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-             Suspected Nonfatal Overdose ED Visits<sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+             Suspected Nonfatal Overdose ED Visits<sup>§</sup><sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup><sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -1964,7 +1974,7 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '4%'}}></td>
-              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
               <td style={{'width': '18%'}}>
                 <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall</option>
@@ -2067,7 +2077,8 @@ const getYears = (startYrInp, endYrInp) => {
         </div> 
        <br></br>
         {drugsBarChartMemo}
-        <br></br>
+        {!accessible &&<br></br>}
+        {!accessible &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '15%'}}></td>
@@ -2080,6 +2091,17 @@ const getYears = (startYrInp, endYrInp) => {
             <td style={{width: '5%'}}></td>
           </tr>
         </table>
+        }
+        {accessible &&
+        <table style={{width: '100%'}}>
+          <tr>
+            <td style={{width: '100%'}}>
+              <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses per 10,000 Total ED Visits.</i></small></span></div>
+              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+            </td>
+          </tr>
+        </table>
+        }
       </section>
 
       <section>
@@ -2131,7 +2153,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table style={{'width': '100%'}}>
               <tr>
               <td style={{'width': '12%'}}></td>
-              <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
               <td style={{'width': '20%'}}>
                 <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
                 <option value="US">Overall</option>
@@ -2233,7 +2255,8 @@ const getYears = (startYrInp, endYrInp) => {
             
           }
           {lineChartMemo}
-          <br></br>
+          {!accessible &&<br></br>}
+          {!accessible &&
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '5%'}}></td>
@@ -2250,6 +2273,17 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '15%'}}></td>
             </tr>
           </table>
+        }
+        {accessible &&
+          <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '100%'}}>
+                  <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses per 10,000 Total ED Visits.</i></small></span></div>
+                 <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
+              </td>
+            </tr>
+          </table>
+        }
       </section>
 
       <section>
@@ -2362,7 +2396,15 @@ const getYears = (startYrInp, endYrInp) => {
               </table>
             }
           {usaMapMemo}
-          {accessible && getFootNotesForData()}
+          {accessible &&
+          <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '100%'}}>
+                  <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits.</i></small></span></div>
+              </td>
+            </tr>
+          </table>
+        }
       </section>
 
        <section>
@@ -2491,26 +2533,44 @@ const getYears = (startYrInp, endYrInp) => {
             </tr>
           </table>
           <br></br>
-          <table>
-            <tr>
-              <td style={{width: '50%'}}>
-                {sexChartMemo}
-                {accessible && getFootNotesForData()}
-              </td>
-              <td style={{width: '50%'}}>
-                {ageChartMemo}
-                {accessible && getFootNotesForData()}
-              </td>
-            </tr>
-            <tr>
-              <td style={{width: '50%'}}>
-                {sexAgeChartMemo}
-                {accessible && getFootNotesForData()}
-              </td>
-              <td style={{width: '50%'}}>
-              </td>
-            </tr>
-          </table>
+          {!accessible &&
+            <table>
+              <tr>
+                <td style={{width: '50%'}}>
+                  {sexChartMemo}
+                </td>
+                <td style={{width: '50%'}}>
+                  {ageChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '50%'}}>
+                  {sexAgeChartMemo}
+                </td>
+                <td style={{width: '50%'}}>
+                </td>
+              </tr>
+            </table>
+          }
+          {accessible &&
+            <table>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ageChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '0%'}}>
+                  {sexAgeChartMemo}
+                </td>
+              </tr>
+            </table>
+          }
       </section>
 
       <div className='data-tables'>
@@ -2540,7 +2600,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
         <div className="datatable-container">
           <button className="h2" style={{ backgroundColor: '#005EAA' }} onClick={toggleFootNotes}>
-            Footnotes 
+            References 
             {showFootNotes && <span>{String.fromCharCode(8722)}</span>}
             {!showFootNotes && <span>{String.fromCharCode(43)}</span>}
           </button>
@@ -2555,7 +2615,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
 
-      <a download="DOSE_dashboard_output-download.xlsx" href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
+      <a download="DOSE_SYS_dashboard_07242025.xlsx" href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
 
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
 

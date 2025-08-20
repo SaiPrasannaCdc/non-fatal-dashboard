@@ -48,7 +48,7 @@ export const AccessibilityFunctions = {
   
     },  
 
-    generateLineChartData : (data, currentDrug, selDrugs, state, stateNames) => {
+    generateLineChartData : (data, currentDrug, selDrugs, state, stateNames, showOverall) => {
 
       let myData = {};
     
@@ -80,7 +80,7 @@ export const AccessibilityFunctions = {
           if (selDrugs.includes('stimulants'))
             obj['stimulants'] = data['US'][i].stimulants;
 
-          let monyr = data['US'][i].year;
+          let monyr = data['US'][i].year.substring(0,4) + '/' + data['US'][i].year.substring(4);
           myData[monyr] = obj;
         }
       }
@@ -88,48 +88,66 @@ export const AccessibilityFunctions = {
       {
         for (var i=0;i<Object.keys(data['US']).length;i++)
         {
+          var stateN = stateNames[state] + '*';
+
           let obj = {};
-          if (currentDrug == 'alldrug') {
-            obj['Overall'] = data['US'][i].all;
-            obj[stateNames[state]] = data[state][i].all;
+          if (currentDrug == 'all') {
+            if (showOverall)
+              obj['Overall'] = data['US'][i].all;
+
+            obj[stateN] = data[state][i].all;
           }
 
           if (currentDrug == 'benzodiazepine') {
-             obj['Overall'] = data['US'][i].benzodiazepine;
-            obj[stateNames[state]] = data[state][i].benzodiazepine;
+            if (showOverall)
+                obj['Overall'] = data['US'][i].benzodiazepine;
+
+            obj[stateN] = data[state][i].benzodiazepine;
           }
 
           if (currentDrug == 'cocaine') {
-            obj['Overall'] = data['US'][i].cocaine;
-            obj[stateNames[state]] = data[state][i].cocaine;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].cocaine;
+
+            obj[stateN] = data[state][i].cocaine;
           }
 
           if (currentDrug == 'fentanyl') {
-             obj['Overall'] = data['US'][i].fentanyl;
-            obj[stateNames[state]] = data[state][i].fentanyl;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].fentanyl;
+
+            obj[stateN] = data[state][i].fentanyl;
           }
 
           if (currentDrug == 'heroin') {
-             obj['Overall'] = data['US'][i].heroin;
-            obj[stateNames[state]] = data[state][i].heroin;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].heroin;
+
+            obj[stateN] = data[state][i].heroin;
           }
 
           if (currentDrug == 'methamphetamine') {
-            obj['Overall'] = data['US'][i].methamphetamine;
-            obj[stateNames[state]] = data[state][i].methamphetamine;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].methamphetamine;
+
+            obj[stateN] = data[state][i].methamphetamine;
           }
 
           if (currentDrug == 'opioids') {
+            if (showOverall)
              obj['Overall'] = data['US'][i].opioids;
-            obj[stateNames[state]] = data[state][i].opioids;
+
+            obj[stateN] = data[state][i].opioids;
           }
 
           if (currentDrug == 'stimulants') {
+            if (showOverall)
              obj['Overall'] = data['US'][i].stimulants;
-            obj[stateNames[state]] = data[state][i].stimulants;
+
+            obj[stateN] = data[state][i].stimulants;
           }
 
-          let monyr = data['US'][i].year;
+          let monyr = data['US'][i].year.substring(0,4) + '/' + data['US'][i].year.substring(4);
           myData[monyr] = obj;
         }
       }
@@ -144,7 +162,7 @@ export const AccessibilityFunctions = {
       for (var i=0;i<data.length;i++)
       {
         let obj = {};
-        let age = data[i].age;
+        let age = data[i].ageN;
         obj['Female'] = data[i].F;
         obj['Male'] = data[i].M;
         myData[age] = obj;
@@ -175,7 +193,7 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         obj['rate'] = data[i].value;
-        myData[data[i].age] = obj;
+        myData[data[i].ageN] = obj;
       }
 
 
