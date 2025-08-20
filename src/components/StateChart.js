@@ -128,7 +128,7 @@ const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear,
       }
   }
 
-  return UtilityFunctions.deleteStateKeys(finalData);
+  return finalData;
 }
 
 function StateChart(params) {
@@ -203,7 +203,7 @@ function StateChart(params) {
   }, [currentDrug, currentYear]);
 
   const getXAxisLabel = () => {
-      return 'Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
+      return 'Suspected Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
@@ -297,7 +297,18 @@ function StateChart(params) {
                         {'†'}
                       </text>
                     }
-                    
+                    {
+                      rate == -2 &&
+                        <text 
+                        className="bar-label"
+                        x={rate < 0 ? 0 : xScale(rate)}
+                        y={yScale(name)}
+                        dy="16"
+                        dx="0"
+                        data-tip={`<strong>${name}</strong><br/><br/>Rate: Unfunded State`}>
+                        {'^'}
+                      </text>
+                    }
                   </Group>
                 )}
               )}

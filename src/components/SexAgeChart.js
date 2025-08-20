@@ -383,12 +383,12 @@ function SexAgeChart(params) {
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-          height={300}
+          height={350}
         />
         <table>
           <tr>
             <td>
-              <div><span><small><i><sup>*</sup>Rate of nonfatal overdoses involving {drugOptions[currentDrug].titleAll} per 100,000 Total ED Visits.</i></small></span></div>
+              <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED Visits.</i></small></span></div>
             </td>
           </tr>
           {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) &&
@@ -453,7 +453,7 @@ function SexAgeChart(params) {
               }
             }}
           /> */}
-          <text x={xMax/2} y={yMax+ 40} fill={'#000066'} fontSize={13} textAnchor="middle">Nonfatal Overdoses Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>
+          <text x={xMax/2} y={yMax+ 40} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>
           {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax+ 70} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
           {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 100 : 70)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
           {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 120 : 90)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
