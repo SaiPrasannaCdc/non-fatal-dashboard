@@ -149,7 +149,7 @@ export const AccessibilityFunctions = {
             obj[stateN] = data[state][i].stimulants;
           }
 
-          let monyr = utilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4);
+          let monyr = UtilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4);
           myData[monyr] = obj;
         }
       }

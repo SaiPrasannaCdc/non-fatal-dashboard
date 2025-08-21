@@ -306,7 +306,7 @@ function StateChart(params) {
                         dy="16"
                         dx="0"
                         data-tip={`<strong>${name}</strong><br/><br/>Rate: Unfunded State`}>
-                        {'^'}
+                        {'**'}
                       </text>
                     }
                   </Group>
