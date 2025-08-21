@@ -169,6 +169,7 @@ function BarChart(params) {
             'benzodiazepine': 'Benzodiazepine',
             'cocaine': 'Cocaine',
             'heroin': 'Heroin',
+            'fentanyl': 'Fentanyl',
             'methamphetamine': 'Methamphetamine',
             'opioids': 'All Opioids',
             'stimulants': 'All Stimulants',
@@ -245,7 +246,7 @@ function BarChart(params) {
                         dy="22"
                         dx={"0"}
                         fill="black"
-                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Overdoses: Not Funded`}>^
+                        data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Unfunded State`}>**
                         </text>
                     }
                     {

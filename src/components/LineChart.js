@@ -741,7 +741,7 @@ const adjustCrowdedLabels = () => {
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] > 0 && <Circle cx={specs.xScale(d[specs.xKey])} cy={specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == 0 && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-1.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '†' : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-2.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '^' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-2.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '**' : ''}</text>}
 
                         </Group>
                         )
@@ -835,12 +835,14 @@ const adjustCrowdedLabels = () => {
             'opioids': 'All Opioids*',
             'stimulants': 'All Stimulants*',
             'Overall': 'Overall*',
+            'Year/Month': 'Month Year',
           }}
           xAxisKey={'Year/Month'}
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
+          noSort={true}
         />
         </>        
       ) : (

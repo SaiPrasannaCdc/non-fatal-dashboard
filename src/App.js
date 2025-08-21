@@ -1556,6 +1556,10 @@ const getYears = (startYrInp, endYrInp) => {
                 <td style={{ width: '10%' }}></td>
                 <td style={{ width: '95%' }}><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></td>
               </tr>
+              <tr style={{ textAlign: 'left'}}>
+                <td style={{ width: '10%' }}></td>
+                <td style={{ width: '95%' }}><small><i><sup>**</sup>{'Unfunded State'}</i></small></td>
+              </tr>
             </table>
           </div>
     )
@@ -2087,6 +2091,7 @@ const getYears = (startYrInp, endYrInp) => {
               <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
               <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
               <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+              <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
             </td>
             <td style={{width: '5%'}}></td>
           </tr>
@@ -2269,6 +2274,7 @@ const getYears = (startYrInp, endYrInp) => {
                  (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
                   <div><span><small><i><sup>‡</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
                 }
+                <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
               </td>
               <td style={{width: '15%'}}></td>
             </tr>

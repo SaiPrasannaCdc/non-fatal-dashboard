@@ -1,3 +1,5 @@
+import { UtilityFunctions } from './utility'
+
 export const AccessibilityFunctions = {
 
     generateStateChartData : (data) => {
@@ -80,7 +82,7 @@ export const AccessibilityFunctions = {
           if (selDrugs.includes('stimulants'))
             obj['stimulants'] = data['US'][i].stimulants;
 
-          let monyr = data['US'][i].year.substring(0,4) + '/' + data['US'][i].year.substring(4);
+          let monyr = UtilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4);
           myData[monyr] = obj;
         }
       }
@@ -147,7 +149,7 @@ export const AccessibilityFunctions = {
             obj[stateN] = data[state][i].stimulants;
           }
 
-          let monyr = data['US'][i].year.substring(0,4) + '/' + data['US'][i].year.substring(4);
+          let monyr = utilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4);
           myData[monyr] = obj;
         }
       }

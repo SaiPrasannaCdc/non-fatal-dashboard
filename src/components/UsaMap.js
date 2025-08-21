@@ -438,7 +438,7 @@ const UsaMap = (params) => {
                       <tr>
                         <td style={{'width': '23%', 'verticalAlign': 'top'}}>
                           <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                          <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                          <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
                         </td>
                         <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
                           {getDrugControls()}
