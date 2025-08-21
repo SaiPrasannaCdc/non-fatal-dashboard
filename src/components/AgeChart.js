@@ -228,7 +228,7 @@ const getMaxValue = (fdata) => {
 
 function AgeChart(params) {
 
-  const viewportCutoff = 600;
+    const isSmallViewport = width < 550;
 
   const { data, year, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, accessible } = params;
   const [ animated, setAnimated ] = useState(false);
@@ -372,11 +372,12 @@ function AgeChart(params) {
                   top={adjustedHeight}
                   scale={xScale}
                   tickStroke="transparent"
+                  numTicks={isSmallViewport ? 2 : null}
                   tickLabelProps={() => ({
                     fill: '#000066',
                     fontSize: 'medium',
                     textAnchor: 'middle',
-                    transform: 'translate(0, 10)'
+                    transform: isSmallViewport ? 'rotate(-90deg)' : 'translate(0, 10)'
                   })}
                 />
               </>

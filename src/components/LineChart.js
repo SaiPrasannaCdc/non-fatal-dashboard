@@ -200,6 +200,7 @@ function LineChart(params) {
 
   const currentYear = parseInt(currentYearUntyped);
 
+  const isSmallViewport = width < 550;
   const showLabels = false;
   const currentDrugOnly = currentState != 'US' ? true : false;
 
@@ -223,7 +224,7 @@ function LineChart(params) {
   const specs = [];
   specs['width'] = width - 35; 
   specs['width'] = specs['width'];
-  specs['isSmallViewport'] = specs['width'] < 500;
+  specs['isSmallViewport'] = specs['width'] < 550;
   specs['fontSize'] = 16;
   specs['height'] = 500;
   specs['seriesOverlapMargin'] = 20;
@@ -267,18 +268,33 @@ function LineChart(params) {
 
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
+    var janCnt = 0;
     if (ticks !== undefined && ticks != null) {
       for (var i=0; i<ticks?.length; i++) {
         var tickText = ticks[i]?.childNodes[1].childNodes[0].childNodes[0].innerHTML;
+        var tickCtl = ticks[i]?.childNodes[1].childNodes[0].childNodes[0];
         var ln = ticks[i]?.getElementsByClassName("visx-line");
         if (ln !== undefined && ln != null) {
-          ln[0]?.setAttribute("y1","0");
-          ln[0]?.setAttribute('stroke-width', '1')
-          if (tickText.substring(0,3) === 'Jan') {
-            ln[0]?.setAttribute("y1","1");
-            ln[0]?.setAttribute('stroke-width', '3')
+          if (!specs.isSmallViewport) {
+            ln[0]?.setAttribute("y1","0");
+            ln[0]?.setAttribute('stroke-width', '1')
+            if (tickText.substring(0,3) === 'Jan') {
+              ln[0]?.setAttribute("y1","1");
+              ln[0]?.setAttribute('stroke-width', '3')
+            }
           }
-        }
+          else{
+            ln[0]?.setAttribute("y1","0");
+            ln[0]?.setAttribute('stroke-width', '1')
+            if (tickText.substring(0,3) === 'Jan') {
+              ln[0]?.setAttribute("y1","1");
+              ln[0]?.setAttribute('stroke-width', '3');
+              janCnt++;
+              if (janCnt > 1 && tickText.substring(4) != lookupPeriodEndYear)
+                tickCtl.innerHTML = '';
+            }
+          }
+        } 
       }
     } 
 }
@@ -768,7 +784,7 @@ const adjustCrowdedLabels = () => {
                           }
                         }
     
-                        if (currentState != 'US') {
+                        if (currentState != 'US' && !specs.isSmallViewport) {
                           return <text 
                             x={specs.xMax + 25} 
                             y={yPos}
@@ -778,7 +794,7 @@ const adjustCrowdedLabels = () => {
                               {key != 'US' ? inp.stateNames[key] : (showOverall ? 'Overall' : '')}
                           </text>
                         }
-                        else{
+                        else if (!specs.isSmallViewport){
                           return (
                             <Group>
                               <line
@@ -882,7 +898,7 @@ const adjustCrowdedLabels = () => {
                   tickLabelProps={(value) => ({
                     fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
                     fill: '#000066',
-                    textAnchor: ('start'),
+                    textAnchor: (specs.isSmallViewport ? 'middle' : 'start'),
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
@@ -896,7 +912,7 @@ const adjustCrowdedLabels = () => {
       </tr>
       </table>
       )}
-      {(!accessible && specs.isSmallViewport) && (
+      {(!accessible && !specs.isSmallViewport) && (
         <div id="line-chart-legend-container">
           <div id="line-chart-legend">
             {Object.keys(filteredData).map((key, i) =>

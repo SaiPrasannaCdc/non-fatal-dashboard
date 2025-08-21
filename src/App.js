@@ -19,11 +19,10 @@ import 'rc-slider/assets/index.css';
 import './styles.scss';
 import { UtilityFunctions } from './utility'
 
+const viewportCutoffSmall = 550;
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 const Handle = Slider.Handle;
-
-const wrapperStyle = { width: 900, marginBottom: 30, marginLeft: 10, marginTop: 5 };
 
 /* const handle = (props) => {
   const { value, dragging, index, ...restProps } = props;
@@ -252,9 +251,10 @@ export default function App( params ) {
 
   const [width, setWidth] = useState(0);
 
-  const isSmallViewport = width < 500;
+  const isSmallViewport = width < viewportCutoffSmall;
 
-
+  const wrapperStyle = { width: 900, marginBottom: 30, marginLeft: 10, marginTop: 5 };
+  const wrapperStyleM = { width: width - 20, marginBottom: 30, marginLeft: 10, marginTop: 5 };
 
   const stateBarChartRef = useRef();
   const drugsBarChartRef = useRef();
@@ -1289,7 +1289,7 @@ const getYears = (startYrInp, endYrInp) => {
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
-                width={width * 0.5}
+                width={!isSmallViewport ? (width * 0.5) : width}
                 height={640} //TODO
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
@@ -1315,7 +1315,7 @@ const getYears = (startYrInp, endYrInp) => {
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
-                width={width * 0.5}
+                width={!isSmallViewport ? (width * 0.5) : width}
                 height={640} //TODO
                 header={false}
                 el={ageChartRef}
@@ -1345,7 +1345,7 @@ const getYears = (startYrInp, endYrInp) => {
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
             currentDataType={'rate'}
-            width={width * 0.5} 
+            width={!isSmallViewport ? (width * 0.5) : width}
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
             accessible={accessible}
@@ -1407,6 +1407,7 @@ const getYears = (startYrInp, endYrInp) => {
         const entries = Object.entries(drugOptions);
         entries.sort((a, b) => a[1].barChartOrder - b[1].barChartOrder);
     
+        if (!isSmallViewport) {
         return (
           <Fragment>
             <Fragment>
@@ -1438,6 +1439,30 @@ const getYears = (startYrInp, endYrInp) => {
             </Fragment>
           </Fragment>
         )
+      }
+      else {
+              return (
+              <Fragment>
+                      <Fragment>
+                        <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                        {
+                          entries.map((drug, index) => (
+                            <div>
+                              <div class={`drugDiv-${drug[0]}`}>
+                                <span class={(selectedDrugsBar.includes(drug[0])) ? drug[0] : 'notSelectedBar'} onClick={(event) => { handleDrugSelectionsBarChange(event, drug[0]) }}></span>
+                                <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                              </div>
+                              <br></br>
+                              </div>
+                              
+                          ))
+                        }
+                        </div>
+                      </Fragment>
+                    </Fragment>
+              )
+      }
+
   }
 
   const handleDrugSelectionsLineChange = (event, drug) => {
@@ -1463,6 +1488,7 @@ const getYears = (startYrInp, endYrInp) => {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
 
+    if (!isSmallViewport) {
     return (
       <Fragment>
         <Fragment>
@@ -1493,7 +1519,30 @@ const getYears = (startYrInp, endYrInp) => {
           </div>
         </Fragment>
       </Fragment>
-    )
+      )
+    }
+    else{
+          return (
+            <Fragment>
+                <Fragment>
+                  <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                  {
+                  entries.map((drug, index) => (
+                    <div>
+                      <div class={`drugDiv-${drug[0]}`}>
+                        <span class={(selectedDrugsLine.includes(drug[0])) ? drug[0] : 'notSelectedLine'} onClick={(event) => { handleDrugSelectionsLineChange(event, drug[0]) }}></span>
+                        <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                      </div>
+                      <br></br>
+                      </div>
+                      
+                  ))
+                }
+                </div>
+                </Fragment>
+              </Fragment>
+          )
+        }
   }
 
   const handleDrugSelectionsSexAgeChange = (event, drug) => {
@@ -1545,24 +1594,42 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const getFootNotesForData = () => {
-    return (
-          <div>
-            <table style={{ width: '100%' }}>
-              <tr style={{ textAlign: 'left'}}>
-                <td style={{ width: '10%' }}></td>
-                <td style={{ width: '95%' }}><small><i><sup>*</sup>{'Data suppressed'}</i></small></td>
-              </tr>
-              <tr style={{ textAlign: 'left'}}>
-                <td style={{ width: '10%' }}></td>
-                <td style={{ width: '95%' }}><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></td>
-              </tr>
-              <tr style={{ textAlign: 'left'}}>
-                <td style={{ width: '10%' }}></td>
-                <td style={{ width: '95%' }}><small><i><sup>**</sup>{'Unfunded State'}</i></small></td>
-              </tr>
-            </table>
-          </div>
-    )
+    if (!isSmallViewport) {
+      return (
+            <div>
+              <table style={{ width: '100%' }}>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '10%' }}></td>
+                  <td style={{ width: '95%' }}><small><i><sup>*</sup>{'Data suppressed'}</i></small></td>
+                </tr>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '10%' }}></td>
+                  <td style={{ width: '95%' }}><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></td>
+                </tr>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '10%' }}></td>
+                  <td style={{ width: '95%' }}><small><i><sup>**</sup>{'Unfunded State'}</i></small></td>
+                </tr>
+              </table>
+            </div>
+      )
+    }
+    else {
+      <div>
+              <table style={{ width: '100%' }}>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '100%' }}><small><i><sup>*</sup>{'Data suppressed'}</i></small></td>
+                </tr>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '100%' }}><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></td>
+                </tr>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '100%' }}><small><i><sup>**</sup>{'Unfunded State'}</i></small></td>
+                </tr>
+              </table>
+            </div>
+    }
+
   }
 
   function getMonthlyValueForCurrentDrug() {
@@ -1706,8 +1773,14 @@ const getYears = (startYrInp, endYrInp) => {
       <div className="filters-container" ref={outerContainerRef}>
         <div>
           <table style={{'width': '100%'}}>
+             {isSmallViewport &&
+              <tr>
+                <td style={{'width': '100%', 'textAlign': 'left'}}><div><strong>Select a Drug:</strong></div></td>
+              </tr>
+            }
             <tr>
               <td colspan='4'>
+                {!isSmallViewport &&
                 <div>
                   <div className="drug-tab-section">
                     {drugTab('all', <span>All Drugs</span>)}
@@ -1722,6 +1795,21 @@ const getYears = (startYrInp, endYrInp) => {
                     {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
                   </div>
                 </div>
+                }
+                {isSmallViewport &&
+                <div>
+                  <select className="drug-select" value={currentDrug} onChange={(e) => { setDrug(e.target.value); }}>
+                    <option value="all">All drugs</option>
+                    <option value="stimulants">All Stimulants</option>
+                    <option value="opioids">All Opioids</option>
+                    <option value="fentanyl">Fentanyl</option>
+                    <option value="cocaine">Cocaine</option>
+                    <option value="methamphetamine">Methamphetamine</option>
+                    <option value="heroin">Heroin</option>
+                    <option value="benzodiazepine">Benzodiazepine</option>
+                  </select>
+                </div>
+                }
               </td>
             </tr>
             <tr>
@@ -1814,7 +1902,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
 
-      <div className="callouts">
+      <div className={isSmallViewport ? "calloutsM" : "callouts"}>
         <div style={{'borderLeft': '5px solid' + drugColor}}>
           <span className="callout" style={{ 'color': drugColor }}>{isNaN(usRate) ? 'N/A' : `${Number(usRate).toFixed(1)}`}</span>
           <div>
@@ -1874,6 +1962,7 @@ const getYears = (startYrInp, endYrInp) => {
           }
         </div>
         <div>
+          {!isSmallViewport &&
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '14%'}}></td>
@@ -1936,6 +2025,72 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+          }
+          {isSmallViewport &&
+          <table style={{'width': '100%'}}>
+            <tr>
+              <td style={{'width': '20%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
+                <div className="select-input">Select Time Period:</div>
+              </td>
+            </tr>
+            <tr>
+              <td style={{'width': '100%'}}>
+                <div className="inputContainer">
+                <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
+                  {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
+                  {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+                </div>
+              </td>
+              <td style={{'width': '15%', 'textAlign': 'left', 'paddingLeft': '15px'}}></td>
+            </tr>
+            <br></br>
+            <tr>
+              <td style={{'width': '100%'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '100%', 'textAlign': 'left'}}>
+                      <div className="inputContainer">
+                        <div>
+                          <input
+                            id="radioUSMonthlyState"
+                            name="radioUSMonthlyState"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnual === false}
+                            onChange={(e) => {
+                                setMonthlyToggle(false)
+                                setTimeline('Monthly');
+                                setPeriodToggle(true);
+                                setYearSelected(currentYear, 'Monthly');
+                            }} />
+                          <label htmlFor="radioUSMonthlyState">Monthly</label>
+                          <input
+                          id="radioUSAnnualState"
+                          name="radioUSAnnualState"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnual === true}
+                          onChange={(e) => {
+                              setMonthlyToggle(true);
+                              setTimeline('Annual');
+                              setPeriodToggle(false);
+                              setYearSelected(currentYear, 'Annual');
+                          }} 
+                          />
+                          <label
+                          htmlFor="radioUSAnnualState">Annual</label>
+                        </div>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          }
         </div>
         { timeline == 'Annual' &&
             <table>
@@ -1975,6 +2130,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
 
           <div>
+            {!isSmallViewport &&
           <table style={{'width': '100%'}}>
           <tr>
               <td style={{'width': '4%'}}></td>
@@ -2048,6 +2204,88 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '3%'}}></td>
             </tr>
           </table>
+          }
+          {isSmallViewport &&
+          <table style={{'width': '100%'}}>
+          <tr>
+              <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+          </tr>
+          <tr>
+              <td style={{'width': '100%'}}>
+                <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                <option value="US">Overall</option>
+                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
+              </select>
+            </td>
+          </tr>
+          <br></br>
+          <tr>
+              <td style={{'width': '18%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
+                <div className="select-input">Select Time Period:</div>
+              </td>
+         </tr>
+         <tr> 
+            <td>
+              <table>
+                <tr>
+                  <td style={{'width': '100%'}}>
+                    <div className="inputContainer">
+                      <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
+                        {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
+                      </select>
+                      <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
+                        {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                      </select>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>    
+          </tr>
+          <br></br>
+          <tr>
+              <td style={{'width': '100%'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '100%', 'textAlign': 'left'}}>
+                        <div className="inputContainer">
+                          <input
+                            id="radioUSMonthlyBar"
+                            name="radioUSMonthlyBar"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnualBar === false}
+                            onChange={(e) => {
+                              setMonthlyToggleBar(false);
+                              setTimelineBar('Monthly');
+                              setPeriodToggle(true);
+                              setYearSelectedBar(currentYearBar, 'Monthly');
+                              setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
+                            }} />
+                          <label htmlFor="radioUSMonthlyBar">Monthly</label>
+                          <input
+                          id="radioUSAnnualBar"
+                          name="radioUSAnnualBar"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnualBar === true}
+                          onChange={(e) => {
+                            setMonthlyToggleBar(true);
+                            setTimelineBar('Annual');
+                            setPeriodToggle(false);
+                            setYearSelectedBar(currentYearBar, 'Annual');
+                            setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Annual'));
+                          }} 
+                          />
+                          <label htmlFor="radioUSAnnualBar">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          }
           <br></br>
           { timelineBar == 'Annual' &&
             <table>
@@ -2061,8 +2299,8 @@ const getYears = (startYrInp, endYrInp) => {
           }
           <table>
             <tr>
-              <td style={{'width': '8%'}}></td>
-              <td style={{'width': '84%'}}>
+              <td style={{'width': '100%'}}>
+                {!isSmallViewport &&
                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                   <tr>
                     <td style={{'width': '23%', 'verticalAlign': 'top'}}>
@@ -2074,15 +2312,31 @@ const getYears = (startYrInp, endYrInp) => {
                     </td>
                   </tr>
                   </table>
+                }
+                {isSmallViewport &&
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                      {getDrugControlsBar()}
+                    </td>
+                  </tr>
+                  </table>
+                }
               </td>
-              <td style={{'width': '8%'}}></td>
             </tr>
           </table>
         </div> 
        <br></br>
         {drugsBarChartMemo}
-        {!accessible &&<br></br>}
-        {!accessible &&
+        {!accessible && !isSmallViewport && <br></br>}
+        {!accessible && isSmallViewport && <br></br>}
+        {!accessible && !isSmallViewport &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '15%'}}></td>
@@ -2094,6 +2348,19 @@ const getYears = (startYrInp, endYrInp) => {
               <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
             </td>
             <td style={{width: '5%'}}></td>
+          </tr>
+        </table>
+        }
+        {!accessible && isSmallViewport &&
+        <table style={{width: '100%'}}>
+          <tr>
+            <td style={{width: '100%'}}>
+              <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+              <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
+              <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
+              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+              <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
+            </td>
           </tr>
         </table>
         }
@@ -2122,6 +2389,7 @@ const getYears = (startYrInp, endYrInp) => {
           </h2>
           }
         </div>
+        {!isSmallViewport &&
         <table>
              <tr>
               <td style={{'width': '16.8%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
@@ -2155,6 +2423,45 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               </tr>
             </table>
+        }
+        {isSmallViewport &&
+        <table>
+             <tr>
+              <td style={{'width': '100%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
+            </tr>
+            <tr>
+              <td style={{'width': '84%'}}>
+                { !showAnnualLine &&
+                  <div style={wrapperStyleM}>
+                    <Range 
+                    min={1} 
+                    max={getNumberofMonthsBetween(startUSMonthYearForSliderM, endUSMonthYearForSliderM)}
+                    defaultValue={[49, getNumberofMonthsBetween(startUSMonthYearForSliderM, endUSMonthYearForSliderM)]} 
+                    step={1} marks={getMarksForRangeMonthly(startUSMonthYearForSliderM, endUSMonthYearForSliderM)} 
+                    tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSliderM.substring(0,4)), value)}`} 
+                    onAfterChange={didOnAfterChangeTriggerMonthly}
+                    key={sliderKey}
+                    />
+                  </div>
+                }
+                { showAnnualLine &&
+                  <div style={wrapperStyleM}>
+                    <Range 
+                    min={1} 
+                    max={getNumberofMonthsBetween(startUSMonthYearForSliderA, endUSMonthYearForSliderA)}
+                    defaultValue={[38, getNumberofMonthsBetween(startUSMonthYearForSliderA, endUSMonthYearForSliderA)]} 
+                    step={1} marks={getMarksForRangeMonthly(startUSMonthYearForSliderA, endUSMonthYearForSliderA)} 
+                    tipFormatter={value => `${getMonthYear(Number(startUSMonthYearForSliderA.substring(0,4)), value)}`} 
+                    onAfterChange={didOnAfterChangeTriggerAnnual}
+                    key={sliderKey}
+                    />
+                  </div>
+                }
+              </td>
+              </tr>
+        </table>
+        }
+        {!isSmallViewport &&
             <table style={{'width': '100%'}}>
               <tr>
               <td style={{'width': '12%'}}></td>
@@ -2215,6 +2522,67 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '22%'}}></td>
             </tr>
             </table>
+        }
+        {isSmallViewport &&
+            <table style={{'width': '100%'}}>
+              <tr>
+              <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              </tr>
+              <tr>
+                <td style={{'width': '100%'}}>
+                  <select id="jurisdiction-select" value={currentStateLine || ''} onChange={(e) => { setCurrentStateLine(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                  <option value="US">Overall</option>
+                  {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
+                </select>
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+              <td style={{'width': '100%', 'textAlign': 'left'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '50%', 'textAlign': 'left'}}>
+                        <div className="inputContainer">
+                          <input
+                            id="radioUSMonthlyLine"
+                            name="radioUSMonthlyLine"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnualLine === false}
+                            onChange={(e) => {
+                              setMonthlyToggleLine(false);
+                              setTimelineLine('Monthly');
+                              setPeriodToggle(true);
+                              setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']);
+                              setLookupPeriodStartYearM('2023');
+                              setLookupPeriodStartMonthM('1');
+                            }} />
+                          <label htmlFor="radioUSMonthlyLine">Monthly</label>
+                          <input
+                          id="radioUSAnnualLine"
+                          name="radioUSAnnualLine"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnualLine === true}
+                          onChange={(e) => {
+                            setMonthlyToggleLine(true);
+                            setTimelineLine('Annual');
+                            setPeriodToggle(false);
+                            setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']);
+                            setLookupPeriodStartYearA('2023');
+                            setLookupPeriodStartMonthA('1');
+                          }} 
+                          />
+                          <label htmlFor="radioUSAnnualLine">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
+              </td>
+              <td style={{'width': '22%'}}></td>
+            </tr>
+            </table>
+        }
             <br></br>
           {getToggleControls()}
           { timelineLine == 'Annual' &&
@@ -2227,6 +2595,7 @@ const getYears = (startYrInp, endYrInp) => {
               <br></br>
             </table>
           }
+          {!isSmallViewport &&
         <table>
             <tr>
               <td style={{'width': '8%'}}></td>
@@ -2246,6 +2615,22 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '8%'}}></td>
             </tr>
           </table>
+        }
+        {isSmallViewport &&
+            <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+              <tr>
+                <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                  <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                  <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                </td>
+              </tr>
+              <tr>
+                <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                  {getDrugControlsLine()}
+                </td>
+              </tr>
+            </table>
+          }
           <br></br>
           {
             currentStateLine == 'IL' && (selectedDrugsLine.includes('fentanyl') || selectedDrugsLine.includes('heroin')) &&
@@ -2260,8 +2645,9 @@ const getYears = (startYrInp, endYrInp) => {
             
           }
           {lineChartMemo}
-          {!accessible &&<br></br>}
-          {!accessible &&
+          {!accessible && !isSmallViewport && <br></br>}
+          {!accessible && isSmallViewport && <br></br>}
+          {!accessible && !isSmallViewport && 
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '5%'}}></td>
@@ -2277,6 +2663,23 @@ const getYears = (startYrInp, endYrInp) => {
                 <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
               </td>
               <td style={{width: '15%'}}></td>
+            </tr>
+          </table>
+        }
+        {!accessible && isSmallViewport && 
+          <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '100%'}}>
+                <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+                <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
+                <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
+                 <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
+                {((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
+                 (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
+                  <div><span><small><i><sup>‡</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
+                }
+                <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
+              </td>
             </tr>
           </table>
         }
@@ -2305,92 +2708,155 @@ const getYears = (startYrInp, endYrInp) => {
           </h2>
           }
         </div>
-          <table>
-            <tr>
-              <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
-              <td style={{'width': '18%'}}>
-                  <table style={{'width': '100%'}}>
-                  <tr>
-                      <td style={{'width': '30%'}}>
-                        <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value);}}>
-                          {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
-                        </select>
-                      </td>
-                      <td style={{'width': '30%'}}>
-                      <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly);}}>
-                        {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
-                      </select>
-                      </td>
-                    </tr>
-                  </table>
-              </td>
-              <td style={{'width': '16%', 'textAlign': 'right'}}>
-                <table>
-                  <tr>
-                      <td style={{'width': '50%', 'textAlign': 'right'}}>
-                      <div>
-                        <input
-                          id="radioUSMonthlyMap"
-                          name="radioUSMonthlyMap"
-                          type="radio"
-                          value="Monthly"
-                          checked={mapMonthly === 'Monthly'}
-                          onChange={(e) => {
-                            setMapMonthly(e.target.value);
-                            setYearSelectedMap(currentYearMap, 'Monthly');
-                          }} />
-                        <label
-                          htmlFor="radioUSMonthlyMap">Monthly</label>
-                      </div>
-                    </td>
-                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
-                      <div>
-                        <input
-                        id="radioUSAnnualMap"
-                        name="radioUSAnnualMap"
-                        type="radio"
-                        value="Annual"
-                        checked={mapMonthly === 'Annual'}
-                        onChange={(e) => {
-                          setMapMonthly(e.target.value);
-                          setYearSelectedMap(currentYearMap, 'Annual');
-                        }} 
-                        />
-                        <label
-                        htmlFor="radioUSAnnualMap">Annual</label>
-                      </div>
-                    </td>
-                    </tr>
-                  </table>
-                </td>
-                <td style={{'width': '6%'}}></td>
-                <td style={{'width': '22%'}}>
-                  {!accessible && 
-                   <table>
+            {!isSmallViewport &&
+                  <table>
                     <tr>
-                      <td style={{ 'width' : '15%', 'textAlign': 'right'}}>
-                         <AngleArrow
-                            width={15}
-                            height={30}
-                            colorScale={'#000000'}
-                            defaultValueIfEmpty={defaultValueIfEmpty}
-                            percentValue={1}
-                          ></AngleArrow>
+                      <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
+                      <td style={{'width': '18%'}}>
+                          <table style={{'width': '100%'}}>
+                          <tr>
+                              <td style={{'width': '30%'}}>
+                                <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value);}}>
+                                  {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
+                                </select>
+                              </td>
+                              <td style={{'width': '30%'}}>
+                              <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly);}}>
+                                {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                              </select>
+                              </td>
+                            </tr>
+                          </table>
                       </td>
-                      <td style={{ 'textAlign': 'right'}}>
-                          <svg style={{ height: 100, width: isSmallViewport ? width : 240, display: isSmallViewport ? 'block' : 'inline-block' }}>
-                            <text x={20} y={30} fill="black" alignmentBaseline="middle" fontSize={15} fontWeight={'bold'}>Want to know more?</text>
-                            <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={15}>Hover over any jurisdiction to </text>
-                            <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={15}>see overdose-specific </text>
-                            <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={15}>visits</text>
-                        </svg>
-                      </td>
+                      <td style={{'width': '16%', 'textAlign': 'right'}}>
+                        <table>
+                          <tr>
+                              <td style={{'width': '50%', 'textAlign': 'right'}}>
+                              <div>
+                                <input
+                                  id="radioUSMonthlyMap"
+                                  name="radioUSMonthlyMap"
+                                  type="radio"
+                                  value="Monthly"
+                                  checked={mapMonthly === 'Monthly'}
+                                  onChange={(e) => {
+                                    setMapMonthly(e.target.value);
+                                    setYearSelectedMap(currentYearMap, 'Monthly');
+                                  }} />
+                                <label
+                                  htmlFor="radioUSMonthlyMap">Monthly</label>
+                              </div>
+                            </td>
+                            <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
+                              <div>
+                                <input
+                                id="radioUSAnnualMap"
+                                name="radioUSAnnualMap"
+                                type="radio"
+                                value="Annual"
+                                checked={mapMonthly === 'Annual'}
+                                onChange={(e) => {
+                                  setMapMonthly(e.target.value);
+                                  setYearSelectedMap(currentYearMap, 'Annual');
+                                }} 
+                                />
+                                <label
+                                htmlFor="radioUSAnnualMap">Annual</label>
+                              </div>
+                            </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td style={{'width': '6%'}}></td>
+                        <td style={{'width': '22%'}}>
+                          {!accessible && 
+                           <table>
+                            <tr>
+                              <td style={{ 'width' : '15%', 'textAlign': 'right'}}>
+                                 <AngleArrow
+                                    width={15}
+                                    height={30}
+                                    colorScale={'#000000'}
+                                    defaultValueIfEmpty={defaultValueIfEmpty}
+                                    percentValue={1}
+                                  ></AngleArrow>
+                              </td>
+                              <td style={{ 'textAlign': 'right'}}>
+                                  <svg style={{ height: 100, width: isSmallViewport ? width : 240, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                                    <text x={20} y={30} fill="black" alignmentBaseline="middle" fontSize={15} fontWeight={'bold'}>Want to know more?</text>
+                                    <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={15}>Hover over any jurisdiction to </text>
+                                    <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={15}>see overdose-specific </text>
+                                    <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={15}>visits</text>
+                                </svg>
+                              </td>
+                            </tr>
+                          </table>
+                          }
+                        </td>
                     </tr>
                   </table>
                   }
-                </td>
-            </tr>
-          </table>
+                  {isSmallViewport &&
+                  <table>
+                    <tr>
+                      <td style={{'width': '100%', 'textAlign': 'left'}}><div><strong>Select Time Period:</strong></div></td>
+                    </tr>
+                    <tr>
+                      <td style={{'width': '100%'}}>
+                          <table style={{'width': '100%'}}>
+                          <tr>
+                              <td style={{'width': '100%'}}>
+                                <div className="inputContainer">
+                                  <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value);}}>
+                                    {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
+                                  </select>
+                                  <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly);}}>
+                                  {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                                </select>
+                                </div>
+                              </td>
+                            </tr>
+                          </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{'width': '100%', 'textAlign': 'left'}}>
+                        <table>
+                          <tr>
+                              <td style={{'width': '100%', 'textAlign': 'left'}}>
+                              <div className="inputContainer">
+                                <input
+                                  id="radioUSMonthlyMap"
+                                  name="radioUSMonthlyMap"
+                                  type="radio"
+                                  value="Monthly"
+                                  checked={mapMonthly === 'Monthly'}
+                                  onChange={(e) => {
+                                    setMapMonthly(e.target.value);
+                                    setYearSelectedMap(currentYearMap, 'Monthly');
+                                  }} />
+                                <label htmlFor="radioUSMonthlyMap">Monthly</label>
+                                <input
+                                id="radioUSAnnualMap"
+                                name="radioUSAnnualMap"
+                                type="radio"
+                                value="Annual"
+                                checked={mapMonthly === 'Annual'}
+                                onChange={(e) => {
+                                  setMapMonthly(e.target.value);
+                                  setYearSelectedMap(currentYearMap, 'Annual');
+                                }} 
+                                />
+                                <label htmlFor="radioUSAnnualMap">Annual</label>
+                              </div>
+                            </td>
+                            </tr>
+                          </table>
+                        </td>
+                        </tr>
+                        <br></br>
+                  </table>
+                  }
           { mapMonthly == 'Annual' &&
               <table>
                 <tr>
@@ -2428,116 +2894,234 @@ const getYears = (startYrInp, endYrInp) => {
           }
         </div>
 
-          <table>
-            <tr>
-              <td></td>
-              <td>
-                          <table>
-            <tr>
-              <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
-              <td style={{'width': '22%'}}>
-                  <table style={{'width': '100%'}}>
-                  <tr>
-                      <td style={{'width': '30%'}}>
-                        <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
-                        {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
-                      </select>
+        {!isSmallViewport &&
+                  <table>
+                    <tr>
+                      <td></td>
+                      <td>
+                         <table>
+                        <tr>
+                          <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
+                          <td style={{'width': '22%'}}>
+                              <table style={{'width': '100%'}}>
+                              <tr>
+                                  <td style={{'width': '30%'}}>
+                                    <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
+                                    {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
+                                  </select>
+                                  </td>
+                                  <td style={{'width': '30%'}}>
+                                  <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value, sexAgeMonthly); }}>
+                                  {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                                </select>
+                                  </td>
+                                </tr>
+                              </table>
+                          </td>
+                          <td style={{'width': '20%', 'textAlign': 'right'}}>
+                            <table>
+                              <tr>
+                                  <td style={{'width': '50%', 'textAlign': 'right'}}>
+                                <div>
+                                    <input
+                                      id="radioUSMonthlySexAge"
+                                      name="radioUSMonthlySexAge"
+                                      type="radio"
+                                      value="Monthly"
+                                      checked={sexAgeMonthly === 'Monthly'}
+                                      disabled={isDisabledDrug()}
+                                      onChange={(e) => {
+                                        setSexAgeMetric(e.target.value);
+                                        setYearSelectedSexAge(currentYearSexAge, 'Monthly');
+                                      }} />
+                                    <label
+                                      htmlFor="radioUSMonthlySexAge">Monthly</label>
+                                  </div>
+                                </td>
+                                <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
+                                  <div>
+                                    <input
+                                    id="radioUSYearlySexAge"
+                                    name="radioUSYearlySexAge"
+                                    type="radio"
+                                    value="Annual"
+                                    checked={sexAgeMonthly === 'Annual'}
+                                    onChange={(e) => {
+                                      setSexAgeMetric(e.target.value);
+                                      setYearSelectedSexAge(currentYearSexAge, 'Annual');
+                                    }} />
+                                    <label
+                                    htmlFor="radioUSYearlySexAge">Annual</label>
+                                  </div>
+                                </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td style={{'width': '26%'}}>
+                            </td>
+                        </tr>
+                      </table>
                       </td>
-                      <td style={{'width': '30%'}}>
-                      <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value, sexAgeMonthly); }}>
-                      {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
-                    </select>
+                    </tr>
+                    <tr>
+                      <td colspan={3}>
+                        { sexAgeMonthly == 'Annual' &&
+                            <table>
+                              <tr>
+                                <td style={{'textAlign': 'center'}}>
+                                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                                </td>
+                              </tr>
+                              <br></br>
+                            </table>
+                          }
+                          { sexAgeMonthly == 'Monthly' &&
+                            <table>
+                              <tr>
+                                <td style={{'textAlign': 'center'}}>
+                                  <strong>Note: </strong><span>Due to data suppression rules for counts under 20 ED visits, monthly demographic figures are not available for Cocaine, Methamphetamine, Fentanyl, Heroin, and Benzodiazepine Drug Syndromes. These data can be viewed at the Annual level.</span>
+                                </td>
+                              </tr>
+                              <br></br>
+                            </table>
+                          }
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{'width': '8%'}}></td>
+                      <td style={{'width': '84%'}}>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                              {getDrugControlsSexAge()}
+                            </td>
+                          </tr>
+                          </table>
+                      </td>
+                      <td style={{'width': '8%'}}></td>
+                    </tr>
+                  </table>
+                }
+                {isSmallViewport &&
+                  <table>
+                    <tr>
+                      <td>
+                        <table>
+                        <tr>
+                          <td style={{'width': '100%', 'textAlign': 'left'}}><div><strong>Select Time Period:</strong></div></td>
+                        </tr>
+                        <tr>
+                          <td style={{'width': '100%'}}>
+                              <table style={{'width': '100%'}}>
+                              <tr>
+                                  <td style={{'width': '30%'}}>
+                                    <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
+                                    {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
+                                  </select>
+                                  </td>
+                                  <td style={{'width': '30%'}}>
+                                  <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value, sexAgeMonthly); }}>
+                                  {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
+                                </select>
+                                  </td>
+                                </tr>
+                              </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style={{'width': '100%', 'textAlign': 'right'}}>
+                            <table>
+                              <tr>
+                                  <td style={{'width': '50%', 'textAlign': 'right'}}>
+                                <div>
+                                    <input
+                                      id="radioUSMonthlySexAge"
+                                      name="radioUSMonthlySexAge"
+                                      type="radio"
+                                      value="Monthly"
+                                      checked={sexAgeMonthly === 'Monthly'}
+                                      disabled={isDisabledDrug()}
+                                      onChange={(e) => {
+                                        setSexAgeMetric(e.target.value);
+                                        setYearSelectedSexAge(currentYearSexAge, 'Monthly');
+                                      }} />
+                                    <label
+                                      htmlFor="radioUSMonthlySexAge">Monthly</label>
+                                  </div>
+                                </td>
+                                <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
+                                  <div>
+                                    <input
+                                    id="radioUSYearlySexAge"
+                                    name="radioUSYearlySexAge"
+                                    type="radio"
+                                    value="Annual"
+                                    checked={sexAgeMonthly === 'Annual'}
+                                    onChange={(e) => {
+                                      setSexAgeMetric(e.target.value);
+                                      setYearSelectedSexAge(currentYearSexAge, 'Annual');
+                                    }} />
+                                    <label
+                                    htmlFor="radioUSYearlySexAge">Annual</label>
+                                  </div>
+                                </td>
+                                </tr>
+                              </table>
+                            </td>
+                        <td style={{'width': '26%'}}>
+                        </td>
+                    </tr>
+                  </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        { sexAgeMonthly == 'Annual' &&
+                            <table>
+                              <tr>
+                                <td style={{'textAlign': 'center'}}>
+                                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                                </td>
+                              </tr>
+                              <br></br>
+                            </table>
+                          }
+                          { sexAgeMonthly == 'Monthly' &&
+                            <table>
+                              <tr>
+                                <td style={{'textAlign': 'center'}}>
+                                  <strong>Note: </strong><span>Due to data suppression rules for counts under 20 ED visits, monthly demographic figures are not available for Cocaine, Methamphetamine, Fentanyl, Heroin, and Benzodiazepine Drug Syndromes. These data can be viewed at the Annual level.</span>
+                                </td>
+                              </tr>
+                              <br></br>
+                            </table>
+                          }
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '100%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'left', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                              {getDrugControlsSexAge()}
+                            </td>
+                          </tr>
+                          </table>
                       </td>
                     </tr>
                   </table>
-              </td>
-              <td style={{'width': '20%', 'textAlign': 'right'}}>
-                <table>
-                  <tr>
-                      <td style={{'width': '50%', 'textAlign': 'right'}}>
-                     <div>
-                        <input
-                          id="radioUSMonthlySexAge"
-                          name="radioUSMonthlySexAge"
-                          type="radio"
-                          value="Monthly"
-                          checked={sexAgeMonthly === 'Monthly'}
-                          disabled={isDisabledDrug()}
-                          onChange={(e) => {
-                            setSexAgeMetric(e.target.value);
-                            setYearSelectedSexAge(currentYearSexAge, 'Monthly');
-                          }} />
-                        <label
-                          htmlFor="radioUSMonthlySexAge">Monthly</label>
-                      </div>
-                    </td>
-                    <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
-                      <div>
-                        <input
-                        id="radioUSYearlySexAge"
-                        name="radioUSYearlySexAge"
-                        type="radio"
-                        value="Annual"
-                        checked={sexAgeMonthly === 'Annual'}
-                        onChange={(e) => {
-                          setSexAgeMetric(e.target.value);
-                          setYearSelectedSexAge(currentYearSexAge, 'Annual');
-                        }} />
-                        <label
-                        htmlFor="radioUSYearlySexAge">Annual</label>
-                      </div>
-                    </td>
-                    </tr>
-                  </table>
-                </td>
-                <td style={{'width': '26%'}}>
-                </td>
-            </tr>
-          </table>
-              </td>
-            </tr>
-            <tr>
-              <td colspan={3}>
-                { sexAgeMonthly == 'Annual' &&
-                    <table>
-                      <tr>
-                        <td style={{'textAlign': 'center'}}>
-                          <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
-                        </td>
-                      </tr>
-                      <br></br>
-                    </table>
-                  }
-                  { sexAgeMonthly == 'Monthly' &&
-                    <table>
-                      <tr>
-                        <td style={{'textAlign': 'center'}}>
-                          <strong>Note: </strong><span>Due to data suppression rules for counts under 20 ED visits, monthly demographic figures are not available for Cocaine, Methamphetamine, Fentanyl, Heroin, and Benzodiazepine Drug Syndromes. These data can be viewed at the Annual level.</span>
-                        </td>
-                      </tr>
-                      <br></br>
-                    </table>
-                  }
-              </td>
-            </tr>
-            <tr>
-              <td style={{'width': '8%'}}></td>
-              <td style={{'width': '84%'}}>
-                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                  <tr>
-                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
-                    </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
-                      {getDrugControlsSexAge()}
-                    </td>
-                  </tr>
-                  </table>
-              </td>
-              <td style={{'width': '8%'}}></td>
-            </tr>
-          </table>
+                }
+
           <br></br>
           {!accessible &&
             <table>

@@ -400,6 +400,59 @@ border-radius: 4px;
 padding: 15px;
 }
 
+.calloutsM {
+display: grid;
+gap: 1em;
+margin-bottom: 1em;
+
+@include r($lg) {
+grid-template-columns: repeat(3, 1fr);
+}
+
+>div {
+border: 1px solid rgba(0, 0, 0, .125);
+border-left: 5px solid #B890BB;
+border-radius: .25rem;
+min-height: 126px;
+padding: .5em;
+display: flex;
+align-items: center;
+min-width: 30%;
+
+svg {
+flex-shrink: 0;
+}
+
+span.callout {
+font-size: 2em;
+font-weight: 500;
+color: #712177;
+padding: 0 .5em 0 .1em;
+// font-family: "Merriweather", serif;
+align-self: flex-start;
+margin-top: .25em;
+
+&+div {
+align-self: flex-start;
+margin-top: .5em;
+}
+}
+
+p {
+font-size: .85em;
+}
+
+.data-bite-title {
+// font-family: Merriweather, serif;
+line-height: 1.1;
+font-weight: bold;
+text-align: left;
+font-size: 1em;
+margin: 0 0 0.1em 0;
+}
+}
+}
+
 .callouts {
 display: flex;
 gap: 1em;
@@ -1764,4 +1817,9 @@ display: inline-block;
 
 .alignLeft {
     text-align: left;
+}
+
+.inputContainer {
+    display: flex;
+    justify-content: flex-start;
 }

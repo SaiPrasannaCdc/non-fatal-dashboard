@@ -199,9 +199,10 @@ const getMaxValue = (fdata) => {
 
 function SexChart(params) {
 
-  const viewportCutoff = 600;
-
   const { data, width, height, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, accessible } = params;
+
+  const isSmallViewport = width < 550;
+  
   const [ animated, setAnimated ] = useState(false);
 
   const filteredData = getFilteredData(data, currentDrug, currentYear, currentMonth);

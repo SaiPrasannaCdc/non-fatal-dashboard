@@ -288,7 +288,7 @@ function SexAgeChart(params) {
   const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth);
   const missingData = getMissingData(data, currentDrug, currentYear, currentMonth);
 
-  const isSmallViewport = width < 500;
+  const isSmallViewport = width < 550;
   const fontSize = 16;
   const height = 630;
   const margin = { top: 50, bottom: 145, left: 50, right: 15 };
