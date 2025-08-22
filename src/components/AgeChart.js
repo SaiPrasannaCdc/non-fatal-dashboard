@@ -290,6 +290,7 @@ function AgeChart(params) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           height={350}
+          width={width}
         />
         <table>
             <tr>

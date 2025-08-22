@@ -1289,7 +1289,7 @@ const getYears = (startYrInp, endYrInp) => {
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
-                width={!isSmallViewport ? (width * 0.5) : width}
+                width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
                 height={640} //TODO
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
@@ -1315,7 +1315,7 @@ const getYears = (startYrInp, endYrInp) => {
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
-                width={!isSmallViewport ? (width * 0.5) : width}
+                width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
                 height={640} //TODO
                 header={false}
                 el={ageChartRef}
@@ -1345,7 +1345,7 @@ const getYears = (startYrInp, endYrInp) => {
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
             currentDataType={'rate'}
-            width={!isSmallViewport ? (width * 0.5) : width}
+            width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
             accessible={accessible}
@@ -1800,7 +1800,7 @@ const getYears = (startYrInp, endYrInp) => {
               <tr>
                 <td style={{'width': '100%', 'textAlign': 'left'}}><div><strong>Select a Drug:</strong></div></td>
               </tr>
-            }
+             }
             <tr>
               <td colspan='4'>
                 {!isSmallViewport &&
@@ -2323,7 +2323,6 @@ const getYears = (startYrInp, endYrInp) => {
           <table>
             <tr>
               <td style={{'width': '100%'}}>
-                {!isSmallViewport &&
                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                   <tr>
                     <td style={{'width': '23%', 'verticalAlign': 'top'}}>
@@ -2335,30 +2334,13 @@ const getYears = (startYrInp, endYrInp) => {
                     </td>
                   </tr>
                   </table>
-                }
-                {isSmallViewport &&
-                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                  <tr>
-                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
-                      {getDrugControlsBar()}
-                    </td>
-                  </tr>
-                  </table>
-                }
               </td>
             </tr>
           </table>
         </div> 
        <br></br>
         {drugsBarChartMemo}
-        {!accessible && !isSmallViewport && <br></br>}
-        {!accessible && isSmallViewport && <br></br>}
+        {!accessible && <br></br>}
         {!accessible && !isSmallViewport &&
         <table style={{width: '100%'}}>
           <tr>
@@ -2640,18 +2622,19 @@ const getYears = (startYrInp, endYrInp) => {
           </table>
         }
         {isSmallViewport &&
-            <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-              <tr>
-                <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                  <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                  <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
-                </td>
-              </tr>
-              <tr>
-                <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
-                  {getDrugControlsLine()}
-                </td>
-              </tr>
+
+        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+            <tr>
+              <td style={{'width': '100%', 'verticalAlign': 'top'}}>
+                <div style={{'fontWeight': 'bold', 'textAlign': 'left', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                {getDrugControlsLine()}
+              </td>
+            </tr>
             </table>
           }
           <br></br>
@@ -2670,7 +2653,8 @@ const getYears = (startYrInp, endYrInp) => {
           {lineChartMemo}
           {!accessible && !isSmallViewport && <br></br>}
           {!accessible && isSmallViewport && <br></br>}
-          {!accessible && !isSmallViewport && 
+          
+          {!accessible && !isSmallViewport && //regular view and not accessible
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '5%'}}></td>
@@ -2688,24 +2672,25 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{width: '15%'}}></td>
             </tr>
           </table>
-        }
-        {!accessible && isSmallViewport && 
-          <table style={{width: '100%'}}>
-            <tr>
-              <td style={{width: '100%'}}>
-                <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
-                <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
-                 <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
-                {((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
-                 (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
-                  <div><span><small><i><sup>‡</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
-                }
-                <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
-              </td>
-            </tr>
-          </table>
-        }
+          }
+          {!accessible && isSmallViewport && //mobile view and not accessible
+            <table style={{width: '100%'}}>
+              <tr>
+                <td style={{width: '100%'}}>
+                  <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+                  <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
+                  <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
+                  <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
+                  {((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
+                  (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
+                    <div><span><small><i><sup>‡</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
+                  }
+                  <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
+                </td>
+              </tr>
+            </table>
+          }
+
         {accessible &&
           <table style={{width: '100%'}}>
             <tr>

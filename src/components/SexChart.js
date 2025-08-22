@@ -262,6 +262,7 @@ function SexChart(params) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           height={'auto'}
+          width={width}
         />
         <table>
             <tr>

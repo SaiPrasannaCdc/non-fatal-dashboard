@@ -380,7 +380,8 @@ const UsaMap = (params) => {
                 transforms={{
                   rate: num => (isNaN(num) ? num : num)
                 }}
-                height={400}
+                height={'auto'}
+                width={width}
               />
           }
           </td>
@@ -533,7 +534,8 @@ const UsaMap = (params) => {
                 transforms={{
                   rate: num => (isNaN(num) ? num : num)
                 }}
-                height={400}
+                height={'auto'}
+                width={width}
               />
           }
           </td>
