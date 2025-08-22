@@ -1560,6 +1560,7 @@ const getYears = (startYrInp, endYrInp) => {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
 
+    if (!isSmallViewport) {
     return (
       <Fragment>
         <Fragment>
@@ -1592,6 +1593,29 @@ const getYears = (startYrInp, endYrInp) => {
       </Fragment>
     )
   }
+  else {
+    return (
+            <Fragment>
+                <Fragment>
+                  <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                  {
+                  entries.map((drug, index) => (
+                    <div>
+                      <div class={`drugDiv-${drug[0]}`}>
+                        <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
+                        <label key={drug[0]} class={(sexAgeMonthly == 'Monthly' && (drug[0] != 'all' && drug[0] != 'opioids' && drug[0] != 'stimulants')) ? "lblDrugGray" : "lblDrug"}>{drug[1].titleForDropDown}</label>
+                      </div>
+                      <br></br>
+                      </div>
+                      
+                  ))
+                }
+                </div>
+                </Fragment>
+              </Fragment>
+          )
+  }
+  }
 
   const getFootNotesForData = () => {
     if (!isSmallViewport) {
@@ -1615,22 +1639,17 @@ const getYears = (startYrInp, endYrInp) => {
       )
     }
     else {
+      return (
       <div>
               <table style={{ width: '100%' }}>
                 <tr style={{ textAlign: 'left'}}>
-                  <td style={{ width: '100%' }}><small><i><sup>*</sup>{'Data suppressed'}</i></small></td>
-                </tr>
-                <tr style={{ textAlign: 'left'}}>
-                  <td style={{ width: '100%' }}><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></td>
-                </tr>
-                <tr style={{ textAlign: 'left'}}>
-                  <td style={{ width: '100%' }}><small><i><sup>**</sup>{'Unfunded State'}</i></small></td>
+                  <td style={{ width: '100%' }}><div><small><i><sup>*</sup>{'Data suppressed'}</i></small></div><div><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></div><div><small><i><sup>**</sup>{'Unfunded State'}</i></small></div></td>
                 </tr>
               </table>
             </div>
+      )
     }
-
-  }
+ }
 
   function getMonthlyValueForCurrentDrug() {
     for(let i=0;i<keyedRawUSDataMonthly.length;i++)
@@ -1763,6 +1782,10 @@ const getYears = (startYrInp, endYrInp) => {
     
   }
   
+  const setDrug = (val) => {
+    setCurrentDrug(val);
+    setselectedDrugs([val])
+  }
 
   const drugColor = drugOptions[currentDrug].color;
   const usRate = String(getMonthlyValueForCurrentDrug().toFixed(1)); 
@@ -3123,7 +3146,8 @@ const getYears = (startYrInp, endYrInp) => {
                 }
 
           <br></br>
-          {!accessible &&
+          {}
+          {!accessible && !isSmallViewport &&
             <table>
               <tr>
                 <td style={{width: '50%'}}>
@@ -3142,7 +3166,45 @@ const getYears = (startYrInp, endYrInp) => {
               </tr>
             </table>
           }
-          {accessible &&
+          {accessible && !isSmallViewport &&
+            <table>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ageChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '0%'}}>
+                  {sexAgeChartMemo}
+                </td>
+              </tr>
+            </table>
+          }
+          {!accessible && isSmallViewport &&
+            <table>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ageChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexAgeChartMemo}
+                </td>
+              </tr>
+            </table>
+          }
+          {accessible && isSmallViewport &&
             <table>
               <tr>
                 <td style={{width: '100%'}}>

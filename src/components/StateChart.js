@@ -147,7 +147,7 @@ function StateChart(params) {
 
   const margin = {top: 10, bottom: 10, left: !isSmallViewport ? 130 : 115, right: 10};
 
-  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
+  const adjustedHeight = ((!isSmallViewport ? height : height - 20) - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
   const adjustedWidth = !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.42));
 
@@ -208,9 +208,12 @@ function StateChart(params) {
   }
 
   const getXAxisLabel1 = () => {
-      return 'Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown;
+      return 'Nonfatal Overdoses '; 
   }
   const getXAxisLabel2 = () => {
+      return 'Involving ' + drugOptions[currentDrug].titleForDropDown;
+  }
+  const getXAxisLabel3 = () => {
       return ' per 10,000 Total ED Visits';
   }
 
@@ -344,6 +347,9 @@ function StateChart(params) {
               }
               {isSmallViewport && 
                 <text width={adjustedWidth} y={adjustedHeight + 90} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel2()}</text>
+              }
+              {isSmallViewport && 
+                <text width={adjustedWidth} y={adjustedHeight + 110} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel3()}</text>
               }
               {!isSmallViewport && 
               <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}</text>

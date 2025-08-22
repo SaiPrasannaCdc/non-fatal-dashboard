@@ -99,7 +99,7 @@ function BarChart(params) {
 
   const margin = {top: 100, bottom: 0, left: !isSmallViewport ? 170 : 150, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(drugOptions).length / 50)*(1.2));
-const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
+  const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.10))) + 210;
 
   const sort = (a,b) => {
@@ -156,6 +156,14 @@ const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 
 
   const getXAxisTopLabel = () => {
       return 'Suspected Nonfatal Overdoses per 10,000 Total ED Visits';
+  }
+
+  const getXAxisTopLabel1 = () => {
+      return 'Suspected Nonfatal Overdoses ';
+  }
+
+  const getXAxisTopLabel2 = () => {
+      return 'per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
@@ -285,7 +293,15 @@ const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 
                   </g>
                 )}
               </AxisLeft>
+              {!isSmallViewport &&
               <text width={adjustedWidth} y={adjustedHeight - 190} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
+              }
+              {isSmallViewport &&
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel1()}</text>
+              }
+              {isSmallViewport &&
+              <text width={adjustedWidth} y={adjustedHeight - 170} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel2()}</text>
+              }
               <AxisTop
                 top={adjustedHeight - 140}
                 scale={xScale}
