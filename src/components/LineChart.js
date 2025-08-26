@@ -200,6 +200,7 @@ function LineChart(params) {
 
   const currentYear = parseInt(currentYearUntyped);
 
+  const isSmallViewport = width < 550;
   const showLabels = false;
   const currentDrugOnly = currentState != 'US' ? true : false;
 
@@ -223,12 +224,12 @@ function LineChart(params) {
   const specs = [];
   specs['width'] = width - 35; 
   specs['width'] = specs['width'];
-  specs['isSmallViewport'] = specs['width'] < 500;
-  specs['fontSize'] = 16;
-  specs['height'] = 500;
+  specs['isSmallViewport'] = specs['width'] < 550;
+  specs['fontSize'] = !isSmallViewport ? 16 : 14;
+  specs['height'] = 550;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 65, left: (currentState != 'US' && !showOverall ? 125 : 75), right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = isPeriod ? { top: 15, bottom: 115, left: 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
@@ -267,18 +268,20 @@ function LineChart(params) {
 
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
+    var janCnt = 0;
     if (ticks !== undefined && ticks != null) {
       for (var i=0; i<ticks?.length; i++) {
         var tickText = ticks[i]?.childNodes[1].childNodes[0].childNodes[0].innerHTML;
+        var tickCtl = ticks[i]?.childNodes[1].childNodes[0].childNodes[0];
         var ln = ticks[i]?.getElementsByClassName("visx-line");
         if (ln !== undefined && ln != null) {
-          ln[0]?.setAttribute("y1","0");
-          ln[0]?.setAttribute('stroke-width', '1')
-          if (tickText.substring(0,3) === 'Jan') {
-            ln[0]?.setAttribute("y1","1");
-            ln[0]?.setAttribute('stroke-width', '3')
-          }
-        }
+            ln[0]?.setAttribute("y1","0");
+            ln[0]?.setAttribute('stroke-width', '1')
+            if (tickText.substring(0,3) === 'Jan') {
+              ln[0]?.setAttribute("y1","1");
+              ln[0]?.setAttribute('stroke-width', '3')
+            }
+        } 
       }
     } 
 }
@@ -592,13 +595,17 @@ const adjustCrowdedLabels = () => {
     return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
   }
 
+  const getTooltipCovidSVP = () => {
+    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Grayed out area represents </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>the COVID-19 pandemic and is</small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small> distinct from data suppression.</small></strong></td></tr></table>`;
+  }
+
   const getJurisCount = (yearmon) => {
     return jurisCountData[yearmon + currentTimeframe]
   }
 
   const getDataTip = (d, tooltipValuesSorted) => {
     if (UtilityFunctions.isCovidPeriod(d['year']))
-      return getTooltipCovid();
+      return isSmallViewport ? getTooltipCovidSVP() : getTooltipCovid();
 
     if (inp.currentState !== 'US') {
       if (!showOverall)
@@ -768,7 +775,7 @@ const adjustCrowdedLabels = () => {
                           }
                         }
     
-                        if (currentState != 'US') {
+                        if (currentState != 'US' && !specs.isSmallViewport) {
                           return <text 
                             x={specs.xMax + 25} 
                             y={yPos}
@@ -778,7 +785,7 @@ const adjustCrowdedLabels = () => {
                               {key != 'US' ? inp.stateNames[key] : (showOverall ? 'Overall' : '')}
                           </text>
                         }
-                        else{
+                        else if (!specs.isSmallViewport){
                           return (
                             <Group>
                               <line
@@ -875,6 +882,7 @@ const adjustCrowdedLabels = () => {
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}
+                  orientation="bottom"
                   tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
                   tickFormat={value => 
                       getFormattedValue(value)
@@ -882,7 +890,8 @@ const adjustCrowdedLabels = () => {
                   tickLabelProps={(value) => ({
                     fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
                     fill: '#000066',
-                    textAnchor: ('start'),
+                    textAnchor: (specs.isSmallViewport ? 'start' : 'start'),
+                    angle: (specs.isSmallViewport ? 90 : 0),
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
@@ -896,7 +905,7 @@ const adjustCrowdedLabels = () => {
       </tr>
       </table>
       )}
-      {(!accessible && specs.isSmallViewport) && (
+      {/* {(!accessible && !specs.isSmallViewport) && (
         <div id="line-chart-legend-container">
           <div id="line-chart-legend">
             {Object.keys(filteredData).map((key, i) =>
@@ -906,7 +915,7 @@ const adjustCrowdedLabels = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
     </>
     )
 

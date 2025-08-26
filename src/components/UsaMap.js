@@ -9,6 +9,7 @@ import { geoAlbersUsaTerritories } from 'd3-composite-projections';
 import { UtilityFunctions } from '../utility';
 import { AccessibilityFunctions } from '../accessibility';
 import DataTable508 from './DataTable508';
+import AngleArrow from './AngleArrow';
 
 const { features: stateTopoPre2020 } = feature(topoJSONPre2020, topoJSONPre2020.objects.states)
 const { features: stateTopoPost2020 } = feature(topoJSONPost2020, topoJSONPost2020.objects.states)
@@ -218,7 +219,7 @@ const UsaMap = (params) => {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
 
-    if (!accessible)
+    if (!accessible || isSmallViewport)
     {
       return (
         <Fragment>
@@ -310,8 +311,8 @@ const UsaMap = (params) => {
             style={{ pointerEvents: geo.id.length <= 2 ? 'default' : 'default' }}
             data-tip={geo.id.length > 2 && filteredData[geo.id] ? getTooltipFragment(geo.id) : getTooltipFragment(geo.id)}
           />
-          <line x1={getDCCordinates(projection)[0] + 6} y1={getDCCordinates(projection)[1] + 2} x2={getDCCordinates(projection)[0] + 70} y2={getDCCordinates(projection)[1]} stroke="black" stroke-width="1"/>
-          <text x={getDCCordinates(projection)[0] + 75} y={getDCCordinates(projection)[1]} fill="black" alignmentBaseline="middle" fontWeight={'bold'} fontSize={12}>DC</text>
+          <line x1={getDCCordinates(projection)[0] + 6} y1={getDCCordinates(projection)[1] + 2} x2={getDCCordinates(projection)[0] + (!isSmallViewport ? 70 : 30)} y2={getDCCordinates(projection)[1]} stroke="black" stroke-width="1"/>
+          <text x={getDCCordinates(projection)[0] + (!isSmallViewport ? 75 : 35)} y={getDCCordinates(projection)[1]} fill="black" alignmentBaseline="middle" fontWeight={'bold'} fontSize={12}>DC</text>
         </g>
       )
 
@@ -344,7 +345,29 @@ const UsaMap = (params) => {
         className="tooltip"
       />
       <br></br>
-      {!accessible &&
+
+      {!isSmallViewport && accessible &&
+        <table>
+            <tr>
+              <td style={{'width': '8%'}}></td>
+              <td style={{'width': '84%'}}>
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControls()}
+                    </td>
+                  </tr>
+                  </table>
+              </td>
+              <td style={{'width': '8%'}}></td>
+            </tr>
+          </table>
+      }
+      {!isSmallViewport && 
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '79%', verticalAlign: 'top', height: '800'}} >
@@ -366,8 +389,25 @@ const UsaMap = (params) => {
               <div style={{'paddingLeft': '200px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
             </div>
           }
+          {accessible && 
+            <DataTable508
+                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                labelOverrides={{
+                  'rate': 'Rate',
+                  'count': 'Count'
+                }}
+                xAxisKey={'Jurisdiction'}
+                highlight={stateNames[currentState]}
+                transforms={{
+                  rate: num => (isNaN(num) ? num : num)
+                }}
+                height={'auto'}
+                width={width}
+              />
+          }
           </td>
-          <td style={{width: '21%', verticalAlign: 'top'}}>
+          {!accessible && 
+          <td style={{width: '21%'}}>
             <table>
               <br></br>
               <tr>
@@ -384,6 +424,7 @@ const UsaMap = (params) => {
               <br></br>
               <tr>
                 <td>
+                  {!accessible &&
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
@@ -418,6 +459,151 @@ const UsaMap = (params) => {
                       </td>
                     </tr>
                   </table>
+                  }
+                </td>
+              </tr>
+            </table>
+              
+          </td>
+          }
+        </tr>
+      </table>
+      }
+      {isSmallViewport &&
+      <table style={{width: '100%'}}>
+        <tr>
+          <td>
+             <table>
+              <tr>
+                <td style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                <div style={{'fontWeight': 'bold'}} className="select-input">Select Drug Syndrome:</div>
+                <div className="select-input"><em>Click One</em></div>
+                <div>&nbsp;</div>
+                <div>
+                  {getDrugControls()}
+                </div>
+                  
+                </td>
+              </tr>
+              <br></br>
+            </table>
+          </td>
+        </tr>
+        {isSmallViewport && 
+        <tr>
+          <td>
+            <table>
+              <tr>
+                  <td style={{'width': '100%'}}>
+                    {!accessible && 
+                      <table>
+                      <tr>
+                        <td style={{ 'width' : '15%', 'textAlign': 'right'}}>
+                            <AngleArrow
+                              width={15}
+                              height={30}
+                              colorScale={'#000000'}
+                              defaultValueIfEmpty={defaultValueIfEmpty}
+                              percentValue={1}
+                              isSmallViewport={true}
+                            ></AngleArrow>
+                        </td>
+                        <td style={{ 'textAlign': 'right'}}>
+                            <svg style={{ height: 100, width: isSmallViewport ? width : 240, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                              <text x={20} y={30} fill="black" alignmentBaseline="middle" fontSize={15} fontWeight={'bold'}>Want to know more?</text>
+                              <text x={20} y={50} fill="black" alignmentBaseline="middle" fontSize={15}>Hover over any jurisdiction to </text>
+                              <text x={20} y={70} fill="black" alignmentBaseline="middle" fontSize={15}>see overdose-specific </text>
+                              <text x={20} y={90} fill="black" alignmentBaseline="middle" fontSize={15}>visits</text>
+                          </svg>
+                        </td>
+                      </tr>
+                    </table>
+                    }
+                  </td>
+                </tr>
+              </table>
+          </td>
+        </tr>
+        }
+        <tr>
+          <td style={{width: '95%', verticalAlign: 'top', height: '800'}} >
+            {!accessible && 
+              <div>
+                <svg style={{ height, width: isSmallViewport ? width : mapWidth, display: isSmallViewport ? 'block' : 'inline-block' }} fill="none" aria-describedby="main-data-table">
+                  <defs>
+                    <pattern id="pattern_KJD3DK2" patternUnits="userSpaceOnUse" width="9.5" height="9.5" patternTransform="rotate(45)">
+                      <line x1="0" y="0" x2="0" y2="9.5" stroke="#0C0824" style={{ strokeWidth: 2 }} />
+                    </pattern>
+                  </defs>
+                <g style={{ transform: `rotate(${statePosition.rotate || 0}deg)`, transformOrigin: `${(isSmallViewport ? width : mapWidth) / 2}px ${halfHeight}px` }}>
+                  <CustomProjection data={currentYear > 2020 ? stateTopoPre2020 : stateTopoPost2020} scale={scaleFactor} translate={[(isSmallViewport ? width : mapWidth) / 2 + (scaleFactor * statePosition.x), halfHeight + (scaleFactor * statePosition.y)]} rotate={50} projection={geoAlbersUsaTerritories}>
+                    {({ features, projection }) => constructGeoJsx(features, projection, true)}
+                  </CustomProjection>
+                </g>
+                
+              </svg>
+              <div style={{'paddingLeft': '10px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
+            </div>
+          }
+          {accessible && 
+            <DataTable508
+                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                labelOverrides={{
+                  'rate': 'Rate',
+                  'count': 'Count'
+                }}
+                xAxisKey={'Jurisdiction'}
+                highlight={stateNames[currentState]}
+                transforms={{
+                  rate: num => (isNaN(num) ? num : num)
+                }}
+                height={'auto'}
+                width={width}
+              />
+          }
+          </td>
+        </tr>
+        <tr>
+          <td style={{width: '100%'}}>
+            <table>
+              <tr>
+                <td>
+                  {!accessible &&
+                  <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                    <tr>
+                      <td>
+                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal </label>
+                        <label style={{'fontSize':'16px'}}>Overdoses per 10,000 </label>
+                        <label style={{'fontSize':'16px'}}>Total ED Visits</label>
+                      </td>
+                    </tr>
+                    {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 
+                    <tr>
+                      <td>
+                          <svg style={{ height: !isSmallViewport ? ((legendHeight * 0.3) + 10) : ((legendHeight * 0.3) + 50), width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'inline-block' : 'inline-block' }}>
+                            {colorIntervals.map((value, idx) => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={idx == 0 ? 15 : (15 + (idx * 30))} width={50} height={(legendHeight * 0.3) / colorIntervals.length} fill={colorScale(value)} />)}
+                            {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={idx == 0 ? 30 : (30 + (idx * 30))} fill="black" alignmentBaseline="middle">{value}</text>)}
+                        </svg>
+                      </td>
+                    </tr>
+                    }
+                    <tr>
+                      <td>
+                        <svg style={{ height: !isSmallViewport ? 90 : 110, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'block' : 'inline-block' }}>
+                            <rect x={0} y={15} width={50} height={10} fill={suppressedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={20} fill="black" alignmentBaseline="middle" fontSize={12}>Data suppressed</text>
+
+                            <rect x={0} y={30} width={50} height={10} fill={unavailableColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={35} fill="black" alignmentBaseline="middle" fontSize={12}>Data not available/</text>
+                            <text x={60} y={52} fill="black" alignmentBaseline="middle" fontSize={12}>not reported</text>
+
+                            <rect x={0} y={62} width={50} height={10} fill={unfundedColor} style={{ strokeWidth: '1', stroke: 'gray'}}/>
+                            <text x={60} y={67} fill="black" alignmentBaseline="middle" fontSize={12}>Unfunded State</text>
+                        </svg>
+                      </td>
+                    </tr>
+                  </table>
+                  }
                 </td>
               </tr>
             </table>
@@ -426,50 +612,6 @@ const UsaMap = (params) => {
         </tr>
       </table>
       }
-      {accessible &&
-      <table style={{width: '100%'}}>
-          <tr>
-            <td style={{width: '21%', verticalAlign: 'top'}}>
-              <table>
-                <tr>
-                  <td style={{'width': '8%'}}></td>
-                  <td style={{'width': '84%'}}>
-                    <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                      <tr>
-                        <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                          <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                          <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
-                        </td>
-                        <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
-                          {getDrugControls()}
-                        </td>
-                      </tr>
-                      </table>
-                  </td>
-                  <td style={{'width': '8%'}}></td>
-              </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-          <td style={{width: '100%', verticalAlign: 'top', height: 'auto'}} >
-            <DataTable508
-                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
-                labelOverrides={{
-                  'rate': 'Rate*',
-                  'count': 'Count*'
-                }}
-                xAxisKey={'Jurisdiction'}
-                highlight={stateNames[currentState]}
-                transforms={{
-                  rate: num => (isNaN(num) ? num : num)
-                }}
-              />
-          </td>
-          </tr>
-      </table>
-      }
-      
       
     </>
   )

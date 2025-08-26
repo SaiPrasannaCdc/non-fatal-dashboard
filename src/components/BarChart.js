@@ -85,11 +85,11 @@ const getData = (data, currentState, currentYear, currentMonth, selectedDrugs) =
 
 function BarChart(params) {
 
-  const viewportCutoff = 600;
-
-  const [ animated, setAnimated ] = useState(true);
+    const [ animated, setAnimated ] = useState(true);
 
   const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions, accessible } = params;
+
+  const isSmallViewport = width < 550;
  
   const dataRates = getData(data, currentState, currentYear, currentMonth, selectedDrugs);
 
@@ -97,10 +97,12 @@ function BarChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 100, bottom: 0, left: 170, right: 10};
+  const margin = {top: 100, bottom: 0, left: !isSmallViewport ? 170 : 150, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(drugOptions).length / 50)*(1.2));
-  const adjustedWidth = width - margin.left - margin.right - 100; 
+  const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.10))) + 210;
+
+  const fontSize = 16;
 
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
@@ -123,7 +125,7 @@ function BarChart(params) {
   };
 
   const xScale = scaleLinear({
-    domain: [0, max * (width < viewportCutoff ? 1.3 : 1.1)],
+    domain: [0, max * (isSmallViewport ? 1.3 : 1.1)],
     range: [ 0, adjustedWidth ]
   });
 
@@ -156,6 +158,14 @@ function BarChart(params) {
 
   const getXAxisTopLabel = () => {
       return 'Suspected Nonfatal Overdoses per 10,000 Total ED Visits';
+  }
+
+  const getXAxisTopLabel1 = () => {
+      return 'Suspected Nonfatal Overdoses ';
+  }
+
+  const getXAxisTopLabel2 = () => {
+      return 'per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
@@ -285,15 +295,23 @@ function BarChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight - 190} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
+              {!isSmallViewport &&
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
+              }
+              {isSmallViewport &&
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisTopLabel1()}</text>
+              }
+              {isSmallViewport &&
+              <text width={adjustedWidth} y={adjustedHeight - 170} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisTopLabel2()}</text>
+              }
               <AxisTop
                 top={adjustedHeight - 140}
+                numTicks={isSmallViewport ? 3 : null}
                 scale={xScale}
-                numTicks={width < viewportCutoff ? 4 : null}
                 tickStroke="none"
                 labelProps={{
                   fontSize: 'medium',
-                  textAnchor: width < viewportCutoff ? 'end' : 'top',
+                  textAnchor: isSmallViewport ? 'end' : 'top',
                   transform: 'translate(0, 40)'
                 }}
                 tickLabelProps={() => ({

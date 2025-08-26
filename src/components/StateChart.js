@@ -133,11 +133,11 @@ const getData = (data, dataOverall, currentTimeframe, currentMonth, currentYear,
 
 function StateChart(params) {
 
-  const viewportCutoff = 600;
-
   const [ animated, setAnimated ] = useState(true);
 
   const { data, dataOverall, width, height, el, currentState, currentDrug, currentTimeframe, currentMonth, currentYear, drugOptions, stateNames, setCurrentState, accessible } = params;
+
+  const isSmallViewport = width < 550;
 
   const dataRates = getData(data, dataOverall, currentTimeframe, currentMonth, currentYear, currentDrug, stateNames);
 
@@ -145,10 +145,13 @@ function StateChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 10, bottom: 10, left: 130, right: 10};
-  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
-  const adjustedWidth = width - margin.left - margin.right - 100; 
+  const margin = {top: 10, bottom: 10, left: !isSmallViewport ? 130 : 115, right: 10};
+
+  const adjustedHeight = ((!isSmallViewport ? height : height - 20) - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
+  const adjustedWidth = !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.42));
+
+  const fontSize = 16;
 
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
@@ -171,7 +174,7 @@ function StateChart(params) {
   };
 
   const xScale = scaleLinear({
-    domain: [0, max * (width < viewportCutoff ? 1.3 : 1.1)],
+    domain: [0, max * (isSmallViewport ? 1.3 : 1.1)],
     range: [ 0, adjustedWidth ]
   });
 
@@ -204,6 +207,13 @@ function StateChart(params) {
 
   const getXAxisLabel = () => {
       return 'Suspected Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
+  }
+
+  const getXAxisLabel1 = () => {
+      return 'Suspected Nonfatal Overdoses Involving'; 
+  }
+  const getXAxisLabel2 = () => {
+      return drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
@@ -331,15 +341,23 @@ function StateChart(params) {
                   </g>
                 )}
               </AxisLeft>
+              {isSmallViewport && 
+                <text width={adjustedWidth} y={adjustedHeight + 70} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisLabel1()}</text>
+              }
+              {isSmallViewport && 
+                <text width={adjustedWidth} y={adjustedHeight + 90} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisLabel2()}</text>
+              }
+              {!isSmallViewport && 
               <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}</text>
+              }
               <AxisBottom
                 top={adjustedHeight}
+                numTicks={isSmallViewport ? 3 : null}
                 scale={xScale}
-                numTicks={width < viewportCutoff ? 4 : null}
                 tickStroke="none"
                 labelProps={{
                   fontSize: 'medium',
-                  textAnchor: width < viewportCutoff ? 'end' : 'middle',
+                  textAnchor: isSmallViewport ? 'end' : 'middle',
                   transform: 'translate(0, 40)'
                 }}
                 tickLabelProps={() => ({
