@@ -102,6 +102,8 @@ function BarChart(params) {
   const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.10))) + 210;
 
+  const fontSize = 16;
+
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
       if(parseFloat(dataRates[a].rate) > parseFloat(dataRates[b].rate)) return 1;
@@ -297,10 +299,10 @@ function BarChart(params) {
               <text width={adjustedWidth} y={adjustedHeight - 190} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel()}</text>
               }
               {isSmallViewport &&
-              <text width={adjustedWidth} y={adjustedHeight - 190} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel1()}</text>
+              <text width={adjustedWidth} y={adjustedHeight - 190} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisTopLabel1()}</text>
               }
               {isSmallViewport &&
-              <text width={adjustedWidth} y={adjustedHeight - 170} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}}>{getXAxisTopLabel2()}</text>
+              <text width={adjustedWidth} y={adjustedHeight - 170} x={!isSmallViewport ? (adjustedWidth/2) : 0} textAnchor={"middle"} style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisTopLabel2()}</text>
               }
               <AxisTop
                 top={adjustedHeight - 140}

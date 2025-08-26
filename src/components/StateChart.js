@@ -151,6 +151,8 @@ function StateChart(params) {
   const adjustedWidth = !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.42));
 
+  const fontSize = 16;
+
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
       if(parseFloat(dataRates[a].rate) > parseFloat(dataRates[b].rate)) return 1;
@@ -204,17 +206,14 @@ function StateChart(params) {
   }, [currentDrug, currentYear]);
 
   const getXAxisLabel = () => {
-      return 'Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
+      return 'Suspected Nonfatal Overdoses Involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
   }
 
   const getXAxisLabel1 = () => {
-      return 'Nonfatal Overdoses '; 
+      return 'Suspected Nonfatal Overdoses Involving'; 
   }
   const getXAxisLabel2 = () => {
-      return 'Involving ' + drugOptions[currentDrug].titleForDropDown;
-  }
-  const getXAxisLabel3 = () => {
-      return ' per 10,000 Total ED Visits';
+      return drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
   }
 
   return width > 0 && (
@@ -343,13 +342,10 @@ function StateChart(params) {
                 )}
               </AxisLeft>
               {isSmallViewport && 
-                <text width={adjustedWidth} y={adjustedHeight + 70} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel1()}</text>
+                <text width={adjustedWidth} y={adjustedHeight + 70} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisLabel1()}</text>
               }
               {isSmallViewport && 
-                <text width={adjustedWidth} y={adjustedHeight + 90} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel2()}</text>
-              }
-              {isSmallViewport && 
-                <text width={adjustedWidth} y={adjustedHeight + 110} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel3()}</text>
+                <text width={adjustedWidth} y={adjustedHeight + 90} x={(-100)} textAnchor="left" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} fontSize={fontSize * .8}>{getXAxisLabel2()}</text>
               }
               {!isSmallViewport && 
               <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`, fill: '#000066'}} >{getXAxisLabel()}</text>

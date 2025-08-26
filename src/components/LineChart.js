@@ -595,13 +595,17 @@ const adjustCrowdedLabels = () => {
     return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
   }
 
+  const getTooltipCovidSVP = () => {
+    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Grayed out area represents </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>the COVID-19 pandemic and is</small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small> distinct from data suppression.</small></strong></td></tr></table>`;
+  }
+
   const getJurisCount = (yearmon) => {
     return jurisCountData[yearmon + currentTimeframe]
   }
 
   const getDataTip = (d, tooltipValuesSorted) => {
     if (UtilityFunctions.isCovidPeriod(d['year']))
-      return getTooltipCovid();
+      return isSmallViewport ? getTooltipCovidSVP() : getTooltipCovid();
 
     if (inp.currentState !== 'US') {
       if (!showOverall)
