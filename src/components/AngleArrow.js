@@ -3,7 +3,7 @@ import { Polygon } from '@visx/shape';
 import { Group } from '@visx/group';
 
 function AngleArrow(params) {
-    const {colorScale, defaultValueIfEmpty, percentValue, width, height } = params;
+    const {colorScale, defaultValueIfEmpty, percentValue, width, height, isSmallViewport } = params;
     const upArrayPoints  = [
         { x: width /2, y: height/10 },
         { x: width * 0.95, y: height*0.40 },
@@ -36,7 +36,7 @@ function AngleArrow(params) {
                         upArrayPoints.map(p => [p.x, p.y]):
                         (percentValue == 0 ? [] : decreaseArrayPoints.map(p => [p.x, p.y]))}
                     fill={colorScale}
-                    transform="rotate(-130 12 10)"
+                    transform={!isSmallViewport ? "rotate(-130 12 10)" : "rotate(-220 12 20)"}
                 ></Polygon>
             </Group>
         </svg>

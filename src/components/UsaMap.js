@@ -219,7 +219,7 @@ const UsaMap = (params) => {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
 
-    if (!accessible)
+    if (!accessible || isSmallViewport)
     {
       return (
         <Fragment>
@@ -346,7 +346,28 @@ const UsaMap = (params) => {
       />
       <br></br>
 
-      {!isSmallViewport &&
+      {!isSmallViewport && accessible &&
+        <table>
+            <tr>
+              <td style={{'width': '8%'}}></td>
+              <td style={{'width': '84%'}}>
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControls()}
+                    </td>
+                  </tr>
+                  </table>
+              </td>
+              <td style={{'width': '8%'}}></td>
+            </tr>
+          </table>
+      }
+      {!isSmallViewport && 
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '79%', verticalAlign: 'top', height: '800'}} >
@@ -385,6 +406,7 @@ const UsaMap = (params) => {
               />
           }
           </td>
+          {!accessible && 
           <td style={{width: '21%'}}>
             <table>
               <br></br>
@@ -443,6 +465,7 @@ const UsaMap = (params) => {
             </table>
               
           </td>
+          }
         </tr>
       </table>
       }
@@ -475,7 +498,6 @@ const UsaMap = (params) => {
                     {!accessible && 
                       <table>
                       <tr>
-                        <td style={{ 'width' : '30%', 'textAlign': 'right'}}></td>
                         <td style={{ 'width' : '15%', 'textAlign': 'right'}}>
                             <AngleArrow
                               width={15}
@@ -483,6 +505,7 @@ const UsaMap = (params) => {
                               colorScale={'#000000'}
                               defaultValueIfEmpty={defaultValueIfEmpty}
                               percentValue={1}
+                              isSmallViewport={true}
                             ></AngleArrow>
                         </td>
                         <td style={{ 'textAlign': 'right'}}>
@@ -557,7 +580,7 @@ const UsaMap = (params) => {
                     {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 
                     <tr>
                       <td>
-                          <svg style={{ height: (legendHeight * 0.3) + 10, width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'inline-block' : 'inline-block' }}>
+                          <svg style={{ height: !isSmallViewport ? ((legendHeight * 0.3) + 10) : ((legendHeight * 0.3) + 50), width: isSmallViewport ? width : legendWidth, display: isSmallViewport ? 'inline-block' : 'inline-block' }}>
                             {colorIntervals.map((value, idx) => value != 'NaN' && <rect key={`color-interval-${value}`} x={0} y={idx == 0 ? 15 : (15 + (idx * 30))} width={50} height={(legendHeight * 0.3) / colorIntervals.length} fill={colorScale(value)} />)}
                             {labelIntervals.map((value, idx) => value != 'NaN' && <text key={`label-interval-${value}`} x={60} y={idx == 0 ? 30 : (30 + (idx * 30))} fill="black" alignmentBaseline="middle">{value}</text>)}
                         </svg>

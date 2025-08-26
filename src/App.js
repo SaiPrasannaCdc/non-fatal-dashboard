@@ -1290,7 +1290,7 @@ const getYears = (startYrInp, endYrInp) => {
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-                height={640} //TODO
+                height={!isSmallViewport ? 640 : 600} //TODO
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
                 drugOptions={drugOptions}
@@ -1298,6 +1298,7 @@ const getYears = (startYrInp, endYrInp) => {
                 currentYear={currentYearSexAge}
                 currentMonth={currentMonthSexAge}
                 accessible={accessible}
+                widthReduction={(!isSmallViewport && !accessible) ? true : false}
               />
           </div>
         </div>
@@ -1326,6 +1327,7 @@ const getYears = (startYrInp, endYrInp) => {
                 currentYear={currentYearSexAge}
                 currentMonth={currentMonthSexAge}
                 accessible={accessible}
+                widthReduction={(!isSmallViewport && !accessible) ? true : false}
               />
           </div>
         </div>
@@ -1335,7 +1337,7 @@ const getYears = (startYrInp, endYrInp) => {
         
   const sexAgeChartMemo = useMemo(() =>
     <>
-    <div className="column column-right">
+    <div className={"column column-right"}>
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           {!accessible && <span className="individual-header margin-top">By Age (In years) and Sex</span>}
           <div class='' ref={sexAgeChartRef}>
@@ -1346,9 +1348,11 @@ const getYears = (startYrInp, endYrInp) => {
             currentMonth={currentMonthSexAge}
             currentDataType={'rate'}
             width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
+            height={640} //TODO
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
             accessible={accessible}
+            widthReduction={(!isSmallViewport && !accessible) ? true : false}
             />
           </div>
         </div>
@@ -1992,7 +1996,6 @@ const getYears = (startYrInp, endYrInp) => {
               <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
                 <div className="select-input">Select Time Period:</div>
               </td>
-              
               <td style={{'width': '11%'}}>
                 <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
                   {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
@@ -2062,6 +2065,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
                   {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
+                &nbsp;
                 <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
@@ -2090,6 +2094,7 @@ const getYears = (startYrInp, endYrInp) => {
                                 setYearSelected(currentYear, 'Monthly');
                             }} />
                           <label htmlFor="radioUSMonthlyState">Monthly</label>
+                          &nbsp;
                           <input
                           id="radioUSAnnualState"
                           name="radioUSAnnualState"
@@ -2229,42 +2234,45 @@ const getYears = (startYrInp, endYrInp) => {
           </table>
           }
           {isSmallViewport &&
-          <table style={{'width': '100%'}}>
-          <tr>
-              <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
-          </tr>
-          <tr>
-              <td style={{'width': '100%'}}>
-                <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                <option value="US">Overall</option>
-                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
-              </select>
-            </td>
-          </tr>
-          <br></br>
-          <tr>
-              <td style={{'width': '18%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
-                <div className="select-input">Select Time Period:</div>
+          <div>
+          <table style={{'width': '100%', 'paddingBottom': '20px'}}>
+            <tr>
+                <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+            </tr>
+            <tr>
+                <td style={{'width': '100%'}}>
+                  <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                  <option value="US">Overall</option>
+                  {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
+                </select>
               </td>
-         </tr>
-         <tr> 
-            <td>
-              <table>
-                <tr>
-                  <td style={{'width': '100%'}}>
-                    <div className="inputContainer">
-                      <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
-                        {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
-                      </select>
-                      <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
-                        {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
-                      </select>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-            </td>    
+            </tr>
+            </table>
+            <table>
+            <tr>
+                <td style={{'width': '18%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
+                  <div className="select-input">Select Time Period:</div>
+                </td>
           </tr>
+          <tr> 
+              <td>
+                <table>
+                  <tr>
+                    <td style={{'width': '100%'}}>
+                      <div className="inputContainer">
+                        <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
+                          {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                        &nbsp;
+                        <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
+                          {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>    
+            </tr>
           <br></br>
           <tr>
               <td style={{'width': '100%'}}>
@@ -2286,6 +2294,7 @@ const getYears = (startYrInp, endYrInp) => {
                               setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
                             }} />
                           <label htmlFor="radioUSMonthlyBar">Monthly</label>
+                          &nbsp;
                           <input
                           id="radioUSAnnualBar"
                           name="radioUSAnnualBar"
@@ -2308,6 +2317,7 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+          </div>
           }
           <br></br>
           { timelineBar == 'Annual' &&
@@ -2320,23 +2330,19 @@ const getYears = (startYrInp, endYrInp) => {
               <br></br>
             </table>
           }
-          <table>
+          <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
             <tr>
-              <td style={{'width': '100%'}}>
-                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                  <tr>
-                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
-                    </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
-                      {getDrugControlsBar()}
-                    </td>
-                  </tr>
-                  </table>
+              <td style={{'width': '100%', 'verticalAlign': 'top'}}>
+                <div style={{'fontWeight': 'bold', 'textAlign': 'left', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
               </td>
             </tr>
-          </table>
+            <tr>
+              <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                {getDrugControlsBar()}
+              </td>
+            </tr>
+            </table>
         </div> 
        <br></br>
         {drugsBarChartMemo}
@@ -2818,6 +2824,7 @@ const getYears = (startYrInp, endYrInp) => {
                                   <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value);}}>
                                     {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
                                   </select>
+                                  &nbsp;
                                   <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly);}}>
                                   {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                                 </select>
@@ -2827,6 +2834,7 @@ const getYears = (startYrInp, endYrInp) => {
                           </table>
                       </td>
                     </tr>
+                    <br></br>
                     <tr>
                       <td style={{'width': '100%', 'textAlign': 'left'}}>
                         <table>
@@ -2844,6 +2852,7 @@ const getYears = (startYrInp, endYrInp) => {
                                     setYearSelectedMap(currentYearMap, 'Monthly');
                                   }} />
                                 <label htmlFor="radioUSMonthlyMap">Monthly</label>
+                                &nbsp;
                                 <input
                                 id="radioUSAnnualMap"
                                 name="radioUSAnnualMap"
@@ -3030,8 +3039,7 @@ const getYears = (startYrInp, endYrInp) => {
                                     <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
                                     {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
                                   </select>
-                                  </td>
-                                  <td style={{'width': '30%'}}>
+                                  &nbsp;
                                   <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value, sexAgeMonthly); }}>
                                   {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                                 </select>
@@ -3040,11 +3048,14 @@ const getYears = (startYrInp, endYrInp) => {
                               </table>
                           </td>
                         </tr>
+                      </table>
+                        <br></br>
+                        <table>
                         <tr>
-                          <td style={{'width': '100%', 'textAlign': 'right'}}>
+                          <td style={{'width': '100%', 'textAlign': 'left'}}>
                             <table>
                               <tr>
-                                  <td style={{'width': '50%', 'textAlign': 'right'}}>
+                                  <td style={{'width': '100%', 'textAlign': 'left'}}>
                                 <div>
                                     <input
                                       id="radioUSMonthlySexAge"
@@ -3057,12 +3068,8 @@ const getYears = (startYrInp, endYrInp) => {
                                         setSexAgeMetric(e.target.value);
                                         setYearSelectedSexAge(currentYearSexAge, 'Monthly');
                                       }} />
-                                    <label
-                                      htmlFor="radioUSMonthlySexAge">Monthly</label>
-                                  </div>
-                                </td>
-                                <td style={{'width': '50%', 'textAlign': 'right', 'paddingLeft': '15px'}}>
-                                  <div>
+                                    <label htmlFor="radioUSMonthlySexAge">Monthly</label>
+                                    &nbsp;
                                     <input
                                     id="radioUSYearlySexAge"
                                     name="radioUSYearlySexAge"
@@ -3177,11 +3184,13 @@ const getYears = (startYrInp, endYrInp) => {
                   {sexChartMemo}
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {ageChartMemo}
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {sexAgeChartMemo}
@@ -3196,11 +3205,13 @@ const getYears = (startYrInp, endYrInp) => {
                   {sexChartMemo}
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {ageChartMemo}
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{width: '0%'}}>
                   {sexAgeChartMemo}

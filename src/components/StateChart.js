@@ -356,8 +356,8 @@ function StateChart(params) {
               }
               <AxisBottom
                 top={adjustedHeight}
+                numTicks={isSmallViewport ? 3 : null}
                 scale={xScale}
-                numTicks={isSmallViewport ? 2 : null}
                 tickStroke="none"
                 labelProps={{
                   fontSize: 'medium',

@@ -282,20 +282,19 @@ const getAgeGroups = (data, currentTimeLine, currentYear, currentMonth) => {
 
 function SexAgeChart(params) {
 
-  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions, accessible } = params;
+  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction } = params;
 
   const ageGroups = getAgeGroups(data, currentTimeframe, currentYear, currentMonth)
   const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth);
   const missingData = getMissingData(data, currentDrug, currentYear, currentMonth);
 
-  const isSmallViewport = width < 550;
+  const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const height = 630;
   const margin = { top: 50, bottom: 145, left: 50, right: 15 };
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
-  const yMax = height - margin.top - margin.bottom;
+  const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
 
   const x1Key = 'F';
   const x2Key = 'M';
@@ -409,56 +408,30 @@ function SexAgeChart(params) {
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
-          {/* <Text x={-20} y={yMax / 2} style={{ transform: 'rotate(-90deg)', transformOrigin: `-20px ${yMax / 2}px` }} fill={'#000066'} fontSize={fontSize} textAnchor="middle">Nonfatal Overdoses per 10,000 ED visits by Age Group</Text> */}
           <AxisLeft
           scale={yScale}
           tickLabelProps={() => ({
             fontSize: 'medium',
             fill: '#000066',
             textAnchor: 'end',
-            verticalAnchor: 'middle'
+            verticalAnchor: 'middle',
           })}
-          left={50}
+          left={!isSmallViewport ? 50 : 40}
           hideTicks
           hideAxisLine
         />
-         {/*  <AxisBottom
-            top={yMax}
-            scale={x1Scale}
-            numTicks={isSmallViewport ? 3 : null}
-            tickLabelProps={(value) => {
-              return {
-                style: {
-                  transform: 'rotate(-60deg)',
-                  transformOrigin: `${x1Scale(value)}px ${18}px`,
-                  textAnchor: 'end',
-                  fontSize: fontSize,
-                  fill: '#000066',
-                }
-              }
-            }}
-          />
-          <AxisBottom
-            top={yMax}
-            scale={x2Scale}
-            numTicks={isSmallViewport ? 3 : null}
-            tickLabelProps={(value) => {
-              return {
-                style: {
-                  transform: 'rotate(-60deg)',
-                  transformOrigin: `${x2Scale(value)}px ${18}px`,
-                  textAnchor: 'end',
-                  fontSize: fontSize,
-                  fill: '#000066',
-                }
-              }
-            }}
-          /> */}
-          <text x={xMax/2} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>
-          <text x={xMax/2} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>
-          {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax+ 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
-          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
-          {<text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
+          {!isSmallViewport && <text x={xMax/2} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
+          {!isSmallViewport && <text x={xMax/2} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+          {!isSmallViewport && (currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
+          {!isSmallViewport && <text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
+          {!isSmallViewport && <text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
+
+          {isSmallViewport && <text x={-50} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
+          {isSmallViewport && <text x={-50} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+          {isSmallViewport && (currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={-50} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>}
+          {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+          {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
+          {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 150 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
         </Group>
       </svg>
       )}

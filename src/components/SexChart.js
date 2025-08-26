@@ -199,16 +199,16 @@ const getMaxValue = (fdata) => {
 
 function SexChart(params) {
 
-  const { data, width, height, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, accessible } = params;
+  const { data, width, height, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, accessible, widthReduction } = params;
 
-  const isSmallViewport = width < 550;
+  const isSmallViewport = width < 550 && !widthReduction;
   
   const [ animated, setAnimated ] = useState(false);
 
   const filteredData = getFilteredData(data, currentDrug, currentYear, currentMonth);
   const missingData = getMissingData(data, currentDrug, currentYear, currentMonth);
 
-  const margin = {top: 10, bottom: 50, left: 90, right: 10};
+  const margin = {top: 10, bottom: 50, left: 50, right: 10};
   const adjustedHeight = height - margin.top - margin.bottom - 120;
   const adjustedWidth = width - margin.left - margin.right;
   const fontSize = 16;
@@ -248,7 +248,7 @@ function SexChart(params) {
 
   return width > 0 && 
       (
-        <div id="age-chart">
+        <div id="sex-chart">
           {accessible ? (
         <>
         <DataTable508
@@ -287,7 +287,6 @@ function SexChart(params) {
               <>
                 <AxisLeft
                   scale={yScale}
-                  numTicks={6}
                   tickLabelProps={() => ({
                     fontSize: 'medium',
                     fill: '#000066',
@@ -300,7 +299,6 @@ function SexChart(params) {
                   })}
                   labelOffset={60}
                 />
-                {/* <text x={adjustedHeight / -2} y={-65} textAnchor="middle" fill={'#000066'} transform="rotate(-90)">Nonfatal Overdoses per 10,000 ED visits</text> */}
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.sex}`} className="animate-bars">
@@ -337,6 +335,7 @@ function SexChart(params) {
                           fontWeight='normal'
                           textAnchor="middle"
                           cursor="default"
+                          fontSize={isSmallViewport ? fontSize * .8 : fontSize}
                         >{d.value}</text>
                       )}
                   </Group>
@@ -355,11 +354,18 @@ function SexChart(params) {
                 />
               </>
             )
-            <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>
-            <text x={adjustedWidth/2} y={height - 90} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>
-            {!UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 60} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
-            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-            {<text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
+            {!isSmallViewport && <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
+            {!isSmallViewport && <text x={adjustedWidth/2} y={height - 90} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+            {!isSmallViewport && !UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 60} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
+            {!isSmallViewport && <text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+            {!isSmallViewport && <text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
+
+            {isSmallViewport && <text x={-50} y={height - 130} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
+            {isSmallViewport && <text x={-50} y={height - 110} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+            {isSmallViewport && !UtilityFunctions.allDataIsSupressed(filteredData) && <text x={-50} y={height - 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>} 
+            {isSmallViewport && <text x={-50} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 50 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+            {isSmallViewport && <text x={-50} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
+            {isSmallViewport && <text x={-50} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
           </Group>
         </svg>
       )}
