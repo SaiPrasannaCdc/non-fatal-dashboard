@@ -833,15 +833,15 @@ const adjustCrowdedLabels = () => {
         <DataTable508
           data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, showOverall)}
           labelOverrides={{
-            'all': 'All Drugs*',
-            'benzodiazepine': 'Benzodiazepine*',
-            'cocaine': 'Cocaine*',
-            'heroin': 'Heroin*',
-            'fentanyl': 'Fentanyl*',
-            'methamphetamine': 'Methamphetamine*',
-            'opioids': 'All Opioids*',
-            'stimulants': 'All Stimulants*',
-            'Overall': 'Overall*',
+            'all': !isSmallViewport ? 'All Drugs*' : 'All Drugs',
+            'benzodiazepine': !isSmallViewport ? 'Benzodiazepine*' : 'Benzodiazepine',
+            'cocaine': !isSmallViewport ? 'Cocaine*' : 'Cocaine',
+            'heroin': !isSmallViewport ? 'Heroin*' : 'Heroin',
+            'fentanyl': !isSmallViewport ? 'Fentanyl*' : 'Fentanyl',
+            'methamphetamine': !isSmallViewport ? 'Methamphetamine*' : 'Methamphetamine',
+            'opioids': !isSmallViewport ? 'All Opioids*' : 'All Opioids',
+            'stimulants': !isSmallViewport ? 'All Stimulants*' : 'All Stimulants',
+            'Overall': !isSmallViewport ? 'Overall*' : 'Overall',
             'Year/Month': 'Month Year',
           }}
           xAxisKey={'Year/Month'}
@@ -850,6 +850,7 @@ const adjustCrowdedLabels = () => {
           }}
           width={width}
           noSort={true}
+          isSmallViewport={isSmallViewport}
         />
         </>        
       ) : (

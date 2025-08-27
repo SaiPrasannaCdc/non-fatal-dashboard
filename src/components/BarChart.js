@@ -175,21 +175,14 @@ function BarChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateBarChartData(dataRates)}
           labelOverrides={{
-            'all': 'All Drugs',
-            'benzodiazepine': 'Benzodiazepine',
-            'cocaine': 'Cocaine',
-            'heroin': 'Heroin',
-            'fentanyl': 'Fentanyl',
-            'methamphetamine': 'Methamphetamine',
-            'opioids': 'All Opioids',
-            'stimulants': 'All Stimulants',
-            'rate': 'Rate*'
+            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
           }}
           xAxisKey={'Drug'}
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
            width={width}
+           isSmallViewport={isSmallViewport}
         />
         </>        
       ) : (

@@ -372,10 +372,10 @@ function SexAgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': 'Rate*',
-            'Age Group': 'By Age (In years) and Sex',
-            'Female': 'Female*',
-            'Male': 'Male*',
+            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
+            'Age Group': !isSmallViewport ? 'By Age (In years) and Sex' : 'By Age and Sex',
+            'Female': !isSmallViewport ? 'Female*' : 'Female',
+            'Male': !isSmallViewport ? 'Male*' : 'Male',
             '0–14': '<15'
           }}
           xAxisKey={'Age Group'}
@@ -384,8 +384,9 @@ function SexAgeChart(params) {
           }}
           height={350}
           width={width}
+          isSmallViewport={isSmallViewport}
         />
-        <table>
+        {!isSmallViewport && <table>
           <tr>
             <td>
               <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED Visits.</i></small></span></div>
@@ -399,6 +400,17 @@ function SexAgeChart(params) {
           </tr>
           }
         </table>
+        }
+        {isSmallViewport && <table>
+                    <tr>
+                      <td>
+                        <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+                        {!UtilityFunctions.allDataIsSupressedSA(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                        <span></span>
+                      </td>
+                    </tr>
+                </table>
+        }
         </>        
       ) : (
       <svg style={{ height }}>

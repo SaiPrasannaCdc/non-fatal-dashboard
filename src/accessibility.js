@@ -26,8 +26,9 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         let drug = Object.keys(data)[i];
+        let drugN = drug.replace('all','All Drugs').replace('benzodiazepine','Benzodiazepine').replace('cocaine','Cocaine').replace('heroin','Heroin').replace('fentanyl','Fentanyl').replace('methamphetamine','Methamphetamine').replace('opioids','All Opioids').replace('stimulants','All Stimulants');
         obj['rate'] = data[drug].rate;
-        myData[drug] = obj;
+        myData[drugN] = obj;
       }
 
       return myData;

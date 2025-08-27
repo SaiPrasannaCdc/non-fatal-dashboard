@@ -1621,7 +1621,7 @@ const getYears = (startYrInp, endYrInp) => {
   }
   }
 
-  const getFootNotesForData = () => {
+  const getFootNotesForData = (chart) => {
     if (!isSmallViewport) {
       return (
             <div>
@@ -1647,7 +1647,12 @@ const getYears = (startYrInp, endYrInp) => {
       <div>
               <table style={{ width: '100%' }}>
                 <tr style={{ textAlign: 'left'}}>
-                  <td style={{ width: '100%' }}><div><small><i><sup>*</sup>{'Data suppressed'}</i></small></div><div><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></div><div><small><i><sup>**</sup>{'Unfunded State'}</i></small></div></td>
+                  <td style={{ width: '100%' }}>
+                    <div><small><i><sup>*</sup>{'Data suppressed'}</i></small></div>
+                    <div><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></div>
+                    {chart == 'Bar' && <div><small><i><sup>¶</sup>{'These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.'}</i></small></div>}
+                    {chart == 'Line' && <div><small><i><sup>¶</sup>{'Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter'}<sup>2</sup>.</i></small></div>}
+                    <div><small><i><sup>**</sup>{'Unfunded State'}</i></small></div></td>
                 </tr>
               </table>
             </div>
@@ -1825,7 +1830,7 @@ const getYears = (startYrInp, endYrInp) => {
                 }
                 {isSmallViewport &&
                 <div>
-                  <select className="drug-select" value={currentDrug} onChange={(e) => { setDrug(e.target.value); }}>
+                  <select id="drug-select" value={currentDrug} onChange={(e) => { setDrug(e.target.value); }}>
                     <option value="all">All drugs</option>
                     <option value="stimulants">All Stimulants</option>
                     <option value="opioids">All Opioids</option>
@@ -2065,7 +2070,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
                   {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
-                &nbsp;
+                &nbsp;&nbsp;
                 <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
@@ -2094,7 +2099,7 @@ const getYears = (startYrInp, endYrInp) => {
                                 setYearSelected(currentYear, 'Monthly');
                             }} />
                           <label htmlFor="radioUSMonthlyState">Monthly</label>
-                          &nbsp;
+                          &nbsp;&nbsp;
                           <input
                           id="radioUSAnnualState"
                           name="radioUSAnnualState"
@@ -2131,8 +2136,9 @@ const getYears = (startYrInp, endYrInp) => {
           }
           {stateBarChartMemo}
           {!accessible && getFootNotesForData()}
+          {accessible && isSmallViewport && getFootNotesForData()}
           
-          {accessible &&
+          {accessible && !isSmallViewport &&
             <table style={{width: '100%'}}>
               <tr>
                 <td style={{width: '100%'}}>
@@ -2237,7 +2243,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div>
           <table style={{'width': '100%', 'paddingBottom': '20px'}}>
             <tr>
-                <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+                <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
             </tr>
             <tr>
                 <td style={{'width': '100%'}}>
@@ -2263,7 +2269,7 @@ const getYears = (startYrInp, endYrInp) => {
                         <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
                           {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
                         </select>
-                        &nbsp;
+                        &nbsp;&nbsp;
                         <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
                           {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                         </select>
@@ -2294,7 +2300,7 @@ const getYears = (startYrInp, endYrInp) => {
                               setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
                             }} />
                           <label htmlFor="radioUSMonthlyBar">Monthly</label>
-                          &nbsp;
+                          &nbsp;&nbsp;
                           <input
                           id="radioUSAnnualBar"
                           name="radioUSAnnualBar"
@@ -2330,6 +2336,28 @@ const getYears = (startYrInp, endYrInp) => {
               <br></br>
             </table>
           }
+          {!isSmallViewport &&
+        <table>
+            <tr>
+              <td style={{'width': '8%'}}></td>
+              <td style={{'width': '84%'}}>
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControlsBar()}
+                    </td>
+                  </tr>
+                  </table>
+              </td>
+              <td style={{'width': '8%'}}></td>
+            </tr>
+          </table>
+        }
+          {isSmallViewport &&
           <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
             <tr>
               <td style={{'width': '100%', 'verticalAlign': 'top'}}>
@@ -2343,6 +2371,7 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
             </table>
+          }
         </div> 
        <br></br>
         {drugsBarChartMemo}
@@ -2375,7 +2404,7 @@ const getYears = (startYrInp, endYrInp) => {
           </tr>
         </table>
         }
-        {accessible &&
+        {accessible && !isSmallViewport &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '100%'}}>
@@ -2384,6 +2413,9 @@ const getYears = (startYrInp, endYrInp) => {
             </td>
           </tr>
         </table>
+        }
+        {accessible && isSmallViewport &&
+          getFootNotesForData('Bar')
         }
       </section>
 
@@ -2537,7 +2569,7 @@ const getYears = (startYrInp, endYrInp) => {
         {isSmallViewport &&
             <table style={{'width': '100%'}}>
               <tr>
-              <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
               </tr>
               <tr>
                 <td style={{'width': '100%'}}>
@@ -2569,6 +2601,7 @@ const getYears = (startYrInp, endYrInp) => {
                               setLookupPeriodStartMonthM('1');
                             }} />
                           <label htmlFor="radioUSMonthlyLine">Monthly</label>
+                          &nbsp;&nbsp;
                           <input
                           id="radioUSAnnualLine"
                           name="radioUSAnnualLine"
@@ -2697,7 +2730,7 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
           }
 
-        {accessible &&
+        {accessible && !isSmallViewport &&
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
@@ -2706,6 +2739,9 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+        }
+        {accessible && isSmallViewport &&
+          getFootNotesForData('Line')
         }
       </section>
 
@@ -2824,7 +2860,7 @@ const getYears = (startYrInp, endYrInp) => {
                                   <select id="month-select-map" value={monthNames[currentMonthMap] || ''} onChange={(e) => { setMonthSelectedMap(e.target.value);}}>
                                     {monthsForDropDownMap.map((key) => <option key={key} value={key}>{key}</option>)}
                                   </select>
-                                  &nbsp;
+                                  &nbsp;&nbsp;
                                   <select id="year-select-map" value={currentYearMap || ''} onChange={(e) => { setYearSelectedMap(e.target.value, mapMonthly);}}>
                                   {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                                 </select>
@@ -2852,7 +2888,7 @@ const getYears = (startYrInp, endYrInp) => {
                                     setYearSelectedMap(currentYearMap, 'Monthly');
                                   }} />
                                 <label htmlFor="radioUSMonthlyMap">Monthly</label>
-                                &nbsp;
+                                &nbsp;&nbsp;
                                 <input
                                 id="radioUSAnnualMap"
                                 name="radioUSAnnualMap"
@@ -2885,7 +2921,7 @@ const getYears = (startYrInp, endYrInp) => {
               </table>
             }
           {usaMapMemo}
-          {accessible &&
+          {accessible && !isSmallViewport &&
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
@@ -2893,6 +2929,9 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+        }
+        {accessible && isSmallViewport &&
+          getFootNotesForData()
         }
       </section>
 
@@ -2985,7 +3024,7 @@ const getYears = (startYrInp, endYrInp) => {
                         { sexAgeMonthly == 'Annual' &&
                             <table>
                               <tr>
-                                <td style={{'textAlign': 'center'}}>
+                                <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
                                   <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
                                 </td>
                               </tr>
@@ -2995,7 +3034,7 @@ const getYears = (startYrInp, endYrInp) => {
                           { sexAgeMonthly == 'Monthly' &&
                             <table>
                               <tr>
-                                <td style={{'textAlign': 'center'}}>
+                                <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
                                   <strong>Note: </strong><span>Due to data suppression rules for counts under 20 ED visits, monthly demographic figures are not available for Cocaine, Methamphetamine, Fentanyl, Heroin, and Benzodiazepine Drug Syndromes. These data can be viewed at the Annual level.</span>
                                 </td>
                               </tr>
@@ -3039,7 +3078,7 @@ const getYears = (startYrInp, endYrInp) => {
                                     <select id="month-select-sexAge" value={monthNames[currentMonthSexAge] || ''} onChange={(e) => { setMonthSelectedSexAge(e.target.value) }}>
                                     {monthsForDropDownSexAge.map((key) => <option key={key} value={key}>{key}</option>)}
                                   </select>
-                                  &nbsp;
+                                  &nbsp;&nbsp;
                                   <select id="year-select-sexAge" value={currentYearSexAge || ''} onChange={(e) => { setYearSelectedSexAge(e.target.value, sexAgeMonthly); }}>
                                   {yearsForDropDown.map((key) => <option key={key} value={key}>{key}</option>)}
                                 </select>
@@ -3069,7 +3108,7 @@ const getYears = (startYrInp, endYrInp) => {
                                         setYearSelectedSexAge(currentYearSexAge, 'Monthly');
                                       }} />
                                     <label htmlFor="radioUSMonthlySexAge">Monthly</label>
-                                    &nbsp;
+                                    &nbsp;&nbsp;
                                     <input
                                     id="radioUSYearlySexAge"
                                     name="radioUSYearlySexAge"
@@ -3098,7 +3137,7 @@ const getYears = (startYrInp, endYrInp) => {
                         { sexAgeMonthly == 'Annual' &&
                             <table>
                               <tr>
-                                <td style={{'textAlign': 'center'}}>
+                                <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
                                   <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
                                 </td>
                               </tr>
@@ -3108,7 +3147,7 @@ const getYears = (startYrInp, endYrInp) => {
                           { sexAgeMonthly == 'Monthly' &&
                             <table>
                               <tr>
-                                <td style={{'textAlign': 'center'}}>
+                                <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
                                   <strong>Note: </strong><span>Due to data suppression rules for counts under 20 ED visits, monthly demographic figures are not available for Cocaine, Methamphetamine, Fentanyl, Heroin, and Benzodiazepine Drug Syndromes. These data can be viewed at the Annual level.</span>
                                 </td>
                               </tr>

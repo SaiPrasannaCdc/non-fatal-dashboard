@@ -3,7 +3,7 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, noSort } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, noSort, isSmallViewport } = params;
 
   const labelOverrides = params.labelOverrides || {};
 
@@ -75,6 +75,21 @@ function DataTable508(params) {
     return ret;
   }
 
+  const cleanUpSVP = (val) => {
+    var ret = val;
+
+    if (val == -1)
+      ret = '†';
+
+    if (val == -2)
+      ret = '**';
+
+    if (val == 0)
+      ret = '*';
+
+    return ret;
+  }
+
   return (
     <>
       <div style={{'width': width, 'height': height}} className={`table-container-MY${customBackground ? ' custom-background' : ' non-custom-background'} ${extraClasses}`} tabIndex="0">
@@ -98,7 +113,7 @@ function DataTable508(params) {
                   <th key={`th-${rowKey}-${rowIndex}`} scope="row">{labelOverrides[rowKey] || rowKey.split('_')[0]}</th>
                   {[data].map((d, i) => 
                     Object.keys(d[keys[0]]).map((colKey, colIndex) => (
-                      <td key={`td-${d[rowKey][colKey]}-${rowIndex}-${colIndex}`}>{cleanUp(d[rowKey][colKey])}</td>
+                      <td key={`td-${d[rowKey][colKey]}-${rowIndex}-${colIndex}`}>{!isSmallViewport ? cleanUp(d[rowKey][colKey]) : cleanUpSVP(d[rowKey][colKey])}</td>
                     ))
                   )}
                 </tr>

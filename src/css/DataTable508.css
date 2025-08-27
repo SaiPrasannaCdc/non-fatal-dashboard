@@ -45,19 +45,19 @@
 }
 
 .table-container-MY table tr.highlight th {
-    border-top: 3px solid rgb(113, 33, 119);
-    border-left: 3px solid rgb(113, 33, 119);
-    border-bottom: 3px solid rgb(113, 33, 119); 
+    border-top: 2px solid rgb(113, 33, 119);
+    border-left: 2px solid rgb(113, 33, 119);
+    border-bottom: 2px solid rgb(113, 33, 119); 
 }
 
 .table-container-MY table tr.highlight td {
-    border-top: 3px solid rgb(113, 33, 119);
-    border-bottom: 3px solid rgb(113, 33, 119);
-    border-right: 3px solid rgb(113, 33, 119);
+    border-top: 2px solid rgb(113, 33, 119);
+    border-bottom: 2px solid rgb(113, 33, 119);
+    border-right: 2px solid rgb(113, 33, 119);
 }
 
 .table-container-MY table tr.highlight td:last-child {
-    border-right: 3px solid rgb(113, 33, 119);
+    border-right: 2px solid rgb(113, 33, 119);
 }
 
 .table-container-MY table tbody th,
@@ -112,4 +112,10 @@
 
 .rightAlign{
     text-align: right!important;
+}
+
+thead::after {
+  content: "";
+  display: block;
+  height: 0.25em; 
 }
