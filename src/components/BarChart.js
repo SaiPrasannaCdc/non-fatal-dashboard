@@ -259,7 +259,7 @@ function BarChart(params) {
                           x={rate < 0 ? 10 : xScale(rate)}
                           y={yScale(name)}
                           dy="20"
-                          dx={rate == 0 ? "0" : "15"}
+                          dx={rate == 0 ? "0" : (!isSmallViewport ? "15" : "5")}
                           fill="black">
                             {(Math.round(rate * 100) / 100).toFixed(1)}
                       </text>
