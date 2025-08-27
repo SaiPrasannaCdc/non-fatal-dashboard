@@ -309,15 +309,13 @@ function AgeChart(params) {
         </table>
         }
         {isSmallViewport && <table>
-                    {!UtilityFunctions.allDataIsSupressed(filteredData) &&
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
+                        {!UtilityFunctions.allDataIsSupressed(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
                         <span></span>
                       </td>
                     </tr>
-                    }
                 </table>
         }
         </>        

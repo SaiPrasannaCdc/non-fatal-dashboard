@@ -402,15 +402,13 @@ function SexAgeChart(params) {
         </table>
         }
         {isSmallViewport && <table>
-                    {currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData) &&
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
+                        {!UtilityFunctions.allDataIsSupressedSA(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
                         <span></span>
                       </td>
                     </tr>
-                    }
                 </table>
         }
         </>        
