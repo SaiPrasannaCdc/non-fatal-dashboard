@@ -223,7 +223,7 @@ function StateChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateStateChartData(dataRates)}
           labelOverrides={{
-            'rate': 'Rate*'
+            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
           }}
           xAxisKey={'Jurisdiction'}
           highlight={stateNames[currentState]}
@@ -231,6 +231,7 @@ function StateChart(params) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
            width={width}
+           isSmallViewport={isSmallViewport}
         />
         </>        
       ) : (

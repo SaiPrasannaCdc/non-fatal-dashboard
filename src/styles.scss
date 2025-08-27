@@ -1823,3 +1823,21 @@ display: inline-block;
     display: flex;
     justify-content: flex-start;
 }
+
+a {
+  overflow-wrap: break-word; 
+}
+
+thead::after {
+  content: "";
+  display: block;
+  height: 0.25em; 
+}
+
+select {
+    border: .05rem solid darkgray;
+}
+
+option {
+    font-size: inherit;
+}

@@ -254,7 +254,7 @@ function SexChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexChartData(filteredData)}
           labelOverrides={{
-            'rate': 'Rate*',
+            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
             'Sex': 'By Sex'
           }}
           xAxisKey={'Sex'}
@@ -263,8 +263,9 @@ function SexChart(params) {
           }}
           height={'auto'}
           width={width}
+          isSmallViewport={isSmallViewport}
         />
-        <table>
+        {!isSmallViewport && <table>
             <tr>
               <td>
                 <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED Visits.</i></small></span></div>
@@ -273,15 +274,28 @@ function SexChart(params) {
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
             <tr>
               <td>
-                <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
+                <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
                 <span></span>
               </td>
             </tr>
             }
         </table>
+        }
+        {isSmallViewport && <table>
+            {!UtilityFunctions.allDataIsSupressed(filteredData) &&
+            <tr>
+              <td>
+                <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+                <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
+                <span></span>
+              </td>
+            </tr>
+            }
+        </table>
+        }
         </>        
       ) : (
-        <svg width={width} height={height}>
+        <svg width={width} height={height + 10}>
           <Group top={margin.top} left={margin.left}>
             (
               <>

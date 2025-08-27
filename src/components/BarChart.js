@@ -183,13 +183,14 @@ function BarChart(params) {
             'methamphetamine': 'Methamphetamine',
             'opioids': 'All Opioids',
             'stimulants': 'All Stimulants',
-            'rate': 'Rate*'
+            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
           }}
           xAxisKey={'Drug'}
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
            width={width}
+           isSmallViewport={isSmallViewport}
         />
         </>        
       ) : (

@@ -393,7 +393,7 @@ const UsaMap = (params) => {
             <DataTable508
                 data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
-                  'rate': 'Rate',
+                  'rate': !isSmallViewport ? 'Rate*' : 'Rate',
                   'count': 'Count'
                 }}
                 xAxisKey={'Jurisdiction'}
@@ -403,6 +403,7 @@ const UsaMap = (params) => {
                 }}
                 height={'auto'}
                 width={width}
+                isSmallViewport={isSmallViewport}
               />
           }
           </td>
@@ -549,7 +550,7 @@ const UsaMap = (params) => {
             <DataTable508
                 data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
-                  'rate': 'Rate',
+                  'rate': !isSmallViewport ? 'Rate*' : 'Rate',
                   'count': 'Count'
                 }}
                 xAxisKey={'Jurisdiction'}
@@ -559,6 +560,7 @@ const UsaMap = (params) => {
                 }}
                 height={'auto'}
                 width={width}
+                isSmallViewport={isSmallViewport}
               />
           }
           </td>
