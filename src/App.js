@@ -2243,7 +2243,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div>
           <table style={{'width': '100%', 'paddingBottom': '20px'}}>
             <tr>
-                <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+                <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
             </tr>
             <tr>
                 <td style={{'width': '100%'}}>
@@ -2569,7 +2569,7 @@ const getYears = (startYrInp, endYrInp) => {
         {isSmallViewport &&
             <table style={{'width': '100%'}}>
               <tr>
-              <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdictions:</div></td>
+              <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
               </tr>
               <tr>
                 <td style={{'width': '100%'}}>
@@ -2601,6 +2601,7 @@ const getYears = (startYrInp, endYrInp) => {
                               setLookupPeriodStartMonthM('1');
                             }} />
                           <label htmlFor="radioUSMonthlyLine">Monthly</label>
+                          &nbsp;&nbsp;
                           <input
                           id="radioUSAnnualLine"
                           name="radioUSAnnualLine"

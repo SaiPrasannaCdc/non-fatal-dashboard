@@ -282,7 +282,7 @@ function AgeChart(params) {
           data={AccessibilityFunctions.generateAgeChartData(filteredData)}
           labelOverrides={{
             'rate': !isSmallViewport ? 'Rate*' : 'Rate',
-            'Sex': 'By Age',
+            'Sex': !isSmallViewport ? 'By Age (In years)' : 'By Age',
             '0–14': '<15'
           }}
           xAxisKey={'Sex'}

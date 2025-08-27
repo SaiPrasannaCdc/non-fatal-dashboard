@@ -373,7 +373,7 @@ function SexAgeChart(params) {
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
             'rate': !isSmallViewport ? 'Rate*' : 'Rate',
-            'Age Group': 'By Age and Sex',
+            'Age Group': !isSmallViewport ? 'By Age (In years) and Sex' : 'By Age and Sex',
             'Female': !isSmallViewport ? 'Female*' : 'Female',
             'Male': !isSmallViewport ? 'Male*' : 'Male',
             '0–14': '<15'
