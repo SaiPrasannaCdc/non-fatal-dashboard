@@ -372,10 +372,10 @@ function SexAgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
+            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate‡',
             'Age Group': !isSmallViewport ? 'By Age (In years) and Sex' : 'By Age and Sex',
-            'Female': !isSmallViewport ? 'Female' : 'Female',
-            'Male': !isSmallViewport ? 'Male' : 'Male',
+            'Female': !isSmallViewport ? 'Female' : 'Female‡',
+            'Male': !isSmallViewport ? 'Male' : 'Male‡',
             '0–14': '<15'
           }}
           xAxisKey={'Age Group'}
@@ -399,6 +399,12 @@ function SexAgeChart(params) {
         </table>
         }
         {isSmallViewport && <table>
+          <tr>
+              <td>
+                <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
+              </td>
+            </tr>
+            <br></br>
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>

@@ -91,7 +91,7 @@ export const AccessibilityFunctions = {
       {
         for (var i=0;i<Object.keys(data['US']).length;i++)
         {
-          var stateN = stateNames[state] + (isSVP ? '' : ''); //TODO
+          var stateN = stateNames[state] + (isSVP ? '‡' : '');
 
           let obj = {};
           if (currentDrug == 'all') {

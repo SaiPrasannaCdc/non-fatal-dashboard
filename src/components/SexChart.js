@@ -254,7 +254,7 @@ function SexChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
+            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate‡',
             'Sex': 'By Sex'
           }}
           xAxisKey={'Sex'}
@@ -277,6 +277,12 @@ function SexChart(params) {
         </table>
         }
         {isSmallViewport && <table>
+          <tr>
+              <td>
+                <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
+              </td>
+            </tr>
+            <br></br>
             <tr>
               <td>
                 <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>

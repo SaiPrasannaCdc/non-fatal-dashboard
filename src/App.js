@@ -1622,6 +1622,7 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const getFootNotesForData = (chart) => {
+
     if (!isSmallViewport) {
       return (
             <div>
@@ -1644,7 +1645,27 @@ const getYears = (startYrInp, endYrInp) => {
     }
     else {
       return (
-      <div>
+          <div>
+              {(chart == 'Line' || chart == 'Bar') && 
+              <table style={{ width: '100%' }}>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '100%' }}>
+                    <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses per 10,000 Total ED Visits.'}</small></span></div>
+                  </td>
+                </tr>
+                <tr><td></td></tr>
+              </table>
+              }
+              {(chart == 'State') && 
+              <table style={{ width: '100%' }}>
+                <tr style={{ textAlign: 'left'}}>
+                  <td style={{ width: '100%' }}>
+                    <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
+                  </td>
+                </tr>
+                <tr><td></td></tr>
+              </table>
+              }
               <table style={{ width: '100%' }}>
                 <tr style={{ textAlign: 'left'}}>
                   <td style={{ width: '100%' }}>
@@ -1794,6 +1815,15 @@ const getYears = (startYrInp, endYrInp) => {
   const setDrug = (val) => {
     setCurrentDrug(val);
     setselectedDrugs([val])
+  }
+
+  const getFileNameFromPath = (path) => {
+    if(!path){
+      return 'DOSE_SyS_Dashboard_Download.xlsx';
+    }
+    // Get the filename from the path and remove any query parameters
+    const filename = path.split('/').pop();
+    return filename.split('?')[0];
   }
 
   const drugColor = drugOptions[currentDrug].color;
@@ -2136,7 +2166,7 @@ const getYears = (startYrInp, endYrInp) => {
           }
           {stateBarChartMemo}
           {!accessible && getFootNotesForData()}
-          {accessible && isSmallViewport && getFootNotesForData()}
+          {accessible && isSmallViewport && getFootNotesForData('State')}
           
       <section>
 
@@ -3282,7 +3312,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
 
-      <a download="DOSE_SYS_dashboard_07242025.xlsx" href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> {isSmallViewport ? <br></br> : ''} with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
+      <a download={getFileNameFromPath(document.querySelector('#non-fatal-container').attributes['download-url']?.value)} href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> {isSmallViewport ? <br></br> : ''} with all available suspected nonfatal drug overdose visit estimates per 10,000 ED visits.</span>
 
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip"/>
 
