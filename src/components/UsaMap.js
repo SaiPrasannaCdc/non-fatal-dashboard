@@ -393,7 +393,7 @@ const UsaMap = (params) => {
             <DataTable508
                 data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
-                  'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate‡',
+                  'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
                   'count': 'Count'
                 }}
                 xAxisKey={'Jurisdiction'}
@@ -550,7 +550,7 @@ const UsaMap = (params) => {
             <DataTable508
                 data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
-                  'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate‡',
+                  'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
                   'count': 'Count'
                 }}
                 xAxisKey={'Jurisdiction'}
@@ -614,6 +614,7 @@ const UsaMap = (params) => {
                           <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
                         </td>
                       </tr>
+                      <br></br>
                     </table>
                   }
                 </td>

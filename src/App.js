@@ -1653,7 +1653,7 @@ const getYears = (startYrInp, endYrInp) => {
                     <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses per 10,000 Total ED Visits.'}</small></span></div>
                   </td>
                 </tr>
-                <tr><td></td></tr>
+                <br></br>
               </table>
               }
               {(chart == 'State') && 
@@ -1663,7 +1663,7 @@ const getYears = (startYrInp, endYrInp) => {
                     <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
                   </td>
                 </tr>
-                <tr><td></td></tr>
+                <br></br>
               </table>
               }
               <table style={{ width: '100%' }}>
