@@ -3,7 +3,7 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, noSort, isSmallViewport } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, noSort, isSmallViewport, colSpan, drugName } = params;
 
   const labelOverrides = params.labelOverrides || {};
 
@@ -92,12 +92,13 @@ function DataTable508(params) {
 
   return (
     <>
-      <div style={{'width': width, 'height': height}} className={`table-container-MY${customBackground ? ' custom-background' : ' non-custom-background'} ${extraClasses}`} tabIndex="0">
+      <div style={{'width': width, 'height': height}} className={`table-container-MY${customBackground ? ' custom-background' : ' non-custom-background'} ${extraClasses} ${!isSmallViewport ? 'borderCollapse' : ''}`} tabIndex="0">
         <table>
           <caption>{caption}</caption>
           <thead>
           <tr>
               <th className={'keepSticky'} scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
+              {colSpan != null && <th key={'abcd'} scope="col" colspan={colSpan} className={'centerAlign'}>{'Rate of suspected nonfatal overdoses' + (drugName != null ? ' involving ' + drugName : '') + ' per 10,000 Total ED Visits'}</th>}
             </tr>
             <tr>
               {!isArray && [data].map((d, index) => 

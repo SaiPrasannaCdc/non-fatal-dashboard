@@ -831,17 +831,17 @@ const adjustCrowdedLabels = () => {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, showOverall)}
+          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, showOverall, isSmallViewport)}
           labelOverrides={{
-            'all': !isSmallViewport ? 'All Drugs*' : 'All Drugs',
-            'benzodiazepine': !isSmallViewport ? 'Benzodiazepine*' : 'Benzodiazepine',
-            'cocaine': !isSmallViewport ? 'Cocaine*' : 'Cocaine',
-            'heroin': !isSmallViewport ? 'Heroin*' : 'Heroin',
-            'fentanyl': !isSmallViewport ? 'Fentanyl*' : 'Fentanyl',
-            'methamphetamine': !isSmallViewport ? 'Methamphetamine*' : 'Methamphetamine',
-            'opioids': !isSmallViewport ? 'All Opioids*' : 'All Opioids',
-            'stimulants': !isSmallViewport ? 'All Stimulants*' : 'All Stimulants',
-            'Overall': !isSmallViewport ? 'Overall*' : 'Overall',
+            'all': !isSmallViewport ? 'All Drugs' : 'All Drugs‡',
+            'benzodiazepine': !isSmallViewport ? 'Benzodiazepine' : 'Benzodiazepine‡',
+            'cocaine': !isSmallViewport ? 'Cocaine' : 'Cocaine‡',
+            'heroin': !isSmallViewport ? 'Heroin' : 'Heroin‡',
+            'fentanyl': !isSmallViewport ? 'Fentanyl' : 'Fentanyl‡',
+            'methamphetamine': !isSmallViewport ? 'Methamphetamine' : 'Methamphetamine‡',
+            'opioids': !isSmallViewport ? 'All Opioids' : 'All Opioids‡',
+            'stimulants': !isSmallViewport ? 'All Stimulants' : 'All Stimulants‡',
+            'Overall': !isSmallViewport ? 'Overall' : 'Overall‡',
             'Year/Month': 'Month Year',
           }}
           xAxisKey={'Year/Month'}
@@ -850,10 +850,10 @@ const adjustCrowdedLabels = () => {
           }}
           width={width}
           noSort={true}
+          colSpan={!isSmallViewport ? (currentState == 'US' ? selectedDrugs.length : (showOverall ? 2 : 1)) : null}
           isSmallViewport={isSmallViewport}
         />
-        </>        
-      ) : (
+        </> ) : (
       <table style={{width: '100%'}}>
         <tr>
           <td style={{width: '85%'}}>

@@ -372,26 +372,23 @@ function SexAgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
+            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate‡',
             'Age Group': !isSmallViewport ? 'By Age (In years) and Sex' : 'By Age and Sex',
-            'Female': !isSmallViewport ? 'Female*' : 'Female',
-            'Male': !isSmallViewport ? 'Male*' : 'Male',
+            'Female': !isSmallViewport ? 'Female' : 'Female‡',
+            'Male': !isSmallViewport ? 'Male' : 'Male‡',
             '0–14': '<15'
           }}
           xAxisKey={'Age Group'}
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-          height={350}
+          height={390}
           width={width}
           isSmallViewport={isSmallViewport}
+          colSpan={!isSmallViewport ? 2 : null}
+          drugName={drugOptions[currentDrug].titleAll}
         />
         {!isSmallViewport && <table>
-          <tr>
-            <td>
-              <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED Visits.</i></small></span></div>
-            </td>
-          </tr>
           {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) &&
           <tr>
             <td>
@@ -402,6 +399,12 @@ function SexAgeChart(params) {
         </table>
         }
         {isSmallViewport && <table>
+          <tr>
+              <td>
+                <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
+              </td>
+            </tr>
+            <br></br>
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
