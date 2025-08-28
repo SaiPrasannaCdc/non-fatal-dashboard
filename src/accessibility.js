@@ -51,7 +51,7 @@ export const AccessibilityFunctions = {
   
     },  
 
-    generateLineChartData : (data, currentDrug, selDrugs, state, stateNames, showOverall) => {
+    generateLineChartData : (data, currentDrug, selDrugs, state, stateNames, showOverall, isSVP) => {
 
       let myData = {};
     
@@ -91,7 +91,7 @@ export const AccessibilityFunctions = {
       {
         for (var i=0;i<Object.keys(data['US']).length;i++)
         {
-          var stateN = stateNames[state] + '*';
+          var stateN = stateNames[state] + (isSVP ? '' : ''); //TODO
 
           let obj = {};
           if (currentDrug == 'all') {

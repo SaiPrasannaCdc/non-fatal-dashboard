@@ -281,7 +281,7 @@ function AgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
+            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
             'Sex': !isSmallViewport ? 'By Age (In years)' : 'By Age',
             '0–14': '<15'
           }}
@@ -294,11 +294,6 @@ function AgeChart(params) {
           isSmallViewport={isSmallViewport}
         />
         {!isSmallViewport && <table>
-            <tr>
-              <td>
-                <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED Visits.</i></small></span></div>
-              </td>
-            </tr>
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
             <tr>
               <td>

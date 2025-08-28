@@ -2138,16 +2138,6 @@ const getYears = (startYrInp, endYrInp) => {
           {!accessible && getFootNotesForData()}
           {accessible && isSmallViewport && getFootNotesForData()}
           
-          {accessible && !isSmallViewport &&
-            <table style={{width: '100%'}}>
-              <tr>
-                <td style={{width: '100%'}}>
-                  <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[currentDrug].titleForDropDown} per 10,000 Total ED Visits.</i></small></span></div>
-                </td>
-              </tr>
-            </table>
-          }
-
       <section>
 
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
@@ -2408,7 +2398,6 @@ const getYears = (startYrInp, endYrInp) => {
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '100%'}}>
-              <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses per 10,000 Total ED Visits.</i></small></span></div>
               <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
             </td>
           </tr>
@@ -2734,7 +2723,6 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
-                  <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses per 10,000 Total ED Visits.</i></small></span></div>
                  <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
               </td>
             </tr>
@@ -2921,15 +2909,7 @@ const getYears = (startYrInp, endYrInp) => {
               </table>
             }
           {usaMapMemo}
-          {accessible && !isSmallViewport &&
-          <table style={{width: '100%'}}>
-            <tr>
-              <td style={{width: '100%'}}>
-                  <div><span><small><i><sup>*</sup>Rate of suspected nonfatal overdoses involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits.</i></small></span></div>
-              </td>
-            </tr>
-          </table>
-        }
+
         {accessible && isSmallViewport &&
           getFootNotesForData()
         }

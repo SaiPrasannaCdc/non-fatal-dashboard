@@ -223,7 +223,7 @@ function StateChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateStateChartData(dataRates)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate*' : 'Rate',
+            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
           }}
           xAxisKey={'Jurisdiction'}
           highlight={stateNames[currentState]}
