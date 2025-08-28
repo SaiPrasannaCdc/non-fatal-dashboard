@@ -175,7 +175,7 @@ function BarChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateBarChartData(dataRates)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses per 10,000 Total ED Visits' : 'Rate‡',
+            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses per 10,000 Total ED Visits' : 'Rate',
           }}
           xAxisKey={'Drug'}
           transforms={{

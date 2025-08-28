@@ -103,7 +103,7 @@ function DataTable508(params) {
             <tr>
               {!isArray && [data].map((d, index) => 
                 Object.keys(d[keys[0]]).map(rowKey => (
-                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}</th>
+                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}{isSmallViewport ? <sup>‡</sup> : ''}</th>
                 )
               ))}
             </tr>
