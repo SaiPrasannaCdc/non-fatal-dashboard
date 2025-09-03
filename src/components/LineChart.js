@@ -226,7 +226,7 @@ function LineChart(params) {
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 550;
   specs['fontSize'] = !isSmallViewport ? 16 : 14;
-  specs['height'] = 550;
+  specs['height'] = 560;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
   specs['margin'] = isPeriod ? { top: 15, bottom: 115, left: 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
