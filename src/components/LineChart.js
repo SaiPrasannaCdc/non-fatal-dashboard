@@ -530,7 +530,7 @@ const adjustCrowdedLabels = () => {
     let val = isPeriod ? inp.monthNamesPeriod[d[[specs.xKey]]] : d[[specs.xKey]]; 
     let rate = getRateforDrug(inp.selectedDrugs[0], currentState, val)
     let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
-    let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4));
+    let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)));
     let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
     let midStr = `<p><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rate == 0 ? 'Data Suppressed' : (rate == '-1.0' ? 'Data not available/not reported' : (rate == '-2.0' ? 'Unfunded State' : rate))}</p>`
     let parStr = `</strong></span>` + midStr + `</td></tr></table>`;
@@ -542,7 +542,7 @@ const adjustCrowdedLabels = () => {
     let rateSt = getRateforDrug(inp.selectedDrugs[0], currentState, val);
     let rateUS = getRateforDrug(inp.selectedDrugs[0], 'US', val)
     let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
-    let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4));
+    let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)));
     let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
     let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateUS == 0 ? 'Data Suppressed' : (rateUS == '-1.0' ? 'Data not available/not reported' : rateUS)} (${getJurisCount(d['year'])} Jurisdictions)</p>`
     let midStr2 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rateSt == 0 ? 'Data Suppressed' : (rateSt == '-1.0' ? 'Data not available/not reported' : rateSt)}</p>`
@@ -615,7 +615,7 @@ const adjustCrowdedLabels = () => {
     }
     else
     {
-        return `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
+        return `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
                 `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`;
     }
   }
