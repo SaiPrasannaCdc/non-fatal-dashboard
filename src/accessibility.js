@@ -1,3 +1,5 @@
+import { UtilityFunctions } from './utility'
+
 export const AccessibilityFunctions = {
 
     generateStateChartData : (data) => {
@@ -51,7 +53,7 @@ export const AccessibilityFunctions = {
   
     },  
 
-    generateLineChartData : (data, currentDrug, selDrugs, state, stateNames) => {
+    generateLineChartData : (data, currentDrug, selDrugs, state, stateNames, currentTimeframe) => {
 
       let myData = {};
     
@@ -83,7 +85,7 @@ export const AccessibilityFunctions = {
           if (selDrugs.includes('stimulant'))
             obj['stimulant'] = data['US'][i].stimulant;
 
-          let monyr = data['US'][i].year;
+          let monyr = currentTimeframe == 'Monthly' ? (UtilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4)) : data['US'][i].year;
           myData[monyr] = obj;
         }
       }
@@ -180,7 +182,7 @@ export const AccessibilityFunctions = {
               }
           }
 
-          let monyr = data['US'][i].year;
+          let monyr = currentTimeframe == 'Monthly' ? (UtilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4)) : data['US'][i].year;
           myData[monyr] = obj;
         }
       }

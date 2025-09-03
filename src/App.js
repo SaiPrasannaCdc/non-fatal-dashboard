@@ -892,7 +892,13 @@ export default function App(params) {
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
       {getToggleControls()}
+      
       <table style={{ width: '100%' }}>
+        <tr>
+          <td style={{ textAlign: 'center' }}>
+              {accessible && <span><strong>Rate per 100,000 persons<sup>5</sup></strong></span>}
+          </td>
+        </tr>
         <tr>
           <td>
             <div class="containerLC">

@@ -950,7 +950,7 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames)}
+          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe)}
           labelOverrides={{
             'alldrug': 'All Drugs',
             'benzodiazepine': 'Benzodiazepine',
@@ -959,6 +959,7 @@ function LineChart({ params }) {
             'methamphetamine': 'Methamphetamine',
             'opioid': 'All Opioids',
             'stimulant': 'All Stimulants',
+            'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           }}
           xAxisKey={'Year/Month'}
           transforms={{
@@ -1014,24 +1015,24 @@ function LineChart({ params }) {
                 {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
               </Group>
             </svg>
-          {currentDrug == 'fentanyl' &&
+{/*           {currentDrug == 'fentanyl' && */}
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
-                <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Counts and rates for this indicator are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T40.41 ICD-10-CM code as there was no way to code fentanyl-involved poisonings.</i></small></span></div>
+                <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span><small><i>Note: Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Counts and rates for this indicator are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T40.41 ICD-10-CM code as there was no way to code fentanyl-involved poisonings.</i></small></span></div>
               </td>
             </tr>
           </table>
-          }
-          {currentDrug == 'methamphetamine' &&
+          {/* } */}
+          {/* {currentDrug == 'methamphetamine' && */}
             <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
-                <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span class="x32 fill-p cdc-icon-alert_02 colorRed"></span><span><small><i>Note: Data on methamphetamine are shown starting in October 2022, when the ICD-10-CM code for methamphetamine-involved poisoning (T43.65) was introduced. Counts and rates for these indicators are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T43.65 ICD-10-CM code as there was no way to code methamphetamine-involved poisonings.</i></small></span></div>
+                <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span><small><i>Note: Data on methamphetamine are shown starting in October 2022, when the ICD-10-CM code for methamphetamine-involved poisoning (T43.65) was introduced. Counts and rates for these indicators are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T43.65 ICD-10-CM code as there was no way to code methamphetamine-involved poisonings.</i></small></span></div>
               </td>
             </tr>
           </table>
-          }
+         {/*  } */}
         </td>
       </tr>
       </table>

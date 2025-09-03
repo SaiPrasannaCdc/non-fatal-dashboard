@@ -58,7 +58,7 @@ function DataTable508(params) {
     return words.join('');
   };
 
-  const cleanUp = (val) => {
+  const cleanUpOld = (val) => {
     var ret = val;
 
     if (String(val).indexOf('Data suppressed') >= 0)
@@ -70,6 +70,18 @@ function DataTable508(params) {
     return ret;
   }
 
+  const cleanUp = (val) => {
+    var ret = val;
+
+    if (String(val).indexOf('Data suppressed') >= 0)
+      ret = '*';
+
+    if (String(val).indexOf('Data not available') >= 0)
+      ret = '†';
+
+    return ret;
+  }
+
   return (
     <>
       <div style={{'width': width}} className={`table-container-MY${customBackground ? ' custom-background' : ' non-custom-background'} ${extraClasses}`} tabIndex="0">
@@ -77,12 +89,12 @@ function DataTable508(params) {
           <caption>{caption}</caption>
           <thead>
           <tr>
-              <th scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
+              <th className={'keepSticky'} scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
             </tr>
             <tr>
               {!isArray && [data].map((d, index) => 
                 Object.keys(d[keys[0]]).map(rowKey => (
-                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}</th>
+                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}{labelOverrides[rowKey]?.endsWith('visits per 100,000 persons') ? <sup>5</sup> : ''}</th>
                 )
               ))}
             </tr>

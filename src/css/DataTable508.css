@@ -65,11 +65,21 @@
     position: -webkit-sticky;
     position: sticky;
     left: 0;
+    top: 0; 
     background-color: white;
 }
 
 .noSticky{
     position:inherit!important;
+}
+
+.keepSticky {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    top: 0; 
+    z-index: 1;
+    background-color: white;
 }
 
 .table-container-MY.non-custom-background table tr:nth-child(odd),
@@ -102,4 +112,8 @@
 
 .rightAlign{
     text-align: right!important;
+}
+
+th {
+        white-space: normal!important; /* Allows text to wrap */
 }
