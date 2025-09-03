@@ -1834,44 +1834,24 @@ const getYears = (startYrInp, endYrInp) => {
     <Context.Provider value={{ drugOptions, currentDrug, Hexagon }}>
       <div className="filters-container" ref={outerContainerRef}>
         <div>
+          {!isSmallViewport &&
           <table style={{'width': '100%'}}>
-             {isSmallViewport &&
-              <tr>
-                <td style={{'width': '100%', 'textAlign': 'left'}}><div><strong>Select a Drug:</strong></div></td>
-              </tr>
-             }
             <tr>
-              <td colspan='4'>
-                {!isSmallViewport &&
-                <div>
-                  <div className="drug-tab-section">
-                    {drugTab('all', <span>All Drugs</span>)}
-                    {drugTab('stimulants', <span>All Stimulants</span>)}
-                    {drugTab('opioids', <span>All Opioids</span>)}
-                    {drugTab('fentanyl', <span>Fentanyl</span>)}
-                  </div>
-                  <div className="drug-tab-section">
-                    {drugTab('cocaine',<span>Cocaine</span>)}
-                    {drugTab('methamphetamine', <span>Methamphetamine</span>)}
-                    {drugTab('heroin', <span>Heroin</span>)}
-                    {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
-                  </div>
-                </div>
-                }
-                {isSmallViewport &&
-                <div>
-                  <select id="drug-select" value={currentDrug} onChange={(e) => { setDrug(e.target.value); }}>
-                    <option value="all">All drugs</option>
-                    <option value="stimulants">All Stimulants</option>
-                    <option value="opioids">All Opioids</option>
-                    <option value="fentanyl">Fentanyl</option>
-                    <option value="cocaine">Cocaine</option>
-                    <option value="methamphetamine">Methamphetamine</option>
-                    <option value="heroin">Heroin</option>
-                    <option value="benzodiazepine">Benzodiazepine</option>
-                  </select>
-                </div>
-                }
+              <td>
+                  <div>
+                      <div className="drug-tab-section">
+                        {drugTab('all', <span>All Drugs</span>)}
+                        {drugTab('stimulants', <span>All Stimulants</span>)}
+                        {drugTab('opioids', <span>All Opioids</span>)}
+                        {drugTab('fentanyl', <span>Fentanyl</span>)}
+                      </div>
+                      <div className="drug-tab-section">
+                        {drugTab('cocaine',<span>Cocaine</span>)}
+                        {drugTab('methamphetamine', <span>Methamphetamine</span>)}
+                        {drugTab('heroin', <span>Heroin</span>)}
+                        {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
+                      </div>
+                    </div>
               </td>
             </tr>
             <tr>
@@ -1955,6 +1935,109 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
             </tr>
           </table>
+          } 
+           {isSmallViewport &&
+            <table style={{'width': '100%'}}>
+              <tr>
+                  <td style={{'width': '100%', 'textAlign': 'left'}}><div><strong>Select a Drug:</strong></div></td>
+              </tr>
+              <tr>
+                  <td>
+                    <div>
+                    <select id="drug-select" value={currentDrug} onChange={(e) => { setDrug(e.target.value); }}>
+                      <option value="all">All drugs</option>
+                      <option value="stimulants">All Stimulants</option>
+                      <option value="opioids">All Opioids</option>
+                      <option value="fentanyl">Fentanyl</option>
+                      <option value="cocaine">Cocaine</option>
+                      <option value="methamphetamine">Methamphetamine</option>
+                      <option value="heroin">Heroin</option>
+                      <option value="benzodiazepine">Benzodiazepine</option>
+                    </select>
+                  </div>
+                  </td>
+                  <td>
+                    <div style={{'float': 'right'}}>
+                    <button id="reset-buttonM" style={{ 'backgroundColor': '#000066' }} onClick={() => {
+
+                      let cntUS = keyedRawUSDataMonthly.length; 
+
+                      setCurrentDrug('all');
+                      setselectedDrugs(['all'])
+                      setCurrentState('US');
+                      setCurrentStateBar('US');
+                      setTimeline('Monthly');
+                      setTimelineBar('Monthly');
+                      setTimelineLine('Monthly');
+                      setCurrentStateLine('US');
+
+                      setMonthlyToggle(false);
+                      setMonthlyToggleBar(false);
+                      setMonthlyToggleLine(false);
+                      setPercentToggle(false);  
+                      setOverallToggle(false);
+                      
+                      setCurrentYear(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                      setCurrentYearMap(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                      setCurrentYearBar(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                      setCurrentYearSexAge(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)))
+                      setCurrentMonth(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                      setCurrentMonthMap(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                      setCurrentMonthBar(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                      setCurrentMonthSexAge(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4));
+                      setYearsForDropDown(getYears(keyedRawUSDataMonthly[0]['YYYYMM'], keyedRawUSDataMonthly[cntUS-1]['YYYYMM']));
+                      setMonthsForDropDown(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                      setMonthsForDropDownBar(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                      setMonthsForDropDownMap(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                      setMonthsForDropDownSexAge(getMonths(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                      setJurisCount(getJurisCount(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+                      setJurisForDropDown(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+                      setJurisForDropDownLine(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), false));
+                      setJurisForDropDownMap(getJurisInitial(keyedRawDataMonthly, Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)), Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4)), true));
+
+                      setLookupPeriodStartYearM('2023');
+                      setLookupPeriodStartMonthM('1');
+
+                      setLookupPeriodStartYearA('2023');
+                      setLookupPeriodStartMonthA('1');
+
+                      setLookupPeriodEndYearM(String(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(0,4)));
+                      setLookupPeriodEndMonthM(String(Number(keyedRawUSDataMonthly[cntUS-1]['YYYYMM'].substring(4))));
+
+                      setLookupPeriodEndYearA(String(keyedRawUSDataAnnual[cntUS-1]['YYYYMM'].substring(0,4)));
+                      setLookupPeriodEndMonthA(String(Number(keyedRawUSDataAnnual[cntUS-1]['YYYYMM'].substring(4))));
+
+                      setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']); 
+                      setEndUSMonthYearForSliderM(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+                      setStartMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']); 
+                      setEndMonthYearForSliderM(keyedRawUSDataMonthly[cntUS-1]['YYYYMM']); 
+
+                      setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']); 
+                      setEndUSMonthYearForSliderA(keyedRawUSDataAnnual[cntUS-1]['YYYYMM']); 
+                      setStartMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']); 
+                      setEndMonthYearForSliderA(keyedRawUSDataAnnual[cntUS-1]['YYYYMM']);
+
+                      setselectedDrugs(['all']);
+                      setselectedDrugsBar(['benzodiazepine', 'opioids', 'fentanyl', 'heroin', 'stimulants', 'cocaine', 'methamphetamine']);
+                      setselectedDrugsLine(['all']);
+                      setselectedDrugsSexAge(['all']);
+                      setShowConsiderations(false);
+                      setShowFootNotes(false);
+
+                      setMapMonthly('Monthly');
+                      handleData('all')
+                      setSexAgeMetric('Monthly');
+
+                      setSliderKey(Date.now());
+                      setMapKey(Date.now());
+
+                                }}>Reset</button>
+                  </div>
+                  </td>
+              </tr>
+            </table>
+
+          }
         </div>
 
       <div style={{'width':'100%', 'backgroundColor': drugColor}}>
@@ -2597,6 +2680,9 @@ const getYears = (startYrInp, endYrInp) => {
                   {Object.keys(jurisForDropDownLine).map((key) => <option key={key} value={key}>{jurisForDropDownLine[key]}</option>)}
                 </select>
                 </td>
+                <td>
+                  {getToggleControls()}
+                </td>
               </tr>
               <br></br>
               <tr>
@@ -2647,7 +2733,7 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
         }
             <br></br>
-          {getToggleControls()}
+           {!isSmallViewport && getToggleControls()}
           { timelineLine == 'Annual' &&
             <table>
               <tr>

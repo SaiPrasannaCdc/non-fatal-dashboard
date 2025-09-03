@@ -355,9 +355,6 @@ margin-bottom: $gbl-padding;
 &.no-grid {
 display: block;
 
-#reset-button {
-margin-top: 27px;
-}
 }
 
 .compare {
@@ -386,6 +383,12 @@ color: white;
 padding: 0.5em 1em;
 border-radius: 5px;
 margin-top: 27px;
+}
+
+#reset-buttonM {
+color: white;
+padding: 0.5em 1em;
+border-radius: 5px;
 }
 
 /* Tooltip Styles - overrides some default ones provided by <ReactTooltip /> */
@@ -1841,3 +1844,9 @@ select {
 option {
     font-size: inherit;
 }
+
+.divSidebySide {
+  display: flex;
+  gap: 20px; 
+}
+
