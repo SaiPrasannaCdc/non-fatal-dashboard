@@ -2,7 +2,7 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, colSpan, isSmallViewport, hdr } = params;
 
   const labelOverrides = params.labelOverrides || {};
 
@@ -88,8 +88,9 @@ function DataTable508(params) {
         <table>
           <caption>{caption}</caption>
           <thead>
-          <tr>
+            <tr>
               <th className={'keepSticky'} scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
+              {colSpan != null && <th key={'abcd'} scope="col" colspan={colSpan} className={'centerAlign'}>{hdr != null ? hdr : 'Rate per 100,000 persons'}{hdr == null ? <sup>5</sup> : ''}</th>}
             </tr>
             <tr>
               {!isArray && [data].map((d, index) => 

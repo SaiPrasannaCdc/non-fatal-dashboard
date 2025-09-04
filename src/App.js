@@ -206,7 +206,7 @@ export default function App(params) {
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
   const toggleFootnotes = () => setFootnotes(!showFootnotes);
 
-  const isSmallViewport = width < 500;
+  const isSmallViewport = width < 550;
 
   const stateBarChartRef = useRef();
 
@@ -895,11 +895,6 @@ export default function App(params) {
       
       <table style={{ width: '100%' }}>
         <tr>
-          <td style={{ textAlign: 'center' }}>
-              {accessible && <span><strong>Rate per 100,000 persons<sup>5</sup></strong></span>}
-          </td>
-        </tr>
-        <tr>
           <td>
             <div class="containerLC">
               <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"}>
@@ -933,7 +928,8 @@ export default function App(params) {
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
-      <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>
+      {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
+      {accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true" />
       5 Year Rate
@@ -1159,21 +1155,22 @@ export default function App(params) {
             <section className="first-section">
               {lineChartMemo}
               <br></br>
-              {!accessible && getFootNotesForData()}
+              {getFootNotesForData()}
             </section>
 
             <section>
               {stateBarChartMemo}
-              {!accessible && getFootNotesForData()}
+              {getFootNotesForData()}
             </section>
 
             <section>
               {sexAgeChartsMemo}
-              {!accessible && getFootNotesForData()}
+              {getFootNotesForData()}
             </section>
 
             <section>
               {usaMapMemo}
+              {accessible && getFootNotesForData()}
             </section>
           </>
         )}
@@ -1225,7 +1222,7 @@ export default function App(params) {
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of opioid-, fentanyl-, heroin-, benzodiazepine-, stimulant-, cocaine-, and methamphetamine-involved overdose visits are included in the numbers of all drug overdose visits; heroin- and fentanyl-involved overdose visits are included in the numbers of opioid-involved overdose visits; cocaine- and methamphetamine-involved overdose visits are included in the numbers of stimulant-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
                 <li><strong>Rates beginning in 2021 may not be directly comparable to prior years.</strong> The <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> instituted new methodology to calculate population estimates beginning with 2021 data. The new methodology, referred to as differential privacy, ensures that data from individuals and individual households remain confidential.</li>
                 <li><strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction;</strong> however, some jurisdictions' coverage was lower (i.e., between 60% and 79%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. States with 60% - &lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 only). States with 60 - &lt;80% inpatient hospital facility coverage include MT (2018-2023). State data with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
-                <li><strong>There are several important caveats to consider</strong> when viewing the figures included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</li>
+                <li><strong>There are several important caveats to consider</strong> when viewing the {!accessible ? 'figures' : 'tables'} included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</li>
               </ul>
             </div>}
         </div>

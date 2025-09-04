@@ -9,7 +9,7 @@
 
 .table-container-MY table {
     min-width: calc(100% - 5px);
-    /* border-collapse: collapse; */
+    border-collapse: collapse;
     border-spacing: 0;
 }
 
@@ -33,8 +33,8 @@
 .table-container-MY table thead th {
     border-top: 1px solid black;
     border-bottom: 1px solid black;
-/*     border-right: 1px solid black;
-    border-left: 1px solid black; */
+    border-right: 1px solid black;
+    border-left: 1px solid black;
 }
 
 .table-container-MY.demographics-table table thead th {
@@ -65,7 +65,7 @@
     position: -webkit-sticky;
     position: sticky;
     left: 0;
-    top: 0; 
+    top: 0;
     background-color: white;
 }
 
@@ -114,6 +114,12 @@
     text-align: right!important;
 }
 
+thead::after {
+  content: "";
+  display: block;
+  height: 0.25em; 
+}
+
 th {
-        white-space: normal!important; /* Allows text to wrap */
+    white-space: normal!important; /* Allows text to wrap */
 }

@@ -224,7 +224,7 @@ function LineChart({ params }) {
   const specs = [];
   specs['width'] = width - 20; 
   specs['width'] = specs['width'];
-  specs['isSmallViewport'] = specs['width'] < 500;
+  specs['isSmallViewport'] = specs['width'] < 550;
   specs['fontSize'] = 16;
   specs['height'] = 400;
   specs['seriesOverlapMargin'] = 20;
@@ -966,6 +966,8 @@ function LineChart({ params }) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
+          colSpan={!specs['isSmallViewport'] ? (currentState == 'US' ? selectedDrugs.length : 2) : null}
+          isSmallViewport={specs['isSmallViewport']}
         />
         </>        
       ) : (

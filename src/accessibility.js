@@ -35,18 +35,33 @@ export const AccessibilityFunctions = {
   
     },  
 
-    generateMapData : (data, stateNames) => {
+    generateMapData : (data, stateNames, stateName) => {
 
       let myData = {};
 
-      for (var i=0;i<Object.keys(data).length;i++)
+      if (stateName == 'US') {
+        for (var i=0;i<Object.keys(data).length;i++)
+        {
+          let obj = {};
+          obj['county'] = data[Object.keys(data)[i]].county;
+          obj['rate'] = data[Object.keys(data)[i]].rate;
+          obj['count'] = data[Object.keys(data)[i]].count;
+          let st = stateNames[data[Object.keys(data)[i]].state] + '_' + i.toString();
+          myData[st] = obj;
+        }
+      }
+      else
       {
-        let obj = {};
-        obj['county'] = data[Object.keys(data)[i]].county;
-        obj['rate'] = data[Object.keys(data)[i]].rate;
-        obj['count'] = data[Object.keys(data)[i]].count;
-        let st = stateNames[data[Object.keys(data)[i]].state] + '_' + i.toString();
-        myData[st] = obj;
+        for (var i=0;i<Object.keys(data).length;i++)
+        {
+          let obj = {};
+          obj['county'] = data[Object.keys(data)[i]].county;
+          obj['rate'] = data[Object.keys(data)[i]].rate;
+          obj['count'] = data[Object.keys(data)[i]].count;
+          let st = stateNames[data[Object.keys(data)[i]].state] + '_' + i.toString();
+          if (data[Object.keys(data)[i]].state == stateName)
+            myData[st] = obj;
+        }
       }
 
       return myData;
