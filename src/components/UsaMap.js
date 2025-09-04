@@ -28,7 +28,7 @@ const UsaMap = ({ params }) => {
 
   const filteredData = data.county[currentYearGroup === 'all' ? 'all' : currentYear];
 
-  const isSmallViewport = width < 500;
+  const isSmallViewport = width < 550;
   const fontSize = 15;
   const suppressedColor = '#999';
   const unavailableColor = '#EEE';
@@ -228,7 +228,7 @@ const UsaMap = ({ params }) => {
     {accessible ? (
           <>
           <DataTable508
-            data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+            data={AccessibilityFunctions.generateMapData(filteredData, stateNames, currentState)}
             labelOverrides={{
               'county': 'County',
               'rate': 'Rate',

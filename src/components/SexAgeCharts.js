@@ -14,7 +14,7 @@ function SexAgeCharts({ params }) {
 
   const filteredData = data.sex[currentDataSource][currentDrug][currentYear][currentTimeframe === 'Monthly' ? currentMonth : 'all'][currentDataType];
 
-  const isSmallViewport = width < 500;
+  const isSmallViewport = width < 550;
   const fontSize = 16;
   const height = 450;
   const margin = { top: 50, bottom: 125, left: 50, right: 15 };
@@ -103,7 +103,10 @@ function SexAgeCharts({ params }) {
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-           width={width}
+          width={width}
+          colSpan={!isSmallViewport ? 2 : null}
+          isSmallViewport={isSmallViewport}
+          hdr={currentDataType == 'count' ? 'Count' : null}
         />
         </>        
       ) : (
