@@ -501,7 +501,7 @@ export default function App(params) {
               <table>
                 <tr>
                   <td style={{ width: '76%', textAlign: 'right' }}>
-                    {(!accessible && currentTimeframe === 'Annual') &&
+                    {(currentTimeframe === 'Annual') &&
                       <div style={{ float: 'right' }}>
                         <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
                           <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent}

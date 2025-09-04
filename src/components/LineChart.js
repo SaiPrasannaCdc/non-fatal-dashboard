@@ -215,6 +215,8 @@ function LineChart({ params }) {
   
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
 
+  const currentStatePctChange = stateNames[currentState] + ' %Change'
+
   useEffect(() => {
     markYearsForTicks();
     adjustCrowdedLabels();
@@ -950,7 +952,7 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe)}
+          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, changePrecValues)}
           labelOverrides={{
             'alldrug': 'All Drugs',
             'benzodiazepine': 'Benzodiazepine',
@@ -959,6 +961,17 @@ function LineChart({ params }) {
             'methamphetamine': 'Methamphetamine',
             'opioid': 'All Opioids',
             'stimulant': 'All Stimulants',
+            'fentanyl': 'Fentanyl',
+            'alldrug_pct': 'All Drugs %Change',
+            'benzodiazepine_pct': 'Benzodiazepine %Change',
+            'cocaine_pct': 'Cocaine %Change',
+            'heroin_pct': 'Heroin %Change',
+            'methamphetamine_pct': 'Methamphetamine %Change',
+            'opioid_pct': 'All Opioids %Change',
+            'stimulant_pct': 'All Stimulants %Change',
+            'fentanyl_pct': 'Fentanyl %Change',
+            'Overall_pct': 'Overall %Change',
+            'state_pct' : currentStatePctChange,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           }}
           xAxisKey={'Year/Month'}
@@ -966,7 +979,7 @@ function LineChart({ params }) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          colSpan={!specs['isSmallViewport'] ? (currentState == 'US' ? selectedDrugs.length : 2) : null}
+          colSpan={!specs['isSmallViewport'] ? (currentState == 'US' ? (!showPercent ? selectedDrugs.length : (selectedDrugs.length * 2)) : (!showPercent ? 2: 4)) : null}
           isSmallViewport={specs['isSmallViewport']}
         />
         </>        
