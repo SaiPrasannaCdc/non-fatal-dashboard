@@ -215,7 +215,8 @@ function LineChart({ params }) {
   
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
 
-  const currentStatePctChange = stateNames[currentState] + ' %Change'
+  const currentStaterate = stateNames[currentState] + ' rate'
+  const currentStatePctChange = stateNames[currentState] + ' %change in rate'
 
   useEffect(() => {
     markYearsForTicks();
@@ -954,23 +955,25 @@ function LineChart({ params }) {
         <DataTable508
           data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, changePrecValues)}
           labelOverrides={{
-            'alldrug': 'All Drugs',
-            'benzodiazepine': 'Benzodiazepine',
-            'cocaine': 'Cocaine',
-            'heroin': 'Heroin',
-            'methamphetamine': 'Methamphetamine',
-            'opioid': 'All Opioids',
-            'stimulant': 'All Stimulants',
-            'fentanyl': 'Fentanyl',
-            'alldrug_pct': 'All Drugs %Change',
-            'benzodiazepine_pct': 'Benzodiazepine %Change',
-            'cocaine_pct': 'Cocaine %Change',
-            'heroin_pct': 'Heroin %Change',
-            'methamphetamine_pct': 'Methamphetamine %Change',
-            'opioid_pct': 'All Opioids %Change',
-            'stimulant_pct': 'All Stimulants %Change',
-            'fentanyl_pct': 'Fentanyl %Change',
-            'Overall_pct': 'Overall %Change',
+            'alldrug': 'All Drugs rate',
+            'benzodiazepine': 'Benzodiazepine rate',
+            'cocaine': 'Cocaine rate',
+            'heroin': 'Heroin rate',
+            'methamphetamine': 'Methamphetamine rate',
+            'opioid': 'All Opioids rate',
+            'stimulant': 'All Stimulants rate',
+            'fentanyl': 'Fentanyl rate',
+            'Overall': 'Overall rate',
+            'alldrug_pct': 'All Drugs %change in rate',
+            'benzodiazepine_pct': 'Benzodiazepine %change in rate',
+            'cocaine_pct': 'Cocaine %change in rate',
+            'heroin_pct': 'Heroin %change in rate',
+            'methamphetamine_pct': 'Methamphetamine %change in rate',
+            'opioid_pct': 'All Opioids %change in rate',
+            'stimulant_pct': 'All Stimulants %change in rate',
+            'fentanyl_pct': 'Fentanyl %change in rate',
+            'Overall_pct': 'Overall %change in rate',
+            'state' : currentStaterate,
             'state_pct' : currentStatePctChange,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           }}
@@ -979,9 +982,28 @@ function LineChart({ params }) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          colSpan={!specs['isSmallViewport'] ? (currentState == 'US' ? (!showPercent ? selectedDrugs.length : (selectedDrugs.length * 2)) : (!showPercent ? 2: 4)) : null}
+          //colSpan={!specs['isSmallViewport'] ? (currentState == 'US' ? (!showPercent ? selectedDrugs.length : (selectedDrugs.length * 2)) : (!showPercent ? 2: 4)) : null}
           isSmallViewport={specs['isSmallViewport']}
+          supScript='§'
         />
+        {currentDrug == 'fentanyl' &&
+          <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '100%'}}>
+                <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span><small><i>Note: Fentanyl data are displayed beginning in October 2020, reflecting the introduction of the ICD-10-CM code for fentanyl-involved poisoning (T40.41). Counts and rates for this indicator are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T40.41 ICD-10-CM code as there was no way to code fentanyl-involved poisonings.</i></small></span></div>
+              </td>
+            </tr>
+          </table>
+          }
+          {currentDrug == 'methamphetamine' &&
+            <table style={{width: '100%'}}>
+            <tr>
+              <td style={{width: '100%'}}>
+                <div class="rounded ds-8 pt-3 pr-3 pb-2 pl-3 border-0 text-center icon-wrap"><span><small><i>Note: Data on methamphetamine are shown starting in October 2022, when the ICD-10-CM code for methamphetamine-involved poisoning (T43.65) was introduced. Counts and rates for these indicators are shown as {currentTimeframe == 'Monthly' ? '"' + 'NA' + '"' + ' (Not Available)' : 'NA'} for time periods prior to the introduction of the T43.65 ICD-10-CM code as there was no way to code methamphetamine-involved poisonings.</i></small></span></div>
+              </td>
+            </tr>
+          </table>
+         }
         </>        
       ) : (
       <table style={{width: '100%'}}>
@@ -1030,7 +1052,7 @@ function LineChart({ params }) {
                 {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
               </Group>
             </svg>
-{/*           {currentDrug == 'fentanyl' && */}
+          {currentDrug == 'fentanyl' &&
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
@@ -1038,8 +1060,8 @@ function LineChart({ params }) {
               </td>
             </tr>
           </table>
-          {/* } */}
-          {/* {currentDrug == 'methamphetamine' && */}
+          }
+          {currentDrug == 'methamphetamine' &&
             <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
@@ -1047,7 +1069,7 @@ function LineChart({ params }) {
               </td>
             </tr>
           </table>
-         {/*  } */}
+         }
         </td>
       </tr>
       </table>

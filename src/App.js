@@ -198,7 +198,7 @@ export default function App(params) {
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [width, setWidth] = useState(0);
   const [activeTab, setActiveTab] = useState(0);
-  const { accessible } = params;
+ const { accessible } = params;
 
   const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
 
@@ -801,12 +801,13 @@ export default function App(params) {
 
   }, []);
 
-  const getFootNotesForData = () => {
+  const getFootNotesForData = (addl) => {
     return (
       <div className="datatable-body">
         <table style={{ width: '100%' }}>
           <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
           <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
+          {addl && <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
         </table>
       </div>
     )
@@ -929,7 +930,7 @@ export default function App(params) {
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
       {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
-      {accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
+      {accessible && <div><small><i>The county-level tables are only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. This table uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true" />
       5 Year Rate
@@ -1155,7 +1156,8 @@ export default function App(params) {
             <section className="first-section">
               {lineChartMemo}
               <br></br>
-              {getFootNotesForData()}
+              {!accessible && getFootNotesForData()}
+              {accessible && getFootNotesForData(true)}
             </section>
 
             <section>
