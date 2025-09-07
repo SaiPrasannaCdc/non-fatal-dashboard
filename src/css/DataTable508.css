@@ -119,3 +119,7 @@ thead::after {
   display: block;
   height: 0.25em; 
 }
+
+th {
+    white-space: normal!important; /* Allows text to wrap */
+}

@@ -4,17 +4,44 @@ export const AccessibilityFunctions = {
 
     generateStateChartData : (data) => {
 
-      let myData = {};
+      var myData = {};
 
       for (var i=0;i<Object.keys(data).length;i++)
       {
-        let obj = {};
-        let jur = Object.keys(data)[i];
+        var obj = {};
+        var jur = Object.keys(data)[i];
         obj['rate'] = data[jur].rate;
         myData[jur] = obj;
       }
 
       return myData;
+  
+    },  
+
+    generateStateChartDataSorted : (data) => {
+
+      const myData = {};
+      const myDataSorted = {};
+
+      for (var i=0;i<Object.keys(data).length;i++)
+      {
+        var obj = {};
+        var jur = Object.keys(data)[i];
+        obj['rate'] = data[jur].rate;
+        myData[jur] = obj;
+      }
+
+      const tempEntries = Object.entries(myData).sort(([, a], [, b]) => b.rate - a.rate)
+
+      for (var i=0;i<tempEntries.length;i++)
+      {
+        var objS = {};
+        var jurS = tempEntries[i][0];
+        objS['rate'] = tempEntries[i][1].rate;
+        myDataSorted[jurS] = objS;
+      }
+
+      return myDataSorted;
   
     },  
 
@@ -35,6 +62,34 @@ export const AccessibilityFunctions = {
   
     },  
 
+    generateBarChartDataSorted : (data) => {
+   
+      const myData = {};
+      const myDataSorted = {};
+
+       for (var i=0;i<Object.keys(data).length;i++)
+      {
+        let obj = {};
+        let drug = Object.keys(data)[i];
+        let drugN = drug.replace('all','All Drugs').replace('benzodiazepine','Benzodiazepine').replace('cocaine','Cocaine').replace('heroin','Heroin').replace('fentanyl','Fentanyl').replace('methamphetamine','Methamphetamine').replace('opioids','All Opioids').replace('stimulants','All Stimulants');
+        obj['rate'] = data[drug].rate;
+        myData[drugN] = obj;
+      }
+
+      const tempEntries = Object.entries(myData).sort(([, a], [, b]) => b.rate - a.rate)
+
+      for (var i=0;i<tempEntries.length;i++)
+      {
+        var objS = {};
+        var drug = tempEntries[i][0];
+        objS['rate'] = tempEntries[i][1].rate;
+        myDataSorted[drug] = objS;
+      }
+
+      return myDataSorted;
+  
+    },  
+
     generateMapData : (data, stateNames) => {
 
       let myData = {};
@@ -49,6 +104,33 @@ export const AccessibilityFunctions = {
 
       return myData;
   
+    },  
+
+    generateMapDataSorted : (data, stateNames) => {
+
+      const myData = {};
+      const myDataSorted = {};
+
+      for (var i=0;i<Object.keys(data).length;i++)
+      {
+        let obj = {};
+        obj['rate'] = data[Object.keys(data)[i]];
+        let st = stateNames[Object.keys(data)[i]];
+        myData[st] = obj;
+      }
+
+      const tempEntries = Object.entries(myData).sort(([, a], [, b]) => b.rate - a.rate)
+
+      for (var i=0;i<tempEntries.length;i++)
+      {
+        var objS = {};
+        var st = tempEntries[i][0];
+        objS['rate'] = tempEntries[i][1].rate;
+        myDataSorted[st] = objS;
+      }
+
+      return myDataSorted;
+
     },  
 
     generateLineChartData : (data, currentDrug, selDrugs, state, stateNames, showOverall, isSVP) => {

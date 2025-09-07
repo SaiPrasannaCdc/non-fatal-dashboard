@@ -249,6 +249,10 @@ export default function App( params ) {
 
   const [isPeriod, setPeriodToggle] = useState(true);
 
+  const [stateSort, setStateSort] = useState('S');
+  const [barSort, setBarSort] = useState('B');
+  const [mapSort, setMapSort] = useState('M');
+
   const [width, setWidth] = useState(0);
 
   const isSmallViewport = width < viewportCutoffSmall;
@@ -1196,10 +1200,11 @@ const getYears = (startYrInp, endYrInp) => {
         stateNames={stateNames}
         setCurrentState={setCurrentState}
         accessible={accessible}
+        sortBy={stateSort}
         />
     </div>
   </>,
-  [width, currentDrug, timeline, currentMonth, currentYear, currentState]);
+  [width, currentDrug, timeline, currentMonth, currentYear, currentState, stateSort]);
 
   const drugsBarChartMemo = useMemo(() =>
     <>
@@ -1215,10 +1220,11 @@ const getYears = (startYrInp, endYrInp) => {
         currentMonth={currentMonthBar} 
         drugOptions={drugOptions}
         accessible={accessible}
+        sortBy={barSort}
         />
     </div>
   </>,
-  [width, currentStateBar, selectedDrugsBar, currentYearBar, currentMonthBar, timelineBar]);
+  [width, currentStateBar, selectedDrugsBar, currentYearBar, currentMonthBar, timelineBar, barSort]);
 
   const lineChartMemo = useMemo(() =>
   <>
@@ -1276,9 +1282,10 @@ const getYears = (startYrInp, endYrInp) => {
         onData={handleData}
         key={mapKey}
         accessible={accessible}
+        sortBy={mapSort}
         />
   </>,
-  [currentYearMap, currentMonthMap, width, mapMonthly, mapKey]);
+  [currentYearMap, currentMonthMap, width, mapMonthly, mapKey, mapSort]);
 
   const sexChartMemo = useMemo(() =>
     <>
@@ -1629,7 +1636,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table style={{ width: '100%' }}>
                 <tr style={{ textAlign: 'left'}}>
                   <td style={{ width: '10%' }}></td>
-                  <td style={{ width: '95%' }}><small><i><sup>*</sup>{'Data suppressed'}</i></small></td>
+                  <td style={{ width: '95%' }}><small><i><sup>*</sup>{!accessible ? 'Data suppressed' : 'Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.'}</i></small></td>
                 </tr>
                 <tr style={{ textAlign: 'left'}}>
                   <td style={{ width: '10%' }}></td>
@@ -1669,7 +1676,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table style={{ width: '100%' }}>
                 <tr style={{ textAlign: 'left'}}>
                   <td style={{ width: '100%' }}>
-                    <div><small><i><sup>*</sup>{'Data suppressed'}</i></small></div>
+                    <div><small><i><sup>*</sup>{!accessible ? 'Data suppressed' : 'Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.'}</i></small></div>
                     <div><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></div>
                     {chart == 'Bar' && <div><small><i><sup>¶</sup>{'These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.'}</i></small></div>}
                     {chart == 'Line' && <div><small><i><sup>¶</sup>{'Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter'}<sup>2</sup>.</i></small></div>}
@@ -2110,7 +2117,6 @@ const getYears = (startYrInp, endYrInp) => {
           {!isSmallViewport &&
           <table style={{'width': '100%'}}>
           <tr>
-              <td style={{'width': '14%'}}></td>
               <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
                 <div className="select-input">Select Time Period:</div>
               </td>
@@ -2166,6 +2172,11 @@ const getYears = (startYrInp, endYrInp) => {
                       </td>
                   </tr>
                 </table>
+              </td>
+              <td>
+                  <span className="boldFont">Sort By: </span>State
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
+                  Rate
               </td>
             </tr>
           </table>
@@ -2233,6 +2244,13 @@ const getYears = (startYrInp, endYrInp) => {
                       </td>
                   </tr>
                 </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span className="boldFont">Sort By: </span>State
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
+                  Rate
               </td>
             </tr>
           </table>
@@ -2338,7 +2356,11 @@ const getYears = (startYrInp, endYrInp) => {
                   </tr>
                 </table>
               </td>
-              <td style={{'width': '3%'}}></td>
+              <td>
+                <span className="boldFont">Sort By: </span>Drug
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setBarSort(e.target.checked ? 'B' : 'R')} defaultChecked="true" />
+                  Rate
+              </td>
             </tr>
           </table>
           }
@@ -2423,6 +2445,13 @@ const getYears = (startYrInp, endYrInp) => {
                       </td>
                   </tr>
                 </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span className="boldFont">Sort By: </span>Drug
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setBarSort(e.target.checked ? 'B' : 'R')} defaultChecked="true" />
+                  Rate
               </td>
             </tr>
           </table>
@@ -2839,6 +2868,7 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
+                <div><span><small><i><sup>§</sup>Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.</i></small></span></div>
                  <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
               </td>
             </tr>
@@ -2946,6 +2976,14 @@ const getYears = (startYrInp, endYrInp) => {
                             </tr>
                           </table>
                           }
+                          {
+                            accessible &&
+                            <td>
+                            <span className="boldFont">Sort By: </span>State
+                              <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
+                              Rate
+                          </td>
+                          }
                         </td>
                     </tr>
                   </table>
@@ -3011,6 +3049,15 @@ const getYears = (startYrInp, endYrInp) => {
                           </table>
                         </td>
                         </tr>
+                        { accessible &&
+                        <tr>
+                          <td>
+                            <span className="boldFont">Sort By: </span>State
+                              <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
+                              Rate
+                          </td>
+                        </tr>
+                        }
                         <br></br>
                   </table>
                   }

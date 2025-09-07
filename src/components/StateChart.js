@@ -135,7 +135,7 @@ function StateChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, dataOverall, width, height, el, currentState, currentDrug, currentTimeframe, currentMonth, currentYear, drugOptions, stateNames, setCurrentState, accessible } = params;
+  const { data, dataOverall, width, height, el, currentState, currentDrug, currentTimeframe, currentMonth, currentYear, drugOptions, stateNames, setCurrentState, accessible, sortBy } = params;
 
   const isSmallViewport = width < 550;
 
@@ -221,7 +221,7 @@ function StateChart(params) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateStateChartData(dataRates)}
+          data={sortBy ? AccessibilityFunctions.generateStateChartDataSorted(dataRates) : AccessibilityFunctions.generateStateChartData(dataRates)}
           labelOverrides={{
             'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
           }}
@@ -232,6 +232,7 @@ function StateChart(params) {
           }}
            width={width}
            isSmallViewport={isSmallViewport}
+           sortBy={sortBy == 'S' ? false : true}
         />
         </>        
       ) : (

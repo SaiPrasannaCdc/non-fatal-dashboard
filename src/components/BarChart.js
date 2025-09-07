@@ -87,7 +87,7 @@ function BarChart(params) {
 
     const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions, accessible } = params;
+  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions, accessible, sortBy } = params;
 
   const isSmallViewport = width < 550;
  
@@ -173,7 +173,7 @@ function BarChart(params) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateBarChartData(dataRates)}
+          data={sortBy ? AccessibilityFunctions.generateBarChartDataSorted(dataRates) : AccessibilityFunctions.generateBarChartData(dataRates)}
           labelOverrides={{
             'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses per 10,000 Total ED Visits' : 'Rate',
           }}
@@ -183,6 +183,7 @@ function BarChart(params) {
           }}
            width={width}
            isSmallViewport={isSmallViewport}
+           sortBy={sortBy == 'B' ? false : true}
         />
         </>        
       ) : (

@@ -124,7 +124,7 @@ const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, curre
 
 const UsaMap = (params) => {
 
-  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData, accessible } = params;
+  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData, accessible, sortBy } = params;
   
   const [selectedDrugsMap, setselectedDrugsMap] = useState(['all']);
 
@@ -391,7 +391,7 @@ const UsaMap = (params) => {
           }
           {accessible && 
             <DataTable508
-                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                data={sortBy ? AccessibilityFunctions.generateMapDataSorted(filteredData, stateNames) : AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
                   'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
                   'count': 'Count'
@@ -404,6 +404,7 @@ const UsaMap = (params) => {
                 height={'auto'}
                 width={width}
                 isSmallViewport={isSmallViewport}
+                sortBy={sortBy == 'M' ? false : true}
               />
           }
           </td>
@@ -548,7 +549,7 @@ const UsaMap = (params) => {
           }
           {accessible && 
             <DataTable508
-                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                data={sortBy ? AccessibilityFunctions.generateMapDataSorted(filteredData, stateNames) : AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
                   'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
                   'count': 'Count'
@@ -561,6 +562,7 @@ const UsaMap = (params) => {
                 height={'auto'}
                 width={width}
                 isSmallViewport={isSmallViewport}
+                sortBy={sortBy == 'M' ? false : true}
               />
           }
           </td>

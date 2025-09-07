@@ -849,7 +849,7 @@ const adjustCrowdedLabels = () => {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          noSort={true}
+          sortBy={true}
           colSpan={!isSmallViewport ? (currentState == 'US' ? selectedDrugs.length : (showOverall ? 2 : 1)) : null}
           isSmallViewport={isSmallViewport}
         />
