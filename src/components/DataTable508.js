@@ -72,6 +72,9 @@ function DataTable508(params) {
     if (val == 0)
       ret = 'Data Suppressed';
 
+    if (val == 9)
+      ret = 'Data Suppressed§';
+
     return ret;
   }
 
@@ -84,7 +87,7 @@ function DataTable508(params) {
     if (val == -2)
       ret = '**';
 
-    if (val == 0)
+    if (val == 0 || val == 9)
       ret = '*';
 
     return ret;

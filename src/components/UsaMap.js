@@ -372,7 +372,7 @@ function UsaMap (params) {
             <br></br>
             <tr>
               <td colspan='3' className="alignRight"> 
-              <span className="boldFont">Sort By: </span>State
+              <span className="boldFont">Sort By: </span>Jurisdiction
                 <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
                 Rate
             </td>
@@ -442,9 +442,7 @@ function UsaMap (params) {
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
-                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal </label>
-                        <label style={{'fontSize':'16px'}}>Overdoses per 10,000 </label>
-                        <label style={{'fontSize':'16px'}}>Total ED Visits</label>
+                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</label>
                       </td>
                     </tr>
                     {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 
@@ -563,7 +561,7 @@ function UsaMap (params) {
             <table>
               <tr>
                 <td className="alignRight"> 
-                <span className="boldFont">Sort By: </span>State
+                <span className="boldFont">Sort By: </span>Jurisdiction
                   <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
                   Rate
               </td>
@@ -599,9 +597,7 @@ function UsaMap (params) {
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
-                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal </label>
-                        <label style={{'fontSize':'16px'}}>Overdoses per 10,000 </label>
-                        <label style={{'fontSize':'16px'}}>Total ED Visits</label>
+                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</label>
                       </td>
                     </tr>
                     {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 

@@ -1630,8 +1630,17 @@ const getYears = (startYrInp, endYrInp) => {
                 </Fragment>
               </Fragment>
           )
+    }
   }
+
+  const hasCovidPeriod = () => {
+    if   ((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
+         (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA)))
+      return true;
+    else
+      return false;
   }
+
 
   const getFootNotesForData = (chart) => {
 
@@ -1641,7 +1650,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table style={{ width: '100%' }}>
                 <tr style={{ textAlign: 'left'}}>
                   <td style={{ width: '10%' }}></td>
-                  <td style={{ width: '95%' }}><small><i><sup>*</sup>{!accessible ? 'Data suppressed' : 'Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.'}</i></small></td>
+                  <td style={{ width: '95%' }}><small><i><sup>*</sup>{!accessible ? 'Data suppressed' : (hasCovidPeriod() ? 'Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.' : 'Data suppressed.')}</i></small></td>
                 </tr>
                 <tr style={{ textAlign: 'left'}}>
                   <td style={{ width: '10%' }}></td>
@@ -1681,7 +1690,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table style={{ width: '100%' }}>
                 <tr style={{ textAlign: 'left'}}>
                   <td style={{ width: '100%' }}>
-                    <div><small><i><sup>*</sup>{!accessible ? 'Data suppressed' : 'Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.'}</i></small></div>
+                    <div><small><i><sup>*</sup>{!accessible ? 'Data suppressed' : ((chart == 'Line' && hasCovidPeriod()) ? 'Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.' : 'Data suppressed.')}</i></small></div>
                     <div><small><i><sup>†</sup>{'Data not available/not reported'}</i></small></div>
                     {chart == 'Bar' && <div><small><i><sup>¶</sup>{'These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.'}</i></small></div>}
                     {chart == 'Line' && <div><small><i><sup>¶</sup>{'Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter'}<sup>2</sup>.</i></small></div>}
@@ -2180,7 +2189,7 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               {accessible &&
               <td>
-                  <span className="boldFont">Sort By: </span>State
+                  <span className="boldFont">Sort By: </span>Jurisdiction
                   <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
                   Rate
               </td>
@@ -2257,7 +2266,7 @@ const getYears = (startYrInp, endYrInp) => {
             {accessible &&
             <tr>
               <td className="alignRight">
-                <span className="boldFont">Sort By: </span>State
+                <span className="boldFont">Sort By: </span>Jurisdiction
                   <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
                   Rate
               </td>
@@ -2284,12 +2293,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>§</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-             Suspected Nonfatal Overdose ED Visits<sup>§</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+             Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -2564,12 +2573,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
             {timelineLine == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
           </h2>
           }
           {timelineLine == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>†</sup> {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
           </h2>
           }
         </div>
@@ -2847,8 +2856,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
                 <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
                  <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
-                {((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
-                 (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
+                {hasCovidPeriod() &&
                   <div><span><small><i><sup>‡</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
                 }
                 <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
@@ -2865,8 +2873,7 @@ const getYears = (startYrInp, endYrInp) => {
                   <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
                   <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
                   <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
-                  {((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
-                  (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA))) &&
+                  {hasCovidPeriod() &&
                     <div><span><small><i><sup>‡</sup>Grayed out area represents the COVID-19 pandemic and is distinct from data suppression.</i></small></span></div>
                   }
                   <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
@@ -2879,7 +2886,7 @@ const getYears = (startYrInp, endYrInp) => {
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
-                <div><span><small><i><sup>§</sup>Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.</i></small></span></div>
+                {hasCovidPeriod() && <div><span><small><i><sup>§</sup>Data suppressed. Please note data from March – August 2020 represent the COVID-19 pandemic and are distinct from data suppression related to small sample size.</i></small></span></div>}
                  <div><span><small><i><sup>¶</sup>Monthly comparisons should be interpreted with caution due to seasonality, with common increases in nonfatal drug overdoses in summer and decreases in winter<sup>2</sup>.</i></small></span></div>
               </td>
             </tr>
@@ -2894,12 +2901,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
           {mapMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Geographic distribution of Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
+            Geographic distribution of Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
           </h2>
           }
           {mapMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-             Geographic distribution of Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
+             Geographic distribution of Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
           </h2>
           }
         </div>
@@ -3076,12 +3083,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
           {sexAgeMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
           }
           {sexAgeMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>†</sup> Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
           }
         </div>
