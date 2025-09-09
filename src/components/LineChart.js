@@ -229,7 +229,7 @@ function LineChart(params) {
   specs['height'] = 560;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 115, left: 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = isPeriod ? { top: 15, bottom: 115, left: specs.isSmallViewport ? 35 : 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: specs.isSmallViewport ? 10 : (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
@@ -879,7 +879,7 @@ const adjustCrowdedLabels = () => {
                     dy: 5
                   })}
                 />
-                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</text>
+                {!isSmallViewport && <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</text>}
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}

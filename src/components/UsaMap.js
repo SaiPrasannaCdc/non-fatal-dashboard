@@ -122,9 +122,9 @@ const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, curre
      
 };
 
-const UsaMap = (params) => {
+function UsaMap (params) {
 
-  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData, accessible, sortBy } = params;
+  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData, onSort, accessible, sortBy } = params;
   
   const [selectedDrugsMap, setselectedDrugsMap] = useState(['all']);
 
@@ -213,6 +213,10 @@ const UsaMap = (params) => {
   const handleDrugSelectionsMapChange = (event, drug) => {
     setselectedDrugsMap([drug])
     onData(drug);
+  }
+
+  const setMapSort = (val) => {
+    onSort(val);
   }
 
   const getDrugControls = () => {
@@ -365,6 +369,13 @@ const UsaMap = (params) => {
               </td>
               <td style={{'width': '8%'}}></td>
             </tr>
+            <tr>
+              <td colspan='3' className="alignRight"> 
+              <span className="boldFont">Sort By: </span>State
+                <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
+                Rate
+            </td>
+            </tr>
           </table>
       }
       {!isSmallViewport && 
@@ -404,7 +415,7 @@ const UsaMap = (params) => {
                 height={'auto'}
                 width={width}
                 isSmallViewport={isSmallViewport}
-                sortBy={sortBy == 'M' ? false : true}
+                sortBy={sortBy}
               />
           }
           </td>
@@ -547,6 +558,17 @@ const UsaMap = (params) => {
               <div style={{'paddingLeft': '10px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
             </div>
           }
+          {accessible &&
+            <table>
+              <tr>
+                <td className="alignRight"> 
+                <span className="boldFont">Sort By: </span>State
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
+                  Rate
+              </td>
+              </tr>
+            </table>
+          }
           {accessible && 
             <DataTable508
                 data={sortBy ? AccessibilityFunctions.generateMapDataSorted(filteredData, stateNames) : AccessibilityFunctions.generateMapData(filteredData, stateNames)}
@@ -562,7 +584,7 @@ const UsaMap = (params) => {
                 height={'auto'}
                 width={width}
                 isSmallViewport={isSmallViewport}
-                sortBy={sortBy == 'M' ? false : true}
+                sortBy={sortBy}
               />
           }
           </td>

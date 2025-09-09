@@ -246,12 +246,12 @@ export default function App( params ) {
   const [hdrInfoFromMap, setDataFromMap] = useState('all');
   const [mapMonthly, setMapMonthly] = useState('Monthly');
   const [sexAgeMonthly, setSexAgeMetric] = useState('Monthly');
+  const [mapSort, setSortFromMap] = useState('M');
 
   const [isPeriod, setPeriodToggle] = useState(true);
 
   const [stateSort, setStateSort] = useState('S');
   const [barSort, setBarSort] = useState('B');
-  const [mapSort, setMapSort] = useState('M');
 
   const [width, setWidth] = useState(0);
 
@@ -777,6 +777,10 @@ export default function App( params ) {
   const handleData = (forHdr) => {
     setDataFromMap(forHdr);
   };
+
+  const handleSort = (forSort) => {
+    setSortFromMap(forSort);
+  };
  
   const getMonths = (mon) => {
 
@@ -1200,7 +1204,7 @@ const getYears = (startYrInp, endYrInp) => {
         stateNames={stateNames}
         setCurrentState={setCurrentState}
         accessible={accessible}
-        sortBy={stateSort}
+        sortBy={stateSort == 'S' ? false : true}
         />
     </div>
   </>,
@@ -1220,7 +1224,7 @@ const getYears = (startYrInp, endYrInp) => {
         currentMonth={currentMonthBar} 
         drugOptions={drugOptions}
         accessible={accessible}
-        sortBy={barSort}
+        sortBy={barSort == 'B' ? false : true}
         />
     </div>
   </>,
@@ -1280,9 +1284,10 @@ const getYears = (startYrInp, endYrInp) => {
         drugOptions={drugOptions}
         jurisdictions={jurisForDropDownMap}
         onData={handleData}
+        onSort={handleSort}
         key={mapKey}
         accessible={accessible}
-        sortBy={mapSort}
+        sortBy={mapSort == 'M' ? false : true}
         />
   </>,
   [currentYearMap, currentMonthMap, width, mapMonthly, mapKey, mapSort]);
@@ -2130,7 +2135,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
                 </select>
               </td>
-              <td style={{'width': '45%'}}>
+              <td style={{'width': '35%'}}>
                 <table>
                   <tr>
                     <td style={{'width': '14%', 'textAlign': 'right'}}>
@@ -2173,11 +2178,13 @@ const getYears = (startYrInp, endYrInp) => {
                   </tr>
                 </table>
               </td>
+              {accessible &&
               <td>
                   <span className="boldFont">Sort By: </span>State
                   <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
                   Rate
               </td>
+              }
             </tr>
           </table>
           }
@@ -2246,6 +2253,7 @@ const getYears = (startYrInp, endYrInp) => {
                 </table>
               </td>
             </tr>
+            {accessible &&
             <tr>
               <td>
                 <span className="boldFont">Sort By: </span>State
@@ -2253,6 +2261,7 @@ const getYears = (startYrInp, endYrInp) => {
                   Rate
               </td>
             </tr>
+            }
           </table>
           }
         </div>
@@ -2274,12 +2283,12 @@ const getYears = (startYrInp, endYrInp) => {
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
           {timelineBar == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits<sup>§</sup><sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup><sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+            Suspected Nonfatal Overdose ED Visits<sup>§</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
           </h2>
           }
           {timelineBar == 'Annual' &&
           <h2 className="data-bite-header">
-             Suspected Nonfatal Overdose ED Visits<sup>§</sup><sup>†</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup><sup>§</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+             Suspected Nonfatal Overdose ED Visits<sup>§</sup> per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
           </h2>
           }
         </div>
@@ -2355,11 +2364,6 @@ const getYears = (startYrInp, endYrInp) => {
                       </td>
                   </tr>
                 </table>
-              </td>
-              <td>
-                <span className="boldFont">Sort By: </span>Drug
-                  <input className="data-type-checkbox" type="checkbox" onChange={e => setBarSort(e.target.checked ? 'B' : 'R')} defaultChecked="true" />
-                  Rate
               </td>
             </tr>
           </table>
@@ -2447,13 +2451,6 @@ const getYears = (startYrInp, endYrInp) => {
                 </table>
               </td>
             </tr>
-            <tr>
-              <td>
-                <span className="boldFont">Sort By: </span>Drug
-                  <input className="data-type-checkbox" type="checkbox" onChange={e => setBarSort(e.target.checked ? 'B' : 'R')} defaultChecked="true" />
-                  Rate
-              </td>
-            </tr>
           </table>
           </div>
           }
@@ -2506,6 +2503,18 @@ const getYears = (startYrInp, endYrInp) => {
           }
         </div> 
        <br></br>
+       {accessible &&
+       <table>
+        <tr>
+          <td className="alignRight">
+            <span className="boldFont">Sort By: </span>Drug
+              <input className="data-type-checkbox" type="checkbox" onChange={e => setBarSort(e.target.checked ? 'B' : 'R')} defaultChecked="true" />
+              Rate
+          </td>
+        </tr>
+       </table>
+              
+              }
         {drugsBarChartMemo}
         {!accessible && <br></br>}
         {!accessible && !isSmallViewport &&
@@ -2823,6 +2832,7 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
             
           }
+          {isSmallViewport && <div style={{color: '#000066', textAlign: 'center'}}><span><small>{'Suspected nonfatal overdoses per 10,000 Total ED Visits.'}</small></span></div>}
           {lineChartMemo}
           {!accessible && !isSmallViewport && <br></br>}
           {!accessible && isSmallViewport && <br></br>}
@@ -2976,14 +2986,6 @@ const getYears = (startYrInp, endYrInp) => {
                             </tr>
                           </table>
                           }
-                          {
-                            accessible &&
-                            <td>
-                            <span className="boldFont">Sort By: </span>State
-                              <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
-                              Rate
-                          </td>
-                          }
                         </td>
                     </tr>
                   </table>
@@ -3049,15 +3051,6 @@ const getYears = (startYrInp, endYrInp) => {
                           </table>
                         </td>
                         </tr>
-                        { accessible &&
-                        <tr>
-                          <td>
-                            <span className="boldFont">Sort By: </span>State
-                              <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
-                              Rate
-                          </td>
-                        </tr>
-                        }
                         <br></br>
                   </table>
                   }

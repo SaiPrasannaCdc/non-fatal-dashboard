@@ -97,7 +97,7 @@ function BarChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 100, bottom: 0, left: !isSmallViewport ? 170 : 150, right: 10};
+  const margin = {top: 100, bottom: 0, left: !isSmallViewport ? 170 : 157, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(drugOptions).length / 50)*(1.2));
   const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.10))) + 210;
@@ -181,9 +181,9 @@ function BarChart(params) {
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-           width={width}
-           isSmallViewport={isSmallViewport}
-           sortBy={sortBy == 'B' ? false : true}
+          width={width}
+          isSmallViewport={isSmallViewport}
+          sortBy={sortBy}
         />
         </>        
       ) : (

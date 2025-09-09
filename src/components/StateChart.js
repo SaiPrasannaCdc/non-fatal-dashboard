@@ -145,10 +145,10 @@ function StateChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 10, bottom: 10, left: !isSmallViewport ? 130 : 115, right: 10};
+  const margin = {top: 10, bottom: 10, left: !isSmallViewport ? 130 : 130, right: 10};
 
   const adjustedHeight = ((!isSmallViewport ? height : height - 20) - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 50)*(1.5));
-  const adjustedWidth = !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
+  const adjustedWidth = !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 5); 
   const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.42));
 
   const fontSize = 16;
@@ -232,7 +232,7 @@ function StateChart(params) {
           }}
            width={width}
            isSmallViewport={isSmallViewport}
-           sortBy={sortBy == 'S' ? false : true}
+           sortBy={sortBy}
         />
         </>        
       ) : (
