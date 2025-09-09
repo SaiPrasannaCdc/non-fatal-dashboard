@@ -182,7 +182,7 @@ export const UtilityFunctions = {
     return monthNamesShortPeriod;
   },
   
-  buildMonthNumbersPeriod: (filteredData) => {
+  buildMonthNumbersPeriodTBD: (filteredData) => {
   
     var monthNamesShortPeriod = {}
     var mon = '';
@@ -210,6 +210,20 @@ export const UtilityFunctions = {
   
     return monthNamesShortPeriod;
   },
+
+    buildMonthNumbersPeriod: (filteredData) => {
+  
+    var monthNamesShortPeriod = {}
+    var cnt = 1;
+  
+    for (var i = 0; i < filteredData.length; i++) {
+        monthNamesShortPeriod[cnt] = filteredData[i].year;
+        cnt++
+    }
+  
+    return monthNamesShortPeriod;
+  },
+  
   
   buildMonthNamesPeriod: (filteredData) => {
   

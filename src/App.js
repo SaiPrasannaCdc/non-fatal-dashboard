@@ -2253,9 +2253,10 @@ const getYears = (startYrInp, endYrInp) => {
                 </table>
               </td>
             </tr>
+            <br></br>
             {accessible &&
             <tr>
-              <td>
+              <td className="alignRight">
                 <span className="boldFont">Sort By: </span>State
                   <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
                   Rate
@@ -2832,7 +2833,7 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
             
           }
-          {isSmallViewport && <div style={{color: '#000066', textAlign: 'center'}}><span><small>{'Suspected nonfatal overdoses per 10,000 Total ED Visits.'}</small></span></div>}
+          {isSmallViewport && !accessible && <div style={{color: '#000066', textAlign: 'center'}}><span><small>{'Suspected nonfatal overdoses per 10,000 Total ED Visits.'}</small></span></div>}
           {lineChartMemo}
           {!accessible && !isSmallViewport && <br></br>}
           {!accessible && isSmallViewport && <br></br>}
@@ -3051,7 +3052,6 @@ const getYears = (startYrInp, endYrInp) => {
                           </table>
                         </td>
                         </tr>
-                        <br></br>
                   </table>
                   }
           { mapMonthly == 'Annual' &&

@@ -265,7 +265,6 @@ function LineChart(params) {
   inp['numOfTicks'] = specs['xMax']/inp['tickWidth'];
 
   const markYearsForTicks = () => {
-
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
     var janCnt = 0;
@@ -439,21 +438,27 @@ const adjustCrowdedLabels = () => {
     }
   }
 
-  const getFormattedValue = (val) => {
-    if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
+  const getJanCount = () =>{
+    let janCnt = 0;
+    for (let i=0;i<Object.keys(inp.monthNamesShortPeriod).length;i++)
     {
-      if (inp.monthNamesShortPeriod[val].length == 4) {
-        let retVal =  monthNamesShort[parseInt('1')];
-        if (retVal == 'Jan')
-          return monthNamesShort[parseInt('1')] + ' ' + inp.monthNamesShortPeriod[val];
-        else
-          return '';
-      }
-      else 
-        return '';
+      if (Number(inp.monthNamesShortPeriod[Object.keys(inp.monthNamesShortPeriod)[i]]?.substring(4)) == 1)
+        janCnt++
     }
+    return janCnt
+  }
+
+  const getFormattedValue = (val) => {
+
+    if (getJanCount() == 1)
+      return monthNamesShort[Number(inp.monthNamesShortPeriod[val].substring(4))] + ' ' +  inp.monthNamesShortPeriod[val].substring(0,4);
     else
-      return '';
+    {
+      if (Number(inp.monthNamesShortPeriod[val].substring(4)) == 1)
+        return monthNamesShort[Number(inp.monthNamesShortPeriod[val].substring(4))] + ' ' +  inp.monthNamesShortPeriod[val].substring(0,4);
+      else
+        return ''
+    }
   } 
   
   const getRateforDrug = (drug, parmState, val) => {
@@ -884,7 +889,7 @@ const adjustCrowdedLabels = () => {
                   top={specs.yMax}
                   scale={specs.xScale}
                   orientation="bottom"
-                  tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
+                  tickValues={(isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
                   tickFormat={value => 
                       getFormattedValue(value)
                   }

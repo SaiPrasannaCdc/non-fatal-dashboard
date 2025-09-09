@@ -369,6 +369,7 @@ function UsaMap (params) {
               </td>
               <td style={{'width': '8%'}}></td>
             </tr>
+            <br></br>
             <tr>
               <td colspan='3' className="alignRight"> 
               <span className="boldFont">Sort By: </span>State
