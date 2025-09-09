@@ -221,31 +221,6 @@ function LineChart(params) {
     adjustLinesForLabels();
   });
 
-  const specs = [];
-  specs['width'] = width - 35; 
-  specs['width'] = specs['width'];
-  specs['isSmallViewport'] = specs['width'] < 550;
-  specs['fontSize'] = !isSmallViewport ? 16 : 14;
-  specs['height'] = 560;
-  specs['seriesOverlapMargin'] = 20;
-  specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 115, left: specs.isSmallViewport ? 35 : 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: specs.isSmallViewport ? 10 : (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
-  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
-  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
-  specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
-  specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
-
-  specs['xScale'] = scaleLinear({
-    domain: [Math.min(...specs.xValues), Math.max(...specs.xValues)],
-    range: [10, specs.xMax]
-  });
-  specs['yScale'] = scaleLinear({
-    domain: [0, yScaleDomainPeriod == 0 ? 0.8 : yScaleDomainPeriod], 
-    range: [specs.yMax, 0],
-  });
-
-  const changePrecValues = getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey);
-
   const inp = [];
   inp['filteredData'] = filteredData;
   inp['stateNames'] = stateNames;
@@ -261,6 +236,42 @@ function LineChart(params) {
   inp['currentDrug'] = currentDrug;
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
+
+  const getJanCount = () =>{
+    let janCnt = 0;
+    for (let i=0;i<Object.keys(inp.monthNamesShortPeriod).length;i++)
+    {
+      if (Number(inp.monthNamesShortPeriod[Object.keys(inp.monthNamesShortPeriod)[i]]?.substring(4)) == 1)
+        janCnt++
+    }
+    return janCnt;
+  }
+  
+  const specs = [];
+  specs['width'] = width - 35; 
+  specs['width'] = specs['width'];
+  specs['isSmallViewport'] = specs['width'] < 550;
+  specs['fontSize'] = !isSmallViewport ? 16 : 14;
+  specs['height'] = getJanCount() == 1 ? 580 : 560;
+  specs['seriesOverlapMargin'] = 20;
+  specs['seriesSpacing'] = 20;
+  specs['margin'] = isPeriod ? { top: 15, bottom: (getJanCount() == 1 ? 130 : 115), left: specs.isSmallViewport ? 35 : 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: specs.isSmallViewport ? 10 : (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
+  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
+  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
+  specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
+  specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
+
+  specs['xScale'] = scaleLinear({
+    domain: [Math.min(...specs.xValues), Math.max(...specs.xValues)],
+    range: [10, specs.xMax]
+  });
+  specs['yScale'] = scaleLinear({
+    domain: [0, yScaleDomainPeriod == 0 ? 0.8 : yScaleDomainPeriod], 
+    range: [specs.yMax, 0],
+  });
+
+  const changePrecValues = getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey);
+  
   inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
   inp['numOfTicks'] = specs['xMax']/inp['tickWidth'];
 
@@ -436,16 +447,6 @@ const adjustCrowdedLabels = () => {
         }
        }
     }
-  }
-
-  const getJanCount = () =>{
-    let janCnt = 0;
-    for (let i=0;i<Object.keys(inp.monthNamesShortPeriod).length;i++)
-    {
-      if (Number(inp.monthNamesShortPeriod[Object.keys(inp.monthNamesShortPeriod)[i]]?.substring(4)) == 1)
-        janCnt++
-    }
-    return janCnt
   }
 
   const getFormattedValue = (val) => {
@@ -897,7 +898,7 @@ const adjustCrowdedLabels = () => {
                     fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
                     fill: '#000066',
                     textAnchor: (specs.isSmallViewport ? 'start' : 'start'),
-                    angle: (specs.isSmallViewport ? 90 : 0),
+                    angle: (specs.isSmallViewport ? 90 : (getJanCount() == 1 ? 90 : 0)),
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
