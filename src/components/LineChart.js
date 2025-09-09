@@ -151,14 +151,14 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
                 var monData = {}
                 monData['index'] = Number(index);
                 monData['year'] = monthsArray[j]
-                monData['all'] = String(Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n)).toFixed(1));
-                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n)).toFixed(1));
-                monData['opioids'] = String(Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n)).toFixed(1));
-                monData['fentanyl'] = String(Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n)).toFixed(1));
-                monData['heroin'] = String(Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n)).toFixed(1));
-                monData['stimulants'] = String(Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n)).toFixed(1));
-                monData['cocaine'] = String(Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n)).toFixed(1));
-                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n)).toFixed(1));
+                monData['all'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_drug_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Benzo_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['opioids'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_opioid_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['fentanyl'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Fentanyl_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['heroin'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_heroin_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['stimulants'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_stimulant_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['cocaine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Cocaine_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Methamphetamine_OD_n, data[i].YYYYMM)).toFixed(1));
 
                 allMonthsData.push(monData);
 
@@ -172,14 +172,14 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
                 var monData = {}
                 monData['index'] = Number(index);
                 monData['year'] = monthsArray[j]
-                monData['all'] = String(Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n)).toFixed(1));
-                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n)).toFixed(1));
-                monData['opioids'] = String(Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n)).toFixed(1));
-                monData['fentanyl'] = String(Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n)).toFixed(1));
-                monData['heroin'] = String(Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n)).toFixed(1));
-                monData['stimulants'] = String(Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n)).toFixed(1));
-                monData['cocaine'] = String(Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n)).toFixed(1));
-                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n)).toFixed(1));
+                monData['all'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_drug_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Benzo_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['opioids'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_opioid_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['fentanyl'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Fentanyl_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['heroin'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_heroin_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['stimulants'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_stimulant_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['cocaine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Cocaine_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Methamphetamine_OD_n, data[i].YYYYMM)).toFixed(1));
 
                 allMonthsData.push(monData);
 
@@ -221,31 +221,6 @@ function LineChart(params) {
     adjustLinesForLabels();
   });
 
-  const specs = [];
-  specs['width'] = width - 35; 
-  specs['width'] = specs['width'];
-  specs['isSmallViewport'] = specs['width'] < 550;
-  specs['fontSize'] = !isSmallViewport ? 16 : 14;
-  specs['height'] = 560;
-  specs['seriesOverlapMargin'] = 20;
-  specs['seriesSpacing'] = 20;
-  specs['margin'] = isPeriod ? { top: 15, bottom: 115, left: 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
-  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
-  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
-  specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
-  specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
-
-  specs['xScale'] = scaleLinear({
-    domain: [Math.min(...specs.xValues), Math.max(...specs.xValues)],
-    range: [10, specs.xMax]
-  });
-  specs['yScale'] = scaleLinear({
-    domain: [0, yScaleDomainPeriod == 0 ? 0.8 : yScaleDomainPeriod], 
-    range: [specs.yMax, 0],
-  });
-
-  const changePrecValues = getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey);
-
   const inp = [];
   inp['filteredData'] = filteredData;
   inp['stateNames'] = stateNames;
@@ -261,11 +236,46 @@ function LineChart(params) {
   inp['currentDrug'] = currentDrug;
   inp['currentState'] = currentState;
   inp['selectedDrugs'] = selectedDrugs;
+
+  const getJanCount = () =>{
+    let janCnt = 0;
+    for (let i=0;i<Object.keys(inp.monthNamesShortPeriod).length;i++)
+    {
+      if (Number(inp.monthNamesShortPeriod[Object.keys(inp.monthNamesShortPeriod)[i]]?.substring(4)) == 1)
+        janCnt++
+    }
+    return janCnt;
+  }
+  
+  const specs = [];
+  specs['width'] = width - 35; 
+  specs['width'] = specs['width'];
+  specs['isSmallViewport'] = specs['width'] < 550;
+  specs['fontSize'] = !isSmallViewport ? 16 : 14;
+  specs['height'] = getJanCount() <= 1 ? 580 : 560;
+  specs['seriesOverlapMargin'] = 20;
+  specs['seriesSpacing'] = 20;
+  specs['margin'] = isPeriod ? { top: 15, bottom: (getJanCount() <= 1 ? 130 : 115), left: specs.isSmallViewport ? 35 : 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: specs.isSmallViewport ? 10 : (currentState != 'US' && !showOverall ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
+  specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
+  specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
+  specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
+  specs['xValues'] = isPeriod ? filteredData['US'].map(d => d.index) : filteredData['US'].map(d => currentTimeframe === 'Monthly' ? d.month : d.year);
+
+  specs['xScale'] = scaleLinear({
+    domain: [Math.min(...specs.xValues), Math.max(...specs.xValues)],
+    range: [10, specs.xMax]
+  });
+  specs['yScale'] = scaleLinear({
+    domain: [0, yScaleDomainPeriod == 0 ? 0.8 : yScaleDomainPeriod], 
+    range: [specs.yMax, 0],
+  });
+
+  const changePrecValues = getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey);
+  
   inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
   inp['numOfTicks'] = specs['xMax']/inp['tickWidth'];
 
   const markYearsForTicks = () => {
-
     const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
     var janCnt = 0;
@@ -440,20 +450,16 @@ const adjustCrowdedLabels = () => {
   }
 
   const getFormattedValue = (val) => {
-    if (val == 1 || val == Object.keys(inp.monthNamesShortPeriod).length ||  inp.monthNamesShortPeriod[val].length == 4)
-    {
-      if (inp.monthNamesShortPeriod[val].length == 4) {
-        let retVal =  monthNamesShort[parseInt('1')];
-        if (retVal == 'Jan')
-          return monthNamesShort[parseInt('1')] + ' ' + inp.monthNamesShortPeriod[val];
-        else
-          return '';
-      }
-      else 
-        return '';
-    }
+
+    if (getJanCount() <= 1)
+      return monthNamesShort[Number(inp.monthNamesShortPeriod[val].substring(4))] + ' ' +  inp.monthNamesShortPeriod[val].substring(0,4);
     else
-      return '';
+    {
+      if (Number(inp.monthNamesShortPeriod[val].substring(4)) == 1)
+        return monthNamesShort[Number(inp.monthNamesShortPeriod[val].substring(4))] + ' ' +  inp.monthNamesShortPeriod[val].substring(0,4);
+      else
+        return ''
+    }
   } 
   
   const getRateforDrug = (drug, parmState, val) => {
@@ -849,7 +855,7 @@ const adjustCrowdedLabels = () => {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          noSort={true}
+          sortBy={true}
           colSpan={!isSmallViewport ? (currentState == 'US' ? selectedDrugs.length : (showOverall ? 2 : 1)) : null}
           isSmallViewport={isSmallViewport}
         />
@@ -879,12 +885,12 @@ const adjustCrowdedLabels = () => {
                     dy: 5
                   })}
                 />
-                <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</text>
+                {!isSmallViewport && <text width={specs.yMax} x={(specs.margin.left / -2) - 3} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</text>}
                <AxisBottom
                   top={specs.yMax}
                   scale={specs.xScale}
                   orientation="bottom"
-                  tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
+                  tickValues={(isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
                   tickFormat={value => 
                       getFormattedValue(value)
                   }
@@ -892,7 +898,7 @@ const adjustCrowdedLabels = () => {
                     fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
                     fill: '#000066',
                     textAnchor: (specs.isSmallViewport ? 'start' : 'start'),
-                    angle: (specs.isSmallViewport ? 90 : 0),
+                    angle: (specs.isSmallViewport ? 90 : (getJanCount() <= 1 ? 90 : 0)),
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,

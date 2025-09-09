@@ -182,7 +182,7 @@ export const UtilityFunctions = {
     return monthNamesShortPeriod;
   },
   
-  buildMonthNumbersPeriod: (filteredData) => {
+  buildMonthNumbersPeriodTBD: (filteredData) => {
   
     var monthNamesShortPeriod = {}
     var mon = '';
@@ -210,6 +210,20 @@ export const UtilityFunctions = {
   
     return monthNamesShortPeriod;
   },
+
+    buildMonthNumbersPeriod: (filteredData) => {
+  
+    var monthNamesShortPeriod = {}
+    var cnt = 1;
+  
+    for (var i = 0; i < filteredData.length; i++) {
+        monthNamesShortPeriod[cnt] = filteredData[i].year;
+        cnt++
+    }
+  
+    return monthNamesShortPeriod;
+  },
+  
   
   buildMonthNamesPeriod: (filteredData) => {
   
@@ -574,6 +588,22 @@ export const UtilityFunctions = {
       return val;
   },
 
+  convertValueLine: (val, yrmon) => {
+    if (val == 8888) //data not available
+      return -1;
+    else if (val == 7777) //unfunded
+      return -2;
+   else if (val == 9999) //data supressed
+   {
+     if (UtilityFunctions.isCovidPeriod(yrmon))
+      return 9;
+     else
+      return 0;
+   }
+  else
+      return val;
+  },
+
   deleteStateKeys : (obj) => {
     for (let key in obj) {
       if (obj[key].rate == -2) {
@@ -602,7 +632,7 @@ export const UtilityFunctions = {
   isCovidPeriod : (yearmon) => {
     return covidPeriod.includes(yearmon);
   },
-  
+
   doesEndWithCovidPeriod : (data, st) => {
     var cnt = data[st].length;
     return covidPeriod.includes(data[st][cnt - 1]['year']);

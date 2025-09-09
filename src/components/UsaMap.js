@@ -122,9 +122,9 @@ const getFilteredData = (data, currentTimeLine, currentYear, currentMonth, curre
      
 };
 
-const UsaMap = (params) => {
+function UsaMap (params) {
 
-  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData, accessible } = params;
+  const { data, stateNames, currentState, currentYear, currentMonth, currentTimeLine, width, drugOptions, jurisdictions, onData, onSort, accessible, sortBy } = params;
   
   const [selectedDrugsMap, setselectedDrugsMap] = useState(['all']);
 
@@ -213,6 +213,10 @@ const UsaMap = (params) => {
   const handleDrugSelectionsMapChange = (event, drug) => {
     setselectedDrugsMap([drug])
     onData(drug);
+  }
+
+  const setMapSort = (val) => {
+    onSort(val);
   }
 
   const getDrugControls = () => {
@@ -365,6 +369,14 @@ const UsaMap = (params) => {
               </td>
               <td style={{'width': '8%'}}></td>
             </tr>
+            <br></br>
+            <tr>
+              <td colspan='3' className="alignRight"> 
+              <span className="boldFont">Sort By: </span>Jurisdiction
+                <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
+                Rate
+            </td>
+            </tr>
           </table>
       }
       {!isSmallViewport && 
@@ -391,7 +403,7 @@ const UsaMap = (params) => {
           }
           {accessible && 
             <DataTable508
-                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                data={sortBy ? AccessibilityFunctions.generateMapDataSorted(filteredData, stateNames) : AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
                   'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
                   'count': 'Count'
@@ -404,6 +416,7 @@ const UsaMap = (params) => {
                 height={'auto'}
                 width={width}
                 isSmallViewport={isSmallViewport}
+                sortBy={sortBy}
               />
           }
           </td>
@@ -429,9 +442,7 @@ const UsaMap = (params) => {
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
-                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal </label>
-                        <label style={{'fontSize':'16px'}}>Overdoses per 10,000 </label>
-                        <label style={{'fontSize':'16px'}}>Total ED Visits</label>
+                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</label>
                       </td>
                     </tr>
                     {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 
@@ -546,9 +557,20 @@ const UsaMap = (params) => {
               <div style={{'paddingLeft': '10px'}}><span><small><i><sup>†</sup>Scale of the figure may change based on the data selected. </i></small></span></div>
             </div>
           }
+          {accessible &&
+            <table>
+              <tr>
+                <td className="alignRight"> 
+                <span className="boldFont">Sort By: </span>Jurisdiction
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setMapSort(e.target.checked ? 'M' : 'R')} defaultChecked="true" />
+                  Rate
+              </td>
+              </tr>
+            </table>
+          }
           {accessible && 
             <DataTable508
-                data={AccessibilityFunctions.generateMapData(filteredData, stateNames)}
+                data={sortBy ? AccessibilityFunctions.generateMapDataSorted(filteredData, stateNames) : AccessibilityFunctions.generateMapData(filteredData, stateNames)}
                 labelOverrides={{
                   'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[selectedDrugsMap[0]].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
                   'count': 'Count'
@@ -561,6 +583,7 @@ const UsaMap = (params) => {
                 height={'auto'}
                 width={width}
                 isSmallViewport={isSmallViewport}
+                sortBy={sortBy}
               />
           }
           </td>
@@ -574,9 +597,7 @@ const UsaMap = (params) => {
                   <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                     <tr>
                       <td>
-                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal </label>
-                        <label style={{'fontSize':'16px'}}>Overdoses per 10,000 </label>
-                        <label style={{'fontSize':'16px'}}>Total ED Visits</label>
+                        <label style={{'fontSize':'16px'}}>Suspected Nonfatal Overdoses per 10,000 Total ED Visits</label>
                       </td>
                     </tr>
                     {!UtilityFunctions.allDataIsSupressedMap(filteredData) && 

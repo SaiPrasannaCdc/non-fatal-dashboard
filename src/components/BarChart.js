@@ -87,7 +87,7 @@ function BarChart(params) {
 
     const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions, accessible } = params;
+  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions, accessible, sortBy } = params;
 
   const isSmallViewport = width < 550;
  
@@ -97,7 +97,7 @@ function BarChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 100, bottom: 0, left: !isSmallViewport ? 170 : 150, right: 10};
+  const margin = {top: 100, bottom: 0, left: !isSmallViewport ? 170 : 157, right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(drugOptions).length / 50)*(1.2));
   const adjustedWidth =  !isSmallViewport ? (width - margin.left - margin.right - 100) : (width - margin.left - margin.right - 10); 
   const heightNew = (height * ((Object.keys(drugOptions).length / 50)*(1.10))) + 210;
@@ -173,7 +173,7 @@ function BarChart(params) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateBarChartData(dataRates)}
+          data={sortBy ? AccessibilityFunctions.generateBarChartDataSorted(dataRates) : AccessibilityFunctions.generateBarChartData(dataRates)}
           labelOverrides={{
             'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses per 10,000 Total ED Visits' : 'Rate',
           }}
@@ -181,8 +181,9 @@ function BarChart(params) {
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-           width={width}
-           isSmallViewport={isSmallViewport}
+          width={width}
+          isSmallViewport={isSmallViewport}
+          sortBy={sortBy}
         />
         </>        
       ) : (

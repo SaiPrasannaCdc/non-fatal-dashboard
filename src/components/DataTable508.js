@@ -3,13 +3,13 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, noSort, isSmallViewport, colSpan, drugName } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, sortBy, isSmallViewport, colSpan, drugName } = params;
 
   const labelOverrides = params.labelOverrides || {};
 
   const isArray = Array.isArray(data);
 
-  const keys = (isArray ? Object.keys(data[0]) : (!noSort ? Object.keys(data).sort((a,b) => {
+  const keys = (isArray ? Object.keys(data[0]) : (!sortBy ? Object.keys(data).sort((a,b) => {
     if(a === 'Overall') return -1;
     if(b === 'Overall') return 1;
     return a < b ? -1 : 1;
@@ -72,6 +72,9 @@ function DataTable508(params) {
     if (val == 0)
       ret = 'Data Suppressed';
 
+    if (val == 9)
+      ret = 'Data Suppressed§';
+
     return ret;
   }
 
@@ -84,7 +87,7 @@ function DataTable508(params) {
     if (val == -2)
       ret = '**';
 
-    if (val == 0)
+    if (val == 0 || val == 9)
       ret = '*';
 
     return ret;
