@@ -253,7 +253,7 @@ export default function App( params ) {
   const [stateSort, setStateSort] = useState('S');
   const [barSort, setBarSort] = useState('B');
 
-  const [width, setWidth] = useState(0);
+  const [width, setWidth] = useState(accessible ? 0 : 100);
 
   const isSmallViewport = width < viewportCutoffSmall;
 
