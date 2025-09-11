@@ -197,9 +197,11 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
   }
 };
 
-function LineChart({ params }) {
+function LineChart_WIP({ params }) {
 
   const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
+
+  const isSmallViewport = width < 550;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -224,15 +226,43 @@ function LineChart({ params }) {
     adjustLinesForLabels();
   });
 
+  const inp = [];
+  inp['filteredData'] = filteredData;
+  inp['stateNames'] = stateNames;
+  inp['monthNames'] = monthNames;
+  inp['monthNamesShort'] = monthNamesShort;
+  inp['monthNamesPeriod'] = UtilityFunctions.buildMonthNamesPeriod(filteredData['US'])
+  inp['monthNamesShortPeriod'] = UtilityFunctions.buildMonthNumbersPeriod(filteredData['US'])
+  inp['tickIndexes'] = UtilityFunctions.getAllIndexes(inp['monthNamesShortPeriod'], 4)
+  inp['currentTimeframe'] = currentTimeframe;
+  inp['currentDataSource'] = currentDataSource;
+  inp['currentYear'] = currentYear;
+  inp['currentMonth'] = currentMonth;
+  inp['currentDrug'] = currentDrug;
+  inp['currentState'] = currentState;
+  inp['selectedDrugs'] = selectedDrugs;
+
+  const getJanCount = () =>{
+    let janCnt = 0;
+    if (currentTimeframe == 'Monthly') {
+      for (let i=0;i<Object.keys(inp.monthNamesShortPeriod).length;i++)
+      {
+        if (Number(inp.monthNamesShortPeriod[Object.keys(inp.monthNamesShortPeriod)[i]]?.substring(4)) == 1)
+          janCnt++
+      }
+    }
+    return janCnt;
+  }
+
   const specs = [];
-  specs['width'] = width - 20; 
+  specs['width'] = width - 35; 
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 550;
-  specs['fontSize'] = 16;
-  specs['height'] = 400;
+  specs['fontSize'] = !isSmallViewport ? 16 : 14;
+  specs['height'] = getJanCount() <= 1 ? 580 : 560;
   specs['seriesOverlapMargin'] = 20;
   specs['seriesSpacing'] = 20;
-  specs['margin'] = (isPeriod && filteredData['US'].length > 12) ? { top: 15, bottom: 85, left: specs.isSmallViewport ? 35 : 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 45, left: specs.isSmallViewport ? 55 : (currentState != 'US' ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
+  specs['margin'] = isPeriod ? { top: 15, bottom: (getJanCount() <= 1 ? 130 : 115), left: specs.isSmallViewport ? 35 : 75, right: specs.isSmallViewport ? 10 : 150 } : { top: 15, bottom: 95, left: specs.isSmallViewport ? 10 : (currentState != 'US' ? 125: 75), right: specs.isSmallViewport ? 10 : 150 };
   specs['xMax'] = specs['width'] - specs.margin.left - specs.margin.right;
   specs['yMax'] = specs.height - specs.margin.top - specs.margin.bottom;
   specs['xKey'] = isPeriod ? 'index' : currentTimeframe === 'Monthly' ? 'month' : 'year';
@@ -249,21 +279,6 @@ function LineChart({ params }) {
 
   const changePrecValues = (currentTimeframe == 'Annual' && !isPeriod) ? getChangePrecValues(filteredData, selectedDrugs, specs.xValues, specs.xKey) : [];
 
-  const inp = [];
-  inp['filteredData'] = filteredData;
-  inp['stateNames'] = stateNames;
-  inp['monthNames'] = monthNames;
-  inp['monthNamesShort'] = monthNamesShort;
-  inp['monthNamesPeriod'] = UtilityFunctions.buildMonthNamesPeriod(filteredData['US'])
-  inp['monthNamesShortPeriod'] = UtilityFunctions.buildMonthNumbersPeriod(filteredData['US'])
-  inp['tickIndexes'] = UtilityFunctions.getAllIndexes(inp['monthNamesShortPeriod'], 4)
-  inp['currentTimeframe'] = currentTimeframe;
-  inp['currentDataSource'] = currentDataSource;
-  inp['currentYear'] = currentYear;
-  inp['currentMonth'] = currentMonth;
-  inp['currentDrug'] = currentDrug;
-  inp['currentState'] = currentState;
-  inp['selectedDrugs'] = selectedDrugs;
   inp['tickWidth'] = specs['xMax']/(Object.keys(inp['monthNamesShortPeriod']).length - 1);
   inp['numOfTicks'] = specs['xMax']/inp['tickWidth'];
 
@@ -327,18 +342,22 @@ function LineChart({ params }) {
 
   const markYearsForTicks = () => {
 
-    const xAxis = document?.getElementsByClassName("visx-axis-bottom")[0];
+    const xAxis = document?.getElementsByClassName("visx-axis-bottom")[1];
     const ticks = xAxis?.getElementsByClassName("visx-axis-tick");
+    var janCnt = 0;
     if (ticks !== undefined && ticks != null) {
       for (var i=0; i<ticks?.length; i++) {
         var tickText = ticks[i]?.childNodes[1].childNodes[0].childNodes[0].innerHTML;
+        var tickCtl = ticks[i]?.childNodes[1].childNodes[0].childNodes[0];
         var ln = ticks[i]?.getElementsByClassName("visx-line");
         if (ln !== undefined && ln != null) {
-          ln[0]?.setAttribute("y1","0");
-          if (tickText == 'Dec') {
-            ln[0]?.setAttribute("y1","-10");
-          }
-        }
+            ln[0]?.setAttribute("y1","0");
+            ln[0]?.setAttribute('stroke-width', '1')
+            if (tickText.substring(0,3) === 'Jan') {
+              ln[0]?.setAttribute("y1","1");
+              ln[0]?.setAttribute('stroke-width', '3')
+            }
+        } 
       }
     } 
   }
@@ -1051,9 +1070,9 @@ function LineChart({ params }) {
                       getFormattedValue(value)
                   }
                   tickLabelProps={(value) => ({
-                    fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
+                    fontSize: specs.fontSize,
                     textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
-                    angle: (specs.isSmallViewport ? 90 : (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)),
+                    angle: (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)
                   })}
                   labelProps={{
                     fontSize: specs.fontSize,
@@ -1086,7 +1105,7 @@ function LineChart({ params }) {
       </tr>
       </table>
       )}
-      {/* {(!accessible && specs.isSmallViewport) && (
+      {(!accessible && specs.isSmallViewport) && (
         <div id="line-chart-legend-container">
           <div id="line-chart-legend">
             {Object.keys(filteredData).map((key, i) =>
@@ -1096,10 +1115,10 @@ function LineChart({ params }) {
             )}
           </div>
         </div>
-      )} */}
+      )}
     </>
     )
 
 }
 
-export default LineChart
+export default LineChart_WIP

@@ -246,6 +246,15 @@ export default function App(params) {
     }
   }
 
+    const getFileNameFromPath = (path) => {
+    if(!path){
+      return 'DOSE_DIS_Dashboard_Download.xlsx';
+    }
+    // Get the filename from the path and remove any query parameters
+    const filename = path.split('/').pop();
+    return filename.split('?')[0];
+  }
+
   const selectAllDrugs = () => {
     var selDrugs = []
     Object.keys(drugOptions).forEach(drug => {
@@ -421,15 +430,111 @@ export default function App(params) {
     )
   }
 
+  const getPeriodControlsSVP = () => {
+
+    return (
+      <Fragment>
+        <table>
+          <tr>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+                <Select params={{
+                  key: 'year',
+                  label: 'Start Period: ',
+                  value: lookupPeriodStartYear,
+                  onChange: (val) => {
+                    if (!UtilityFunctions.areValidSelections(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth))
+                      resetDates()
+                    else
+                      setLookupPeriodStartYear(val)
+
+                    checkForPeriod(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth);
+                  },
+                  options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+                  optionLabel: (key) => key,
+                  noSelectPrefix: true
+                }} />
+              </div>
+            </td>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+                <Select params={{
+                  key: 'month',
+                  label: '',
+                  value: lookupPeriodStartMonth,
+                  onChange: setLookupPeriodStartMonth,
+                  onChange: (val) => {
+                    if (!UtilityFunctions.areValidSelections(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth))
+                      resetDates();
+                    else
+                      setLookupPeriodStartMonth(val)
+
+                    checkForPeriod(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth);
+                  },
+                  options: Object.keys(monthNames).filter(key => key !== 'all'),
+                  optionLabel: (key) => monthNames[key],
+                  noSelectPrefix: true
+                }} />
+              </div>
+             
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+              <Select params={{
+                key: 'year',
+                label: 'End Period: ',
+                value: lookupPeriodEndYear,
+                onChange: (val) => {
+                  if (!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth))
+                    resetDates();
+                  else
+                    setLookupPeriodEndYear(val)
+
+                  checkForPeriod(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth)
+                },
+                options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+                optionLabel: (key) => key,
+                noSelectPrefix: true
+              }} />
+              </div>
+            </td>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+              <Select params={{
+                key: 'month',
+                label: '',
+                value: lookupPeriodEndMonth,
+                onChange: (val) => {
+                  if (!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val))
+                    resetDates();
+                  else
+                    setLookupPeriodEndMonth(val)
+
+                  checkForPeriod(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val)
+                },
+                options: Object.keys(monthNames).filter(key => key !== 'all'),
+                optionLabel: (key) => monthNames[key],
+                noSelectPrefix: true
+          }} />
+              </div>
+                
+            </td>
+          </tr>
+        </table>
+      </Fragment>
+    )
+  }
+
   const getPeriodControlsWrapper = () => {
     return (
       <Fragment>
         <table>
           <tr>
             <td style={{ width: '100%!important', textAlign: 'center' }}>
-              {currentTimeframe === 'Monthly' &&
-                getPeriodControls()
-              }
+              {currentTimeframe === 'Monthly' && isSmallViewport && getPeriodControlsSVP()}
+              {currentTimeframe === 'Monthly' && !isSmallViewport && getPeriodControls()}
             </td>
           </tr>
         </table>
@@ -1047,7 +1152,8 @@ export default function App(params) {
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
       {getToggleControls()}
-      
+      <br></br>
+      {(isSmallViewport && !accessible) && <div style={{color: '#000066', textAlign: 'center'}}><span><small>{'Rate per 100,000 persons'}</small><sup>5</sup></span></div>}
       <table style={{ width: '100%' }}>
         <tr>
           <td>
@@ -1058,6 +1164,7 @@ export default function App(params) {
             </div>
           </td>
         </tr>
+        <br></br>
         <tr>
           <td>{getPeriodControlsWrapper()}</td>
         </tr>
@@ -1549,6 +1656,9 @@ export default function App(params) {
             </div>}
         </div>
       </div>
+
+      <a download={getFileNameFromPath(document.querySelector('#non-fatal-container').attributes['download-url']?.value)} href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> {isSmallViewport ? <br></br> : ''} with all available ED and inpatient hospitalization discharge data.</span>
+
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
     </>
   );
