@@ -2115,461 +2115,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
         
-        <div style={{'width':'100%', 'backgroundColor': drugColor}}>
-          {timeline == 'Monthly' &&
-          <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
-          </h2>
-          }
-          {timeline == 'Annual' &&
-          <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
-          </h2>
-          }
-        </div>
-        <div>
-          {!isSmallViewport &&
-          <table style={{'width': '100%'}}>
-          <tr>
-              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
-                <div className="select-input">Select Time Period:</div>
-              </td>
-              <td style={{'width': '11%'}}>
-                <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
-                  {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-              </td>
-              <td style={{'width': '6%'}}>
-                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
-                  {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-              </td>
-              <td style={{'width': '35%'}}>
-                <table>
-                  <tr>
-                    <td style={{'width': '14%', 'textAlign': 'right'}}>
-                        <div>
-                          <input
-                            id="radioUSMonthlyState"
-                            name="radioUSMonthlyState"
-                            type="radio"
-                            value="Monthly"
-                            checked={showAnnual === false}
-                            onChange={(e) => {
-                                setMonthlyToggle(false)
-                                setTimeline('Monthly');
-                                setPeriodToggle(true);
-                                setYearSelected(currentYear, 'Monthly');
-                            }} />
-                          <label
-                            htmlFor="radioUSMonthlyState">Monthly</label>
-                        </div>
-                      </td>
-                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '15px'}}>
-                        <div>
-                          <input
-                          id="radioUSAnnualState"
-                          name="radioUSAnnualState"
-                          type="radio"
-                          value="Annual"
-                          checked={showAnnual === true}
-                          onChange={(e) => {
-                              setMonthlyToggle(true);
-                              setTimeline('Annual');
-                              setPeriodToggle(false);
-                              setYearSelected(currentYear, 'Annual');
-                          }} 
-                          />
-                          <label
-                          htmlFor="radioUSAnnualState">Annual</label>
-                        </div>
-                      </td>
-                  </tr>
-                </table>
-              </td>
-              {accessible &&
-              <td>
-                  <span className="boldFont">Sort By: </span>Jurisdiction
-                  <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
-                  Rate
-              </td>
-              }
-            </tr>
-          </table>
-          }
-          {isSmallViewport &&
-          <table style={{'width': '100%'}}>
-            <tr>
-              <td style={{'width': '20%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
-                <div className="select-input">Select Time Period:</div>
-              </td>
-            </tr>
-            <tr>
-              <td style={{'width': '100%'}}>
-                <div className="inputContainer">
-                <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
-                  {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-                &nbsp;&nbsp;
-                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
-                  {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-                </div>
-              </td>
-              <td style={{'width': '15%', 'textAlign': 'left', 'paddingLeft': '15px'}}></td>
-            </tr>
-            <br></br>
-            <tr>
-              <td style={{'width': '100%'}}>
-                <table>
-                  <tr>
-                    <td style={{'width': '100%', 'textAlign': 'left'}}>
-                      <div className="inputContainer">
-                        <div>
-                          <input
-                            id="radioUSMonthlyState"
-                            name="radioUSMonthlyState"
-                            type="radio"
-                            value="Monthly"
-                            checked={showAnnual === false}
-                            onChange={(e) => {
-                                setMonthlyToggle(false)
-                                setTimeline('Monthly');
-                                setPeriodToggle(true);
-                                setYearSelected(currentYear, 'Monthly');
-                            }} />
-                          <label htmlFor="radioUSMonthlyState">Monthly</label>
-                          &nbsp;&nbsp;
-                          <input
-                          id="radioUSAnnualState"
-                          name="radioUSAnnualState"
-                          type="radio"
-                          value="Annual"
-                          checked={showAnnual === true}
-                          onChange={(e) => {
-                              setMonthlyToggle(true);
-                              setTimeline('Annual');
-                              setPeriodToggle(false);
-                              setYearSelected(currentYear, 'Annual');
-                          }} 
-                          />
-                          <label
-                          htmlFor="radioUSAnnualState">Annual</label>
-                        </div>
-                        </div>
-                      </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <br></br>
-            {accessible &&
-            <tr>
-              <td className="alignRight">
-                <span className="boldFont">Sort By: </span>Jurisdiction
-                  <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
-                  Rate
-              </td>
-            </tr>
-            }
-          </table>
-          }
-        </div>
-        { timeline == 'Annual' &&
-            <table>
-              <tr>
-                <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYear, currentMonth)}</span>
-                </td>
-              </tr>
-            </table>
-          }
-          {stateBarChartMemo}
-          {!accessible && getFootNotesForData()}
-          {accessible && isSmallViewport && getFootNotesForData('State')}
-          
-      <section>
-
-          <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
-          {timelineBar == 'Monthly' &&
-          <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
-          </h2>
-          }
-          {timelineBar == 'Annual' &&
-          <h2 className="data-bite-header">
-             Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
-          </h2>
-          }
-        </div>
-
-          <div>
-            {!isSmallViewport &&
-          <table style={{'width': '100%'}}>
-          <tr>
-              <td style={{'width': '4%'}}></td>
-              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
-              <td style={{'width': '18%'}}>
-                <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                <option value="US">Overall</option>
-                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
-              </select>
-              </td>
-
-              <td style={{'width': '18%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
-                <div className="select-input">Select Time Period:</div>
-              </td>
-              
-              <td style={{'width': '11%'}}>
-                <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
-                  {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-              </td>
-              <td style={{'width': '6%'}}>
-                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
-                  {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
-                </select>
-              </td>
-              <td style={{'width': '18%'}}>
-                <table>
-                  <tr>
-                    <td style={{'width': '50%', 'textAlign': 'right'}}>
-                        <div>
-                          <input
-                            id="radioUSMonthlyBar"
-                            name="radioUSMonthlyBar"
-                            type="radio"
-                            value="Monthly"
-                            checked={showAnnualBar === false}
-                            onChange={(e) => {
-                              setMonthlyToggleBar(false);
-                              setTimelineBar('Monthly');
-                              setPeriodToggle(true);
-                              setYearSelectedBar(currentYearBar, 'Monthly');
-                              setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
-                            }} />
-                          <label
-                            htmlFor="radioUSMonthlyBar">Monthly</label>
-                        </div>
-                      </td>
-                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '15px'}}>
-                        <div>
-                          <input
-                          id="radioUSAnnualBar"
-                          name="radioUSAnnualBar"
-                          type="radio"
-                          value="Annual"
-                          checked={showAnnualBar === true}
-                          onChange={(e) => {
-                            setMonthlyToggleBar(true);
-                            setTimelineBar('Annual');
-                            setPeriodToggle(false);
-                            setYearSelectedBar(currentYearBar, 'Annual');
-                            setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Annual'));
-                          }} 
-                          />
-                          <label
-                          htmlFor="radioUSAnnualBar">Annual</label>
-                        </div>
-                      </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-          }
-          {isSmallViewport &&
-          <div>
-          <table style={{'width': '100%', 'paddingBottom': '20px'}}>
-            <tr>
-                <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
-            </tr>
-            <tr>
-                <td style={{'width': '100%'}}>
-                  <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
-                  <option value="US">Overall</option>
-                  {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
-                </select>
-              </td>
-            </tr>
-            </table>
-            <table>
-            <tr>
-                <td style={{'width': '18%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
-                  <div className="select-input">Select Time Period:</div>
-                </td>
-          </tr>
-          <tr> 
-              <td>
-                <table>
-                  <tr>
-                    <td style={{'width': '100%'}}>
-                      <div className="inputContainer">
-                        <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
-                          {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
-                        </select>
-                        &nbsp;&nbsp;
-                        <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
-                          {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
-                        </select>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-              </td>    
-            </tr>
-          <br></br>
-          <tr>
-              <td style={{'width': '100%'}}>
-                <table>
-                  <tr>
-                    <td style={{'width': '100%', 'textAlign': 'left'}}>
-                        <div className="inputContainer">
-                          <input
-                            id="radioUSMonthlyBar"
-                            name="radioUSMonthlyBar"
-                            type="radio"
-                            value="Monthly"
-                            checked={showAnnualBar === false}
-                            onChange={(e) => {
-                              setMonthlyToggleBar(false);
-                              setTimelineBar('Monthly');
-                              setPeriodToggle(true);
-                              setYearSelectedBar(currentYearBar, 'Monthly');
-                              setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
-                            }} />
-                          <label htmlFor="radioUSMonthlyBar">Monthly</label>
-                          &nbsp;&nbsp;
-                          <input
-                          id="radioUSAnnualBar"
-                          name="radioUSAnnualBar"
-                          type="radio"
-                          value="Annual"
-                          checked={showAnnualBar === true}
-                          onChange={(e) => {
-                            setMonthlyToggleBar(true);
-                            setTimelineBar('Annual');
-                            setPeriodToggle(false);
-                            setYearSelectedBar(currentYearBar, 'Annual');
-                            setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Annual'));
-                          }} 
-                          />
-                          <label htmlFor="radioUSAnnualBar">Annual</label>
-                        </div>
-                      </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-          </div>
-          }
-          <br></br>
-          { timelineBar == 'Annual' &&
-            <table>
-              <tr>
-                <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}</span>
-                </td>
-              </tr>
-              <br></br>
-            </table>
-          }
-          {!isSmallViewport &&
-        <table>
-            <tr>
-              <td style={{'width': '8%'}}></td>
-              <td style={{'width': '84%'}}>
-                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                  <tr>
-                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
-                    </td>
-                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
-                      {getDrugControlsBar()}
-                    </td>
-                  </tr>
-                  </table>
-              </td>
-              <td style={{'width': '8%'}}></td>
-            </tr>
-          </table>
-        }
-          {isSmallViewport &&
-          <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-            <tr>
-              <td style={{'width': '100%', 'verticalAlign': 'top'}}>
-                <div style={{'fontWeight': 'bold', 'textAlign': 'left', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
-              </td>
-            </tr>
-            <tr>
-              <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
-                {getDrugControlsBar()}
-              </td>
-            </tr>
-            </table>
-          }
-        </div> 
-       <br></br>
-       {accessible &&
-       <table>
-        <tr>
-          <td className="alignRight">
-            <span className="boldFont">Sort By: </span>Drug
-              <input className="data-type-checkbox" type="checkbox" onChange={e => setBarSort(e.target.checked ? 'B' : 'R')} defaultChecked="true" />
-              Rate
-          </td>
-        </tr>
-       </table>
-              
-              }
-        {drugsBarChartMemo}
-        {!accessible && <br></br>}
-        {!accessible && !isSmallViewport &&
-        <table style={{width: '100%'}}>
-          <tr>
-            <td style={{width: '15%'}}></td>
-            <td style={{width: '80%'}}>
-              <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-              <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
-              <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
-              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
-              <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
-            </td>
-            <td style={{width: '5%'}}></td>
-          </tr>
-        </table>
-        }
-        {!accessible && isSmallViewport &&
-        <table style={{width: '100%'}}>
-          <tr>
-            <td style={{width: '100%'}}>
-              <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-              <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
-              <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
-              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
-              <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
-            </td>
-          </tr>
-        </table>
-        }
-        {accessible && !isSmallViewport &&
-        <table style={{width: '100%'}}>
-          <tr>
-            <td style={{width: '100%'}}>
-              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
-            </td>
-          </tr>
-        </table>
-        }
-        {accessible && isSmallViewport &&
-          getFootNotesForData('Bar')
-        }
-      </section>
-
-      <section>
+        <section>
           <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
             {timelineLine == 'Monthly' &&
           <h2 className="data-bite-header">
@@ -2898,6 +2444,287 @@ const getYears = (startYrInp, endYrInp) => {
       </section>
 
       <section>
+
+          <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsBar)}}>
+          {timelineBar == 'Monthly' &&
+          <h2 className="data-bite-header">
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {monthNames[Number(currentMonthBar)] + ' ' + currentYearBar}
+          </h2>
+          }
+          {timelineBar == 'Annual' &&
+          <h2 className="data-bite-header">
+             Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} per 10,000 Total ED visits by Drug Type<sup>¶</sup> in {currentStateBar == 'US' ? jurisCountData[currentYearBar + String(currentMonthBar).padStart(2, '0') + timelineBar] + ' Participating Jurisdictions' : stateNames[currentStateBar]}, {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}
+          </h2>
+          }
+        </div>
+
+          <div>
+            {!isSmallViewport &&
+          <table style={{'width': '100%'}}>
+          <tr>
+              <td style={{'width': '4%'}}></td>
+              <td style={{'width': '16%', 'textAlign': 'right', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
+              <td style={{'width': '18%'}}>
+                <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                <option value="US">Overall</option>
+                {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
+              </select>
+              </td>
+
+              <td style={{'width': '18%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+                <div className="select-input">Select Time Period:</div>
+              </td>
+              
+              <td style={{'width': '11%'}}>
+                <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
+                  {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+              </td>
+              <td style={{'width': '6%'}}>
+                <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
+                  {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+              </td>
+              <td style={{'width': '18%'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '50%', 'textAlign': 'right'}}>
+                        <div>
+                          <input
+                            id="radioUSMonthlyBar"
+                            name="radioUSMonthlyBar"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnualBar === false}
+                            onChange={(e) => {
+                              setMonthlyToggleBar(false);
+                              setTimelineBar('Monthly');
+                              setPeriodToggle(true);
+                              setYearSelectedBar(currentYearBar, 'Monthly');
+                              setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
+                            }} />
+                          <label
+                            htmlFor="radioUSMonthlyBar">Monthly</label>
+                        </div>
+                      </td>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '15px'}}>
+                        <div>
+                          <input
+                          id="radioUSAnnualBar"
+                          name="radioUSAnnualBar"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnualBar === true}
+                          onChange={(e) => {
+                            setMonthlyToggleBar(true);
+                            setTimelineBar('Annual');
+                            setPeriodToggle(false);
+                            setYearSelectedBar(currentYearBar, 'Annual');
+                            setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Annual'));
+                          }} 
+                          />
+                          <label
+                          htmlFor="radioUSAnnualBar">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          }
+          {isSmallViewport &&
+          <div>
+          <table style={{'width': '100%', 'paddingBottom': '20px'}}>
+            <tr>
+                <td style={{'width': '100%', 'textAlign': 'left', 'fontWeight': 'bold'}}><div className="select-input">Select Jurisdiction:</div></td>
+            </tr>
+            <tr>
+                <td style={{'width': '100%'}}>
+                  <select id="jurisdiction-select" value={currentStateBar || ''} onChange={(e) => { setCurrentStateBar(e.target.value); setselectedDrugsLine([currentDrug])}}>
+                  <option value="US">Overall</option>
+                  {Object.keys(jurisForDropDown).map((key) => <option key={key} value={key}>{jurisForDropDown[key]}</option>)}
+                </select>
+              </td>
+            </tr>
+            </table>
+            <table>
+            <tr>
+                <td style={{'width': '18%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
+                  <div className="select-input">Select Time Period:</div>
+                </td>
+          </tr>
+          <tr> 
+              <td>
+                <table>
+                  <tr>
+                    <td style={{'width': '100%'}}>
+                      <div className="inputContainer">
+                        <select id="month-select-bar" value={monthNames[currentMonthBar] || ''} onChange={(e) => { setMonthSelectedBar(e.target.value); setJurisForDropDown(getJuris(currentYearBar, getKeyByValue(monthNames, e.target.value), timelineBar)) }}>
+                          {monthsForDropDownBar?.map((key) => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                        &nbsp;&nbsp;
+                        <select id="year-select-bar" value={currentYearBar || ''} onChange={(e) => { setYearSelectedBar(e.target.value, timelineBar); setJurisForDropDown(getJuris(e.target.value, currentMonthBar, timelineBar));}}>
+                          {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                        </select>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>    
+            </tr>
+          <br></br>
+          <tr>
+              <td style={{'width': '100%'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '100%', 'textAlign': 'left'}}>
+                        <div className="inputContainer">
+                          <input
+                            id="radioUSMonthlyBar"
+                            name="radioUSMonthlyBar"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnualBar === false}
+                            onChange={(e) => {
+                              setMonthlyToggleBar(false);
+                              setTimelineBar('Monthly');
+                              setPeriodToggle(true);
+                              setYearSelectedBar(currentYearBar, 'Monthly');
+                              setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Monthly'));
+                            }} />
+                          <label htmlFor="radioUSMonthlyBar">Monthly</label>
+                          &nbsp;&nbsp;
+                          <input
+                          id="radioUSAnnualBar"
+                          name="radioUSAnnualBar"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnualBar === true}
+                          onChange={(e) => {
+                            setMonthlyToggleBar(true);
+                            setTimelineBar('Annual');
+                            setPeriodToggle(false);
+                            setYearSelectedBar(currentYearBar, 'Annual');
+                            setJurisForDropDown(getJuris(currentYearBar, currentMonthBar, 'Annual'));
+                          }} 
+                          />
+                          <label htmlFor="radioUSAnnualBar">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          </div>
+          }
+          <br></br>
+          { timelineBar == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}</span>
+                </td>
+              </tr>
+              <br></br>
+            </table>
+          }
+          {!isSmallViewport &&
+        <table>
+            <tr>
+              <td style={{'width': '8%'}}></td>
+              <td style={{'width': '84%'}}>
+                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                  <tr>
+                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+                    </td>
+                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                      {getDrugControlsBar()}
+                    </td>
+                  </tr>
+                  </table>
+              </td>
+              <td style={{'width': '8%'}}></td>
+            </tr>
+          </table>
+        }
+          {isSmallViewport &&
+          <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+            <tr>
+              <td style={{'width': '100%', 'verticalAlign': 'top'}}>
+                <div style={{'fontWeight': 'bold', 'textAlign': 'left', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                <div style={{'textAlign': 'left'}} className="select-input"><em>Click to select/unselect</em></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                {getDrugControlsBar()}
+              </td>
+            </tr>
+            </table>
+          }
+        </div> 
+       <br></br>
+       {accessible &&
+       <table>
+        <tr>
+          <td className="alignRight">
+            <span className="boldFont">Sort By: </span>Drug
+              <input className="data-type-checkbox" type="checkbox" onChange={e => setBarSort(e.target.checked ? 'B' : 'R')} defaultChecked="true" />
+              Rate
+          </td>
+        </tr>
+       </table>
+              
+              }
+        {drugsBarChartMemo}
+        {!accessible && <br></br>}
+        {!accessible && !isSmallViewport &&
+        <table style={{width: '100%'}}>
+          <tr>
+            <td style={{width: '15%'}}></td>
+            <td style={{width: '80%'}}>
+              <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+              <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
+              <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
+              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+              <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
+            </td>
+            <td style={{width: '5%'}}></td>
+          </tr>
+        </table>
+        }
+        {!accessible && isSmallViewport &&
+        <table style={{width: '100%'}}>
+          <tr>
+            <td style={{width: '100%'}}>
+              <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
+              <div><span><small><i><sup>†</sup>Data not available/not reported.</i></small></span></div>
+              <div><span><small><i><sup>§</sup>Scale of the figure may change based on the data presented.</i></small></span></div>
+              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+              <div><span><small><i><sup>**</sup>Unfunded State.</i></small></span></div>
+            </td>
+          </tr>
+        </table>
+        }
+        {accessible && !isSmallViewport &&
+        <table style={{width: '100%'}}>
+          <tr>
+            <td style={{width: '100%'}}>
+              <div><span><small><i><sup>¶</sup>These categories are not mutually exclusive and reflect nesting. Some overdose visits may involve multiple substances.</i></small></span></div>
+            </td>
+          </tr>
+        </table>
+        }
+        {accessible && isSmallViewport &&
+          getFootNotesForData('Bar')
+        }
+      </section>
+
+<section>
         <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
           {mapMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
@@ -3077,6 +2904,181 @@ const getYears = (startYrInp, endYrInp) => {
           getFootNotesForData()
         }
       </section>
+
+        {/* State Chart Start */}
+        <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+          {timeline == 'Monthly' &&
+          <h2 className="data-bite-header">
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
+          </h2>
+          }
+          {timeline == 'Annual' &&
+          <h2 className="data-bite-header">
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+          </h2>
+          }
+        </div>
+        <div>
+          {!isSmallViewport &&
+          <table style={{'width': '100%'}}>
+          <tr>
+              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+                <div className="select-input">Select Time Period:</div>
+              </td>
+              <td style={{'width': '11%'}}>
+                <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
+                  {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+              </td>
+              <td style={{'width': '6%'}}>
+                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
+                  {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+              </td>
+              <td style={{'width': '35%'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '14%', 'textAlign': 'right'}}>
+                        <div>
+                          <input
+                            id="radioUSMonthlyState"
+                            name="radioUSMonthlyState"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnual === false}
+                            onChange={(e) => {
+                                setMonthlyToggle(false)
+                                setTimeline('Monthly');
+                                setPeriodToggle(true);
+                                setYearSelected(currentYear, 'Monthly');
+                            }} />
+                          <label
+                            htmlFor="radioUSMonthlyState">Monthly</label>
+                        </div>
+                      </td>
+                      <td style={{'width': '50%', 'textAlign': 'left', 'paddingLeft': '15px'}}>
+                        <div>
+                          <input
+                          id="radioUSAnnualState"
+                          name="radioUSAnnualState"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnual === true}
+                          onChange={(e) => {
+                              setMonthlyToggle(true);
+                              setTimeline('Annual');
+                              setPeriodToggle(false);
+                              setYearSelected(currentYear, 'Annual');
+                          }} 
+                          />
+                          <label
+                          htmlFor="radioUSAnnualState">Annual</label>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
+              </td>
+              {accessible &&
+              <td>
+                  <span className="boldFont">Sort By: </span>Jurisdiction
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
+                  Rate
+              </td>
+              }
+            </tr>
+          </table>
+          }
+          {isSmallViewport &&
+          <table style={{'width': '100%'}}>
+            <tr>
+              <td style={{'width': '20%', 'textAlign': 'left', 'fontWeight': 'bold'}}>
+                <div className="select-input">Select Time Period:</div>
+              </td>
+            </tr>
+            <tr>
+              <td style={{'width': '100%'}}>
+                <div className="inputContainer">
+                <select id="month-select" value={monthNames[currentMonth] || ''} onChange={(e) => { setMonthSelected(e.target.value) }}>
+                  {monthsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+                &nbsp;&nbsp;
+                <select id="year-select" value={currentYear || ''} onChange={(e) => { setYearSelected(e.target.value, timeline);}}>
+                  {yearsForDropDown?.map((key) => <option key={key} value={key}>{key}</option>)}
+                </select>
+                </div>
+              </td>
+              <td style={{'width': '15%', 'textAlign': 'left', 'paddingLeft': '15px'}}></td>
+            </tr>
+            <br></br>
+            <tr>
+              <td style={{'width': '100%'}}>
+                <table>
+                  <tr>
+                    <td style={{'width': '100%', 'textAlign': 'left'}}>
+                      <div className="inputContainer">
+                        <div>
+                          <input
+                            id="radioUSMonthlyState"
+                            name="radioUSMonthlyState"
+                            type="radio"
+                            value="Monthly"
+                            checked={showAnnual === false}
+                            onChange={(e) => {
+                                setMonthlyToggle(false)
+                                setTimeline('Monthly');
+                                setPeriodToggle(true);
+                                setYearSelected(currentYear, 'Monthly');
+                            }} />
+                          <label htmlFor="radioUSMonthlyState">Monthly</label>
+                          &nbsp;&nbsp;
+                          <input
+                          id="radioUSAnnualState"
+                          name="radioUSAnnualState"
+                          type="radio"
+                          value="Annual"
+                          checked={showAnnual === true}
+                          onChange={(e) => {
+                              setMonthlyToggle(true);
+                              setTimeline('Annual');
+                              setPeriodToggle(false);
+                              setYearSelected(currentYear, 'Annual');
+                          }} 
+                          />
+                          <label
+                          htmlFor="radioUSAnnualState">Annual</label>
+                        </div>
+                        </div>
+                      </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <br></br>
+            {accessible &&
+            <tr>
+              <td className="alignRight">
+                <span className="boldFont">Sort By: </span>Jurisdiction
+                  <input className="data-type-checkbox" type="checkbox" onChange={e => setStateSort(e.target.checked ? 'S' : 'R')} defaultChecked="true" />
+                  Rate
+              </td>
+            </tr>
+            }
+          </table>
+          }
+        </div>
+        { timeline == 'Annual' &&
+            <table>
+              <tr>
+                <td style={{'textAlign': 'center'}}>
+                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYear, currentMonth)}</span>
+                </td>
+              </tr>
+            </table>
+          }
+          {stateBarChartMemo}
+          {!accessible && getFootNotesForData()}
+          {accessible && isSmallViewport && getFootNotesForData('State')}
+          {/* State Chart End */}
 
        <section>
 
