@@ -69,8 +69,6 @@ export const AccessibilityFunctions = {
     },  
 
     getPercChange : (drug, yr, st, changePrecValues) => {
-    
-        debugger;
 
         var rec;
         var perc = 0;

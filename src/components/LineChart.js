@@ -954,7 +954,19 @@ function LineChart({ params }) {
         <>
         <DataTable508
           data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, changePrecValues)}
-          labelOverrides={{
+          labelOverrides={ !showPercent ? {
+            'alldrug': 'All Drugs',
+            'benzodiazepine': 'Benzodiazepine',
+            'cocaine': 'Cocaine',
+            'heroin': 'Heroin',
+            'methamphetamine': 'Methamphetamine',
+            'opioid': 'All Opioids',
+            'stimulant': 'All Stimulants',
+            'fentanyl': 'Fentanyl',
+            'Overall': 'Overall rate',
+            'state' : currentStaterate,
+            'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
+          } : {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',
             'cocaine': 'Cocaine rate',
@@ -982,9 +994,9 @@ function LineChart({ params }) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          //colSpan={!specs['isSmallViewport'] ? (currentState == 'US' ? (!showPercent ? selectedDrugs.length : (selectedDrugs.length * 2)) : (!showPercent ? 2: 4)) : null}
+          colSpan={!showPercent ? ((currentState == 'US' ? (!showPercent ? selectedDrugs.length : (selectedDrugs.length * 2)) : (!showPercent ? 2: 4))) : null}
           isSmallViewport={specs['isSmallViewport']}
-          supScript='§'
+          supScript={showPercent ?'§': ''}
         />
         {currentDrug == 'fentanyl' &&
           <table style={{width: '100%'}}>
