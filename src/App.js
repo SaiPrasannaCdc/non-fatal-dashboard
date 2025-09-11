@@ -17,6 +17,8 @@ import { UtilityFunctions } from './utility'
 
 import './styles.scss';
 
+const viewportCutoffSmall = 550;
+
 const dataSourceOptions = {
   'ED': {
     'title': 'ED Visits',
@@ -196,17 +198,17 @@ export default function App(params) {
   const [currentDrugOnly, setOnlyCurrentDrug] = useState(false);
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
-  const [width, setWidth] = useState(0);
   const [activeTab, setActiveTab] = useState(0);
   const { accessible } = params;
-
+  const [width, setWidth] = useState(accessible ? 0 : 100);
+  
   const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
 
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
   const toggleFootnotes = () => setFootnotes(!showFootnotes);
 
-  const isSmallViewport = width < 550;
+  const isSmallViewport = width < viewportCutoffSmall;
 
   const stateBarChartRef = useRef();
 
@@ -242,6 +244,15 @@ export default function App(params) {
       }
 
     }
+  }
+
+    const getFileNameFromPath = (path) => {
+    if(!path){
+      return 'DOSE_DIS_Dashboard_Download.xlsx';
+    }
+    // Get the filename from the path and remove any query parameters
+    const filename = path.split('/').pop();
+    return filename.split('?')[0];
   }
 
   const selectAllDrugs = () => {
@@ -419,15 +430,111 @@ export default function App(params) {
     )
   }
 
+  const getPeriodControlsSVP = () => {
+
+    return (
+      <Fragment>
+        <table>
+          <tr>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+                <Select params={{
+                  key: 'year',
+                  label: 'Start Period: ',
+                  value: lookupPeriodStartYear,
+                  onChange: (val) => {
+                    if (!UtilityFunctions.areValidSelections(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth))
+                      resetDates()
+                    else
+                      setLookupPeriodStartYear(val)
+
+                    checkForPeriod(val, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth);
+                  },
+                  options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+                  optionLabel: (key) => key,
+                  noSelectPrefix: true
+                }} />
+              </div>
+            </td>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+                <Select params={{
+                  key: 'month',
+                  label: '',
+                  value: lookupPeriodStartMonth,
+                  onChange: setLookupPeriodStartMonth,
+                  onChange: (val) => {
+                    if (!UtilityFunctions.areValidSelections(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth))
+                      resetDates();
+                    else
+                      setLookupPeriodStartMonth(val)
+
+                    checkForPeriod(lookupPeriodStartYear, val, lookupPeriodEndYear, lookupPeriodEndMonth);
+                  },
+                  options: Object.keys(monthNames).filter(key => key !== 'all'),
+                  optionLabel: (key) => monthNames[key],
+                  noSelectPrefix: true
+                }} />
+              </div>
+             
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+              <Select params={{
+                key: 'year',
+                label: 'End Period: ',
+                value: lookupPeriodEndYear,
+                onChange: (val) => {
+                  if (!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth))
+                    resetDates();
+                  else
+                    setLookupPeriodEndYear(val)
+
+                  checkForPeriod(lookupPeriodStartYear, lookupPeriodStartMonth, val, lookupPeriodEndMonth)
+                },
+                options: supportedYears.slice().filter(year => year <= supportedYearsLatest).reverse(),
+                optionLabel: (key) => key,
+                noSelectPrefix: true
+              }} />
+              </div>
+            </td>
+            <td>
+              <div style={{ display: 'block', whiteSpace: 'pre' }}>
+              <Select params={{
+                key: 'month',
+                label: '',
+                value: lookupPeriodEndMonth,
+                onChange: (val) => {
+                  if (!UtilityFunctions.areValidSelections(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val))
+                    resetDates();
+                  else
+                    setLookupPeriodEndMonth(val)
+
+                  checkForPeriod(lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, val)
+                },
+                options: Object.keys(monthNames).filter(key => key !== 'all'),
+                optionLabel: (key) => monthNames[key],
+                noSelectPrefix: true
+          }} />
+              </div>
+                
+            </td>
+          </tr>
+        </table>
+      </Fragment>
+    )
+  }
+
   const getPeriodControlsWrapper = () => {
     return (
       <Fragment>
         <table>
           <tr>
             <td style={{ width: '100%!important', textAlign: 'center' }}>
-              {currentTimeframe === 'Monthly' &&
-                getPeriodControls()
-              }
+              {currentTimeframe === 'Monthly' && isSmallViewport && getPeriodControlsSVP()}
+              {currentTimeframe === 'Monthly' && !isSmallViewport && getPeriodControls()}
             </td>
           </tr>
         </table>
@@ -438,7 +545,8 @@ export default function App(params) {
   const getToggleControls = () => {
     return (
       <Fragment>
-        <table style={{ tableLayout: 'fixed', display: 'block', width: '100%' }}>
+        {!isSmallViewport && 
+          <table style={{ tableLayout: 'fixed', display: 'block', width: '100%' }}>
           <tr>
             <td style={{ width: '55%', paddingLeft: '65px' }}>
               <table style={{ width: '100%', tableLayout: 'fixed' }}>
@@ -558,7 +666,129 @@ export default function App(params) {
             }
           </tr>
 
-        </table>
+          </table>
+        }
+        {isSmallViewport && 
+          <table style={{ tableLayout: 'fixed', display: 'block', width: '100%' }}>
+          <tr>
+            <td colSpan='2'>
+                {(currentState === 'US') &&
+                      <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>
+                    }
+            </td>
+          </tr>
+          <tr>
+                  <td style={{ width: '50%!important', verticalAlign: 'top', textAlign: 'left' }}>
+                      {(currentState === 'US') &&
+                        <label title="Check to select all drugs.">
+                          <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCurrentDrug(currentDrug);
+                                selectAllDrugs();
+                                setDeselectAllFlag(false);
+                                setSelectAllFlag(true);
+                              }
+                              else {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug])
+                                setSelectAllFlag(false);
+                              }
+                            }} /> Select All
+                        </label>
+                      }
+                  </td>
+                  <td style={{ width: '50%', verticalAlign: 'top', textAlign: 'left' }}>
+                    <div>
+                      {(currentState === 'US') &&
+                        <label title="Check to clear all drugs, except current drug.">
+                          <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug])
+                                setDeselectAllFlag(true);
+                                setSelectAllFlag(false);
+                              }
+                              else {
+                                setCurrentDrug(currentDrug);
+                                setselectedDrugs([currentDrug]);
+                                setDeselectAllFlag(false);
+                              }
+                            }} /> Clear All
+                        </label>
+                      }
+                    </div>
+                  </td>
+          </tr>
+          <br></br>
+          <tr>
+            <td colSpan='2'>
+              <table>
+                <tr>
+                  <td style={{ width: ((!accessible && !isSmallViewport) ? '76%' : '100%'), textAlign: ((!accessible && !isSmallViewport) ? 'left' : 'right') }}>
+                    {(currentTimeframe === 'Annual') &&
+                      <div style={{ float: 'left' }}>
+                        <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
+                          <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setPercentToggle(true)
+                              }
+                              else {
+                                setPercentToggle(false)
+                              }
+                            }} />
+                          <span class="toggleA-label" data-off="% Chg Off"
+                            data-on="% Chg On">
+                          </span>
+                          <span class="toggleA-handle"></span>
+                        </label>
+                      </div>
+                    }
+                  </td>
+                  {(!accessible && !isSmallViewport) &&
+                  <td style={{ width: '28%', textAlign: 'left' }}>
+                    
+                      <div style={{ float: 'left' }}>
+                        <label class="toggle" title={'Toggle to see values of a data point.'}>
+                          <input id="toggleLabel" class="toggle-input" type="checkbox" checked={showLabels}
+                            onChange={(e) => {
+                              if (e.target.checked)
+                                setLabelToggle(true)
+                              else
+                                setLabelToggle(false)
+                            }} />
+                          <span class="toggle-label" data-off="Labels Off"
+                            data-on="Labels On">
+                          </span>
+                          <span class="toggle-handle"></span>
+                        </label>
+                      </div>
+                  </td>
+                  }
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <br></br>
+          <tr>
+            <td colSpan='2' class="drugsDivTop" style={{ textAlign: 'left', verticalAlign: 'top', paddingLeft: '5px' }}>
+              {(currentState === 'US') &&
+                getDrugControls()
+              }
+            </td>
+          </tr>
+          <tr>
+            {(!accessible && currentTimeframe === 'Annual') &&
+              <td colSpan='2'>
+                <label className="subLabel">When "% Chg" is on, hover over a data point on the line chart to view percent change for the selected year compared to the previous year.&nbsp;&nbsp;</label>
+              </td>
+            }
+          </tr>
+
+          </table>
+        }
       </Fragment>
     )
   }
@@ -567,6 +797,7 @@ export default function App(params) {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
 
+    if (!isSmallViewport) {
     return (
       <Fragment>
         <Fragment>
@@ -598,6 +829,30 @@ export default function App(params) {
         </Fragment>
       </Fragment>
     )
+  }
+  else
+  {
+    return (
+              <Fragment>
+                      <Fragment>
+                        <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                        {
+                          entries.map((drug, index) => (
+                            <div>
+                              <div class={`drugDiv-${drug[0]}`}>
+                                <span class={(selectedDrugs.includes(drug[0])) ? drug[0] : 'notSelected'} onClick={(event) => { handleDrugSelectionsChange(event, drug[0]) }}></span>
+                                <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                              </div>
+                              <br></br>
+                              </div>
+                              
+                          ))
+                        }
+                        </div>
+                      </Fragment>
+                    </Fragment>
+              )
+  }
   }
 
   const fetchData = async () => {
@@ -801,12 +1056,13 @@ export default function App(params) {
 
   }, []);
 
-  const getFootNotesForData = () => {
+  const getFootNotesForData = (addl) => {
     return (
       <div className="datatable-body">
         <table style={{ width: '100%' }}>
           <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
           <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
+          {addl && showPercent && <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
         </table>
       </div>
     )
@@ -864,6 +1120,10 @@ export default function App(params) {
     }
   };
 
+  const setDrug = (val) => {
+    setCurrentDrug(val);
+  }
+
   const stateBarChartMemo = useMemo(() =>
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
@@ -892,7 +1152,8 @@ export default function App(params) {
     <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('lineChart')}<sup>{overrideSuppMessage(currentYear, currentDrug) ? '2,*' : '2'}</sup>?</h2>
       {getToggleControls()}
-      
+      <br></br>
+      {(isSmallViewport && !accessible) && <div style={{color: '#000066', textAlign: 'center'}}><span><small>{'Rate per 100,000 persons'}</small><sup>5</sup></span></div>}
       <table style={{ width: '100%' }}>
         <tr>
           <td>
@@ -903,6 +1164,7 @@ export default function App(params) {
             </div>
           </td>
         </tr>
+        <br></br>
         <tr>
           <td>{getPeriodControlsWrapper()}</td>
         </tr>
@@ -929,7 +1191,7 @@ export default function App(params) {
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
       {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
-      {accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
+      {accessible && <div><small><i>The county-level tables are only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. This table uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true" />
       5 Year Rate
@@ -990,6 +1252,7 @@ export default function App(params) {
               </div>
             </div>
             &nbsp;
+            {!isSmallViewport &&
             <div className="filters">
               <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                 <Select params={{
@@ -1122,6 +1385,171 @@ export default function App(params) {
                 </div>
               </div>
             </div>
+            }
+            {isSmallViewport &&
+            <div className="filters">
+              <table>
+                <tr>
+                  <td>
+                    <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
+                        <Select params={{
+                          key: 'timeframe',
+                          label: 'Time Frame',
+                          value: currentTimeframe,
+                          onChange: (val) => {
+                            if (!timeframeChanged) {
+                              setTimeframeChanged(true)
+                            }
+                            setCurrentTimeframe(val)
+                            getSupportedStates(currentDataSource, currentYear, currentMonth, val);
+                            if (val === 'Monthly') {
+                              setPercentToggle(false)
+                              resetPeriodDates(currentYear)
+                            }
+
+                            setPeriodToggle(false);
+
+                            if (!UtilityFunctions.isStateInSupportedStates(data.supportedJurisdictions, currentDataSource, currentYear, currentMonth, val, currentState)){
+                              setCurrentState('US');
+                              setOnlyCurrentDrug(false);
+                            }
+                          },
+                          options: ['Monthly', 'Annual'],
+                          optionLabel: (key) => key
+                        }} />
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
+                        <Select params={{
+                          key: 'year',
+                          label: 'a Year',
+                          value: currentYear,
+                          onChange: (param) => {
+                            if (param === currentYearCompare) {
+                              let yearIndex = supportedYears.indexOf(param);
+                              yearIndex++;
+                              if (yearIndex >= supportedYears.length) {
+                                yearIndex = 0;
+                              }
+                              setCurrentYearCompare(supportedYears[yearIndex]);
+                            }
+                            setCurrentYear(param);
+                            getSupportedStates(currentDataSource, param, currentMonth, currentTimeframe);
+                            setPeriodToggle(false);
+
+                            if (currentTimeframe === 'Monthly') {
+                              resetPeriodDates(param)
+                            }
+
+                            if (!UtilityFunctions.isStateInSupportedStates(data.supportedJurisdictions, currentDataSource, param, currentMonth, currentTimeframe, currentState)){
+                              setCurrentState('US');
+                              setOnlyCurrentDrug(false);
+                            }
+                          },
+                          options: supportedYears,
+                          optionLabel: (key) => key
+                      }} />
+                    </div>
+                  </td>
+                </tr>
+                {(timeframeChanged && currentTimeframe == 'Monthly') &&
+                <tr>
+                  <td>
+                    <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
+                        <Select params={{
+                            key: 'month',
+                            label: 'a Month',
+                            value: currentMonth,
+                            onChange: (param) => {
+                              setCurrentMonth(param);
+                              getSupportedStates(currentDataSource, currentYear, param, currentTimeframe);
+                              resetPeriodDates(currentYear);
+                              setPeriodToggle(false);
+
+                              if (!UtilityFunctions.isStateInSupportedStates(data.supportedJurisdictions, currentDataSource, currentYear, param, currentTimeframe, currentState)) {
+                                setCurrentState('US');
+                                setOnlyCurrentDrug(false);
+                              }
+                            },
+                            options: Object.keys(monthNames).filter(key => key !== 'all'),
+                            optionLabel: (key) => monthNames[key],
+                            disabled: currentTimeframe === 'Monthly' ? undefined : 'disabled'
+                          }} />
+                    </div>
+                  </td>
+                </tr>
+                }
+                <tr>
+                  <td>
+                    <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
+                      <Select params={{
+                        key: 'jurisdiction',
+                        label: 'View Data For: ',
+                        noSelectPrefix: true,
+                        value: currentState,
+                        onChange: (param) => {
+                          setCurrentState(param);
+                          if (param !== 'US')
+                            setOnlyCurrentDrug(true);
+                          else
+                            setOnlyCurrentDrug(false);
+                        },
+
+
+                        options: stateDropdownOptions?.sort((a, b) => {
+                          if (a === 'US') return -1;
+                          if (b === 'US') return 1;
+                          return a < b;
+                        }),
+                        optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
+                      }} />
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div>
+                      <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
+                        setActiveTab(0);
+                        setCurrentDataSource('ED');
+                        setCurrentDrug('alldrug');
+                        setselectedDrugs(['alldrug'])
+                        setCurrentState('US');
+                        setCurrentTimeframe('Annual');
+                        setCurrentMonth('1');
+                        setCurrentYear(supportedYearsLatest);
+                        setPeriodToggle(false);
+                        setLabelToggle(false);
+                        setPercentToggle(false);
+                        setSelectAllFlag(false);
+                        setDeselectAllFlag(false);
+                      }}>Reset</button>
+                </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div>
+                      <select id="drug-select" value={currentDrug} onChange={(e) => { setDrug(e.target.value); }}>
+                        <option value="alldrug">All Drugs</option>
+                        <option value="stimulant">All Stimulants</option>
+                        <option value="opioid">All Opioids</option>
+                        <option value="fentanyl">Fentanyl</option>
+                        <option value="cocaine">Cocaine</option>
+                        <option value="methamphetamine">Methamphetamine</option>
+                        <option value="heroin">Heroin</option>
+                        <option value="benzodiazepine">Benzodiazepine</option>
+                      </select>
+                  </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            }
+            
             &nbsp;
             <header className="data-bite-header" style={{ backgroundColor: drugColor }}>
               <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>
@@ -1155,7 +1583,8 @@ export default function App(params) {
             <section className="first-section">
               {lineChartMemo}
               <br></br>
-              {getFootNotesForData()}
+              {!accessible && getFootNotesForData()}
+              {accessible && getFootNotesForData(true)}
             </section>
 
             <section>
@@ -1227,6 +1656,9 @@ export default function App(params) {
             </div>}
         </div>
       </div>
+
+      <a download={getFileNameFromPath(document.querySelector('#non-fatal-container').attributes['download-url']?.value)} href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> {isSmallViewport ? <br></br> : ''} with all available ED and inpatient hospitalization discharge data.</span>
+
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
     </>
   );

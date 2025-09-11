@@ -2,7 +2,7 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, colSpan, isSmallViewport, hdr } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, colSpan, isSmallViewport, hdr, supScript } = params;
 
   const labelOverrides = params.labelOverrides || {};
 
@@ -58,7 +58,7 @@ function DataTable508(params) {
     return words.join('');
   };
 
-  const cleanUpOld = (val) => {
+  const cleanUpTBD = (val) => {
     var ret = val;
 
     if (String(val).indexOf('Data suppressed') >= 0)
@@ -95,7 +95,7 @@ function DataTable508(params) {
             <tr>
               {!isArray && [data].map((d, index) => 
                 Object.keys(d[keys[0]]).map(rowKey => (
-                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}{labelOverrides[rowKey]?.endsWith('visits per 100,000 persons') ? <sup>5</sup> : ''}</th>
+                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}{labelOverrides[rowKey]?.endsWith('visits per 100,000 persons') ? <sup>5</sup> : (supScript !=  null ? <sup>{supScript}</sup> : '')}</th>
                 )
               ))}
             </tr>

@@ -69,8 +69,6 @@ export const AccessibilityFunctions = {
     },  
 
     getPercChange : (drug, yr, st, changePrecValues) => {
-    
-        debugger;
 
         var rec;
         var perc = 0;
@@ -165,11 +163,11 @@ export const AccessibilityFunctions = {
             if (showPercent)
               obj['Overall_pct'] = data['US'][i].alldrug;
 
-            obj[stateNames[state]] = '';
+            obj['state'] = '';
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
               if (data['US'][i].year == data[state][j].year) {
-                obj[stateNames[state]] = data[state][j].alldrug;
+                obj['state'] = data[state][j].alldrug;
                 if (showPercent)
                   obj['state_pct'] = data[state][j].alldrug;
               }
@@ -181,11 +179,11 @@ export const AccessibilityFunctions = {
             if (showPercent)
               obj['Overall_pct'] = data['US'][i].benzodiazepine;
 
-            obj[stateNames[state]] = '';
+            obj['state'] = '';
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) {
-                  obj[stateNames[state]] = data[state][j].benzodiazepine;
+                  obj['state'] = data[state][j].benzodiazepine;
                   if (showPercent)
                     obj['state_pct'] = data[state][j].benzodiazepine;
                 }
@@ -197,11 +195,11 @@ export const AccessibilityFunctions = {
             if (showPercent)
               obj['Overall_pct'] = data['US'][i].cocaine;
 
-            obj[stateNames[state]] = '';
+            obj['state'] = '';
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) {
-                  obj[stateNames[state]] = data[state][j].cocaine;
+                  obj['state'] = data[state][j].cocaine;
                   if (showPercent)
                     obj['state_pct'] = data[state][j].cocaine;
                 }
@@ -213,11 +211,11 @@ export const AccessibilityFunctions = {
               if (showPercent)
                 obj['Overall_pct'] = data['US'][i].fentanyl;
 
-              obj[stateNames[state]] = '';
+              obj['state'] = '';
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) {
-                  obj[stateNames[state]] = data[state][j].fentanyl;
+                  obj['state'] = data[state][j].fentanyl;
                   if (showPercent)
                     obj['state_pct'] = data[state][j].fentanyl;
                 }
@@ -229,11 +227,11 @@ export const AccessibilityFunctions = {
               if (showPercent)
                 obj['Overall_pct'] = data['US'][i].heroin;
 
-              obj[stateNames[state]] = '';
+              obj['state'] = '';
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) {
-                  obj[stateNames[state]] = data[state][j].heroin;
+                  obj['state'] = data[state][j].heroin;
                   if (showPercent)
                     obj['state_pct'] = data[state][j].heroin;
                 }
@@ -245,11 +243,11 @@ export const AccessibilityFunctions = {
             if (showPercent)
                 obj['Overall_pct'] = data['US'][i].methamphetamine;
 
-            obj[stateNames[state]] = '';
+            obj['state'] = '';
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) {
-                  obj[stateNames[state]] = data[state][j].methamphetamine;
+                  obj['state'] = data[state][j].methamphetamine;
                   if (showPercent)
                     obj['state_pct'] = data[state][j].methamphetamine;
                 }
@@ -261,11 +259,11 @@ export const AccessibilityFunctions = {
              if (showPercent)
                 obj['Overall_pct'] = data['US'][i].opioid;
 
-              obj[stateNames[state]] = '';
+              obj['state'] = '';
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) {
-                  obj[stateNames[state]] = data[state][j].opioid;
+                  obj['state'] = data[state][j].opioid;
                   if (showPercent)
                     obj['state_pct'] = data[state][j].opioid;
                 }
@@ -277,11 +275,11 @@ export const AccessibilityFunctions = {
              if (showPercent)
                 obj['Overall_pct'] = data['US'][i].stimulant;
 
-              obj[stateNames[state]] = '';
+              obj['state'] = '';
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) {
-                  obj[stateNames[state]] = data[state][j].stimulant;
+                  obj['state'] = data[state][j].stimulant;
                   if (showPercent)
                     obj['state_pct'] = data[state][j].stimulant;
                 }
