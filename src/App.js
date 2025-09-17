@@ -1657,7 +1657,7 @@ export default function App(params) {
         </div>
       </div>
 
-      <a download={getFileNameFromPath(document.querySelector('#non-fatal-container').attributes['download-url']?.value)} href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download no-border">Download Data (XLSX)</a><span> {isSmallViewport ? <br></br> : ''} with all available ED and inpatient hospitalization discharge data.</span>
+      <a download={getFileNameFromPath(document.querySelector('#non-fatal-container').attributes['download-url']?.value)} href={document.querySelector('#non-fatal-container').attributes['download-url']?.value} aria-label="Download this data in an Excel file format." className="btn btn-download-local no-border">Download Data (XLSX)</a><span> {isSmallViewport ? <br></br> : ''} with all available ED and inpatient hospitalization discharge data.</span>
 
       <ReactTooltip html={true} type="light" arrowColor="rgba(0,0,0,0)" className="tooltip" />
     </>
