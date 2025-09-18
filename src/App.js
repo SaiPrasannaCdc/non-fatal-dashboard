@@ -117,7 +117,7 @@ const drugOptions = {
   },
 };
 
-const supportedYears = ['2018', '2019', '2020', '2021', '2022', '2023'];
+const supportedYears = ['2018', '2019', '2020', '2021', '2022', '2023', '2024'];
 const tabData = [{ label: "ED Visits" }, { label: "Inpatient Hospitalizations" }];
 const supportedYearsLatest = supportedYears[supportedYears.length - 1];
 const monthNames = { '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June', '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December', 'all': 'All Months' };
