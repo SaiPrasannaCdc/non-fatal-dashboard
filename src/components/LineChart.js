@@ -108,7 +108,7 @@ const getFilteredData = (data, currentState, lookupPeriodStartYear, lookupPeriod
                   yr_total_Fentanyl_OD_n = yr_total_Fentanyl_OD_n + (UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
                   yr_total_heroin_OD_n = yr_total_heroin_OD_n + (UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
                   yr_total_stimulant_OD_n = yr_total_stimulant_OD_n + (UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
-                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (UtilityFunctions.convertValue(ata[i].total_Cocaine_OD_n));
+                  yr_total_Cocaine_OD_n = yr_total_Cocaine_OD_n + (UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
                   yr_total_Methamphetamine_OD_n = yr_total_Methamphetamine_OD_n + (UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
                 }
             }
