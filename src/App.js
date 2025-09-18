@@ -2922,7 +2922,7 @@ const getYears = (startYrInp, endYrInp) => {
           {!isSmallViewport &&
           <table style={{'width': '100%'}}>
           <tr>
-              <td style={{'width': '25%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
+              <td style={{'width': '20%', 'textAlign': 'right', 'fontWeight': 'bold'}}>
                 <div className="select-input">Select Time Period:</div>
               </td>
               <td style={{'width': '11%'}}>
