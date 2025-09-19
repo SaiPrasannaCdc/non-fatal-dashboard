@@ -176,6 +176,8 @@ export default function App(params) {
   const [stateDropdownOptions, setStateDropdownOptions] = useState(false);
   const [currentDataSource, setCurrentDataSource] = useState('ED');
   const [currentDrug, setCurrentDrug] = useState('alldrug');
+  const [selectedDrugsState, setselectedDrugsState] = useState(['alldrug']);
+  const [selectedDrugsSexAge, setselectedDrugsSexAge] = useState(['alldrug']);
   const [currentState, setCurrentState] = useState('US');
   const [currentTimeframe, setCurrentTimeframe] = useState('Annual');
   const [currentMonth, setCurrentMonth] = useState('1');
@@ -186,7 +188,7 @@ export default function App(params) {
   const [lookupPeriodStartMonth, setLookupPeriodStartMonth] = useState('1');
   const [lookupPeriodEndYear, setLookupPeriodEndYear] = useState(supportedYearsLatest);
   const [lookupPeriodEndMonth, setLookupPeriodEndMonth] = useState('12');
-  const [currentDataType, setCurrentDataType] = useState('count');
+  const [currentDataType, setCurrentDataType] = useState('rate');
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
   const [showFootnotes, setFootnotes] = useState(false);
@@ -315,12 +317,12 @@ export default function App(params) {
         break;
 
       case 'statebarChart':
-        let drugName = drugOptions[currentDrug].titleAll.toLowerCase();
-        let drugNameMod = ((currentDrug === 'alldrug' || currentDrug === 'opioid' || currentDrug === 'stimulant') ? drugName + 's' : drugName);
+        let drugName = drugOptions[selectedDrugsState[0]].titleAll.toLowerCase();
+        let drugNameMod = ((selectedDrugsState[0] === 'alldrug' || selectedDrugsState[0] === 'opioid' || selectedDrugsState[0] === 'stimulant') ? drugName + 's' : drugName);
         if (currentDataSource == 'ED')
-          txt = 'What is the rate of ED visits for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear;
+          txt = 'What is the rate of ED visits for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other Jurisdictions in the U.S.') : ('all participating Jurisdictions ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear;
         else if (currentDataSource == 'HOSP')
-          txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other states in the U.S.') : ('all participating states ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear;
+          txt = 'What is the rate of inpatient hospitalizations for nonfatal overdoses involving ' + drugNameMod + ' in ' + (currentState != 'US' ? (stateNames[currentState] + ' and other Jurisdictions in the U.S.') : ('all participating Jurisdictions ')) + ' in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear;
 
         break;
 
@@ -331,22 +333,22 @@ export default function App(params) {
 
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED')
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
           else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
         }
         else {
           if (currentDataSource == 'ED')
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
           else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' States)';
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
         }
 
         break;
 
       case 'usaMap':
         if (currentDataSource == 'ED')
-          txt = 'How often did people visit the ED for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county in ' + currentYear;
+          txt = 'How often did people visit the ED for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county in ' + (currentYearGroup == 'all' ? supportedYears[0] + '-' + supportedYears[supportedYears.length - 1] : currentYear);
 
         break;
     }
@@ -1056,13 +1058,15 @@ export default function App(params) {
 
   }, []);
 
-  const getFootNotesForData = (addl) => {
+  const getFootNotesForData = (chart, addl) => {
     return (
       <div className="datatable-body">
         <table style={{ width: '100%' }}>
-          <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
-          <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
-          {addl && showPercent && <tr style={{ textAlign: 'right', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
+          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
+          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
+          {(chart == 'Line' || chart == 'Sex') && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.'}</td></tr>}
+          {/* SKV TODO what should be the symbol for rate below*/}
+          {addl && showPercent && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
         </table>
       </div>
     )
@@ -1120,13 +1124,141 @@ export default function App(params) {
     }
   };
 
+  const handleDrugSelectionsStateChange = (event, drug) => {
+      setselectedDrugsState([drug])
+  }
+
+  const getDrugControlsState = () => {
+    const entries = Object.entries(drugOptions);
+    entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
+
+    if (!isSmallViewport) {
+    return (
+      <Fragment>
+        <Fragment>
+          <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index < 4 &&
+                <div class={`drugDiv-${drug[0]}`}>
+                  <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                  <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                </div>
+                
+            ))
+          }
+          </div>
+        </Fragment>
+        <Fragment>
+        <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index >= 4 &&
+              <div class={`drugDiv-${drug[0]}`}>
+                      <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                      <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                    </div>
+            ))
+          }
+          </div>
+        </Fragment>
+      </Fragment>
+    )
+  }
+  else {
+    return (
+            <Fragment>
+                <Fragment>
+                  <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                  {
+                  entries.map((drug, index) => (
+                    <div>
+                      <div class={`drugDiv-${drug[0]}`}>
+                        <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                        <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                      </div>
+                      <br></br>
+                      </div>
+                      
+                  ))
+                }
+                </div>
+                </Fragment>
+              </Fragment>
+          )
+    }
+  }
+
+    const handleDrugSelectionsSexAgeChange = (event, drug) => {
+      setselectedDrugsSexAge([drug])
+  }
+
+  const getDrugControlsSexAge = () => {
+    const entries = Object.entries(drugOptions);
+    entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
+
+    if (!isSmallViewport) {
+    return (
+      <Fragment>
+        <Fragment>
+          <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index < 4 &&
+                <div class={`drugDiv-${drug[0]}`}>
+                  <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
+                  <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                </div>
+                
+            ))
+          }
+          </div>
+        </Fragment>
+        <Fragment>
+        <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index >= 4 &&
+              <div class={`drugDiv-${drug[0]}`}>
+                      <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
+                      <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                    </div>
+            ))
+          }
+          </div>
+        </Fragment>
+      </Fragment>
+    )
+  }
+  else {
+    return (
+            <Fragment>
+                <Fragment>
+                  <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                  {
+                  entries.map((drug, index) => (
+                    <div>
+                      <div class={`drugDiv-${drug[0]}`}>
+                        <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
+                        <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                      </div>
+                      <br></br>
+                      </div>
+                      
+                  ))
+                }
+                </div>
+                </Fragment>
+              </Fragment>
+          )
+    }
+  }
   const setDrug = (val) => {
     setCurrentDrug(val);
   }
 
   const stateBarChartMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
       <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
         <StateChart
           data={data}
@@ -1134,7 +1266,7 @@ export default function App(params) {
           height={900} //TODO
           el={stateBarChartRef}
           currentState={currentState}
-          currentDrug={currentDrug}
+          currentDrug={selectedDrugsState[0]}
           currentDataSource={currentDataSource}
           currentTimeframe={currentTimeframe}
           currentMonth={currentMonth}
@@ -1146,7 +1278,7 @@ export default function App(params) {
         />
       </div>
     </>,
-    [data, width, currentDrug, currentDataSource, currentTimeframe, currentMonth, currentYear, currentState]);
+    [data, width, selectedDrugsState[0], currentDataSource, currentTimeframe, currentMonth, currentYear, currentState]);
 
   const lineChartMemo = useMemo(() =>
     <>
@@ -1175,23 +1307,34 @@ export default function App(params) {
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
       Count
-      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} defaultChecked="true" />
+      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} checked={currentDataType == 'count' ? true : false} defaultChecked="false" disabled={currentYear == '2024' ? true : false}/>
       Rate
       <br></br>
       <div className='subsection marked'>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age and Sex</span>
-        <SexAgeCharts params={{ data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth: currentMonth, currentDataType, width, drugOptions, accessible }} />
+        <SexAgeCharts
+          data={data}
+          currentTimeframe={currentTimeframe}
+          currentDataSource={currentDataSource}
+          currentDrug={selectedDrugsSexAge[0]}
+          currentYear={currentYear}
+          currentMonth={currentMonth}
+          currentDataType={currentDataType}
+          width={width}
+          drugOptions={drugOptions}
+          accessible={accessible} 
+        />
       </div>
     </>,
-    [data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width]);
+    [data, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
       <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
       {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
       {accessible && <div><small><i>The county-level tables are only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. This table uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
+      <br></br>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true" />
       5 Year Rate
@@ -1305,6 +1448,9 @@ export default function App(params) {
                       setCurrentState('US');
                       setOnlyCurrentDrug(false);
                     }
+
+                    if (param == '2024')
+                      setCurrentDataType('rate');
                   },
                   options: supportedYears,
                   optionLabel: (key) => key
@@ -1347,7 +1493,7 @@ export default function App(params) {
                     if (b === 'US') return 1;
                     return a < b;
                   }),
-                  optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
+                  optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' Jurisdictions)'
                 }} />
                 <div>
                   <button id="reset-button" style={{ backgroundColor: drugColor }} onClick={() => {
@@ -1373,15 +1519,15 @@ export default function App(params) {
               <div>
                 <div className="drug-tab-section">
                   {drugTab('alldrug', <span>All Drugs</span>)}
-                  {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
-                  {drugTab('heroin', <span>Heroin</span>)}
                   {drugTab('stimulant', <span>All Stimulants</span>)}
-                </div>
-                <div className="drug-tab-section">
                   {drugTab('opioid', <span>All Opioids</span>)}
                   {drugTab('fentanyl', <span>Fentanyl</span>)}
+                </div>
+                <div className="drug-tab-section">
                   {drugTab('cocaine', <span>Cocaine</span>)}
                   {drugTab('methamphetamine', <span>Methamphetamine</span>)}
+                  {drugTab('heroin', <span>Heroin</span>)}
+                  {drugTab('benzodiazepine', <span>Benzodiazepine</span>)}
                 </div>
               </div>
             </div>
@@ -1504,7 +1650,7 @@ export default function App(params) {
                           if (b === 'US') return 1;
                           return a < b;
                         }),
-                        optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' States)'
+                        optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' Jurisdictions)'
                       }} />
                     </div>
                   </td>
@@ -1573,33 +1719,76 @@ export default function App(params) {
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
                 <span className="callout" style={{ 'color': drugColor }}>{Object.keys(stateDropdownOptions).length - 1}</span>
                 <div>
-                  <span className='data-bite-title' style={{ color: drugColor }}>States Participating<sup>2</sup></span>
+                  <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating<sup>2</sup></span>
                   <p>Participating states with reported data</p>
                 </div>
               </div>
             </div>
             <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Overdoses counted in each category may involve multiple substances.</i></small></div>
+           {/*  SKV TODO */}
+            {<div><sup>§</sup><small><i>Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.</i></small></div>} 
 
             <section className="first-section">
               {lineChartMemo}
               <br></br>
-              {!accessible && getFootNotesForData()}
-              {accessible && getFootNotesForData(true)}
+              {!accessible && getFootNotesForData('Line', true)}
+              {accessible && getFootNotesForData('Line', true)}
             </section>
 
             <section>
+              <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
+              <table>
+                <tr>
+                      <td style={{'width': '8%'}}></td>
+                      <td style={{'width': '84%'}}>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                              {getDrugControlsState()}
+                            </td>
+                          </tr>
+                          </table>
+                      </td>
+                      <td style={{'width': '8%'}}></td>
+                    </tr>
+              </table>
               {stateBarChartMemo}
-              {getFootNotesForData()}
+              {getFootNotesForData('State', false)}
             </section>
 
             <section>
+              <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsSexAge[0]].color }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
+              <table>
+                <tr>
+                      <td style={{'width': '8%'}}></td>
+                      <td style={{'width': '84%'}}>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                              {getDrugControlsSexAge()}
+                            </td>
+                          </tr>
+                          </table>
+                      </td>
+                      <td style={{'width': '8%'}}></td>
+                    </tr>
+              </table>
+              <br></br>
               {sexAgeChartsMemo}
-              {getFootNotesForData()}
+              {getFootNotesForData('Sex', false)}
             </section>
 
             <section>
               {usaMapMemo}
-              {accessible && getFootNotesForData()}
+              {accessible && getFootNotesForData('Map', false)}
             </section>
           </>
         )}
@@ -1626,7 +1815,7 @@ export default function App(params) {
             <div className="datatable-body">
               <ul id='noBullets'>
                 <li><strong><sup>1</sup></strong>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Mid-year annual population denominators were obtained from the U.S. Census Bureau using the most recently updated data at the time of analysis (<a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html</a>).</li>
-                <li><strong><sup>2</sup></strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction; however, some jurisdictions’ coverage was lower (i.e., between 60%-&lt;80%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. Jurisdictions with 60-&lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 only). Jurisdictions with 60-&lt;80% inpatient hospital facility coverage include MT (2018-2023). Jurisdictions with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
+                <li><strong><sup>2</sup></strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction; however, some jurisdictions’ coverage was lower (i.e., between 60%-&lt;80%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. Jurisdictions with 60-&lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 and 2024 ). Jurisdictions with 60-&lt;80% inpatient hospital facility coverage include MT (2018-2024) and UT (2018-2023). Jurisdictions with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
                 <li><strong><sup>3</sup></strong>Counts based on 1-9 overdoses and rates when based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>. Mid-year annual population denominators were obtained from the <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> for the calculations of rates.</li>
                 <li><strong><sup>4</sup></strong>A total of 32 jurisdictions submit DOSE ED discharge data and 35 jurisdictions submit DOSE inpatient hospitalization discharge data under OD2A in States. Certain jurisdictions participating in DOSE discharge surveillance were not included in the current dashboard update, or were not included for all years, if data were not yet completed. Oklahoma reported ED data beginning in 2021. The “Overall” (all jurisdictions) category may not be comparable across years because different jurisdictions may be included in different years based on data availability.</li>
                 <li><strong><sup>5</sup></strong>The term "rate" in the context of ED or inpatient hospitalization visits for nonfatal drug overdoses refers to the number of visits per 100,000 individuals in the population. This metric allows for a more accurate comparison of ED or inpatient hospitalization visit frequencies across different population sizes and demographics.</li>
@@ -1650,7 +1839,7 @@ export default function App(params) {
                 <li><strong>Data are included for overdoses of unintentional and undetermined intents.</strong> Only discharge diagnosis codes for overdoses of unintentional and undetermined intent, initial encounters are included in the data presented on this dashboard. Detailed information on case classification criteria can be found on the <a target="_blank" href="/overdose-prevention/data-research/facts-stats/about-dose-system.html">About DOSE</a> page.</li>
                 <li><strong>Overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories: numbers of opioid-, fentanyl-, heroin-, benzodiazepine-, stimulant-, cocaine-, and methamphetamine-involved overdose visits are included in the numbers of all drug overdose visits; heroin- and fentanyl-involved overdose visits are included in the numbers of opioid-involved overdose visits; cocaine- and methamphetamine-involved overdose visits are included in the numbers of stimulant-involved overdose visits; and some overdose visits involved multiple substances (e.g., a given overdose ED visit could have involved both opioids and stimulants).</li>
                 <li><strong>Rates beginning in 2021 may not be directly comparable to prior years.</strong> The <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> instituted new methodology to calculate population estimates beginning with 2021 data. The new methodology, referred to as differential privacy, ensures that data from individuals and individual households remain confidential.</li>
-                <li><strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction;</strong> however, some jurisdictions' coverage was lower (i.e., between 60% and 79%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. States with 60% - &lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 only). States with 60 - &lt;80% inpatient hospital facility coverage include MT (2018-2023). State data with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
+                <li><strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction;</strong> however, some jurisdictions’ coverage was lower (i.e., between 60%-&lt;80%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. Jurisdictions with 60-&lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2023 and 2024 ). Jurisdictions with 60-&lt;80% inpatient hospital facility coverage include MT (2018-2024) and UT (2018-2023). Jurisdictions with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
                 <li><strong>There are several important caveats to consider</strong> when viewing the {!accessible ? 'figures' : 'tables'} included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</li>
               </ul>
             </div>}

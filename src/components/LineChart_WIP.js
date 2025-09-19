@@ -691,7 +691,7 @@ function LineChart_WIP({ params }) {
 
     let val = isPeriod ? inp.monthNamesPeriod[param] : param;
     let numStates = getNumberOfStates(param)
-    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' States)' + '</p></td></tr>';
+    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' Jurisdictions)' + '</p></td></tr>';
     var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
     var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
     var leftStr = leftComStr + leftRateStr + leftCountStr;
@@ -755,12 +755,12 @@ function LineChart_WIP({ params }) {
               let numStates = getNumberOfStates(d[specs.xKey])
               var tooltipValues = [];
               if (!currentDrugOnly)
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates}Jurisdictions</p>`);
 
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates}Jurisdictions</p>` : null);
                     }
                   }
               }
