@@ -549,9 +549,10 @@ const adjustCrowdedLabels = () => {
     let rateUS = getRateforDrug(inp.selectedDrugs[0], 'US', val)
     let str = `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>`
     let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)));
+    stStr = stStr + ', ' + drugOptions[inp.selectedDrugs[0]].titleForDropDown;
     let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
-    let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateUS == 0 ? 'Data Suppressed' : (rateUS == '-1.0' ? 'Data not available/not reported' : rateUS)} (${getJurisCount(d['year'])} Jurisdictions)</p>`
-    let midStr2 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[0]].titleForDropDown + `</strong>: ${rateSt == 0 ? 'Data Suppressed' : (rateSt == '-1.0' ? 'Data not available/not reported' : rateSt)}</p>`
+    let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateUS == 0 ? 'Data Suppressed' : (rateUS == '-1.0' ? 'Data not available/not reported' : rateUS)} (${getJurisCount(d['year'])} Jurisdictionss)</p>`
+    let midStr2 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + stateNames[currentState] + `</strong>: ${rateSt == 0 ? 'Data Suppressed' : (rateSt == '-1.0' ? 'Data not available/not reported' : rateSt)}</p>`
     let parStr = `</strong></span>` + midStr1 + midStr2 + `</td></tr></table>`;
     return str + stStr + `</td></tr><tr><td class='alignCenter'>` + msgStr + parStr;
   }
@@ -740,10 +741,10 @@ const adjustCrowdedLabels = () => {
 
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] > 0 && dNext[currentDrug] > 0 && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] > 0 && (dNext[currentDrug] > 0 && !UtilityFunctions.isCovidPeriodNoLine(dNext['year'], d['year'])) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] > 0 && dNext[currentDrug] > 0 && key != 'US') && 
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] > 0 && (dNext[currentDrug] > 0 && !UtilityFunctions.isCovidPeriodNoLine(dNext['year'], d['year'])) > 0 && key != 'US') && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={specs.yScale(d[currentDrug]) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={specs.yScale(dNext[currentDrug]) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}

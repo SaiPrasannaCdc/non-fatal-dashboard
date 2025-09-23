@@ -648,6 +648,15 @@ export const UtilityFunctions = {
     return ret;
   },
 
+  isCovidPeriodNoLine : (nextPoint, curPoint) => {
+
+    if (UtilityFunctions.isCovidPeriod(nextPoint))
+      return true;
+
+    if (UtilityFunctions.isCovidPeriod(curPoint))
+      return true;
+  },
+
   getCovidPeriodIndex : (yr) => {
     return covidPeriod.indexOf(yr);
   },
