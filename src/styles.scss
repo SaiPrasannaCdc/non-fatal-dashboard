@@ -1557,3 +1557,19 @@ padding-left: 2px!important;
         max-width: 100% !important;
     }
 }
+
+.notSelectedState {
+    height: 20px;
+    width: 20px;
+    background-color: lightgray;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.notSelectedSexAge {
+    height: 20px;
+    width: 20px;
+    background-color: lightgray;
+    border-radius: 50%;
+    display: inline-block;
+}

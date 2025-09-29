@@ -8,7 +8,7 @@ import DataTable508 from './DataTable508';
 import { UtilityFunctions } from '../utility';
 import { AccessibilityFunctions } from '../accessibility';
 
-function SexAgeCharts({ params }) {
+function SexAgeCharts(params) {
 
   const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions, accessible } = params;
 
