@@ -97,9 +97,9 @@ function Datatable({ params }) {
 
       case 'sexTable':
         if (currentDataSource == 'ED')
-          txt = 'What was the ' + currentDataType + ' of ED visits for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (stateDropdownOptions.length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'What was the ' + currentDataType + ' of ED visits for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (stateDropdownOptions.length - 1)  + ' Jurisdictions) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
         else if (currentDataSource == 'HOSP')
-          txt = 'What was the ' + currentDataType + ' of inpatient hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (stateDropdownOptions.length - 1)  + ' states) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
+          txt = 'What was the ' + currentDataType + ' of inpatient hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses overall (' + (stateDropdownOptions.length - 1)  + ' Jurisdictions) in ' + (currentTimeframe === 'Monthly' ? `${monthNames[currentMonth]} ` : '') +  ' ' + currentYear + ', by age group and sex?'
     
         break;
 
@@ -191,7 +191,7 @@ function Datatable({ params }) {
         </thead>
         <tbody>
           {Object.keys(filteredYearData).map(state => {
-            return <tr key={`line-chart-row-${state}`}><td>{state === 'US' ? stateNames[state] + ' (' + (stateDropdownOptions.length - 1) + ' States)': stateNames[state]}</td>{filteredYearData['US'].map((usRow, i) => {
+            return <tr key={`line-chart-row-${state}`}><td>{state === 'US' ? stateNames[state] + ' (' + (stateDropdownOptions.length - 1) + ' Jurisdictions)': stateNames[state]}</td>{filteredYearData['US'].map((usRow, i) => {
               const row = state === 'US' ? usRow : filteredYearData[state].find(row => row[currentTimeframe === 'Monthly' ? 'month' : 'year'] === usRow[currentTimeframe === 'Monthly' ? 'month' : 'year']) || {}
               return (
                   <td key={`line-chart-col-${state}-${i}`}>{row[currentDrug] || 'Data not available/not reported†'}</td>

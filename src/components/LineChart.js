@@ -38,6 +38,7 @@ const lessMonths = (arr) => {
 };
 
 const getCountsYearly = (data, currentDataSource, drugOptions) => {
+
   var arr = [];
 
   Object.keys(drugOptions).forEach(drug => {
@@ -669,10 +670,10 @@ function LineChart({ params }) {
   }
 
   const getTooltipFragment = (param) => {
-
+   
     let val = isPeriod ? inp.monthNamesPeriod[param] : param;
     let numStates = getNumberOfStates(param)
-    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' States)' + '</p></td></tr>';
+    var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' Jurisdictions)' + '</p></td></tr>';
     var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
     var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
     var leftStr = leftComStr + leftRateStr + leftCountStr;
@@ -734,14 +735,19 @@ function LineChart({ params }) {
 
             if (inp.currentState === 'US') {
               let numStates = getNumberOfStates(d[specs.xKey])
+              let cntC = getCountforDrug(currentDrug, 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
               var tooltipValues = [];
-              if (!currentDrugOnly)
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} States)</p>`);
+              if (!currentDrugOnly) {
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} Jurisdictions)</p>`);
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntC} (${numStates} Jurisdictions)</p>`);
+              }
 
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
+                    let cntS = getCountforDrug(inp.selectedDrugs[i], 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} States)</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} Jurisdictions)</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntS} (${numStates} Jurisdictions)</p>` : null);
                     }
                   }
               }
@@ -998,7 +1004,7 @@ function LineChart({ params }) {
           isSmallViewport={specs['isSmallViewport']}
           supScript={showPercent ?'§': ''}
         />
-        {currentDrug == 'fentanyl' &&
+        {(currentDrug == 'fentanyl' || selectedDrugs.includes('fentanyl')) &&
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
@@ -1007,7 +1013,7 @@ function LineChart({ params }) {
             </tr>
           </table>
           }
-          {currentDrug == 'methamphetamine' &&
+          {(currentDrug == 'methamphetamine' || selectedDrugs.includes('methamphetamine')) &&
             <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
@@ -1064,7 +1070,7 @@ function LineChart({ params }) {
                 {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
               </Group>
             </svg>
-          {currentDrug == 'fentanyl' &&
+          {(currentDrug == 'fentanyl' || selectedDrugs.includes('fentanyl')) &&
           <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
@@ -1073,7 +1079,7 @@ function LineChart({ params }) {
             </tr>
           </table>
           }
-          {currentDrug == 'methamphetamine' &&
+          {(currentDrug == 'methamphetamine' || selectedDrugs.includes('methamphetamine')) &&
             <table style={{width: '100%'}}>
             <tr>
               <td style={{width: '100%'}}>
