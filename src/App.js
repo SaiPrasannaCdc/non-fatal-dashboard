@@ -348,7 +348,7 @@ export default function App(params) {
 
       case 'usaMap':
         if (currentDataSource == 'ED')
-          txt = 'How often did people visit the ED for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county in ' + (currentYearGroup == 'all' ? supportedYears[0] + '-' + supportedYears[supportedYears.length - 1] : currentYear);
+          txt = 'How often did people visit the ED for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses by county in ' + (currentYearGroup == 'all' ? supportedYears[supportedYears.length - 5] + '-' + supportedYears[supportedYears.length - 1] : currentYear);
 
         break;
     }
