@@ -551,7 +551,7 @@ const adjustCrowdedLabels = () => {
     let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)));
     stStr = stStr + ', ' + drugOptions[inp.selectedDrugs[0]].titleForDropDown;
     let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
-    let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateUS == 0 ? 'Data Suppressed' : (rateUS == '-1.0' ? 'Data not available/not reported' : rateUS)} (${getJurisCount(d['year'])} Jurisdictionss)</p>`
+    let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateUS == 0 ? 'Data Suppressed' : (rateUS == '-1.0' ? 'Data not available/not reported' : rateUS)} (${getJurisCount(d['year'])} Jurisdictions)</p>`
     let midStr2 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + stateNames[currentState] + `</strong>: ${rateSt == 0 ? 'Data Suppressed' : (rateSt == '-1.0' ? 'Data not available/not reported' : rateSt)}</p>`
     let parStr = `</strong></span>` + midStr1 + midStr2 + `</td></tr></table>`;
     return str + stStr + `</td></tr><tr><td class='alignCenter'>` + msgStr + parStr;
