@@ -38,7 +38,7 @@ function ChangeIndicator(params) {
                         (percentValue == 0 ? [] : decreaseArrayPoints.map(p => [p.x, p.y]))}
                     fill={colorScale[defaultValueIfEmpty(label, defaultLabelIfEmpty)]}
                 ></Polygon>
-                <text x={percentValue == 0 ? width/2 + 5 : width/2} y="60" textAnchor="middle" fontSize={percentValue == 0 ? 35 :15}
+                <text x={percentValue == 0 ? width/2 + 5 : width/2} y={percentValue > 0 ? height/2 + 5: height/2} textAnchor="middle" fontSize={percentValue == 0 ? 16 : 9}
                     stroke={percentValue == 0 ? colorScale[defaultValueIfEmpty(label, defaultLabelIfEmpty)] :'#fff'}
                 >
                     {Math.abs(percentValue).toFixed(1)}%

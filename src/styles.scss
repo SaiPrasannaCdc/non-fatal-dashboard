@@ -435,6 +435,21 @@ margin-top: .5em;
 }
 }
 
+span.calloutSmall {
+font-size: 1.5em;
+font-weight: 500;
+color: #712177;
+padding: 0 .5em 0 .1em;
+// font-family: "Merriweather", serif;
+align-self: flex-start;
+margin-top: .25em;
+
+&+div {
+align-self: flex-start;
+margin-top: .5em;
+}
+}
+
 p {
 font-size: .85em;
 }
@@ -1211,6 +1226,7 @@ margin-top: 10px;
 width: 70%;
 display: inline-block;
 padding: 0.25em;
+font-size: 14px;
 }
 
 .stats-section .stat-number
@@ -1345,7 +1361,7 @@ width: 100%;
 .toolTipChgPerc
 {
 display: flex;
-width: 320px;
+width: 200px;
 height: 120px;
 }
 
