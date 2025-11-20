@@ -854,14 +854,27 @@ function LineChart({ params }) {
     return 0;
   }
 
-  function lastValuesSame() {
+  function lastValuesNarrow() {
     var stVal = inp.filteredData[currentState][inp.filteredData[currentState].length - 1][currentDrug];
     var usVal = inp.filteredData['US'][inp.filteredData[currentState].length - 1][currentDrug];
+    const usValF = parseFloat(specs.yScale(parseFloat(usVal)));
+    const stValF = parseFloat(specs.yScale(parseFloat(stVal)));
 
-    if (stVal == usVal)
+    var diff;
+    if (usValF > stValF)
+      diff = usValF - stValF;
+    else
+      diff = stValF - usValF;
+
+    if (diff <= 15)
       return true;
     else
       return false;
+  }
+
+  function lastValue() {
+    var stVal = inp.filteredData[currentState][inp.filteredData[currentState].length - 1][currentDrug];
+    return specs.yScale(parseFloat(stVal));
   }
 
   function narrowPoints(xval) {
@@ -1026,10 +1039,10 @@ function LineChart({ params }) {
                             fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)}>
                               {key != 'US' ? inp.stateNames[key] : 'Overall'}
                           </text>
-                          {lastValuesSame() && key != 'US' && <line
+                          {lastValuesNarrow() && key != 'US' && <line
                                 id={`line-leading-${currentDrug}`}
                                 x1={specs.xMax + 4}
-                                y1={yPos - specs.seriesOverlapMargin}
+                                y1={lastValue()}
                                 x2={specs.xMax + 25} 
                                 y2={yPos}
                                 stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)}
