@@ -1036,7 +1036,7 @@ function LineChart({ params }) {
                             y={yPos}
                             alignmentBaseline="middle" 
                             fontSize={specs.fontSize} 
-                            fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)}>
+                            fill={key != 'US' ? UtilityFunctions.getSeriesColorLine(currentDrug, key, false) : UtilityFunctions.getSeriesColorLine(currentDrug, key, true)}>
                               {key != 'US' ? inp.stateNames[key] : 'Overall'}
                           </text>
                           {lastValuesNarrow() && key != 'US' && <line
