@@ -395,7 +395,7 @@ opacity: 1;
 line-height: 1;
 font-size: 1em;
 border-radius: 4px;
-padding: 15px;
+padding: 6px;
 }
 
 .callouts {
@@ -1202,7 +1202,7 @@ padding-top: 0.5em;
 }
 
 .stats-section {
-border: 1px solid rgba(0,0,0,.125);
+border: 0px solid rgba(0,0,0,.125);
 border-left: 5px solid #b890bb;
 border-radius: .25rem;
 transition: .25s box-shadow;
@@ -1391,6 +1391,7 @@ padding-bottom: 25px!important;
 {
 background-color: white;
 padding: 5px;
+margin: 5px;
 text-align: left!important;
 }
 
@@ -1398,6 +1399,7 @@ text-align: left!important;
 {
 background-color: white;
 padding: 5px;
+margin: 5px;
 text-align: center!important;
 }
 
@@ -1405,6 +1407,7 @@ text-align: center!important;
 {
 background-color: white;
 padding: 5px;
+margin: 5px;
 text-align: center!important;
 }
 

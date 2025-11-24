@@ -981,7 +981,8 @@ function LineChart({ params }) {
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
                               y={!narrowPoints(xVal) ? (d[currentDrug] == '0.0' ? specs.yScale(d[currentDrug])-22 : specs.yScale(d[currentDrug])-8) : (higherValue(xVal) == currentState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)}
-                              stroke={'lightblue'} fill={'lightblue'} 
+                              stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} 
+                              strokeWidth={0.25}
                               fontSize={12} 
                               textAnchor={i == 0 ? 'right' : 'middle'}>
                               {showLabels ? d[currentDrug] : ''}
