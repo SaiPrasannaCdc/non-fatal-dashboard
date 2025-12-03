@@ -192,9 +192,10 @@ export default function App(params) {
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
   const [showFootnotes, setFootnotes] = useState(false);
-  const [showStateTable, setStateTable] = useState(false);
+  const [showStateTable, setStateTable] = useState(true);
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
+  const [showCount, setCountToggle] = useState(false);
   const [isPeriod, setPeriodToggle] = useState(false);
   const [selectAllFlag, setSelectAllFlag] = useState(false);
   const [deselectAllFlag, setDeselectAllFlag] = useState(false);
@@ -202,9 +203,7 @@ export default function App(params) {
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  //const { accessible } = params;
-
-  const accessible = true;
+  const { accessible } = params;
 
   const [width, setWidth] = useState(accessible ? 0 : 100);
   
@@ -654,6 +653,25 @@ export default function App(params) {
                         </label>
                       </div>
                     }
+                    {accessible &&
+                      <div style={{ float: 'left' }}>
+                        <label class="toggleB" title={'Toggle to see count.'}>
+                          <input id="toggleBCount" class="toggleB-input" type="checkbox" checked={showCount}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCountToggle(true)
+                              }
+                              else {
+                                setCountToggle(false)
+                              }
+                            }} />
+                          <span class="toggleB-label" data-off="Count Off"
+                            data-on="Count On">
+                          </span>
+                          <span class="toggleB-handle"></span>
+                        </label>
+                      </div>
+                    }
                   </td>
                 </tr>
               </table>
@@ -672,7 +690,6 @@ export default function App(params) {
               </td>
             }
           </tr>
-
           </table>
         }
         {isSmallViewport && 
@@ -1296,7 +1313,7 @@ export default function App(params) {
           <td>
             <div class="containerLC">
               <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"}>
-                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
+                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
               </div>
             </div>
           </td>
@@ -1308,7 +1325,7 @@ export default function App(params) {
 
       </table>
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
@@ -1741,42 +1758,45 @@ export default function App(params) {
               {accessible && getFootNotesForData('Line', true)}
             </section>
 
-            <section>
-              <div className="datatable-container-header">
-                <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }} onClick={toggleStateTable}>
-                <text className="data-bite-header-toggle sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</text>
-                {showStateTable && <span>{String.fromCharCode(8722)}</span>}
-                {!showStateTable && <span>{String.fromCharCode(43)}</span>}
-                </button>
-                {showStateTable &&
-                  <div className="datatable-body">
-                    <table>
-                      <tr>
-                            <td style={{'width': '8%'}}></td>
-                            <td style={{'width': '84%'}}>
-                              <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
-                                <tr>
-                                  <td style={{'width': '23%', 'verticalAlign': 'top'}}>
-                                    <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
-                                    <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
-                                  </td>
-                                  <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
-                                    {getDrugControlsState()}
-                                  </td>
-                                </tr>
-                                </table>
-                            </td>
-                            <td style={{'width': '8%'}}></td>
-                          </tr>
-                    </table>
-                    {stateBarChartMemo}
-                    {getFootNotesForData('State', false)}
-                  </div>
-                }
-            </div>
-          </section>
-            {/* <section>
-              <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
+            {accessible &&
+              <section>
+                <div className="datatable-container-header">
+                  <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }} onClick={toggleStateTable}>
+                  <text className="data-bite-header-toggle sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</text>
+                  {showStateTable && <span>{String.fromCharCode(8722)}</span>}
+                  {!showStateTable && <span>{String.fromCharCode(43)}</span>}
+                  </button>
+                  {showStateTable &&
+                    <div className="datatable-body">
+                      <table>
+                        <tr>
+                              <td style={{'width': '8%'}}></td>
+                              <td style={{'width': '84%'}}>
+                                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                                  <tr>
+                                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                                    </td>
+                                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                                      {getDrugControlsState()}
+                                    </td>
+                                  </tr>
+                                  </table>
+                              </td>
+                              <td style={{'width': '8%'}}></td>
+                            </tr>
+                      </table>
+                      {stateBarChartMemo}
+                      {getFootNotesForData('State', false)}
+                    </div>
+                  }
+              </div>
+            </section>
+            }
+            {!accessible &&
+              <section>
+                <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
               <table>
                 <tr>
                       <td style={{'width': '8%'}}></td>
@@ -1798,7 +1818,8 @@ export default function App(params) {
               </table>
               {stateBarChartMemo}
               {getFootNotesForData('State', false)}
-            </section> */}
+              </section>
+            }
 
             <section>
               <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsSexAge[0]].color }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
