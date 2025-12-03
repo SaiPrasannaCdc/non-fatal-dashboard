@@ -192,6 +192,7 @@ export default function App(params) {
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
   const [showFootnotes, setFootnotes] = useState(false);
+  const [showStateTable, setStateTable] = useState(false);
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
   const [isPeriod, setPeriodToggle] = useState(false);
@@ -201,7 +202,9 @@ export default function App(params) {
   const [selectedDrugs, setselectedDrugs] = useState(['alldrug']);
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const { accessible } = params;
+  //const { accessible } = params;
+
+  const accessible = true;
 
   const [width, setWidth] = useState(accessible ? 0 : 100);
   
@@ -210,6 +213,7 @@ export default function App(params) {
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
   const toggleFootnotes = () => setFootnotes(!showFootnotes);
+  const toggleStateTable = () => setStateTable(!showStateTable);
 
   const isSmallViewport = width < viewportCutoffSmall;
 
@@ -1738,6 +1742,40 @@ export default function App(params) {
             </section>
 
             <section>
+              <div className="datatable-container-header">
+                <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }} onClick={toggleStateTable}>
+                <text className="data-bite-header-toggle sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</text>
+                {showStateTable && <span>{String.fromCharCode(8722)}</span>}
+                {!showStateTable && <span>{String.fromCharCode(43)}</span>}
+                </button>
+                {showStateTable &&
+                  <div className="datatable-body">
+                    <table>
+                      <tr>
+                            <td style={{'width': '8%'}}></td>
+                            <td style={{'width': '84%'}}>
+                              <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                                <tr>
+                                  <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                                    <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                                    <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                                  </td>
+                                  <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                                    {getDrugControlsState()}
+                                  </td>
+                                </tr>
+                                </table>
+                            </td>
+                            <td style={{'width': '8%'}}></td>
+                          </tr>
+                    </table>
+                    {stateBarChartMemo}
+                    {getFootNotesForData('State', false)}
+                  </div>
+                }
+            </div>
+          </section>
+            {/* <section>
               <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
               <table>
                 <tr>
@@ -1760,7 +1798,7 @@ export default function App(params) {
               </table>
               {stateBarChartMemo}
               {getFootNotesForData('State', false)}
-            </section>
+            </section> */}
 
             <section>
               <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsSexAge[0]].color }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
