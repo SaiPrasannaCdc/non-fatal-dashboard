@@ -2,13 +2,13 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, colSpan, isSmallViewport, hdr, supScript } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, colSpan, isSmallViewport, hdr, supScript, noSort } = params;
 
   const labelOverrides = params.labelOverrides || {};
 
   const isArray = Array.isArray(data);
 
-  const keys = (isArray ? Object.keys(data[0]) : Object.keys(data).sort((a,b) => {
+  const keys = (isArray ? Object.keys(data[0]) : noSort ? Object.keys(data) : Object.keys(data).sort((a,b) => {
     if(a === 'Overall') return -1;
     if(b === 'Overall') return 1;
     return a < b ? -1 : 1;

@@ -240,6 +240,7 @@ const UsaMap = ({ params }) => {
               rate: num => (isNaN(num) ? num : num)
             }}
               width={width}
+              noSort={false}
           />
           </>        
         ) : (

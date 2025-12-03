@@ -728,6 +728,14 @@ function LineChart({ params }) {
     return sortedToolTips;
   }
   
+  const get2024FootNote = (yr, str) => {
+    if (String(yr).substring(0,4) == '2024' && str == 'Data not available' )
+      return '<sup>§</sup>';
+    else
+      return '';
+  }
+
+  
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
       <Fragment>
@@ -740,7 +748,7 @@ function LineChart({ params }) {
               var tooltipValues = [];
               if (!currentDrugOnly) {
                 tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} Jurisdictions)</p>`);
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntC} (${numStates} Jurisdictions)</p>`);
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntC} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
@@ -748,7 +756,7 @@ function LineChart({ params }) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
                       tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} Jurisdictions)</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntS} (${numStates} Jurisdictions)</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntS} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }
@@ -1141,6 +1149,7 @@ function LineChart({ params }) {
           colSpan={!showPercent ? ((currentState == 'US' ? (!showPercent ? selectedDrugs.length : (selectedDrugs.length * 2)) : (!showPercent ? 2: 4))) : null}
           isSmallViewport={specs['isSmallViewport']}
           supScript={showPercent ?'§': ''}
+          noSort={true}
         />
         {(currentDrug == 'fentanyl' || selectedDrugs.includes('fentanyl')) &&
           <table style={{width: '100%'}}>
