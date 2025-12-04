@@ -200,7 +200,7 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -216,8 +216,9 @@ function LineChart({ params }) {
   
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
 
-  const currentStaterate = stateNames[currentState] + ' rate'
+  const currentStaterate = stateNames[currentState];
   const currentStatePctChange = stateNames[currentState] + ' %change in rate'
+  const currentStateCnt = stateNames[currentState];
 
   useEffect(() => {
     markYearsForTicks();
@@ -659,13 +660,13 @@ function LineChart({ params }) {
       for (var i in selectedDrugs) {
         if (selectedDrugs[i].includes(currentDrug)) {
           let cnt = getCountforDrug(selectedDrugs[i], parmState, val);
-          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
+          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : cnt) + '</span></br>'
         }
       }
     }
     else {
       let cnt = getCountforDrug(currentDrug, parmState, val);
-      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
+      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : cnt) + '</span></br>'
     }
     return leftCntStr;
   }
@@ -728,6 +729,36 @@ function LineChart({ params }) {
     return sortedToolTips;
   }
   
+  const get2024FootNote = (yr, str) => {
+    if (String(yr).substring(0,4) == '2024' && str == 'Data not available' )
+      return '<sup>§</sup>';
+    else
+      return '';
+  }
+
+  const checkIf2024 = (val) => {
+
+    if (currentTimeframe == 'Annual')
+    {
+      if (val == '2024')
+        return true;
+    }
+    else
+    {
+      if (isPeriod) {
+        if (val.includes('2024'))
+          return true;
+      }
+      else
+      {
+          if ((val >= 1 || val <= 12) && currentYear == '2024')
+            return true;
+      }
+    }
+    
+    return false;
+  }
+  
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
       <Fragment>
@@ -740,7 +771,7 @@ function LineChart({ params }) {
               var tooltipValues = [];
               if (!currentDrugOnly) {
                 tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} Jurisdictions)</p>`);
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntC} (${numStates} Jurisdictions)</p>`);
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntC} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
@@ -748,7 +779,7 @@ function LineChart({ params }) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
                       tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} Jurisdictions)</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntS} (${numStates} Jurisdictions)</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntS} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }
@@ -1097,20 +1128,8 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, changePrecValues)}
-          labelOverrides={ !showPercent ? {
-            'alldrug': 'All Drugs',
-            'benzodiazepine': 'Benzodiazepine',
-            'cocaine': 'Cocaine',
-            'heroin': 'Heroin',
-            'methamphetamine': 'Methamphetamine',
-            'opioid': 'All Opioids',
-            'stimulant': 'All Stimulants',
-            'fentanyl': 'Fentanyl',
-            'Overall': 'Overall rate',
-            'state' : currentStaterate,
-            'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
-          } : {
+          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, showCount, changePrecValues)}
+          labelOverrides={showPercent ? {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',
             'cocaine': 'Cocaine rate',
@@ -1132,15 +1151,50 @@ function LineChart({ params }) {
             'state' : currentStaterate,
             'state_pct' : currentStatePctChange,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
+          } : showCount ? {
+            'alldrug': 'All Drugs',
+            'benzodiazepine': 'Benzodiazepine',
+            'cocaine': 'Cocaine',
+            'heroin': 'Heroin',
+            'methamphetamine': 'Methamphetamine',
+            'opioid': 'All Opioids',
+            'stimulant': 'All Stimulants',
+            'fentanyl': 'Fentanyl',
+            'Overall': 'Overall',
+            'state' : currentStaterate,
+            'alldrug_cnt': 'All Drugs',
+            'benzodiazepine_cnt': 'Benzodiazepine',
+            'cocaine_cnt': 'Cocaine',
+            'heroin_cnt': 'Heroin',
+            'methamphetamine_cnt': 'Methamphetamine',
+            'opioid_cnt': 'All Opioids',
+            'stimulant_cnt': 'All Stimulants',
+            'fentanyl_cnt': 'Fentanyl',
+            'Overall_cnt': 'Overall',
+            'state_cnt' : currentStateCnt,
+          } : {
+            'alldrug': 'All Drugs',
+            'benzodiazepine': 'Benzodiazepine',
+            'cocaine': 'Cocaine',
+            'heroin': 'Heroin',
+            'methamphetamine': 'Methamphetamine',
+            'opioid': 'All Opioids',
+            'stimulant': 'All Stimulants',
+            'fentanyl': 'Fentanyl',
+            'Overall': 'Overall',
+            'state' : currentStaterate,
+            'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           }}
           xAxisKey={'Year/Month'}
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          colSpan={!showPercent ? ((currentState == 'US' ? (!showPercent ? selectedDrugs.length : (selectedDrugs.length * 2)) : (!showPercent ? 2: 4))) : null}
+          colSpan={(showPercent) ? ((currentState == 'US' ? (showPercent ? (selectedDrugs.length * 2) : selectedDrugs.length) : ((showPercent) ? 4: 2))) : (currentState == 'US' ? selectedDrugs.length : 2)}
+          colSpan2={(showCount) ? ((currentState == 'US' ? (showCount ? (selectedDrugs.length * 2) : selectedDrugs.length) : ((showCount) ? 4: 2))) : null}
           isSmallViewport={specs['isSmallViewport']}
           supScript={showPercent ?'§': ''}
+          noSort={true}
         />
         {(currentDrug == 'fentanyl' || selectedDrugs.includes('fentanyl')) &&
           <table style={{width: '100%'}}>

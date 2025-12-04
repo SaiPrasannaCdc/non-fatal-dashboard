@@ -2,13 +2,16 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, colSpan, isSmallViewport, hdr, supScript } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, colSpan, colSpan2, isSmallViewport, hdr, supScript, noSort } = params;
+
+  if (data == null || data === undefined || Object.keys(data).length == 0)
+    return;
 
   const labelOverrides = params.labelOverrides || {};
 
   const isArray = Array.isArray(data);
 
-  const keys = (isArray ? Object.keys(data[0]) : Object.keys(data).sort((a,b) => {
+  const keys = (isArray ? Object.keys(data[0]) : noSort ? Object.keys(data) : Object.keys(data).sort((a,b) => {
     if(a === 'Overall') return -1;
     if(b === 'Overall') return 1;
     return a < b ? -1 : 1;
@@ -91,6 +94,7 @@ function DataTable508(params) {
             <tr>
               <th className={'keepSticky'} scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
               {colSpan != null && <th key={'abcd'} scope="col" colspan={colSpan} className={'centerAlign'}>{hdr != null ? hdr : 'Rate per 100,000 persons'}{hdr == null ? <sup>5</sup> : ''}</th>}
+              {colSpan2 != null && <th key={'abcde'} scope="col" colspan={colSpan2} className={'centerAlign'}>{hdr != null ? hdr : 'Count'}</th>}
             </tr>
             <tr>
               {!isArray && [data].map((d, index) => 

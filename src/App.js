@@ -192,8 +192,10 @@ export default function App(params) {
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
   const [showFootnotes, setFootnotes] = useState(false);
+  const [showStateTable, setStateTable] = useState(true);
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
+  const [showCount, setCountToggle] = useState(false);
   const [isPeriod, setPeriodToggle] = useState(false);
   const [selectAllFlag, setSelectAllFlag] = useState(false);
   const [deselectAllFlag, setDeselectAllFlag] = useState(false);
@@ -202,6 +204,7 @@ export default function App(params) {
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { accessible } = params;
+
   const [width, setWidth] = useState(accessible ? 0 : 100);
   
   const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
@@ -209,6 +212,7 @@ export default function App(params) {
   const toggleDatatable = () => setDatatable(!showDatatable);
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
   const toggleFootnotes = () => setFootnotes(!showFootnotes);
+  const toggleStateTable = () => setStateTable(!showStateTable);
 
   const isSmallViewport = width < viewportCutoffSmall;
 
@@ -614,7 +618,7 @@ export default function App(params) {
                     {(currentTimeframe === 'Annual') &&
                       <div style={{ float: 'right' }}>
                         <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
-                          <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent}
+                          <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent} disabled={showCount}
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setPercentToggle(true)
@@ -649,6 +653,25 @@ export default function App(params) {
                         </label>
                       </div>
                     }
+                    {accessible &&
+                      <div style={{ float: 'left' }}>
+                        <label class="toggleB" title={'Toggle to see count.'}>
+                          <input id="toggleBCount" class="toggleB-input" type="checkbox" checked={showCount} disabled={showPercent}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCountToggle(true)
+                              }
+                              else {
+                                setCountToggle(false)
+                              }
+                            }} />
+                          <span class="toggleB-label" data-off="Count Off"
+                            data-on="Count On">
+                          </span>
+                          <span class="toggleB-handle"></span>
+                        </label>
+                      </div>
+                    }
                   </td>
                 </tr>
               </table>
@@ -667,7 +690,6 @@ export default function App(params) {
               </td>
             }
           </tr>
-
           </table>
         }
         {isSmallViewport && 
@@ -1291,7 +1313,7 @@ export default function App(params) {
           <td>
             <div class="containerLC">
               <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"}>
-                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
+                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
               </div>
             </div>
           </td>
@@ -1303,7 +1325,7 @@ export default function App(params) {
 
       </table>
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
@@ -1703,7 +1725,8 @@ export default function App(params) {
             </header>
             <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{totalOverdoses}</span>
+                {totalOverdoses == 'Data not available' && currentYear == '2024' && <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{totalOverdoses}<sup>§</sup></span>}
+                {totalOverdoses != 'Data not available' && currentYear != '2024' && <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{!isNaN(totalOverdoses) ? totalOverdoses.toLocaleString('en-US') : totalOverdoses}</span>}
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
                   <p>{currentTimeframe} number of nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLowerCase']} in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
@@ -1735,8 +1758,45 @@ export default function App(params) {
               {accessible && getFootNotesForData('Line', true)}
             </section>
 
-            <section>
-              <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
+            {accessible &&
+              <section>
+                <div className="datatable-container-header">
+                  <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }} onClick={toggleStateTable}>
+                  <text className="data-bite-header-toggle sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</text>
+                  {showStateTable && <span>{String.fromCharCode(8722)}</span>}
+                  {!showStateTable && <span>{String.fromCharCode(43)}</span>}
+                  </button>
+                  {showStateTable &&
+                    <div className="datatable-body">
+                      <table>
+                        <tr>
+                              <td style={{'width': '8%'}}></td>
+                              <td style={{'width': '84%'}}>
+                                <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                                  <tr>
+                                    <td style={{'width': '25%', 'verticalAlign': 'top'}}>
+                                      <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                                      <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                                    </td>
+                                    <td class="drugsDivTop" style={{'width': '75%', textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                                      {getDrugControlsState()}
+                                    </td>
+                                  </tr>
+                                  </table>
+                              </td>
+                              <td style={{'width': '8%'}}></td>
+                            </tr>
+                      </table>
+                      {stateBarChartMemo}
+                      {getFootNotesForData('State', false)}
+                    </div>
+                  }
+              </div>
+            </section>
+            }
+            {!accessible &&
+              <section>
+                <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
               <table>
                 <tr>
                       <td style={{'width': '8%'}}></td>
@@ -1758,7 +1818,8 @@ export default function App(params) {
               </table>
               {stateBarChartMemo}
               {getFootNotesForData('State', false)}
-            </section>
+              </section>
+            }
 
             <section>
               <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsSexAge[0]].color }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
@@ -1788,7 +1849,7 @@ export default function App(params) {
 
             <section>
               {usaMapMemo}
-              {accessible && getFootNotesForData('Map', false)}
+              {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
             </section>
           </>
         )}

@@ -107,6 +107,7 @@ function SexAgeCharts(params) {
           colSpan={!isSmallViewport ? 2 : null}
           isSmallViewport={isSmallViewport}
           hdr={currentDataType == 'count' ? 'Count' : null}
+          noSort={true}
         />
         </>        
       ) : (
