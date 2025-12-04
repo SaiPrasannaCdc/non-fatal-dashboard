@@ -660,13 +660,13 @@ function LineChart({ params }) {
       for (var i in selectedDrugs) {
         if (selectedDrugs[i].includes(currentDrug)) {
           let cnt = getCountforDrug(selectedDrugs[i], parmState, val);
-          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
+          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : cnt) + '</span></br>'
         }
       }
     }
     else {
       let cnt = getCountforDrug(currentDrug, parmState, val);
-      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
+      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : cnt) + '</span></br>'
     }
     return leftCntStr;
   }
@@ -736,6 +736,28 @@ function LineChart({ params }) {
       return '';
   }
 
+  const checkIf2024 = (val) => {
+
+    if (currentTimeframe == 'Annual')
+    {
+      if (val == '2024')
+        return true;
+    }
+    else
+    {
+      if (isPeriod) {
+        if (val.includes('2024'))
+          return true;
+      }
+      else
+      {
+          if ((val >= 1 || val <= 12) && currentYear == '2024')
+            return true;
+      }
+    }
+    
+    return false;
+  }
   
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
