@@ -618,7 +618,7 @@ export default function App(params) {
                     {(currentTimeframe === 'Annual') &&
                       <div style={{ float: 'right' }}>
                         <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
-                          <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent}
+                          <input id="togglePercent" class="toggleA-input" type="checkbox" checked={showPercent} disabled={showCount}
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setPercentToggle(true)
@@ -656,7 +656,7 @@ export default function App(params) {
                     {accessible &&
                       <div style={{ float: 'left' }}>
                         <label class="toggleB" title={'Toggle to see count.'}>
-                          <input id="toggleBCount" class="toggleB-input" type="checkbox" checked={showCount}
+                          <input id="toggleBCount" class="toggleB-input" type="checkbox" checked={showCount} disabled={showPercent}
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setCountToggle(true)

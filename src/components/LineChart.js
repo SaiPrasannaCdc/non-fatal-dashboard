@@ -1168,7 +1168,8 @@ function LineChart({ params }) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          colSpan={(!showPercent && !showCount) ? ((currentState == 'US' ? ((!showPercent && !showCount) ? selectedDrugs.length : (selectedDrugs.length * 2)) : ((!showPercent && !showCount) ? 2: 4))) : null}
+          colSpan={(showPercent) ? ((currentState == 'US' ? (showPercent ? (selectedDrugs.length * 2) : selectedDrugs.length) : ((showPercent) ? 4: 2))) : (currentState == 'US' ? selectedDrugs.length : 2)}
+          colSpan2={(showCount) ? ((currentState == 'US' ? (showCount ? (selectedDrugs.length * 2) : selectedDrugs.length) : ((showCount) ? 4: 2))) : null}
           isSmallViewport={specs['isSmallViewport']}
           supScript={showPercent ?'§': ''}
           noSort={true}
