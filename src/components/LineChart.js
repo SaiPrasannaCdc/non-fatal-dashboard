@@ -216,9 +216,9 @@ function LineChart({ params }) {
   
   const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
 
-  const currentStaterate = stateNames[currentState] + ' rate'
+  const currentStaterate = stateNames[currentState];
   const currentStatePctChange = stateNames[currentState] + ' %change in rate'
-  const currentStateCnt = stateNames[currentState] + ' count'
+  const currentStateCnt = stateNames[currentState];
 
   useEffect(() => {
     markYearsForTicks();
@@ -1130,25 +1130,25 @@ function LineChart({ params }) {
             'state_pct' : currentStatePctChange,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           } : showCount ? {
-            'alldrug': 'All Drugs rate',
-            'benzodiazepine': 'Benzodiazepine rate',
-            'cocaine': 'Cocaine rate',
-            'heroin': 'Heroin rate',
-            'methamphetamine': 'Methamphetamine rate',
-            'opioid': 'All Opioids rate',
-            'stimulant': 'All Stimulants rate',
-            'fentanyl': 'Fentanyl rate',
-            'Overall': 'Overall rate',
+            'alldrug': 'All Drugs',
+            'benzodiazepine': 'Benzodiazepine',
+            'cocaine': 'Cocaine',
+            'heroin': 'Heroin',
+            'methamphetamine': 'Methamphetamine',
+            'opioid': 'All Opioids',
+            'stimulant': 'All Stimulants',
+            'fentanyl': 'Fentanyl',
+            'Overall': 'Overall',
             'state' : currentStaterate,
-            'alldrug_cnt': 'All Drugs count',
-            'benzodiazepine_cnt': 'Benzodiazepine count',
-            'cocaine_cnt': 'Cocaine count',
-            'heroin_cnt': 'Heroin count',
-            'methamphetamine_cnt': 'Methamphetamine count',
-            'opioid_cnt': 'All Opioids count',
-            'stimulant_cnt': 'All Stimulants count',
-            'fentanyl_cnt': 'Fentanyl count',
-            'Overall_cnt': 'Overall count',
+            'alldrug_cnt': 'All Drugs',
+            'benzodiazepine_cnt': 'Benzodiazepine',
+            'cocaine_cnt': 'Cocaine',
+            'heroin_cnt': 'Heroin',
+            'methamphetamine_cnt': 'Methamphetamine',
+            'opioid_cnt': 'All Opioids',
+            'stimulant_cnt': 'All Stimulants',
+            'fentanyl_cnt': 'Fentanyl',
+            'Overall_cnt': 'Overall',
             'state_cnt' : currentStateCnt,
           } : {
             'alldrug': 'All Drugs',
@@ -1159,7 +1159,7 @@ function LineChart({ params }) {
             'opioid': 'All Opioids',
             'stimulant': 'All Stimulants',
             'fentanyl': 'Fentanyl',
-            'Overall': 'Overall rate',
+            'Overall': 'Overall',
             'state' : currentStaterate,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           }}
