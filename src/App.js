@@ -1774,11 +1774,11 @@ export default function App(params) {
                               <td style={{'width': '84%'}}>
                                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                                   <tr>
-                                    <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                                    <td style={{'width': '25%', 'verticalAlign': 'top'}}>
                                       <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                                       <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
                                     </td>
-                                    <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                                    <td class="drugsDivTop" style={{'width': '75%', textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
                                       {getDrugControlsState()}
                                     </td>
                                   </tr>
