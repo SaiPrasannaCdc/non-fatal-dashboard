@@ -26,8 +26,8 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         let age = data[i].age;
-        obj['Female'] = data[i].F;
-        obj['Male'] = data[i].M;
+        obj['Female'] = isNaN(data[i].F) ? data[i].F : Number(data[i].F).toLocaleString('en-US');
+        obj['Male'] = isNaN(data[i].M) ? data[i].M : Number(data[i].M).toLocaleString('en-US');
         myData[age] = obj;
       }
 
@@ -45,7 +45,7 @@ export const AccessibilityFunctions = {
           let obj = {};
           obj['county'] = data[Object.keys(data)[i]].county;
           obj['rate'] = data[Object.keys(data)[i]].rate;
-          obj['count'] = data[Object.keys(data)[i]].count;
+          obj['count'] = isNaN(data[Object.keys(data)[i]].count) ? data[Object.keys(data)[i]].count : Number(data[Object.keys(data)[i]].count).toLocaleString('en-US');
           let st = stateNames[data[Object.keys(data)[i]].state] + '_' + i.toString();
           myData[st] = obj;
         }
@@ -57,7 +57,7 @@ export const AccessibilityFunctions = {
           let obj = {};
           obj['county'] = data[Object.keys(data)[i]].county;
           obj['rate'] = data[Object.keys(data)[i]].rate;
-          obj['count'] = data[Object.keys(data)[i]].count;
+          obj['count'] = isNaN(data[Object.keys(data)[i]].count) ? data[Object.keys(data)[i]].count : Number(data[Object.keys(data)[i]].count).toLocaleString('en-US');
           let st = stateNames[data[Object.keys(data)[i]].state] + '_' + i.toString();
           if (data[Object.keys(data)[i]].state == stateName)
             myData[st] = obj;
@@ -101,7 +101,7 @@ export const AccessibilityFunctions = {
         }
       }
 
-      return cnt;
+      return isNaN(cnt) ? cnt : Number(cnt).toLocaleString('en-US');
     },
 
     getCountYearly : (drug, yr, st, data) => {
@@ -113,7 +113,7 @@ export const AccessibilityFunctions = {
         }
       }
 
-      return cnt;
+      return isNaN(cnt) ? cnt : Number(cnt).toLocaleString('en-US');
     },
 
     getCountMonthlyNonUS : (drug, yr, st, data, currentDataSource) => {
@@ -126,7 +126,7 @@ export const AccessibilityFunctions = {
             }
           }
 
-      return cnt;
+      return isNaN(cnt) ? cnt : Number(cnt).toLocaleString('en-US');
     },
 
     getCountYearlyNonUS : (drug, yr, st, data, currentDataSource) => {
@@ -138,7 +138,7 @@ export const AccessibilityFunctions = {
           }
         }
 
-        return cnt;
+        return isNaN(cnt) ? cnt : Number(cnt).toLocaleString('en-US');
     },
 
     generateLineChartData : (stateData, data, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selDrugs, state, stateNames, currentTimeframe, showPercent, showCount, changePrecValues) => {
