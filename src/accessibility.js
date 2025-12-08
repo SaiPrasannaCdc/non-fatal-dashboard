@@ -140,7 +140,7 @@ export const AccessibilityFunctions = {
         return isNaN(cnt) ? cnt : Number(cnt).toLocaleString('en-US');
     },
 
-    generateLineChartData : (stateData, data, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selDrugs, state, stateNames, currentTimeframe, showPercent, showCount, changePrecValues) => {
+    generateLineChartData : (stateData, data, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selDrugs, state, stateNames, currentTimeframe, showPercent, showCount, showOverall, changePrecValues) => {
 
       let myData = {};
       if (state == 'US') {
@@ -247,7 +247,8 @@ export const AccessibilityFunctions = {
           let obj = {};
 
           if (currentDrug == 'alldrug') {
-            obj['Overall'] = data['US'][i].alldrug;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].alldrug;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -257,7 +258,8 @@ export const AccessibilityFunctions = {
           }
 
           if (currentDrug == 'benzodiazepine') {
-            obj['Overall'] = data['US'][i].benzodiazepine;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].benzodiazepine;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -267,7 +269,8 @@ export const AccessibilityFunctions = {
           }
 
           if (currentDrug == 'cocaine') {
-            obj['Overall'] = data['US'][i].cocaine;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].cocaine;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -277,7 +280,8 @@ export const AccessibilityFunctions = {
           }
 
           if (currentDrug == 'fentanyl') {
-            obj['Overall'] = data['US'][i].fentanyl;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].fentanyl;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -287,7 +291,8 @@ export const AccessibilityFunctions = {
           }
 
           if (currentDrug == 'heroin') {
-            obj['Overall'] = data['US'][i].heroin;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].heroin;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -297,7 +302,8 @@ export const AccessibilityFunctions = {
           }
 
           if (currentDrug == 'methamphetamine') {
-            obj['Overall'] = data['US'][i].methamphetamine;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].methamphetamine;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -307,7 +313,8 @@ export const AccessibilityFunctions = {
           }
 
           if (currentDrug == 'opioid') {
-            obj['Overall'] = data['US'][i].opioid;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].opioid;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -317,7 +324,8 @@ export const AccessibilityFunctions = {
           }
 
           if (currentDrug == 'stimulant') {
-            obj['Overall'] = data['US'][i].stimulant;
+            if (showOverall)
+              obj['Overall'] = data['US'][i].stimulant;
 
             for (var j=0;j<Object.keys(data[state]).length;j++)
             {
@@ -327,13 +335,16 @@ export const AccessibilityFunctions = {
           }
 
           if (showPercent)
-            obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+            if (showOverall)
+              obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
 
           if (showPercent)
             obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
 
           if (showCount) {
+              if (showOverall)
               obj['Overall_cnt'] = currentTimeframe == 'Monthly' ? AccessibilityFunctions.getCountMonthly(currentDrug, data['US'][i].year, state, countsDataMonthly) : AccessibilityFunctions.getCountYearly(currentDrug, data['US'][i].year, state, countsDataYearly);
+            
               obj['state_cnt'] = currentTimeframe == 'Monthly' ? AccessibilityFunctions.getCountMonthlyNonUS(currentDrug, data['US'][i].year, state, stateData, currentDataSource) : AccessibilityFunctions.getCountYearlyNonUS(currentDrug, data['US'][i].year, state, stateData, currentDataSource);
           }
 

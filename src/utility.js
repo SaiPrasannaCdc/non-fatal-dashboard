@@ -102,12 +102,37 @@ export const UtilityFunctions = {
         }
   },
 
- calculateYScaleDomain: (filteredData, currentDrug, selectedDrugs, currentState)=> {
+ calculateYScaleDomain: (filteredData, currentDrug, selectedDrugs, currentState, showOverall)=> {
 
     var usNums = [];
     var stateNums = [];
 
-    if (selectedDrugs?.length == 0 || currentState != 'US') {
+    if (currentState == 'US' || (currentState != 'US' && !showOverall)) {
+      if (selectedDrugs?.length == 0) {
+        for (var rec in filteredData["US"])
+          usNums.push(filteredData["US"][rec][currentDrug])
+
+        if (currentState != 'US') {
+          for (var rec in filteredData[currentState])
+            stateNums.push(filteredData[currentState][rec][currentDrug])
+        }
+      }
+      else
+      {
+        for (var idx in selectedDrugs) {
+          for (var rec in filteredData["US"])
+            usNums.push(filteredData["US"][rec][selectedDrugs[idx]])
+        }
+        for (var idx in selectedDrugs) {
+          if (currentState != 'US') {
+            for (var rec in filteredData[currentState])
+              stateNums.push(filteredData[currentState][rec][selectedDrugs[idx]])
+          }
+        }
+      }
+    }
+    else
+    {
       for (var rec in filteredData["US"])
         usNums.push(filteredData["US"][rec][currentDrug])
 
@@ -116,30 +141,33 @@ export const UtilityFunctions = {
           stateNums.push(filteredData[currentState][rec][currentDrug])
       }
     }
-    else
-    {
-      for (var idx in selectedDrugs) {
-        for (var rec in filteredData["US"])
-          usNums.push(filteredData["US"][rec][selectedDrugs[idx]])
+
+      const usNumsFinal = usNums?.filter(i => !isNaN(i));
+      const stateNumsFinal = stateNums?.filter(i => !isNaN(i));
+
+      let usmax = usNumsFinal?.length > 0 ? Math.max(...usNumsFinal) : 0;
+      let statemax = stateNumsFinal?.length > 0 ? Math.max(...stateNumsFinal) : 0;
+
+      if (currentState == 'US') 
+      {
+        if (usmax < statemax)
+          return statemax;
+        else
+          return usmax;
       }
-      for (var idx in selectedDrugs) {
-        if (currentState != 'US') {
-          for (var rec in filteredData[currentState])
-            stateNums.push(filteredData[currentState][rec][selectedDrugs[idx]])
+      else{
+        if (showOverall)
+        {
+          if (usmax < statemax)
+            return statemax;
+          else
+            return usmax;
+        }
+        else
+        {
+            return statemax;
         }
       }
-    }
-
-    const usNumsFinal = usNums?.filter(i => !isNaN(i));
-    const stateNumsFinal = stateNums?.filter(i => !isNaN(i));
-
-    let usmax = usNumsFinal?.length > 0 ? Math.max(...usNumsFinal) : 0;
-    let statemax = stateNumsFinal?.length > 0 ? Math.max(...stateNumsFinal) : 0;
-
-    if (usmax < statemax)
-      return statemax;
-    else
-      return usmax;
   },
 
   calculateYScaleDomainCompare: (filteredData, currentDrug, currentState, compareState)=> {

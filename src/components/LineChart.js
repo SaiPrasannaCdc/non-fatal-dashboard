@@ -217,7 +217,7 @@ function LineChart({ params }) {
   const countsDataYearly = getCountsYearly(data.sex, currentDataSource, drugOptions);
   const countsDataMonthly = getCountsMonthly(data.sex, currentDataSource, drugOptions);
   
-  const yScaleDomainPeriod = showCompare ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
+  const yScaleDomainPeriod = (showCompare || showOverall) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
   const currentStaterate = stateNames[currentState];
   const currentStatePctChange = stateNames[currentState] + ' %change in rate';
@@ -657,13 +657,13 @@ function LineChart({ params }) {
       for (var i in selectedDrugs) {
         if (selectedDrugs[i].includes(currentDrug)) {
           let cnt = getCountforDrug(selectedDrugs[i], parmState, val);
-          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : cnt) + '</span></br>'
+          leftCntStr = leftCntStr + `<span class=${selectedDrugs[i] + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : Number(cnt).toLocaleString('en-US')) + '</span></br>'
         }
       }
     }
     else {
       let cnt = getCountforDrug(currentDrug, parmState, val);
-      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : cnt) + '</span></br>'
+      leftCntStr = leftCntStr + `<span class=${currentDrug + 'ToolTip'}` + '>' + (isNaN(cnt) ? (getText(cnt) + (checkIf2024(val) ? '<sup>§</sup>' : '')) : Number(cnt).toLocaleString('en-US')) + '</span></br>'
     }
     return leftCntStr;
   }
@@ -675,6 +675,23 @@ function LineChart({ params }) {
     var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' Jurisdictions)' + '</p></td></tr>';
     var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr>';
     var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, 'US', val) + '</p></td></tr></table>';
+    var leftStr = leftComStr + leftRateStr + leftCountStr;
+    var rightComStr = `<table><tr><td><p class='whSpace'><strong>` + inp.stateNames[inp.currentState] + '</strong></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</p></td></tr>';
+    var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
+    var rightCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr></table>';
+    var rightStr = rightComStr + rightRateStr + rightCountStr;
+    var heading = '<div class="tooltipTableLCCenter alignCenter"><h3 style="margin: 0; padding: 0;"><strong>' + (currentTimeframe === 'Annual' ? (val + ' </br>') : ((isPeriod ? val : inp.monthNames[val] + ' ' + inp.currentYear) + ' </br>') ) + '</strong></h3><span>' + '</span></div>';
+
+    return heading + '<table class="tooltipTableLCCenter"><tr><td><div class="containerTT"><div class="col left alignCenter">' + leftStr + '</div><div class="col right alignCenter">' + rightStr + '</div></div></td></tr></table>'
+  }
+
+  const getTooltipFragmentState = (param) => {
+  
+    let val = isPeriod ? inp.monthNamesPeriod[param] : param;
+    let numStates = getNumberOfStates(param)
+    var leftComStr = `<table><tr><td><p class='whSpace'><strong>` + inp.stateNames[compareState] + '</strong></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</p></td></tr>';
+    var leftRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, compareState, val) + '</p></td></tr>';
+    var leftCountStr = `<tr><td><p><strong>Count</strong>` + '</br>' + getCountHTMLforDrug(inp.selectedDrugs, compareState, val) + '</p></td></tr></table>';
     var leftStr = leftComStr + leftRateStr + leftCountStr;
     var rightComStr = `<table><tr><td><p class='whSpace'><strong>` + inp.stateNames[inp.currentState] + '</strong></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '</p></td></tr>';
     var rightRateStr = `<tr><td><p><strong>Rate</strong>` + '</br>' + getRateHTMLforDrug(inp.selectedDrugs, inp.currentState, val) + '</p></td></tr>';
@@ -843,7 +860,7 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={(inp.currentState !== 'US' && showOverall) ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
+              data-tip={(showCompare) ? getTooltipFragmentState(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
           })
         }
       </Fragment>
@@ -1406,7 +1423,7 @@ function LineChart({ params }) {
                   </Group>)
                   }
                   {
-                    !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf)
+                    !showPercent && buildToolTipValuesState(sectionWidth, sectionWidthHalf)
                   }
                   {
                     showPercent && 
@@ -1545,7 +1562,7 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, showCount, changePrecValues)}
+          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, showCount, showOverall, changePrecValues)}
           labelOverrides={showPercent ? {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',
