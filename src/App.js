@@ -174,11 +174,13 @@ export default function App(params) {
 
   const [data, setData] = useState();
   const [stateDropdownOptions, setStateDropdownOptions] = useState(false);
+  const [stateDropdownOptionsCompare, setStateDropdownOptionsCompare] = useState(false);
   const [currentDataSource, setCurrentDataSource] = useState('ED');
   const [currentDrug, setCurrentDrug] = useState('alldrug');
   const [selectedDrugsState, setselectedDrugsState] = useState(['alldrug']);
   const [selectedDrugsSexAge, setselectedDrugsSexAge] = useState(['alldrug']);
   const [currentState, setCurrentState] = useState('US');
+  const [compareState, setCompareState] = useState('');
   const [currentTimeframe, setCurrentTimeframe] = useState('Annual');
   const [currentMonth, setCurrentMonth] = useState('1');
   const [currentYear, setCurrentYear] = useState(supportedYearsLatest);
@@ -191,12 +193,14 @@ export default function App(params) {
   const [currentDataType, setCurrentDataType] = useState('rate');
   const [showDatatable, setDatatable] = useState(false);
   const [showConsiderations, setConsiderations] = useState(false);
-  const [showFootnotes, setFootnotes] = useState(false);
   const [showStateTable, setStateTable] = useState(true);
   const [showMapTable, setMapTable] = useState(true);
+  const [showFootnotes, setFootnotes] = useState(false);
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
   const [showCount, setCountToggle] = useState(false);
+  const [showOverall, setOverallToggle] = useState(false);
+  const [showCompare, setCompareToggle] = useState(false);
   const [isPeriod, setPeriodToggle] = useState(false);
   const [selectAllFlag, setSelectAllFlag] = useState(false);
   const [deselectAllFlag, setDeselectAllFlag] = useState(false);
@@ -205,7 +209,6 @@ export default function App(params) {
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { accessible } = params;
-
   const [width, setWidth] = useState(accessible ? 0 : 100);
   
   const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
@@ -215,7 +218,6 @@ export default function App(params) {
   const toggleFootnotes = () => setFootnotes(!showFootnotes);
   const toggleStateTable = () => setStateTable(!showStateTable);
   const toggleMapTable = () => setMapTable(!showMapTable);
-
 
   const isSmallViewport = width < viewportCutoffSmall;
 
@@ -551,73 +553,135 @@ export default function App(params) {
     )
   }
 
+  const getSupportedStatesForCompare = (sts, cst) => {
+    return sts.filter(item => item !== cst).filter(item => item !== 'US');
+  }
+
   const getToggleControls = () => {
     return (
       <Fragment>
         {!isSmallViewport && 
           <table style={{ tableLayout: 'fixed', display: 'block', width: '100%' }}>
           <tr>
-            <td style={{ width: '55%', paddingLeft: '65px' }}>
-              <table style={{ width: '100%', tableLayout: 'fixed' }}>
-                <tr>
-                  <td style={{ width: '50%', verticalAlign: 'top' }}>
-                    {(currentState === 'US') &&
-                      <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>
-                    }
-                  </td>
-                  <td style={{ width: '18%', verticalAlign: 'top' }}>
-                    <div>
-                      {(currentState === 'US') &&
-                        <label title="Check to select all drugs.">
-                          <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setCurrentDrug(currentDrug);
-                                selectAllDrugs();
-                                setDeselectAllFlag(false);
-                                setSelectAllFlag(true);
-                              }
-                              else {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug])
-                                setSelectAllFlag(false);
-                              }
-                            }} /> Select All
-                        </label>
-
+            <td style={{ width: '55%', paddingLeft: '15px' }}>
+                <table style={{ width: '100%', tableLayout: 'fixed' }}>
+                  <tr>
+                    <td style={{ width: '50%', verticalAlign: 'top', textAlign: showCompare ? 'right' : 'left' }}>
+                       {!showOverall && !showCompare && <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>}
+                       {showCompare && <label className="subLabel">Select a jurisdiction to compare:&nbsp;&nbsp;</label>}
+                    </td>
+                    <td style={{ width: '18%', verticalAlign: 'top' }}>
+                      {!showOverall && !showCompare && 
+                      <div>
+                          <label title="Check to select all drugs.">
+                            <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCurrentDrug(currentDrug);
+                                  selectAllDrugs();
+                                  setDeselectAllFlag(false);
+                                  setSelectAllFlag(true);
+                                }
+                                else {
+                                  setCurrentDrug(currentDrug);
+                                  setselectedDrugs([currentDrug])
+                                  setSelectAllFlag(false);
+                                }
+                              }} /> Select All
+                          </label>
+                      </div>
                       }
-                    </div>
-                  </td>
-                  <td style={{ width: '20%', verticalAlign: 'top' }}>
-                    <div>
-                      {(currentState === 'US') &&
-                        <label title="Check to clear all drugs, except current drug.">
-                          <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug])
-                                setDeselectAllFlag(true);
-                                setSelectAllFlag(false);
-                              }
-                              else {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug]);
-                                setDeselectAllFlag(false);
-                              }
-                            }} /> Clear All
-                        </label>
+                      {showCompare && 
+                      <div>
+                          <Select params={{
+                            key: 'jurisdiction',
+                            label: '',
+                            noSelectPrefix: true,
+                            value: compareState,
+                            onChange: (param) => {
+                              setCompareState(param);
+                              setOnlyCurrentDrug(true);
+                            },
+                            options: stateDropdownOptionsCompare,
+                            optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' Jurisdictions)'
+                          }} />
+                      </div>
                       }
-                    </div>
-                  </td>
-                </tr>
-              </table>
+                    </td>
+                    <td style={{ width: '20%', verticalAlign: 'top' }}>
+                      {!showOverall && !showCompare &&
+                      <div>
+                          <label title="Check to clear all drugs, except current drug.">
+                            <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCurrentDrug(currentDrug);
+                                  setselectedDrugs([currentDrug])
+                                  setDeselectAllFlag(true);
+                                  setSelectAllFlag(false);
+                                }
+                                else {
+                                  setCurrentDrug(currentDrug);
+                                  setselectedDrugs([currentDrug]);
+                                  setDeselectAllFlag(false);
+                                }
+                              }} /> Clear All
+                          </label>
+                      </div>
+                      }       
+                    </td>
+                  </tr>
+                </table>
             </td>
-            <td style={{ width: '15%' }}></td>
-            <td style={{ width: '30%' }}>
+            <td style={{ width: '5%' }}></td>
+            <td style={{ width: '50%' }}>
               <table>
                 <tr>
                   <td style={{ width: '76%', textAlign: 'right' }}>
+                    {(currentState !== 'US') &&
+                      <div style={{ float: 'right' }}>
+                        <label class="toggleC" title={'Toggle to compare with a jurisdiction.'}>
+                          <input id="toggleCompare" class="toggleC-input" type="checkbox" checked={showCompare} disabled={showOverall}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCompareToggle(true)
+                                setCompareState(stateDropdownOptionsCompare[0]);
+                              }
+                              else {
+                                setCompareToggle(false)
+                                setCompareState('');
+                              }
+                            }} />
+                          <span class="toggleC-label" data-off="Compare Off"
+                            data-on="Compare On">
+                          </span>
+                          <span class="toggleC-handle"></span>
+                        </label>
+                      </div>
+                    }
+                  </td>
+                  <td style={{ width: '28%', textAlign: 'right' }}>
+                    {(currentState !== 'US') &&
+                      <div style={{ float: 'right' }}>
+                        <label class="toggleB" title={'Toggle to compare with overall.'}>
+                          <input id="toggleOverall" class="toggleB-input" type="checkbox" checked={showOverall} disabled={showCompare}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setOverallToggle(true)
+                              }
+                              else {
+                                setOverallToggle(false)
+                              }
+                            }} />
+                          <span class="toggleB-label" data-off="Overall Off"
+                            data-on="Overall On">
+                          </span>
+                          <span class="toggleB-handle"></span>
+                        </label>
+                      </div>
+                    }
+                  </td>
+                  <td style={{ width: '28%', textAlign: 'right' }}>
                     {(currentTimeframe === 'Annual') &&
                       <div style={{ float: 'right' }}>
                         <label class="toggleA" title={'Toggle to hover over a data point on the line chart to view percent change for the selected year compared to the previous year.'}>
@@ -682,10 +746,8 @@ export default function App(params) {
 
           </tr>
           <tr>
-            <td colSpan='2' class="drugsDivTop" style={{ textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px' }}>
-              {(currentState === 'US') &&
-                getDrugControls()
-              }
+            <td colSpan='2' class="drugsDivTop" style={{ textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px' }}>
+                {!showOverall && !showCompare && getDrugControls()}
             </td>
             {(!accessible && currentTimeframe === 'Annual') &&
               <td>
@@ -693,20 +755,18 @@ export default function App(params) {
               </td>
             }
           </tr>
+
           </table>
         }
         {isSmallViewport && 
           <table style={{ tableLayout: 'fixed', display: 'block', width: '100%' }}>
           <tr>
             <td colSpan='2'>
-                {(currentState === 'US') &&
                       <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>
-                    }
             </td>
           </tr>
           <tr>
                   <td style={{ width: '50%!important', verticalAlign: 'top', textAlign: 'left' }}>
-                      {(currentState === 'US') &&
                         <label title="Check to select all drugs.">
                           <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
                             onChange={(e) => {
@@ -723,11 +783,9 @@ export default function App(params) {
                               }
                             }} /> Select All
                         </label>
-                      }
                   </td>
                   <td style={{ width: '50%', verticalAlign: 'top', textAlign: 'left' }}>
                     <div>
-                      {(currentState === 'US') &&
                         <label title="Check to clear all drugs, except current drug.">
                           <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
                             onChange={(e) => {
@@ -744,7 +802,6 @@ export default function App(params) {
                               }
                             }} /> Clear All
                         </label>
-                      }
                     </div>
                   </td>
           </tr>
@@ -820,9 +877,7 @@ export default function App(params) {
           <br></br>
           <tr>
             <td colSpan='2' class="drugsDivTop" style={{ textAlign: 'left', verticalAlign: 'top', paddingLeft: '5px' }}>
-              {(currentState === 'US') &&
-                getDrugControls()
-              }
+                {getDrugControls()}
             </td>
           </tr>
           <tr>
@@ -998,7 +1053,6 @@ export default function App(params) {
             supportedStates[st] = stateNames[st];
         }
         setStateDropdownOptions(Object.keys(supportedStates))
-
       });
 
     await fetch(dataPath + 'Overall_By_Sex_Age.json')
@@ -1335,7 +1389,7 @@ export default function App(params) {
           <td>
             <div class="containerLC">
               <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"}>
-                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
+                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, showOverall, showCompare, compareState, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
               </div>
             </div>
           </td>
@@ -1347,7 +1401,7 @@ export default function App(params) {
 
       </table>
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
+    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, showOverall, showCompare, compareState, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
@@ -1375,6 +1429,7 @@ export default function App(params) {
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
+      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
       {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
       {accessible && <div><small><i>The county-level tables are only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. This table uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
       <br></br>
@@ -1528,6 +1583,8 @@ export default function App(params) {
                       setOnlyCurrentDrug(true);
                     else
                       setOnlyCurrentDrug(false);
+
+                    setStateDropdownOptionsCompare(getSupportedStatesForCompare(stateDropdownOptions, param))
                   },
 
 
@@ -1685,6 +1742,8 @@ export default function App(params) {
                             setOnlyCurrentDrug(true);
                           else
                             setOnlyCurrentDrug(false);
+
+                          setStateDropdownOptionsCompare(getSupportedStatesForCompare(stateDropdownOptions))
                         },
 
 
@@ -1779,7 +1838,7 @@ export default function App(params) {
               {accessible && getFootNotesForData('Line', true)}
             </section>
 
-            {accessible &&
+          {accessible &&
               <section>
                 <div className="datatable-container-header">
                   <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }} onClick={toggleStateTable}>
@@ -1816,8 +1875,8 @@ export default function App(params) {
             </section>
             }
             {!accessible &&
-              <section>
-                <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
+            <section>
+              <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
               <table>
                 <tr>
                       {!isSmallViewport && <td style={{'width': '8%'}}></td>}
@@ -1839,9 +1898,8 @@ export default function App(params) {
               </table>
               {stateBarChartMemo}
               {getFootNotesForData('State', false)}
-              </section>
+            </section>
             }
-
             <section>
               <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsSexAge[0]].color }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
               <table>
@@ -1894,7 +1952,6 @@ export default function App(params) {
                 {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
               </section>
             }
-
           </>
         )}
       </div>

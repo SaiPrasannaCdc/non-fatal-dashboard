@@ -200,7 +200,7 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
 
 function LineChart({ params }) {
 
-  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
+  const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showOverall, showCompare, compareState, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -211,13 +211,16 @@ function LineChart({ params }) {
   if (currentState !== 'US') 
     filteredData['US'] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
 
+  if (showCompare && compareState !== null) 
+    filteredData[compareState] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, compareState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, compareState, currentYear)
+
   const countsDataYearly = getCountsYearly(data.sex, currentDataSource, drugOptions);
   const countsDataMonthly = getCountsMonthly(data.sex, currentDataSource, drugOptions);
   
-  const yScaleDomainPeriod = (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState) * 1.2);
+  const yScaleDomainPeriod = showCompare ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
   const currentStaterate = stateNames[currentState];
-  const currentStatePctChange = stateNames[currentState] + ' %change in rate'
+  const currentStatePctChange = stateNames[currentState] + ' %change in rate';
   const currentStateCnt = stateNames[currentState];
 
   useEffect(() => {
@@ -348,20 +351,17 @@ function LineChart({ params }) {
 
  const adjustCrowdedLabels = () => {
 
-  if (currentState != 'US')
-    return;
-
     var positionsVar = [];
     const allLabels = document?.getElementsByClassName("adjustCrowded");
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
-        var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]);
+        var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]]);
         if (pos !== undefined) {
           positionsVar.push({
               label: drugOptions[selectedDrugs[i]].titleForDropDown, 
               xpos: specs.xMax + 18,
-              ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
-              yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+              ypos:  specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]]),
+              yposNew: specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]]),
               adjusted: false
             })
         }
@@ -432,9 +432,6 @@ function LineChart({ params }) {
   }
 
   const adjustLinesForLabels = () => {
-
-    if (currentState != 'US')
-      return;
 
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
@@ -758,7 +755,7 @@ function LineChart({ params }) {
     
     return false;
   }
-  
+
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
     return (
       <Fragment>
@@ -799,6 +796,54 @@ function LineChart({ params }) {
               style={{outline: 'none'}}
               fill='transparent'
               data-tip={inp.currentState !== 'US' ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
+          })
+        }
+      </Fragment>
+    )
+  }
+
+  const buildToolTipValuesState = (sectionWidth, sectionWidthHalf) => {
+
+    return (
+      <Fragment>
+        {
+          
+          inp.filteredData[currentState].map(d => {
+
+            if (inp.currentState === currentState) {
+              let numStates = getNumberOfStates(d[specs.xKey])
+              let cntC = getCountforDrug(currentDrug, currentState, currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
+              var tooltipValues = [];
+              if (!currentDrugOnly) {
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Rate</strong>: ${d[currentDrug]}</p>`);
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Count</strong>: ${cntC}</p>`);
+              }
+
+              if (inp.selectedDrugs.length > 0) {
+                  for (var i in inp.selectedDrugs) {
+                    let cntS = getCountforDrug(inp.selectedDrugs[i], currentState, currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
+                    if (!inp.selectedDrugs[i].includes(currentDrug)){
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Rate</strong>: ${d[inp.selectedDrugs[i]]}</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Count</strong>: ${cntS}</p>` : null);
+                    }
+                  }
+              }
+            }
+            
+            
+
+            let tooltipValuesSorted = sortToolTipValues(tooltipValues)
+
+            return <rect
+              key={`tooltip-section-${d[specs.xKey]}`}
+              className={''}
+              x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
+              y={0}
+              width={sectionWidth}
+              height={specs.yMax}
+              style={{outline: 'none'}}
+              fill='transparent'
+              data-tip={(inp.currentState !== 'US' && showOverall) ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
           })
         }
       </Fragment>
@@ -888,6 +933,9 @@ function LineChart({ params }) {
   }
 
   function lastValuesNarrow() {
+    if (!showOverall)
+      return false;
+
     var stVal = inp.filteredData[currentState][inp.filteredData[currentState].length - 1][currentDrug];
     var usVal = inp.filteredData['US'][inp.filteredData[currentState].length - 1][currentDrug];
     const usValF = parseFloat(specs.yScale(parseFloat(usVal)));
@@ -905,12 +953,36 @@ function LineChart({ params }) {
       return false;
   }
 
+  function lastValuesNarrowCompareState() {
+    if (!showCompare)
+      return false;
+
+    var stVal = inp.filteredData[currentState][inp.filteredData[currentState].length - 1][currentDrug];
+    var compareStVal = inp.filteredData[compareState][inp.filteredData[currentState].length - 1][currentDrug];
+    const compareStValF = parseFloat(specs.yScale(parseFloat(compareStVal)));
+    const stValF = parseFloat(specs.yScale(parseFloat(stVal)));
+
+    var diff;
+    if (compareStValF > stValF)
+      diff = compareStValF - stValF;
+    else
+      diff = stValF - compareStValF;
+
+    if (diff <= 15)
+      return true;
+    else
+      return false;
+  }
+
   function lastValue() {
     var stVal = inp.filteredData[currentState][inp.filteredData[currentState].length - 1][currentDrug];
     return specs.yScale(parseFloat(stVal));
   }
 
   function narrowPoints(xval) {
+
+    if (!showOverall)
+      return false;
 
     const usVal = inp.filteredData['US'].find(d => d[specs.xKey] === xval) || {};
     const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
@@ -929,12 +1001,48 @@ function LineChart({ params }) {
       return false;
   }
 
+  function narrowPointsCompareState(xval) {
+
+    if (!showCompare)
+      return false;
+
+    const compareStVal = inp.filteredData[compareState].find(d => d[specs.xKey] === xval) || {};
+    const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
+    const compareStValF = parseFloat(specs.yScale(parseFloat(compareStVal[currentDrug])));
+    const stValF = parseFloat(specs.yScale(parseFloat(stVal[currentDrug])));
+
+    var diff;
+    if (compareStValF > stValF)
+      diff = compareStValF - stValF;
+    else
+      diff = stValF - compareStValF;
+
+    if (diff <= 15)
+      return true;
+    else
+      return false;
+  }
+
   function higherValue(xval) {
+    if (!showOverall)
+      return false;
 
     const usVal = inp.filteredData['US'].find(d => d[specs.xKey] === xval) || {};
     const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
     if (parseFloat(usVal[currentDrug]) > parseFloat(stVal[currentDrug]))
       return 'US';
+    else
+      return currentState;
+  }
+
+  function higherValueCompareState(xval) {
+    if (!showCompare)
+      return false;
+
+    const compareStVal = inp.filteredData[compareState].find(d => d[specs.xKey] === xval) || {};
+    const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
+    if (parseFloat(compareStVal[currentDrug]) > parseFloat(stVal[currentDrug]))
+      return compareState;
     else
       return currentState;
   }
@@ -954,7 +1062,7 @@ function LineChart({ params }) {
     return (
       <Fragment>
           <Group>
-                  {Object.keys(inp.filteredData).map(key => <Group key={`line-path-${key}`}>
+                  {Object.keys(inp.filteredData).filter(d => d == 'US' || d == currentState).map(key => <Group key={`line-path-${key}`}>
                     {specs.xValues.map((xVal, i) => {
                       const d = inp.filteredData[key].find(d => d[specs.xKey] === xVal) || {};
                       const dNext = i === specs.xValues.length - 1 ? {} : inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i + 1]) || {}
@@ -963,7 +1071,7 @@ function LineChart({ params }) {
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key == 'US') && 
-                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, true)} strokeWidth={3} />
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key != 'US') && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} strokeWidth={3} />
@@ -999,7 +1107,7 @@ function LineChart({ params }) {
                           />
                           }
                           {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, true)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} />}
                           {(!isNaN(d[currentDrug]) && key != 'US') && currentState == 'US' &&
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
@@ -1101,7 +1209,7 @@ function LineChart({ params }) {
                                 y={yPos}
                                 alignmentBaseline="middle" 
                                 fontSize={specs.fontSize} 
-                                fill={UtilityFunctions.getSeriesColorLine(currentDrug, key,true)}>
+                                fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)}>
                                   {drugOptions[currentDrug].titleForDropDown}
                               </text>
                             </Group>
@@ -1125,12 +1233,319 @@ function LineChart({ params }) {
       )
   }
 
+  const buildLineForDrugStateCompare = (currentDrug) => {
+
+    const sectionWidth = specs.xMax / specs.xValues.length;
+    const sectionWidthHalf = sectionWidth / 2;
+
+    const seriesLabelPositionCompareState = specs.yScale(inp.filteredData[compareState][inp.filteredData[compareState].length - 1][currentDrug]);
+    const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
+    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint() == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint()) : specs.yScale(valueState);
+    
+    if (seriesLabelPositionCompareState === undefined)
+      return;
+    
+    return (
+      <Fragment>
+          <Group>
+                  {Object.keys(inp.filteredData).filter(d => d == compareState || d == currentState).map(key => <Group key={`line-path-${key}`}>
+                    {specs.xValues.map((xVal, i) => {
+                      const d = inp.filteredData[key].find(d => d[specs.xKey] === xVal) || {};
+                      const dNext = i === specs.xValues.length - 1 ? {} : inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i + 1]) || {}
+                      const dPrev = i > 0  ? inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i - 1]) || {} : {}
+
+                      return (
+                        <Group key={`line-path-${key}-point-${i}`}>
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key == compareState) && 
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} strokeWidth={3} />
+                          }
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key != compareState) && 
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} strokeWidth={3} />
+                          }
+                          {(!isNaN(d[currentDrug]) && key == compareState) && currentState == compareState &&
+                            <text 
+                              x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
+                              y={specs.yScale(d[currentDrug])-8}
+                              stroke={''} fill={''} 
+                              fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>
+                                {showLabels ? d[currentDrug] : ''}
+                            </text>
+                          }
+                          {(!isNaN(d[currentDrug]) && key == compareState) && currentState != compareState && showLabels && 
+                            <text 
+                              x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
+                              y={!narrowPointsCompareState(xVal) ? specs.yScale(d[currentDrug])-8 : (higherValueCompareState(xVal) == compareState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)} 
+                              stroke={''} fill={''} 
+                              fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>
+                                {showLabels ? d[currentDrug] : ''}
+                            </text>
+                          }
+                          {(!isNaN(d[currentDrug]) && key == compareState && currentState != compareState && narrowPointsCompareState(xVal)) && showLabels && 
+                            <line
+                              x1={specs.xScale(d[specs.xKey])}
+                              y1={specs.yScale(d[currentDrug])}
+                              x2={specs.xScale(d[specs.xKey])}
+                              y2={higherValueCompareState(xVal) == compareState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug]) + 18}
+                              stroke="#666"
+                              strokeWidth={0.7}
+                              strokeDasharray="2,2"
+                              opacity={0.6}
+                          />
+                          }
+                          {(isNaN(d[currentDrug]) && key == compareState) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          {(!isNaN(d[currentDrug]) && key == compareState) && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} />}
+                          {(!isNaN(d[currentDrug]) && key != compareState) && currentState == compareState &&
+                            <text 
+                              x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
+                              y={specs.yScale(d[currentDrug])-8}
+                              stroke={'lightblue'} fill={'lightblue'} 
+                              fontSize={12} 
+                              textAnchor={i == 0 ? 'right' : 'middle'}>
+                              {showLabels ? d[currentDrug] : ''}
+                            </text>
+                          }
+                          {(!isNaN(d[currentDrug]) && key != compareState) && currentState != compareState && showLabels && 
+                            <text 
+                              x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
+                              y={!narrowPoints(xVal) ? (d[currentDrug] == '0.0' ? specs.yScale(d[currentDrug])-22 : specs.yScale(d[currentDrug])-8) : (higherValue(xVal) == currentState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)}
+                              stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} 
+                              strokeWidth={0.25}
+                              fontSize={12} 
+                              textAnchor={i == 0 ? 'right' : 'middle'}>
+                              {showLabels ? d[currentDrug] : ''}
+                            </text>
+                          }
+                          {(!isNaN(d[currentDrug]) && key != compareState & narrowPoints(xVal)) && currentState != compareState && showLabels && 
+                            <line
+                              x1={specs.xScale(d[specs.xKey])}
+                              y1={specs.yScale(d[currentDrug])}
+                              x2={specs.xScale(d[specs.xKey])}
+                              y2={higherValue(xVal) == currentState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug]) + 18}
+                              stroke="#666"
+                              strokeWidth={0.7}
+                              strokeDasharray="2,2"
+                              opacity={0.6}
+                          />
+                          }
+                          {(isNaN(d[currentDrug]) && key != compareState) && 
+                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          {(!isNaN(d[currentDrug]) && key != compareState) && 
+                          <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} />}
+                        </Group>
+                      )
+                    })}
+                    {(!specs.isSmallViewport && yScaleDomainPeriod > 0) &&  (() => {
+                        let yPos = seriesLabelPositionCompareState;
+    
+                        if(key !== compareState) {
+
+                          const isOverlapping = seriesLabelPositionState < seriesLabelPositionCompareState + specs.seriesOverlapMargin && seriesLabelPositionState > seriesLabelPositionCompareState - specs.seriesOverlapMargin;
+                          if (isOverlapping) {
+                            if (seriesLabelPositionState < seriesLabelPositionCompareState) {
+                              yPos = seriesLabelPositionCompareState - specs.seriesSpacing;
+                              if(yPos < specs.seriesOverlapMargin){
+                                yPos = seriesLabelPositionCompareState + specs.seriesSpacing;
+                              }
+                            } else {
+                              yPos = seriesLabelPositionCompareState + specs.seriesSpacing;
+                              if(yPos > specs.yMax - specs.seriesOverlapMargin){
+                                yPos = seriesLabelPositionCompareState - specs.seriesSpacing;
+                              }
+                            }
+                          } else {
+                            yPos = seriesLabelPositionState;
+                          }
+                        }
+    
+                        if (currentState != compareState) {
+                          return (<Group>
+                            <text 
+                            x={specs.xMax + 25} 
+                            y={yPos}
+                            alignmentBaseline="middle" 
+                            fontSize={specs.fontSize} 
+                            fill={key != compareState ? UtilityFunctions.getSeriesColorLine(currentDrug, key, false) : UtilityFunctions.getSeriesColorLine(currentDrug, key, true)}>
+                              {key != compareState ? inp.stateNames[key] : inp.stateNames[compareState]}
+                          </text>
+                          {lastValuesNarrow() && key != compareState && <line
+                                id={`line-leading-${currentDrug}`}
+                                x1={specs.xMax + 4}
+                                y1={lastValue()}
+                                x2={specs.xMax + 25} 
+                                y2={yPos}
+                                stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)}
+                                strokeWidth={0.5}/>}
+                          </Group>
+                            )
+                        }
+                        else{
+                          return (
+                            <Group>
+                              <line
+                                id={`line-leading-${currentDrug}`}
+                                x1={specs.xMax + 4}
+                                y1={yPos}
+                                x2={specs.xMax + 25} 
+                                y2={yPos}
+                                stroke={colorScale[currentDrug]}
+                                strokeWidth={0.5}/>
+                              <text
+                                class='adjustCrowded'
+                                x={specs.xMax + 28} 
+                                y={yPos}
+                                alignmentBaseline="middle" 
+                                fontSize={specs.fontSize} 
+                                fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)}>
+                                  {drugOptions[currentDrug].titleForDropDown}
+                              </text>
+                            </Group>
+                            )
+                        }
+                      })()
+                    }
+                  </Group>)
+                  }
+                  {
+                    !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf)
+                  }
+                  {
+                    showPercent && 
+                    inp.selectedDrugs.map(drug => {
+                      return buildToolTipValuesPerc(drug)
+                    })
+                  }
+                </Group>
+      </Fragment>
+      )
+  }
+
+  const buildLineForDrugState = (currentDrug) => {
+
+    const sectionWidth = specs.xMax / specs.xValues.length;
+    const sectionWidthHalf = sectionWidth / 2;
+
+    const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
+    const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
+    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint() == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint()) : specs.yScale(valueState);
+    
+    if (seriesLabelPositionUS === undefined)
+      return;
+    
+    return (
+      <Fragment>
+          <Group>
+                  {Object.keys(inp.filteredData).filter(d => d == 'US' || d == currentState).map(key => <Group key={`line-path-${key}`}>
+                    {specs.xValues.map((xVal, i) => {
+                      const d = inp.filteredData[key].find(d => d[specs.xKey] === xVal) || {};
+                      const dNext = i === specs.xValues.length - 1 ? {} : inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i + 1]) || {}
+                      const dPrev = i > 0  ? inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i - 1]) || {} : {}
+
+                      return (
+                        <Group key={`line-path-${key}-point-${i}`}>
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key != 'US') && 
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} strokeWidth={3} />
+                          }
+                          {(!isNaN(d[currentDrug]) && key == 'US') && currentState != 'US' && showLabels && 
+                            <text 
+                              x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
+                              y={!narrowPoints(xVal) ? specs.yScale(d[currentDrug])-8 : (higherValue(xVal) == 'US' ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)} 
+                              stroke={''} fill={''} 
+                              fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>
+                                {showLabels && showOverall ? d[currentDrug] : ''}
+                            </text>
+                          }
+                          {(!isNaN(d[currentDrug]) && key == 'US' && currentState != 'US' && narrowPoints(xVal)) && showLabels && 
+                            <line
+                              x1={specs.xScale(d[specs.xKey])}
+                              y1={specs.yScale(d[currentDrug])}
+                              x2={specs.xScale(d[specs.xKey])}
+                              y2={higherValue(xVal) == 'US' ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug]) + 18}
+                              stroke="#666"
+                              strokeWidth={0.7}
+                              strokeDasharray="2,2"
+                              opacity={0.6}
+                          />
+                          }
+                          {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && currentState != 'US' && showLabels && 
+                            <text 
+                              x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
+                              y={!narrowPoints(xVal) ? (d[currentDrug] == '0.0' ? specs.yScale(d[currentDrug])-22 : specs.yScale(d[currentDrug])-8) : (higherValue(xVal) == currentState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)}
+                              stroke={''} fill={''} 
+                              strokeWidth={0.25}
+                              fontSize={12} 
+                              textAnchor={i == 0 ? 'right' : 'middle'}>
+                              {showLabels ? d[currentDrug] : ''}
+                            </text>
+                          }
+                          {(!isNaN(d[currentDrug]) && key != 'US' & narrowPoints(xVal)) && currentState != 'US' && showLabels && 
+                            <line
+                              x1={specs.xScale(d[specs.xKey])}
+                              y1={specs.yScale(d[currentDrug])}
+                              x2={specs.xScale(d[specs.xKey])}
+                              y2={higherValue(xVal) == currentState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug]) + 18}
+                              stroke="#666"
+                              strokeWidth={0.7}
+                              strokeDasharray="2,2"
+                              opacity={0.6}
+                          />
+                          }
+                          {(isNaN(d[currentDrug]) && key != 'US') && 
+                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && 
+                          <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} />}
+                        </Group>
+                      )
+                    })}
+                    {(!specs.isSmallViewport && yScaleDomainPeriod > 0) &&  (() => {
+                        let yPos = seriesLabelPositionState;
+    
+                        if (currentState != 'US' && key != 'US') {
+                          return (<Group>
+                              <line
+                                id={`line-leading-${currentDrug}`}
+                                x1={specs.xMax + 4}
+                                y1={yPos}
+                                x2={specs.xMax + 25} 
+                                y2={yPos}
+                                stroke={colorScale[currentDrug]}
+                                strokeWidth={0.5}/>
+                              <text
+                                class='adjustCrowded'
+                                x={specs.xMax + 28} 
+                                y={yPos}
+                                alignmentBaseline="middle" 
+                                fontSize={specs.fontSize} 
+                                fill={UtilityFunctions.getSeriesColorLine(currentDrug, key,true)}>
+                                  {drugOptions[currentDrug].titleForDropDown}
+                              </text>
+                            </Group>
+                            )
+                        }
+                      })()
+                    }
+                  </Group>)
+                  }
+                  {
+                    !showPercent && buildToolTipValuesState(sectionWidth, sectionWidthHalf)
+                  }
+                  {
+                    showPercent && 
+                    inp.selectedDrugs.map(drug => {
+                      return buildToolTipValuesPerc(drug)
+                    })
+                  }
+                </Group>
+      </Fragment>
+      )
+  }
+
   return (
     <>
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, showCount, changePrecValues)}
+          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, changePrecValues)}
           labelOverrides={showPercent ? {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',
@@ -1222,48 +1637,127 @@ function LineChart({ params }) {
         <tr>
           <td style={{width: '85%'}}>
             <svg style={{height: specs.height, width: '100%'}}>
-              <Group top={specs.margin.top} left={specs.margin.left}>
-                {buildLineForDrug(currentDrug)}
-                {inp.selectedDrugs.includes('alldrug') && currentDrug != 'alldrug' && currentState === 'US' && buildLineForDrug('alldrug')}
-                {inp.selectedDrugs.includes('opioid') && currentDrug != 'opioid' && currentState === 'US' && buildLineForDrug('opioid')}
-                {inp.selectedDrugs.includes('heroin') && currentDrug != 'heroin' && currentState === 'US' && buildLineForDrug('heroin')}
-                {inp.selectedDrugs.includes('stimulant') && currentDrug != 'stimulant' && currentState === 'US' && buildLineForDrug('stimulant')}
-                {inp.selectedDrugs.includes('benzodiazepine') && currentDrug != 'benzodiazepine' && currentState === 'US' && buildLineForDrug('benzodiazepine')}
-                {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && currentState === 'US' && buildLineForDrug('fentanyl')}
-                {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && currentState === 'US' && buildLineForDrug('cocaine')}
-                {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && currentState === 'US' && buildLineForDrug('methamphetamine')}
-                
-                <AxisLeft
-                  scale={specs.yScale}
-                  tickLabelProps={() => ({
-                    fontSize: specs.fontSize,
-                    textAnchor: 'end',
-                    dx: -5,
-                    dy: 5
-                  })}
-                />
-                {!specs.isSmallViewport && <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
-                <AxisBottom
-                  top={specs.yMax}
-                  scale={specs.xScale}
-                  tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
-                  tickFormat={value => 
-                      getFormattedValue(value)
-                  }
-                  tickLabelProps={(value) => ({
-                    fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
-                    textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
-                    angle: (specs.isSmallViewport ? 90 : (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)),
-                  })}
-                  labelProps={{
-                    fontSize: specs.fontSize,
-                    textAnchor: 'middle'
-                  }}
-                >
-                </AxisBottom>
-                {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
-              </Group>
+              {(currentState === 'US' || (currentState !== 'US' && showOverall && !showCompare)) && 
+                <Group top={specs.margin.top} left={specs.margin.left}>
+                  {buildLineForDrug(currentDrug)}
+                  {inp.selectedDrugs.includes('alldrug') && currentDrug != 'alldrug' && currentState === 'US' && buildLineForDrug('alldrug')}
+                  {inp.selectedDrugs.includes('opioid') && currentDrug != 'opioid' && currentState === 'US' && buildLineForDrug('opioid')}
+                  {inp.selectedDrugs.includes('heroin') && currentDrug != 'heroin' && currentState === 'US' && buildLineForDrug('heroin')}
+                  {inp.selectedDrugs.includes('stimulant') && currentDrug != 'stimulant' && currentState === 'US' && buildLineForDrug('stimulant')}
+                  {inp.selectedDrugs.includes('benzodiazepine') && currentDrug != 'benzodiazepine' && currentState === 'US' && buildLineForDrug('benzodiazepine')}
+                  {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && currentState === 'US' && buildLineForDrug('fentanyl')}
+                  {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && currentState === 'US' && buildLineForDrug('cocaine')}
+                  {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && currentState === 'US' && buildLineForDrug('methamphetamine')}
 
+                  <AxisLeft
+                    scale={specs.yScale}
+                    tickLabelProps={() => ({
+                      fontSize: specs.fontSize,
+                      textAnchor: 'end',
+                      dx: -5,
+                      dy: 5
+                    })}
+                  />
+                  {!specs.isSmallViewport && <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+                  <AxisBottom
+                    top={specs.yMax}
+                    scale={specs.xScale}
+                    tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
+                    tickFormat={value => 
+                        getFormattedValue(value)
+                    }
+                    tickLabelProps={(value) => ({
+                      fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
+                      textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
+                      angle: (specs.isSmallViewport ? 90 : (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)),
+                    })}
+                    labelProps={{
+                      fontSize: specs.fontSize,
+                      textAnchor: 'middle'
+                    }}
+                  >
+                  </AxisBottom>
+                  {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
+                </Group>
+            }
+            {(currentState !== 'US' && !showOverall && !showCompare) && 
+                <Group top={specs.margin.top} left={specs.margin.left}>
+                  {buildLineForDrugState(currentDrug)}
+                  {inp.selectedDrugs.includes('alldrug') && currentDrug != 'alldrug' && buildLineForDrugState('alldrug')}
+                  {inp.selectedDrugs.includes('opioid') && currentDrug != 'opioid' && buildLineForDrugState('opioid')}
+                  {inp.selectedDrugs.includes('heroin') && currentDrug != 'heroin' && buildLineForDrugState('heroin')}
+                  {inp.selectedDrugs.includes('stimulant') && currentDrug != 'stimulant' && buildLineForDrugState('stimulant')}
+                  {inp.selectedDrugs.includes('benzodiazepine') && currentDrug != 'benzodiazepine' && buildLineForDrugState('benzodiazepine')}
+                  {inp.selectedDrugs.includes('fentanyl') && currentDrug != 'fentanyl' && buildLineForDrugState('fentanyl')}
+                  {inp.selectedDrugs.includes('cocaine') && currentDrug != 'cocaine' && buildLineForDrugState('cocaine')}
+                  {inp.selectedDrugs.includes('methamphetamine') && currentDrug != 'methamphetamine' && buildLineForDrugState('methamphetamine')}
+
+                  <AxisLeft
+                    scale={specs.yScale}
+                    tickLabelProps={() => ({
+                      fontSize: specs.fontSize,
+                      textAnchor: 'end',
+                      dx: -5,
+                      dy: 5
+                    })}
+                  />
+                  {!specs.isSmallViewport && <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+                  <AxisBottom
+                    top={specs.yMax}
+                    scale={specs.xScale}
+                    tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
+                    tickFormat={value => 
+                        getFormattedValue(value)
+                    }
+                    tickLabelProps={(value) => ({
+                      fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
+                      textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
+                      angle: (specs.isSmallViewport ? 90 : (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)),
+                    })}
+                    labelProps={{
+                      fontSize: specs.fontSize,
+                      textAnchor: 'middle'
+                    }}
+                  >
+                  </AxisBottom>
+                  {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
+                </Group>
+            }
+            {showCompare && 
+                <Group top={specs.margin.top} left={specs.margin.left}>
+                  {buildLineForDrugStateCompare(currentDrug)}
+
+                  <AxisLeft
+                    scale={specs.yScale}
+                    tickLabelProps={() => ({
+                      fontSize: specs.fontSize,
+                      textAnchor: 'end',
+                      dx: -5,
+                      dy: 5
+                    })}
+                  />
+                  {!specs.isSmallViewport && <text width={specs.yMax} x={specs.margin.left / -2} y={specs.yMax / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', transformOrigin: `-${specs.margin.left / 2}px ${specs.yMax / 2}px`}}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+                  <AxisBottom
+                    top={specs.yMax}
+                    scale={specs.xScale}
+                    tickValues={currentTimeframe === 'Monthly' && specs.isSmallViewport ? lessMonths(filteredData['US'].map(d => d[specs.xKey])) : (isPeriod ? filteredData['US'].map(d => d[specs.xKey]) : filteredData['US'].map(d => d[specs.xKey]))}
+                    tickFormat={value => 
+                        getFormattedValue(value)
+                    }
+                    tickLabelProps={(value) => ({
+                      fontSize: inp['numOfTicks'] > 60 ? specs.fontSize - 4 : specs.fontSize,
+                      textAnchor: (isPeriod ? (inp['numOfTicks'] <= 12 ? 'middle' : 'end') : 'middle'),
+                      angle: (specs.isSmallViewport ? 90 : (isPeriod ? (inp['numOfTicks'] <= 12 ? 0 : -90) : 0)),
+                    })}
+                    labelProps={{
+                      fontSize: specs.fontSize,
+                      textAnchor: 'middle'
+                    }}
+                  >
+                  </AxisBottom>
+                  {(isPeriod && inp['numOfTicks'] > 12) && generateYearLabels()}
+                </Group>
+            }
             </svg>
           {(currentDrug == 'fentanyl' || selectedDrugs.includes('fentanyl')) &&
           <table style={{width: '100%'}}>

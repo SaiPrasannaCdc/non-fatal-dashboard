@@ -142,6 +142,30 @@ export const UtilityFunctions = {
       return usmax;
   },
 
+  calculateYScaleDomainCompare: (filteredData, currentDrug, currentState, compareState)=> {
+
+    var compareStateNums = [];
+    var stateNums = [];
+
+    for (var rec in filteredData[compareState])
+      compareStateNums.push(filteredData[compareState][rec][currentDrug])
+
+    for (var rec in filteredData[currentState])
+      stateNums.push(filteredData[currentState][rec][currentDrug])
+    
+    const compareStateNumsFinal = compareStateNums?.filter(i => !isNaN(i));
+    const stateNumsFinal = stateNums?.filter(i => !isNaN(i));
+
+    let compareStatemax = compareStateNumsFinal?.length > 0 ? Math.max(...compareStateNumsFinal) : 0;
+    let statemax = stateNumsFinal?.length > 0 ? Math.max(...stateNumsFinal) : 0;
+
+    if (compareStatemax < statemax)
+      return statemax;
+    else
+      return compareStatemax;
+      
+  },
+  
   calculateMax: (filteredData)=> {
 
     var nums = [];
