@@ -1545,7 +1545,7 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(filteredData, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, changePrecValues)}
+          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, showCount, changePrecValues)}
           labelOverrides={showPercent ? {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',

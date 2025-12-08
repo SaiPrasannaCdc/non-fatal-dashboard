@@ -209,6 +209,7 @@ export default function App(params) {
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { accessible } = params;
+
   const [width, setWidth] = useState(accessible ? 0 : 100);
   
   const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
@@ -1429,7 +1430,6 @@ export default function App(params) {
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
       {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
       {accessible && <div><small><i>The county-level tables are only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. This table uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
       <br></br>
