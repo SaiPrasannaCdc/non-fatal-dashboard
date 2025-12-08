@@ -65,8 +65,7 @@ export const AccessibilityFunctions = {
       }
 
       return myData;
-  
-    },  
+      },  
 
     getPercChange : (drug, yr, st, changePrecValues) => {
 
