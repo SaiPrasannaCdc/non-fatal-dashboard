@@ -768,18 +768,20 @@ function LineChart({ params }) {
             if (inp.currentState === 'US') {
               let numStates = getNumberOfStates(d[specs.xKey])
               let cntC = getCountforDrug(currentDrug, 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
+              let cntCFinal = isNaN(cntC) ? cntC : Number(cntC).toLocaleString('en-US');
               var tooltipValues = [];
               if (!currentDrugOnly) {
                 tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} Jurisdictions)</p>`);
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntC} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntCFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
+                    let cntSFinal = isNaN(cntS) ? cntS : Number(cntS).toLocaleString('en-US');
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
                       tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} Jurisdictions)</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntS} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntSFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }

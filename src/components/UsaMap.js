@@ -170,7 +170,7 @@ const UsaMap = ({ params }) => {
     {
       cnt = getCountforED(geoId, presentState, flag);
     }
-    leftCntStr = leftCntStr + '<span>' + (isNaN(cnt) ? getText(cnt) : cnt) + '</span></br>'
+    leftCntStr = leftCntStr + '<span>' + (isNaN(cnt) ? getText(cnt) : Number(cnt).toLocaleString('en-US')) + '</span></br>'
     return leftCntStr;
   }
 

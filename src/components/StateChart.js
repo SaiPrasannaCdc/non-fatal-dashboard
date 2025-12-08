@@ -260,7 +260,7 @@ function StateChart(params) {
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}
-                numTicks={width < viewportCutoff ? 4 : null}
+                numTicks={width < viewportCutoff ? 1 : null}
                 tickStroke="none"
                 labelProps={{
                   fontSize: 'medium',

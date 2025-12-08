@@ -193,6 +193,7 @@ export default function App(params) {
   const [showConsiderations, setConsiderations] = useState(false);
   const [showFootnotes, setFootnotes] = useState(false);
   const [showStateTable, setStateTable] = useState(true);
+  const [showMapTable, setMapTable] = useState(true);
   const [showLabels, setLabelToggle] = useState(false);
   const [showPercent, setPercentToggle] = useState(false);
   const [showCount, setCountToggle] = useState(false);
@@ -213,6 +214,8 @@ export default function App(params) {
   const toggleConsiderations = () => setConsiderations(!showConsiderations);
   const toggleFootnotes = () => setFootnotes(!showFootnotes);
   const toggleStateTable = () => setStateTable(!showStateTable);
+  const toggleMapTable = () => setMapTable(!showMapTable);
+
 
   const isSmallViewport = width < viewportCutoffSmall;
 
@@ -791,6 +794,25 @@ export default function App(params) {
                       </div>
                   </td>
                   }
+                  {accessible &&
+                      <div style={{ float: 'left' }}>
+                        <label class="toggleB" title={'Toggle to see count.'}>
+                          <input id="toggleBCount" class="toggleB-input" type="checkbox" checked={showCount} disabled={showPercent}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCountToggle(true)
+                              }
+                              else {
+                                setCountToggle(false)
+                              }
+                            }} />
+                          <span class="toggleB-label" data-off="Count Off"
+                            data-on="Count On">
+                          </span>
+                          <span class="toggleB-handle"></span>
+                        </label>
+                      </div>
+                  }
                 </tr>
               </table>
             </td>
@@ -1353,7 +1375,6 @@ export default function App(params) {
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
-      <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>
       {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
       {accessible && <div><small><i>The county-level tables are only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. This table uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
       <br></br>
@@ -1770,21 +1791,21 @@ export default function App(params) {
                     <div className="datatable-body">
                       <table>
                         <tr>
-                              <td style={{'width': '8%'}}></td>
-                              <td style={{'width': '84%'}}>
+                              {!isSmallViewport && <td style={{'width': '8%'}}></td>}
+                              <td style={{'width': !isSmallViewport ? '84%' : '100%'}}>
                                 <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                                   <tr>
-                                    <td style={{'width': '25%', 'verticalAlign': 'top'}}>
+                                    <td style={{'width': !isSmallViewport ? '25%' : '15%', 'verticalAlign': 'top'}}>
                                       <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                                       <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
                                     </td>
-                                    <td class="drugsDivTop" style={{'width': '75%', textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                                    <td class="drugsDivTop" style={{'width': '75%', textAlign: 'left', verticalAlign: 'top', paddingLeft: !isSmallViewport ? '65px' : '10px', paddingTop: '5px'}}>
                                       {getDrugControlsState()}
                                     </td>
                                   </tr>
                                   </table>
                               </td>
-                              <td style={{'width': '8%'}}></td>
+                              {!isSmallViewport && <td style={{'width': '8%'}}></td>}
                             </tr>
                       </table>
                       {stateBarChartMemo}
@@ -1799,21 +1820,21 @@ export default function App(params) {
                 <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }}>{getSubBannerText('statebarChart')}<sup>3,4</sup>?</h2>
               <table>
                 <tr>
-                      <td style={{'width': '8%'}}></td>
-                      <td style={{'width': '84%'}}>
+                      {!isSmallViewport && <td style={{'width': '8%'}}></td>}
+                      <td style={{'width': !isSmallViewport ? '84%' : '100%'}}>
                         <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                           <tr>
-                            <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                            <td style={{'width': !isSmallViewport ? '23%' : '15%', 'verticalAlign': 'top'}}>
                               <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                               <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
                             </td>
-                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: !isSmallViewport ? '65px' : '10px', paddingTop: '5px'}}>
                               {getDrugControlsState()}
                             </td>
                           </tr>
                           </table>
                       </td>
-                      <td style={{'width': '8%'}}></td>
+                      {!isSmallViewport && <td style={{'width': '8%'}}></td>}
                     </tr>
               </table>
               {stateBarChartMemo}
@@ -1825,21 +1846,21 @@ export default function App(params) {
               <h2 className="data-bite-header sub" style={{ backgroundColor: drugOptions[selectedDrugsSexAge[0]].color }}>{getSubBannerText('sexChart')}<sup>3,4</sup>?</h2>
               <table>
                 <tr>
-                      <td style={{'width': '8%'}}></td>
-                      <td style={{'width': '84%'}}>
+                      {!isSmallViewport && <td style={{'width': '8%'}}></td>}
+                      <td style={{'width': !isSmallViewport ? '84%' : '100%'}}>
                         <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
                           <tr>
-                            <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                            <td style={{'width': !isSmallViewport ? '23%' : '15%', 'verticalAlign': 'top'}}>
                               <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
                               <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
                             </td>
-                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: !isSmallViewport ? '65px' : '10px', paddingTop: '5px'}}>
                               {getDrugControlsSexAge()}
                             </td>
                           </tr>
                           </table>
                       </td>
-                      <td style={{'width': '8%'}}></td>
+                      {!isSmallViewport && <td style={{'width': '8%'}}></td>}
                     </tr>
               </table>
               <br></br>
@@ -1847,10 +1868,33 @@ export default function App(params) {
               {getFootNotesForData('Sex', false)}
             </section>
 
-            <section>
-              {usaMapMemo}
-              {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
-            </section>
+            {accessible &&
+              <section>
+                 {(currentDataSource === 'ED' && currentDrug === 'alldrug') &&
+                  <div className="datatable-container-header">
+                    <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: drugOptions[selectedDrugsState[0]].color }} onClick={toggleMapTable}>
+                    {(currentDataSource === 'ED' && currentDrug === 'alldrug') && <text className="data-bite-header-toggle sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</text>}
+                    {showMapTable && <span>{String.fromCharCode(8722)}</span>}
+                    {!showMapTable && <span>{String.fromCharCode(43)}</span>}
+                    </button>
+                    {showMapTable &&
+                      <div className="datatable-body">
+                        {usaMapMemo}
+                        {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
+                      </div>
+                    }
+                </div>
+                }
+              </section>
+            }
+            {!accessible &&
+              <section>
+                {(currentDataSource === 'ED' && currentDrug === 'alldrug') && <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>}
+                {usaMapMemo}
+                {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
+              </section>
+            }
+
           </>
         )}
       </div>
