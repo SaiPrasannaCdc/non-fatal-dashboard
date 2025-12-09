@@ -65,6 +65,29 @@ const getCountsYearly = (data, currentDataSource, drugOptions) => {
   return arr;
 }
 
+const getCountsYearlyState = (data, currentDataSource, currentDrug, compareState) => {
+
+  var arr = [];
+
+  for (let i=0; i<data.state[currentDataSource][currentDrug]['all'].length; i++)
+  {
+    if (data.state[currentDataSource][currentDrug]['all'][i].state == compareState)
+    {
+      Object.keys(data.state[currentDataSource][currentDrug]['all'][i]).forEach(rec => {
+        arr.push({
+          year: rec,
+          drug: currentDrug,
+          count: data.state[currentDataSource][currentDrug]['all'][i][rec],
+        });
+      })
+      
+    } 
+    
+  }
+
+  return arr;
+}
+
 const getCountsMonthly = (data, currentDataSource, drugOptions) => {
   var arr = [];
 
@@ -92,6 +115,34 @@ const getCountsMonthly = (data, currentDataSource, drugOptions) => {
       }
     })
   })
+  return arr;
+}
+
+const getCountsMonthlyState = (data, currentDataSource, currentDrug, compareState) => {
+  var arr = [];
+
+  Object.keys(data.state[currentDataSource][currentDrug]).forEach(mon => {
+    if (!isNaN(mon)) {
+      for (let i=0; i<Object.keys(data.state[currentDataSource][currentDrug][mon]).length; i++)
+      {
+          if (data.state[currentDataSource][currentDrug][mon][i].state == compareState)
+          {
+            for (let j=0; j<Object.keys(data.state[currentDataSource][currentDrug][mon][i]).length; j++)
+            {
+              if (Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j] != 'state') {
+                arr.push({
+                  year: Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j],
+                  month: mon,
+                  drug: currentDrug,
+                  count: data.state[currentDataSource][currentDrug][mon][i][Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j]],
+                });
+              }
+            }
+        }
+      } 
+    }
+  })
+
   return arr;
 }
 
@@ -214,8 +265,8 @@ function LineChart({ params }) {
   if (showCompare && compareState !== null) 
     filteredData[compareState] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, compareState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, compareState, currentYear)
 
-  const countsDataYearly = getCountsYearly(data.sex, currentDataSource, drugOptions);
-  const countsDataMonthly = getCountsMonthly(data.sex, currentDataSource, drugOptions);
+  const countsDataYearly = !showCompare ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, currentDrug, compareState);
+  const countsDataMonthly = !showCompare ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, currentDrug, compareState);
   
   const yScaleDomainPeriod = (showCompare || showOverall) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
@@ -1436,6 +1487,60 @@ function LineChart({ params }) {
       )
   }
 
+  const getColSpan = () => {
+
+    if (showOverall) {
+      if (showCount)
+        return 2;
+      if (!showCount)
+        return 4;
+    }
+
+    if (showPercent)
+    {
+      if (showCompare)
+        return 4;
+      else
+        return selectedDrugs.length * 2;
+    }
+
+    if (showCompare)
+    {
+      if (showPercent)
+        return 4;
+      else
+        return 2;
+
+    }
+
+    if (showCount && !showOverall)
+    {
+        return selectedDrugs.length;
+    }
+  }
+
+  const getColSpan2 = () => {
+
+    if (showCount)
+    {
+      if (showOverall)
+      {
+        return 4;
+      }
+      else
+      {
+        if (showCompare)
+          return 2;
+        else
+          return selectedDrugs.length;
+      }
+    }
+    else
+    {
+      return null;
+    }
+  }
+
   const buildLineForDrugState = (currentDrug) => {
 
     const sectionWidth = specs.xMax / specs.xValues.length;
@@ -1562,7 +1667,7 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showPercent, showCount, showOverall, changePrecValues)}
+          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showCompare, showOverall, showPercent, showCount, compareState, changePrecValues)}
           labelOverrides={showPercent ? {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',
@@ -1572,7 +1677,7 @@ function LineChart({ params }) {
             'opioid': 'All Opioids rate',
             'stimulant': 'All Stimulants rate',
             'fentanyl': 'Fentanyl rate',
-            'Overall': 'Overall rate',
+            'Overall': !showCompare ? 'Overall rate' : stateNames[compareState] + ' rate',
             'alldrug_pct': 'All Drugs %change in rate',
             'benzodiazepine_pct': 'Benzodiazepine %change in rate',
             'cocaine_pct': 'Cocaine %change in rate',
@@ -1581,7 +1686,7 @@ function LineChart({ params }) {
             'opioid_pct': 'All Opioids %change in rate',
             'stimulant_pct': 'All Stimulants %change in rate',
             'fentanyl_pct': 'Fentanyl %change in rate',
-            'Overall_pct': 'Overall %change in rate',
+            'Overall_pct': !showCompare ? 'Overall' : stateNames[compareState] + ' %change in rate',
             'state' : currentStaterate,
             'state_pct' : currentStatePctChange,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
@@ -1594,7 +1699,7 @@ function LineChart({ params }) {
             'opioid': 'All Opioids',
             'stimulant': 'All Stimulants',
             'fentanyl': 'Fentanyl',
-            'Overall': 'Overall',
+            'Overall': !showCompare ? 'Overall' : stateNames[compareState],
             'state' : currentStaterate,
             'alldrug_cnt': 'All Drugs',
             'benzodiazepine_cnt': 'Benzodiazepine',
@@ -1604,7 +1709,7 @@ function LineChart({ params }) {
             'opioid_cnt': 'All Opioids',
             'stimulant_cnt': 'All Stimulants',
             'fentanyl_cnt': 'Fentanyl',
-            'Overall_cnt': 'Overall',
+            'Overall_cnt': !showCompare ? 'Overall' : stateNames[compareState],
             'state_cnt' : currentStateCnt,
           } : {
             'alldrug': 'All Drugs',
@@ -1615,7 +1720,7 @@ function LineChart({ params }) {
             'opioid': 'All Opioids',
             'stimulant': 'All Stimulants',
             'fentanyl': 'Fentanyl',
-            'Overall': 'Overall',
+            'Overall': !showCompare ? 'Overall' : stateNames[compareState],
             'state' : currentStaterate,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           }}
@@ -1624,8 +1729,8 @@ function LineChart({ params }) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          colSpan={(showPercent) ? ((currentState == 'US' ? (showPercent ? (selectedDrugs.length * 2) : selectedDrugs.length) : ((showPercent) ? 4: 2))) : (currentState == 'US' ? selectedDrugs.length : 2)}
-          colSpan2={(showCount) ? ((currentState == 'US' ? (showCount ? (selectedDrugs.length * 2) : selectedDrugs.length) : ((showCount) ? 4: 2))) : null}
+          colSpan={getColSpan()}
+          colSpan2={getColSpan2()}
           isSmallViewport={specs['isSmallViewport']}
           supScript={showPercent ?'§': ''}
           noSort={true}

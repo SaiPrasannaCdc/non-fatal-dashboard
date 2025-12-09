@@ -878,7 +878,7 @@ export default function App(params) {
           <br></br>
           <tr>
             <td colSpan='2' class="drugsDivTop" style={{ textAlign: 'left', verticalAlign: 'top', paddingLeft: '5px' }}>
-                {getDrugControls()}
+                {!showOverall && !showCompare && getDrugControls()}
             </td>
           </tr>
           <tr>
