@@ -268,7 +268,7 @@ function LineChart({ params }) {
   const countsDataYearly = !showCompare ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, currentDrug, compareState);
   const countsDataMonthly = !showCompare ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, currentDrug, compareState);
   
-  const yScaleDomainPeriod = (showCompare || showOverall) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
+  const yScaleDomainPeriod = (showCompare) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
   const currentStaterate = stateNames[currentState];
   const currentStatePctChange = stateNames[currentState] + ' %change in rate';

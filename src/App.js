@@ -1581,8 +1581,12 @@ export default function App(params) {
                     setCurrentState(param);
                     if (param !== 'US')
                       setOnlyCurrentDrug(true);
-                    else
+                    else {
                       setOnlyCurrentDrug(false);
+                      setCountToggle(false)
+                      setOverallToggle(false)
+                      setCompareToggle(false)
+                    }
 
                     setStateDropdownOptionsCompare(getSupportedStatesForCompare(stateDropdownOptions, param))
                   },
