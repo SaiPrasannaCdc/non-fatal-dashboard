@@ -723,8 +723,8 @@ export default function App(params) {
                     }
                     {accessible &&
                       <div style={{ float: 'left' }}>
-                        <label class="toggleB" title={'Toggle to see count.'}>
-                          <input id="toggleBCount" class="toggleB-input" type="checkbox" checked={showCount} disabled={showPercent}
+                        <label class="toggleD" title={'Toggle to see count.'}>
+                          <input id="toggleDCount" class="toggleD-input" type="checkbox" checked={showCount} disabled={showPercent}
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setCountToggle(true)
@@ -733,10 +733,10 @@ export default function App(params) {
                                 setCountToggle(false)
                               }
                             }} />
-                          <span class="toggleB-label" data-off="Count Off"
+                          <span class="toggleD-label" data-off="Count Off"
                             data-on="Count On">
                           </span>
-                          <span class="toggleB-handle"></span>
+                          <span class="toggleD-handle"></span>
                         </label>
                       </div>
                     }
@@ -854,8 +854,8 @@ export default function App(params) {
                   }
                   {accessible &&
                       <div style={{ float: 'left' }}>
-                        <label class="toggleB" title={'Toggle to see count.'}>
-                          <input id="toggleBCount" class="toggleB-input" type="checkbox" checked={showCount} disabled={showPercent}
+                        <label class="toggleD" title={'Toggle to see count.'}>
+                          <input id="toggleDCount" class="toggleD-input" type="checkbox" checked={showCount} disabled={showPercent}
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setCountToggle(true)
@@ -864,10 +864,10 @@ export default function App(params) {
                                 setCountToggle(false)
                               }
                             }} />
-                          <span class="toggleB-label" data-off="Count Off"
+                          <span class="toggleD-label" data-off="Count Off"
                             data-on="Count On">
                           </span>
-                          <span class="toggleB-handle"></span>
+                          <span class="toggleD-handle"></span>
                         </label>
                       </div>
                   }
@@ -1579,18 +1579,13 @@ export default function App(params) {
                   value: currentState,
                   onChange: (param) => {
                     setCurrentState(param);
-                    if (param !== 'US')
-                      setOnlyCurrentDrug(true);
-                    else {
-                      setOnlyCurrentDrug(false);
-                      setCountToggle(false)
-                      setOverallToggle(false)
-                      setCompareToggle(false)
-                    }
+                    setOnlyCurrentDrug(false);
+                    setCountToggle(false);
+                    setOverallToggle(false);
+                    setCompareToggle(false);
 
                     setStateDropdownOptionsCompare(getSupportedStatesForCompare(stateDropdownOptions, param))
                   },
-
 
                   options: stateDropdownOptions?.sort((a, b) => {
                     if (a === 'US') return -1;

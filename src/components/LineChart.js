@@ -416,6 +416,16 @@ function LineChart({ params }) {
               adjusted: false
             })
         }
+        else
+        {
+          positionsVar.push({
+              label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+              xpos: specs.xMax + 18,
+              ypos:  specs.yScale(0),
+              yposNew: specs.yScale(0),
+              adjusted: false
+            })
+        }
       }
     }
     
@@ -469,7 +479,6 @@ function LineChart({ params }) {
       }
     }
     
-
     specs['positionsVar'] = positionsVar;
 
     for (var i=0; i<allLabels?.length; i++) {
@@ -881,25 +890,25 @@ function LineChart({ params }) {
             if (inp.currentState === currentState) {
               let numStates = getNumberOfStates(d[specs.xKey])
               let cntC = getCountforDrug(currentDrug, currentState, currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
+              let cntCFinal = isNaN(cntC) ? cntC : Number(cntC).toLocaleString('en-US');
               var tooltipValues = [];
               if (!currentDrugOnly) {
                 tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Rate</strong>: ${d[currentDrug]}</p>`);
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Count</strong>: ${cntC}</p>`);
+                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Count</strong>: ${cntCFinal}` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], currentState, currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
+                    let cntSFinal = isNaN(cntS) ? cntS : Number(cntS).toLocaleString('en-US');
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
                       tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Rate</strong>: ${d[inp.selectedDrugs[i]]}</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Count</strong>: ${cntS}</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Count</strong>: ${cntSFinal}` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }
             }
             
-            
-
             let tooltipValuesSorted = sortToolTipValues(tooltipValues)
 
             return <rect
@@ -967,12 +976,12 @@ function LineChart({ params }) {
     }
   }
 
-  function getLastKnownDataPoint() {
+  function getLastKnownDataPoint(curDrug) {
     let val = 0;
     for (var i=inp.filteredData[inp.currentState].length - 1;i>0;i--)
     {
-      if (!isNaN(inp.filteredData[inp.currentState][i][currentDrug])) {
-        val = inp.filteredData[inp.currentState][i][currentDrug];
+      if (!isNaN(inp.filteredData[inp.currentState][i][curDrug])) {
+        val = inp.filteredData[inp.currentState][i][curDrug];
         break;
       }
     }
@@ -1548,7 +1557,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint() == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint()) : specs.yScale(valueState);
+    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(currentDrug)) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;
@@ -1686,7 +1695,7 @@ function LineChart({ params }) {
             'opioid_pct': 'All Opioids %change in rate',
             'stimulant_pct': 'All Stimulants %change in rate',
             'fentanyl_pct': 'Fentanyl %change in rate',
-            'Overall_pct': !showCompare ? 'Overall' : stateNames[compareState] + ' %change in rate',
+            'Overall_pct': (!showCompare ? 'Overall' : stateNames[compareState]) + ' %change in rate',
             'state' : currentStaterate,
             'state_pct' : currentStatePctChange,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',

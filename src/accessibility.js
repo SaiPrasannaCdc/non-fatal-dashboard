@@ -253,96 +253,145 @@ export const AccessibilityFunctions = {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].alldrug;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+                
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].alldrug;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'benzodiazepine') {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].benzodiazepine;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+                
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].benzodiazepine;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'cocaine') {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].cocaine;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+                
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].cocaine;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'fentanyl') {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].fentanyl;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+                
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].fentanyl;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'heroin') {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].heroin;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+                
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].heroin;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'methamphetamine') {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].methamphetamine;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+                
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].methamphetamine;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'opioid') {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].opioid;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].opioid;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'stimulant') {
               if (showCompare)
                 obj['Overall'] = data[compareState][i].stimulant;
 
+              if (showPercent)
+                if (showCompare)
+                  obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
+
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].stimulant;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
-
-            if (showPercent)
-              if (showCompare)
-                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, compareState, changePrecValues);
-
-            if (showPercent)
-              obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
 
             if (showCount) {
                 if (showCompare)
@@ -366,96 +415,137 @@ export const AccessibilityFunctions = {
               if (showOverall)
                 obj['Overall'] = data['US'][i].alldrug;
 
+              if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+              
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].alldrug;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'benzodiazepine') {
               if (showOverall)
                 obj['Overall'] = data['US'][i].benzodiazepine;
 
+              if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+              
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].benzodiazepine;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'cocaine') {
               if (showOverall)
                 obj['Overall'] = data['US'][i].cocaine;
 
+              if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+              
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].cocaine;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'fentanyl') {
               if (showOverall)
                 obj['Overall'] = data['US'][i].fentanyl;
 
+              if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+              
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].fentanyl;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'heroin') {
               if (showOverall)
                 obj['Overall'] = data['US'][i].heroin;
 
+              if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+              
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].heroin;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'methamphetamine') {
               if (showOverall)
                 obj['Overall'] = data['US'][i].methamphetamine;
 
-              for (var j=0;j<Object.keys(data[state]).length;j++)
+            if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+              
+            for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].methamphetamine;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'opioid') {
               if (showOverall)
                 obj['Overall'] = data['US'][i].opioid;
 
+            if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+              
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].opioid;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
 
             if (currentDrug == 'stimulant') {
               if (showOverall)
                 obj['Overall'] = data['US'][i].stimulant;
 
+            if (showPercent)
+                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
+
               for (var j=0;j<Object.keys(data[state]).length;j++)
               {
                 if (data['US'][i].year == data[state][j].year) 
                   obj['state'] = data[state][j].stimulant;
               }
+
+              if (showPercent)
+                obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
             }
-
-            if (showPercent)
-              if (showOverall)
-                obj['Overall_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, 'US', changePrecValues);
-
-            if (showPercent)
-              obj['state_pct'] = AccessibilityFunctions.getPercChange(currentDrug, data['US'][i].year, state, changePrecValues);
 
             if (showCount) {
                 if (showOverall)
