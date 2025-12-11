@@ -744,7 +744,6 @@ export default function App(params) {
                 </tr>
               </table>
             </td>
-
           </tr>
           <tr>
             <td colSpan='2' class="drugsDivTop" style={{ textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px' }}>
@@ -756,55 +755,130 @@ export default function App(params) {
               </td>
             }
           </tr>
-
           </table>
         }
         {isSmallViewport && 
           <table style={{ tableLayout: 'fixed', display: 'block', width: '100%' }}>
           <tr>
             <td colSpan='2'>
-                      <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>
+                  {!showOverall && !showCompare && <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>}
+                  {showCompare && <label className="subLabel">Select a jurisdiction to compare:&nbsp;&nbsp;</label>}
             </td>
           </tr>
           <tr>
-                  <td style={{ width: '50%!important', verticalAlign: 'top', textAlign: 'left' }}>
-                        <label title="Check to select all drugs.">
-                          <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
+              <td style={{ width: '50%!important', verticalAlign: 'top', textAlign: 'left', paddingLeft: '10px' }}>
+                    {!showOverall && !showCompare && 
+                  <div>
+                    <label title="Check to select all drugs.">
+                      <input id="toggleSelectAll" type="checkbox" checked={selectAllFlag}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setCurrentDrug(currentDrug);
+                            selectAllDrugs();
+                            setDeselectAllFlag(false);
+                            setSelectAllFlag(true);
+                          }
+                          else {
+                            setCurrentDrug(currentDrug);
+                            setselectedDrugs([currentDrug])
+                            setSelectAllFlag(false);
+                          }
+                        }} /> Select All
+                    </label>
+                </div>
+                }
+                {showCompare && 
+                  <div>
+                      <Select params={{
+                        key: 'jurisdiction',
+                        label: '',
+                        noSelectPrefix: true,
+                        value: compareState,
+                        onChange: (param) => {
+                          setCompareState(param);
+                          setOnlyCurrentDrug(true);
+                        },
+                        options: stateDropdownOptionsCompare,
+                        optionLabel: (key) => key != 'US' ? stateNames[key] : stateNames[key] + ' (' + (Object.keys(stateDropdownOptions).length - 1) + ' Jurisdictions)'
+                      }} />
+                  </div>
+                  }
+              </td>
+              <td style={{ width: '50%', verticalAlign: 'top', textAlign: 'left' }}>
+                {!showOverall && !showCompare &&
+                <div>
+                    <label title="Check to clear all drugs, except current drug.">
+                      <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setCurrentDrug(currentDrug);
+                            setselectedDrugs([currentDrug])
+                            setDeselectAllFlag(true);
+                            setSelectAllFlag(false);
+                          }
+                          else {
+                            setCurrentDrug(currentDrug);
+                            setselectedDrugs([currentDrug]);
+                            setDeselectAllFlag(false);
+                          }
+                        }} /> Clear All
+                    </label>
+                </div>
+                }
+              </td>
+          </tr>
+          <br></br>
+          <tr>
+            <td colSpan='2'>
+              <table>
+                <tr>
+                    <td style={{ width: '76%', textAlign: 'right' }}>
+                    {(currentState !== 'US') &&
+                      <div style={{ float: 'right' }}>
+                        <label class="toggleC" title={'Toggle to compare with a jurisdiction.'}>
+                          <input id="toggleCompare" class="toggleC-input" type="checkbox" checked={showCompare} disabled={showOverall}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setCurrentDrug(currentDrug);
-                                selectAllDrugs();
-                                setDeselectAllFlag(false);
-                                setSelectAllFlag(true);
+                                setCompareToggle(true)
+                                setCompareState(stateDropdownOptionsCompare[0]);
                               }
                               else {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug])
-                                setSelectAllFlag(false);
+                                setCompareToggle(false)
+                                setCompareState('');
                               }
-                            }} /> Select All
+                            }} />
+                          <span class="toggleC-label" data-off="Compare Off"
+                            data-on="Compare On">
+                          </span>
+                          <span class="toggleC-handle"></span>
                         </label>
+                      </div>
+                    }
                   </td>
-                  <td style={{ width: '50%', verticalAlign: 'top', textAlign: 'left' }}>
-                    <div>
-                        <label title="Check to clear all drugs, except current drug.">
-                          <input id="toggleClearAll" type="checkbox" checked={deselectAllFlag}
+                  <td style={{ width: '28%', textAlign: 'left' }}>
+                    {(currentState !== 'US') &&
+                      <div style={{ float: 'right' }}>
+                        <label class="toggleB" title={'Toggle to compare with overall.'}>
+                          <input id="toggleOverall" class="toggleB-input" type="checkbox" checked={showOverall} disabled={showCompare}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug])
-                                setDeselectAllFlag(true);
-                                setSelectAllFlag(false);
+                                setOverallToggle(true)
                               }
                               else {
-                                setCurrentDrug(currentDrug);
-                                setselectedDrugs([currentDrug]);
-                                setDeselectAllFlag(false);
+                                setOverallToggle(false)
                               }
-                            }} /> Clear All
+                            }} />
+                          <span class="toggleB-label" data-off="Overall Off"
+                            data-on="Overall On">
+                          </span>
+                          <span class="toggleB-handle"></span>
                         </label>
-                    </div>
+                      </div>
+                    }
                   </td>
+                </tr>
+              </table>
+            </td>
           </tr>
           <br></br>
           <tr>
@@ -1635,7 +1709,7 @@ export default function App(params) {
             <div className="filters">
               <table>
                 <tr>
-                  <td>
+                  <td style={{ paddingTop: '6px' }}>
                     <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                         <Select params={{
                           key: 'timeframe',
@@ -1666,7 +1740,7 @@ export default function App(params) {
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td style={{ paddingTop: '6px' }}>
                     <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                         <Select params={{
                           key: 'year',
@@ -1702,7 +1776,7 @@ export default function App(params) {
                 </tr>
                 {(timeframeChanged && currentTimeframe == 'Monthly') &&
                 <tr>
-                  <td>
+                  <td style={{ paddingTop: '6px' }}>
                     <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                         <Select params={{
                             key: 'month',
@@ -1728,7 +1802,7 @@ export default function App(params) {
                 </tr>
                 }
                 <tr>
-                  <td>
+                  <td style={{ paddingTop: '6px' }}>
                     <div className={`dropdowns${isSmallViewport ? ' no-grid' : ''}`}>
                       <Select params={{
                         key: 'jurisdiction',
@@ -1778,7 +1852,7 @@ export default function App(params) {
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td style={{ paddingTop: '6px' }}>
                     <div>
                       <select id="drug-select" value={currentDrug} onChange={(e) => { setDrug(e.target.value); }}>
                         <option value="alldrug">All Drugs</option>
