@@ -73,14 +73,15 @@ function DataTable508(params) {
     return ret;
   }
 
-  const cleanUp = (val) => {
+  const cleanUp = (val, yr) => {
+
     var ret = val;
 
     if (String(val).indexOf('Data suppressed') >= 0)
       ret = '*';
 
     if (String(val).indexOf('Data not available') >= 0)
-      ret = '†';
+      ret = String(yr).includes('2024') ? '§' : '†';
 
     return ret;
   }
@@ -110,7 +111,7 @@ function DataTable508(params) {
                   <th key={`th-${rowKey}-${rowIndex}`} scope="row">{labelOverrides[rowKey] || rowKey.split('_')[0]}</th>
                   {[data].map((d, i) => 
                     Object.keys(d[keys[0]]).map((colKey, colIndex) => (
-                      <td key={`td-${d[rowKey][colKey]}-${rowIndex}-${colIndex}`}>{cleanUp(d[rowKey][colKey])}</td>
+                      <td key={`td-${d[rowKey][colKey]}-${rowIndex}-${colIndex}`}>{cleanUp(d[rowKey][colKey], rowKey)}</td>
                     ))
                   )}
                 </tr>
