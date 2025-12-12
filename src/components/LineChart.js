@@ -834,6 +834,7 @@ function LineChart({ params }) {
   }
 
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
+
     return (
       <Fragment>
         {
@@ -946,7 +947,7 @@ function LineChart({ params }) {
                         height={20}
                         style={{outline: 'none'}}
                         fill='transparent'
-                        data-tip={getTooltipFragmentPerc(drug, d.year, key)}></rect>
+                        data-tip={getTooltipFragmentPerc(drug, d.year, (!showCompare && currentState != 'US' && !showOverall ? currentState : key))}></rect>
                     }
                 })
               }

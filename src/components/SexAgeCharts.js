@@ -17,7 +17,7 @@ function SexAgeCharts(params) {
   const isSmallViewport = width < 550;
   const fontSize = 16;
   const height = 450;
-  const margin = { top: 50, bottom: 125, left: 50, right: 15 };
+  const margin = { top: 50, bottom: 125, left: isSmallViewport ? 30: 50, right: isSmallViewport ? 0: 15 };
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
