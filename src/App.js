@@ -647,10 +647,12 @@ export default function App(params) {
                               if (e.target.checked) {
                                 setCompareToggle(true)
                                 setCompareState(stateDropdownOptionsCompare[0]);
+                                setOnlyCurrentDrug(true);
                               }
                               else {
                                 setCompareToggle(false)
                                 setCompareState('');
+                                setOnlyCurrentDrug(false);
                               }
                             }} />
                           <span class="toggleC-label" data-off="Compare Off"

@@ -983,34 +983,46 @@ display: inline-block;
 
 .alldrugToolTip {
 color: #325D7D;
+font-size: 14px!important;
 }
 
 .opioidToolTip {
 color: #000C77;
+font-size: 14px!important;
 }
 
 .heroinToolTip {
 color: #0C6F96;
+font-size: 14px!important;
 }
 
 .stimulantToolTip {
 color: #411B6D;
+font-size: 14px!important;
 }
 
 .benzodiazepineToolTip {
 color: #B83A5E;
+font-size: 14px!important;
 }
 
 .fentanylToolTip {
 color: #294891;
+font-size: 14px!important;
 }
 
 .cocaineToolTip {
 color: #671AAA;
+font-size: 14px!important;
 }
 
 .methamphetamineToolTip {
 color: #A378E8;
+font-size: 14px!important;
+}
+
+.smallerFont {
+font-size: 14px!important;
 }
 
 .drugSelections
@@ -1643,7 +1655,7 @@ width: 100%;
 .toolTipChgPerc
 {
 display: flex;
-width: 200px;
+width: 220px;
 height: 120px;
 }
 
@@ -1672,9 +1684,13 @@ padding-bottom: 25px!important;
 .tooltipTableLC
 {
 background-color: white;
-padding: 5px;
+padding: 1px;
 margin: 5px;
 text-align: left!important;
+}
+
+.smallerLineHeight {
+line-height: 8px!important;
 }
 
 .tooltipTableLCCenter
@@ -1819,6 +1835,7 @@ padding-left: 2px!important;
 
 .toolTipSpanLC {
     font-size: 20px!important;
+    line-height: 20px!important;
 }
 
 .App.small-vp .__react_component_tooltip {
