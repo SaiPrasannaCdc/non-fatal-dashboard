@@ -641,16 +641,18 @@ export default function App(params) {
                   <td style={{ width: '76%', textAlign: 'right' }}>
                     {(currentState !== 'US') &&
                       <div style={{ float: 'right' }}>
-                        <label class="toggleC" title={'Toggle to compare with a jurisdiction.'}>
+                        <label class="toggleC" title={'Toggle to compare with selected jurisdiction.'}>
                           <input id="toggleCompare" class="toggleC-input" type="checkbox" checked={showCompare} disabled={showOverall}
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setCompareToggle(true)
                                 setCompareState(stateDropdownOptionsCompare[0]);
+                                setOnlyCurrentDrug(true);
                               }
                               else {
                                 setCompareToggle(false)
                                 setCompareState('');
+                                setOnlyCurrentDrug(false);
                               }
                             }} />
                           <span class="toggleC-label" data-off="Compare Off"
@@ -835,7 +837,7 @@ export default function App(params) {
                     <td style={{ width: '76%', textAlign: 'right' }}>
                     {(currentState !== 'US') &&
                       <div style={{ float: 'right' }}>
-                        <label class="toggleC" title={'Toggle to compare with a jurisdiction.'}>
+                        <label class="toggleC" title={'Toggle to compare with selected jurisdiction.'}>
                           <input id="toggleCompare" class="toggleC-input" type="checkbox" checked={showCompare} disabled={showOverall}
                             onChange={(e) => {
                               if (e.target.checked) {
@@ -906,7 +908,7 @@ export default function App(params) {
                       </div>
                     }
                   </td>
-                  {(!accessible && !isSmallViewport) &&
+                  {(!accessible) &&
                   <td style={{ width: '28%', textAlign: 'left' }}>
                     
                       <div style={{ float: 'left' }}>
@@ -1532,6 +1534,7 @@ export default function App(params) {
   }
 
   let totalOverdoses = data.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
+
   if (totalOverdoses) {
     totalOverdoses = totalOverdoses[currentYear];
   }
@@ -1878,8 +1881,7 @@ export default function App(params) {
             </header>
             <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                {totalOverdoses == 'Data not available' && currentYear == '2024' && <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{totalOverdoses}<sup>§</sup></span>}
-                {totalOverdoses != 'Data not available' && currentYear != '2024' && <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{!isNaN(totalOverdoses) ? totalOverdoses.toLocaleString('en-US') : totalOverdoses}</span>}
+                <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{!isNaN(totalOverdoses) ? totalOverdoses.toLocaleString('en-US') : totalOverdoses}{totalOverdoses == 'Data not available' && currentYear == '2024' && <sup>§</sup>}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
                   <p>{currentTimeframe} number of nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLowerCase']} in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>

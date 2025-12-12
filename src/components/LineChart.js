@@ -834,6 +834,7 @@ function LineChart({ params }) {
   }
 
   const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
+
     return (
       <Fragment>
         {
@@ -845,8 +846,8 @@ function LineChart({ params }) {
               let cntCFinal = isNaN(cntC) ? cntC : Number(cntC).toLocaleString('en-US');
               var tooltipValues = [];
               if (!currentDrugOnly) {
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} Jurisdictions)</p>`);
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntCFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} Jurisdictions)</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntCFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
@@ -854,8 +855,8 @@ function LineChart({ params }) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
                     let cntSFinal = isNaN(cntS) ? cntS : Number(cntS).toLocaleString('en-US');
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} Jurisdictions)</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntSFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} Jurisdictions)</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntSFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }
@@ -872,7 +873,7 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={inp.currentState !== 'US' ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
+              data-tip={inp.currentState !== 'US' ? getTooltipFragment(d[specs.xKey]) : `<table class='tooltipTableLC smallerLineHeight'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong><br></br></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
           })
         }
       </Fragment>
@@ -893,8 +894,8 @@ function LineChart({ params }) {
               let cntCFinal = isNaN(cntC) ? cntC : Number(cntC).toLocaleString('en-US');
               var tooltipValues = [];
               if (!currentDrugOnly) {
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Rate</strong>: ${d[currentDrug]}</p>`);
-                tooltipValues.push(`<p><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Count</strong>: ${cntCFinal}` + get2024FootNote(d['year'], cntC) + `</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Rate</strong>: ${d[currentDrug]}</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Count</strong>: ${cntCFinal}` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
@@ -902,8 +903,8 @@ function LineChart({ params }) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], currentState, currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
                     let cntSFinal = isNaN(cntS) ? cntS : Number(cntS).toLocaleString('en-US');
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Rate</strong>: ${d[inp.selectedDrugs[i]]}</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Count</strong>: ${cntSFinal}` + get2024FootNote(d['year'], cntS) + `</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Rate</strong>: ${d[inp.selectedDrugs[i]]}</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Count</strong>: ${cntSFinal}` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }
@@ -920,7 +921,7 @@ function LineChart({ params }) {
               height={specs.yMax}
               style={{outline: 'none'}}
               fill='transparent'
-              data-tip={(showCompare) ? getTooltipFragmentState(d[specs.xKey]) : `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
+              data-tip={(showCompare) ? getTooltipFragmentState(d[specs.xKey]) : `<table class='tooltipTableLC smallerLineHeight'><tr><td><span class='toolTipSpanLC'><strong>${isPeriod ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong><br></br></span>${tooltipValuesSorted.join('')}</td></tr></table>`}></rect>
           })
         }
       </Fragment>
@@ -946,7 +947,7 @@ function LineChart({ params }) {
                         height={20}
                         style={{outline: 'none'}}
                         fill='transparent'
-                        data-tip={getTooltipFragmentPerc(drug, d.year, key)}></rect>
+                        data-tip={getTooltipFragmentPerc(drug, d.year, (!showCompare && currentState != 'US' && !showOverall ? currentState : key))}></rect>
                     }
                 })
               }
@@ -976,12 +977,12 @@ function LineChart({ params }) {
     }
   }
 
-  function getLastKnownDataPoint(curDrug) {
+  function getLastKnownDataPoint(curState, curDrug) {
     let val = 0;
-    for (var i=inp.filteredData[inp.currentState].length - 1;i>0;i--)
+    for (var i=inp.filteredData[curState].length - 1;i>0;i--)
     {
-      if (!isNaN(inp.filteredData[inp.currentState][i][curDrug])) {
-        val = inp.filteredData[inp.currentState][i][curDrug];
+      if (!isNaN(inp.filteredData[curState][i][curDrug])) {
+        val = inp.filteredData[curState][i][curDrug];
         break;
       }
     }
@@ -1131,7 +1132,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint() == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint()) : specs.yScale(valueState);
+    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;
@@ -1315,12 +1316,10 @@ function LineChart({ params }) {
     const sectionWidth = specs.xMax / specs.xValues.length;
     const sectionWidthHalf = sectionWidth / 2;
 
-    const seriesLabelPositionCompareState = specs.yScale(inp.filteredData[compareState][inp.filteredData[compareState].length - 1][currentDrug]);
+    const compareStateVal = inp.filteredData[compareState].length > 0 ? inp.filteredData[compareState][inp.filteredData[compareState].length - 1][currentDrug] : 'Data suppressed*';
+    const seriesLabelPositionCompareState = compareStateVal === 'Data suppressed*' ? getLastKnownDataPoint(compareState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(compareState, currentDrug)) : specs.yScale(compareStateVal);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint() == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint()) : specs.yScale(valueState);
-    
-    if (seriesLabelPositionCompareState === undefined)
-      return;
+    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     return (
       <Fragment>
@@ -1412,6 +1411,7 @@ function LineChart({ params }) {
                       )
                     })}
                     {(!specs.isSmallViewport && yScaleDomainPeriod > 0) &&  (() => {
+
                         let yPos = seriesLabelPositionCompareState;
     
                         if(key !== compareState) {
@@ -1557,7 +1557,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(currentDrug)) : specs.yScale(valueState);
+    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;

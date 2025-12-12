@@ -29,7 +29,7 @@ function ChangeIndicator(params) {
             <Group>
                 <Polygon
                     sides={3}
-                    size={50}
+                    size={70}
                     rotate={0}
                     center={{ x: 50, y: 50 }}
                     points={
@@ -38,8 +38,8 @@ function ChangeIndicator(params) {
                         (percentValue == 0 ? [] : decreaseArrayPoints.map(p => [p.x, p.y]))}
                     fill={colorScale[defaultValueIfEmpty(label, defaultLabelIfEmpty)]}
                 ></Polygon>
-                <text x={percentValue == 0 ? width/2 + 5 : width/2} y={percentValue > 0 ? height/2 + 5: height/2} textAnchor="middle" fontSize={percentValue == 0 ? 16 : 9}
-                    stroke={percentValue == 0 ? colorScale[defaultValueIfEmpty(label, defaultLabelIfEmpty)] :'#fff'}
+                <text x={percentValue == 0 ? width/2 + 5 : width/2} y={percentValue > 0 ? height/2 + 5: height/2} textAnchor="middle" fontSize={percentValue == 0 ? 16 : 9.5}
+                    stroke={percentValue == 0 ? colorScale[defaultValueIfEmpty(label, defaultLabelIfEmpty)] :'#fff'} fontWeight="normal"
                 >
                     {Math.abs(percentValue).toFixed(1)}%
                 </text>
