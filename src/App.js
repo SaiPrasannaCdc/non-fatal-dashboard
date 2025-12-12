@@ -641,7 +641,7 @@ export default function App(params) {
                   <td style={{ width: '76%', textAlign: 'right' }}>
                     {(currentState !== 'US') &&
                       <div style={{ float: 'right' }}>
-                        <label class="toggleC" title={'Toggle to compare with selected jurisdiction.'}>
+                        <label class="toggleC" title={'Toggle to compare the selected jurisdictions.'}>
                           <input id="toggleCompare" class="toggleC-input" type="checkbox" checked={showCompare} disabled={showOverall}
                             onChange={(e) => {
                               if (e.target.checked) {
@@ -837,7 +837,7 @@ export default function App(params) {
                     <td style={{ width: '76%', textAlign: 'right' }}>
                     {(currentState !== 'US') &&
                       <div style={{ float: 'right' }}>
-                        <label class="toggleC" title={'Toggle to compare with selected jurisdiction.'}>
+                        <label class="toggleC" title={'Toggle to compare the selected jurisdictions.'}>
                           <input id="toggleCompare" class="toggleC-input" type="checkbox" checked={showCompare} disabled={showOverall}
                             onChange={(e) => {
                               if (e.target.checked) {
