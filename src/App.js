@@ -568,7 +568,7 @@ export default function App(params) {
                 <table style={{ width: '100%', tableLayout: 'fixed' }}>
                   <tr>
                     <td style={{ width: '50%', verticalAlign: 'top', textAlign: showCompare ? 'right' : 'left' }}>
-                       {!showOverall && !showCompare && <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>}
+                       {!showOverall && !showCompare && <label className="subLabel">Make a selection to change the {accessible ? 'table' : 'line graph'}&nbsp;&nbsp;</label>}
                        {showCompare && <label className="subLabel">Select a jurisdiction to compare:&nbsp;&nbsp;</label>}
                     </td>
                     <td style={{ width: '18%', verticalAlign: 'top' }}>
@@ -763,7 +763,7 @@ export default function App(params) {
           <table style={{ tableLayout: 'fixed', display: 'block', width: '100%' }}>
           <tr>
             <td colSpan='2'>
-                  {!showOverall && !showCompare && <label className="subLabel">Make a selection to change the line graph&nbsp;&nbsp;</label>}
+                  {!showOverall && !showCompare && <label className="subLabel">Make a selection to change the {accessible ? 'table' : 'line graph'}&nbsp;&nbsp;</label>}
                   {showCompare && <label className="subLabel">Select a jurisdiction to compare:&nbsp;&nbsp;</label>}
             </td>
           </tr>
@@ -1241,7 +1241,7 @@ export default function App(params) {
           <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
           {(chart == 'Line' || chart == 'Sex') && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.'}</td></tr>}
           {/* SKV TODO what should be the symbol for rate below*/}
-          {addl && showPercent && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
+          {addl && showPercent && !accessible && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
         </table>
       </div>
     )
