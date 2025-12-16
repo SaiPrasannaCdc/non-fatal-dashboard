@@ -271,7 +271,7 @@ function LineChart({ params }) {
   const yScaleDomainPeriod = (showCompare) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
   const currentStaterate = stateNames[currentState];
-  const currentStatePctChange = stateNames[currentState] + ' %change in rate';
+  const currentStatePctChange = stateNames[currentState] + ' % change in rate';
   const currentStateCnt = stateNames[currentState];
 
   useEffect(() => {
@@ -1687,15 +1687,15 @@ function LineChart({ params }) {
             'stimulant': 'All Stimulants rate',
             'fentanyl': 'Fentanyl rate',
             'Overall': !showCompare ? 'Overall rate' : stateNames[compareState] + ' rate',
-            'alldrug_pct': 'All Drugs %change in rate',
-            'benzodiazepine_pct': 'Benzodiazepine %change in rate',
-            'cocaine_pct': 'Cocaine %change in rate',
-            'heroin_pct': 'Heroin %change in rate',
-            'methamphetamine_pct': 'Methamphetamine %change in rate',
-            'opioid_pct': 'All Opioids %change in rate',
-            'stimulant_pct': 'All Stimulants %change in rate',
-            'fentanyl_pct': 'Fentanyl %change in rate',
-            'Overall_pct': (!showCompare ? 'Overall' : stateNames[compareState]) + ' %change in rate',
+            'alldrug_pct': 'All Drugs % change in rate',
+            'benzodiazepine_pct': 'Benzodiazepine % change in rate',
+            'cocaine_pct': 'Cocaine % change in rate',
+            'heroin_pct': 'Heroin % change in rate',
+            'methamphetamine_pct': 'Methamphetamine % change in rate',
+            'opioid_pct': 'All Opioids % change in rate',
+            'stimulant_pct': 'All Stimulants % change in rate',
+            'fentanyl_pct': 'Fentanyl % change in rate',
+            'Overall_pct': (!showCompare ? 'Overall' : stateNames[compareState]) + ' % change in rate',
             'state' : currentStaterate,
             'state_pct' : currentStatePctChange,
             'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
@@ -1741,7 +1741,7 @@ function LineChart({ params }) {
           colSpan={getColSpan()}
           colSpan2={getColSpan2()}
           isSmallViewport={specs['isSmallViewport']}
-          supScript={showPercent ?'§': ''}
+          supScript={showPercent ?'': ''}
           noSort={true}
         />
         {(currentDrug == 'fentanyl' || selectedDrugs.includes('fentanyl')) &&

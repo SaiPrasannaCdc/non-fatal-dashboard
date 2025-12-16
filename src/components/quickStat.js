@@ -9,8 +9,8 @@ function QuickStat(params) {
                         <div className="stats-section first">
                           <div id="stats-section-icon" className="" >
                             <ChangeIndicator
-                              width={85}
-                              height={80}
+                              width={95}
+                              height={90}
                               colorScale={colorScale}
                               defaultValueIfEmpty={defaultValueIfEmpty}
                               percentValue={value}
