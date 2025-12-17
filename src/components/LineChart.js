@@ -779,7 +779,7 @@ function LineChart({ params }) {
     if (rec != null && !isNaN(rec.valPrev)) {
       if (rec.value != rec.valPrev) {
           diff =  rec.value - rec.valPrev;
-          perc = ((diff / rec.valPrev) * 100)
+          perc = ((diff / rec.valPrev) * 100);
       }
 
       tooltipHtml = ReactDOMServer.renderToString(buildPercentChartInd(rec.drug, rec.yr, perc, stateNames[rec.state], rec.yearmon))

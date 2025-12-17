@@ -1563,8 +1563,8 @@ export default function App(params) {
                     ))}
                   </div>
                   <div className="tab-content">
-                    {activeTab == 0 && <span><strong>ED Visits:</strong> Discharge data that captures information about patients who sought care at Emergency Department (ED) and were discharged from the ED.</span>}
-                    {activeTab == 1 && <span><strong>Inpatient Hospitalization:</strong> These discharge data refer to information collected about patients’ hospital stays. Inpatient hospitalizations may represent increased severity of nonfatal overdoses, as compared to ED visits.</span>}
+                    {activeTab == 0 && <span><strong>ED Visits:</strong> Discharge data that capture information about patients who sought care at an Emergency Department (ED) and were discharged from the ED.</span>}
+                    {activeTab == 1 && <span><strong>Inpatient Hospitalizations:</strong> These discharge data refer to information collected about patients’ hospital stays. Inpatient hospitalizations may represent increased severity of nonfatal overdoses, as compared to ED visits.</span>}
                   </div>
                 </div>
               </div>

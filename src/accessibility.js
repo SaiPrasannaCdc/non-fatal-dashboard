@@ -86,7 +86,7 @@ export const AccessibilityFunctions = {
               perc = ((diff / rec.valPrev) * 100)
           }
     
-          return perc.toFixed(2);
+          return !isNaN(perc) ? perc.toFixed(1) : '';
         }
         return '';
     },
