@@ -1720,6 +1720,7 @@ function LineChart({ params }) {
             'fentanyl_cnt': 'Fentanyl',
             'Overall_cnt': !showCompare ? 'Overall' : stateNames[compareState],
             'state_cnt' : currentStateCnt,
+            'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           } : {
             'alldrug': 'All Drugs',
             'benzodiazepine': 'Benzodiazepine',
