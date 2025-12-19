@@ -92,6 +92,7 @@ export const AccessibilityFunctions = {
     },
 
     getCountMonthly : (drug, yr, st, data) => {
+
       var cnt;
       for (var i=0;i<Object.keys(data).length;i++) {
         if (data[i].year == yr.substring(0,4) && data[i].month == String(Number(yr.substring(4))) && data[i].drug == drug) {
@@ -140,11 +141,11 @@ export const AccessibilityFunctions = {
         return isNaN(cnt) ? cnt : Number(cnt).toLocaleString('en-US');
     },
 
-    generateLineChartData : (stateData, data, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selDrugs, state, stateNames, currentTimeframe, showCompare, showOverall, showPercent, showCount, compareState, changePrecValues) => {
+    generateLineChartData : (stateData, data, currentDataSource, countsDataYearly, countsDataMonthly, countsDataYearlyUS, countsDataMonthlyUS, currentDrug, selDrugs, state, stateNames, currentTimeframe, showCompare, showOverall, showPercent, showCount, compareState, changePrecValues) => {
 
       let myData = {};
-      if (!showOverall) {
-        if (!showCompare)
+      if (!showOverall) { 
+        if (!showCompare)  
         { 
           for (var i=0;i<Object.keys(data['US']).length;i++)
           {
@@ -549,7 +550,7 @@ export const AccessibilityFunctions = {
 
             if (showCount) {
                 if (showOverall)
-                obj['Overall_cnt'] = currentTimeframe == 'Monthly' ? AccessibilityFunctions.getCountMonthly(currentDrug, data['US'][i].year, state, countsDataMonthly) : AccessibilityFunctions.getCountYearly(currentDrug, data['US'][i].year, state, countsDataYearly);
+                obj['Overall_cnt'] = currentTimeframe == 'Monthly' ? AccessibilityFunctions.getCountMonthly(currentDrug, data['US'][i].year, 'US', countsDataMonthlyUS) : AccessibilityFunctions.getCountYearly(currentDrug, data['US'][i].year, 'US', countsDataYearlyUS);
               
                 obj['state_cnt'] = currentTimeframe == 'Monthly' ? AccessibilityFunctions.getCountMonthlyNonUS(currentDrug, data['US'][i].year, state, stateData, currentDataSource) : AccessibilityFunctions.getCountYearlyNonUS(currentDrug, data['US'][i].year, state, stateData, currentDataSource);
             }

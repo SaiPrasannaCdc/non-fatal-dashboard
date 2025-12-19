@@ -363,6 +363,10 @@ function LineChart({ params }) {
 
   const countsDataYearly = !showCompare ? (currentState == 'US' ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, drugOptions, currentState)) : getCountsYearlyState(data, currentDataSource, drugOptions, compareState);
   const countsDataMonthly = !showCompare ? (currentState == 'US' ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, drugOptions, currentState)) : getCountsMonthlyState(data, currentDataSource, drugOptions, compareState);
+  const countsDataYearlyUS = getCountsYearly(data.sex, currentDataSource, drugOptions);
+  const countsDataMonthlyUS = getCountsMonthly(data.sex, currentDataSource, drugOptions);
+  
+
   
   const yScaleDomainPeriod = (showCompare) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
@@ -1795,7 +1799,7 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showCompare, showOverall, showPercent, showCount, compareState, changePrecValues)}
+          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, countsDataYearlyUS, countsDataMonthlyUS, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showCompare, showOverall, showPercent, showCount, compareState, changePrecValues)}
           labelOverrides={showPercent ? {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',
