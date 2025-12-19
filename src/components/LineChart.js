@@ -65,25 +65,27 @@ const getCountsYearly = (data, currentDataSource, drugOptions) => {
   return arr;
 }
 
-const getCountsYearlyState = (data, currentDataSource, currentDrug, compareState) => {
+const getCountsYearlyState = (data, currentDataSource, drugOptions, compareState) => {
 
   var arr = [];
 
-  for (let i=0; i<data.state[currentDataSource][currentDrug]['all'].length; i++)
-  {
-    if (data.state[currentDataSource][currentDrug]['all'][i].state == compareState)
+  Object.keys(drugOptions).forEach(drug => {
+    for (let i=0; i<data.state[currentDataSource][drug]['all'].length; i++)
     {
-      Object.keys(data.state[currentDataSource][currentDrug]['all'][i]).forEach(rec => {
-        arr.push({
-          year: rec,
-          drug: currentDrug,
-          count: data.state[currentDataSource][currentDrug]['all'][i][rec],
-        });
-      })
+      if (data.state[currentDataSource][drug]['all'][i].state == compareState)
+      {
+        Object.keys(data.state[currentDataSource][drug]['all'][i]).forEach(rec => {
+          arr.push({
+            year: rec,
+            drug: drug,
+            count: data.state[currentDataSource][drug]['all'][i][rec],
+          });
+        })
+        
+      } 
       
-    } 
-    
-  }
+    }
+  })
 
   return arr;
 }
@@ -115,32 +117,36 @@ const getCountsMonthly = (data, currentDataSource, drugOptions) => {
       }
     })
   })
+
+
   return arr;
 }
 
-const getCountsMonthlyState = (data, currentDataSource, currentDrug, compareState) => {
+const getCountsMonthlyState = (data, currentDataSource, drugOptions, compareState) => {
   var arr = [];
 
-  Object.keys(data.state[currentDataSource][currentDrug]).forEach(mon => {
-    if (!isNaN(mon)) {
-      for (let i=0; i<Object.keys(data.state[currentDataSource][currentDrug][mon]).length; i++)
-      {
-          if (data.state[currentDataSource][currentDrug][mon][i].state == compareState)
-          {
-            for (let j=0; j<Object.keys(data.state[currentDataSource][currentDrug][mon][i]).length; j++)
+  Object.keys(drugOptions).forEach(drug => {
+    Object.keys(data.state[currentDataSource][drug]).forEach(mon => {
+      if (!isNaN(mon)) {
+        for (let i=0; i<Object.keys(data.state[currentDataSource][drug][mon]).length; i++)
+        {
+            if (data.state[currentDataSource][drug][mon][i].state == compareState)
             {
-              if (Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j] != 'state') {
-                arr.push({
-                  year: Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j],
-                  month: mon,
-                  drug: currentDrug,
-                  count: data.state[currentDataSource][currentDrug][mon][i][Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j]],
-                });
+              for (let j=0; j<Object.keys(data.state[currentDataSource][drug][mon][i]).length; j++)
+              {
+                if (Object.keys(data.state[currentDataSource][drug][mon][i])[j] != 'state') {
+                  arr.push({
+                    year: Object.keys(data.state[currentDataSource][drug][mon][i])[j],
+                    month: mon,
+                    drug: drug,
+                    count: data.state[currentDataSource][drug][mon][i][Object.keys(data.state[currentDataSource][drug][mon][i])[j]],
+                  });
+                }
               }
-            }
-        }
-      } 
-    }
+          }
+        } 
+      }
+    })
   })
 
   return arr;
@@ -249,24 +255,118 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
   }
 };
 
+const getNewStateDataA = (fdata, state) => {
+    const arStateData = [];
+
+    for (let i = 0; i < fdata['US'].length; ++i) {
+      let yr = fdata['US'][i].year;
+      const result = fdata[state].find(rec => rec.year == yr);
+      if (result == null || result == undefined)
+      {
+        const makeAnObject = Object.keys(fdata['US'][0]).reduce((acc, key) => {
+          acc[key] = 'PH'; 
+          return acc;
+        }, {});
+        makeAnObject.year = yr;
+        arStateData.push(makeAnObject);
+      }
+      else
+      {
+        arStateData.push(result);
+      }
+    }
+
+    return arStateData;
+}
+
+const getNewStateDataM = (fdata, state) => {
+    const arStateData = [];
+
+    for (let i = 0; i < fdata['US'].length; ++i) {
+      let yr = fdata['US'][i].year;
+      let idx = fdata['US'][i].index;
+      const result = fdata[state].find(rec => rec.year == yr);
+      if (result == null || result == undefined)
+      {
+        const makeAnObject = Object.keys(fdata['US'][0]).reduce((acc, key) => {
+          acc[key] = 'PH'; 
+          return acc;
+        }, {});
+        makeAnObject.year = yr;
+        makeAnObject.index = idx;
+        arStateData.push(makeAnObject);
+      }
+      else
+      {
+        result.index = idx;
+        arStateData.push(result);
+      }
+    }
+
+    return arStateData;
+}
+
+const fillGaps = (fdata, state, compState, showCompare, currentTimeframe, isPeriod) => {
+
+  var usKeys = fdata['US'].length;
+  var stateKeys = state != 'US' ? fdata[state].length : null;
+  var compStateKeys = showCompare ? fdata[compState].length : null;
+
+  if (currentTimeframe == 'Annual') {
+    
+    if (state != 'US' && stateKeys < usKeys)
+      fdata[state] = getNewStateDataA(fdata, state);
+
+    if (showCompare && compStateKeys < usKeys) 
+      fdata[compState] = getNewStateDataA(fdata, compState);
+  
+  }
+  else
+  {
+    if (!isPeriod) {
+      if (state != 'US' && stateKeys < usKeys)
+        fdata[state] = getNewStateDataM(fdata, state);
+
+      if (showCompare && compStateKeys < usKeys) 
+        fdata[compState] = getNewStateDataM(fdata, compState);
+    }
+    else {
+      if (state != 'US' && stateKeys < usKeys)
+        fdata[state] = getNewStateDataM(fdata, state);
+
+      if (showCompare && compStateKeys < usKeys) 
+        fdata[compState] = getNewStateDataM(fdata, compState);
+    }
+  }
+
+  return fdata;
+}
+
+
 function LineChart({ params }) {
 
   const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showOverall, showCompare, compareState, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
-  const filteredData = {
+  const filteredDataPre = {
     [currentState]: isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, currentState, currentYear)
   }
 
   if (currentState !== 'US') 
-    filteredData['US'] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
+    filteredDataPre['US'] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
 
   if (showCompare && compareState !== null) 
-    filteredData[compareState] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, compareState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, compareState, currentYear)
+    filteredDataPre[compareState] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, compareState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, compareState, currentYear)
 
-  const countsDataYearly = !showCompare ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, currentDrug, compareState);
-  const countsDataMonthly = !showCompare ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, currentDrug, compareState);
+  const filteredData = fillGaps(filteredDataPre, currentState, compareState, showCompare, currentTimeframe, isPeriod);
+
+  const countsDataYearly = !showCompare ? (currentState == 'US' ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, drugOptions, currentState)) : getCountsYearlyState(data, currentDataSource, drugOptions, compareState);
+  const countsDataMonthly = !showCompare ? (currentState == 'US' ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, drugOptions, currentState)) : getCountsMonthlyState(data, currentDataSource, drugOptions, compareState);
+  const countsDataYearlyUS = getCountsYearly(data.sex, currentDataSource, drugOptions);
+  const countsDataMonthlyUS = getCountsMonthly(data.sex, currentDataSource, drugOptions);
+  
+
   
   const yScaleDomainPeriod = (showCompare) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
@@ -418,13 +518,25 @@ function LineChart({ params }) {
         }
         else
         {
-          positionsVar.push({
-              label: drugOptions[selectedDrugs[i]].titleForDropDown, 
-              xpos: specs.xMax + 18,
-              ypos:  specs.yScale(0),
-              yposNew: specs.yScale(0),
-              adjusted: false
-            })
+          if (inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]] == 'PH') {
+            positionsVar.push({
+                label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+                xpos: specs.xMax + 18,
+                ypos:  specs.yScale(getLastKnownDataPoint(inp.currentState, selectedDrugs[i])),
+                yposNew: specs.yScale(getLastKnownDataPoint(inp.currentState, selectedDrugs[i])),
+                adjusted: false
+              })
+          }
+          else
+          {
+            positionsVar.push({
+                label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+                xpos: specs.xMax + 18,
+                ypos:  specs.yScale(0),
+                yposNew: specs.yScale(0),
+                adjusted: false
+              })
+          }
         }
       }
     }
@@ -840,6 +952,11 @@ function LineChart({ params }) {
         {
           inp.filteredData['US'].map(d => {
 
+            if (d[currentDrug] == 'PH' && !showCompare && !showOverall)
+            {
+              return '';
+            }
+
             if (inp.currentState === 'US') {
               let numStates = getNumberOfStates(d[specs.xKey])
               let cntC = getCountforDrug(currentDrug, 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
@@ -887,6 +1004,11 @@ function LineChart({ params }) {
         {
           
           inp.filteredData[currentState].map(d => {
+
+            if (d[currentDrug] == 'PH' && !showCompare && !showOverall)
+            {
+              return '';
+            }
 
             if (inp.currentState === currentState) {
               let numStates = getNumberOfStates(d[specs.xKey])
@@ -978,7 +1100,8 @@ function LineChart({ params }) {
   }
 
   function getLastKnownDataPoint(curState, curDrug) {
-    let val = 0;
+
+    let val = 0;    
     for (var i=inp.filteredData[curState].length - 1;i>0;i--)
     {
       if (!isNaN(inp.filteredData[curState][i][curDrug])) {
@@ -1132,7 +1255,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
+    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === 'PH') ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;
@@ -1319,7 +1442,7 @@ function LineChart({ params }) {
     const compareStateVal = inp.filteredData[compareState].length > 0 ? inp.filteredData[compareState][inp.filteredData[compareState].length - 1][currentDrug] : 'Data suppressed*';
     const seriesLabelPositionCompareState = compareStateVal === 'Data suppressed*' ? getLastKnownDataPoint(compareState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(compareState, currentDrug)) : specs.yScale(compareStateVal);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
+    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === 'PH') ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     return (
       <Fragment>
@@ -1557,7 +1680,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
+    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === 'PH') ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;
@@ -1629,7 +1752,7 @@ function LineChart({ params }) {
                       )
                     })}
                     {(!specs.isSmallViewport && yScaleDomainPeriod > 0) &&  (() => {
-                        let yPos = seriesLabelPositionState;
+                          let yPos = seriesLabelPositionState;
     
                         if (currentState != 'US' && key != 'US') {
                           return (<Group>
@@ -1676,7 +1799,7 @@ function LineChart({ params }) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showCompare, showOverall, showPercent, showCount, compareState, changePrecValues)}
+          data={AccessibilityFunctions.generateLineChartData(data.state, filteredData, currentDataSource, countsDataYearly, countsDataMonthly, countsDataYearlyUS, countsDataMonthlyUS, currentDrug, selectedDrugs, currentState, stateNames, currentTimeframe, showCompare, showOverall, showPercent, showCount, compareState, changePrecValues)}
           labelOverrides={showPercent ? {
             'alldrug': 'All Drugs rate',
             'benzodiazepine': 'Benzodiazepine rate',
@@ -1720,6 +1843,7 @@ function LineChart({ params }) {
             'fentanyl_cnt': 'Fentanyl',
             'Overall_cnt': !showCompare ? 'Overall' : stateNames[compareState],
             'state_cnt' : currentStateCnt,
+            'Year/Month': currentTimeframe == 'Monthly' ? 'Month and Year' : 'Year',
           } : {
             'alldrug': 'All Drugs',
             'benzodiazepine': 'Benzodiazepine',
