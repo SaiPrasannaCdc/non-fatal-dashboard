@@ -73,7 +73,7 @@ function DataTable508(params) {
     return ret;
   }
 
-  const cleanUp = (val, yr) => {
+  const cleanUp = (val, yr, col) => {
 
     var ret = val;
 
@@ -87,7 +87,7 @@ function DataTable508(params) {
       ret = '†';
 
     if (val === undefined)
-      ret = String(yr).includes('2024') ? '§' : '†';
+      ret = String(yr).includes('2024') ? (String(val).indexOf('state') ? '†' : '§') : '†';
 
     return ret;
   }
@@ -117,7 +117,7 @@ function DataTable508(params) {
                   <th key={`th-${rowKey}-${rowIndex}`} scope="row">{labelOverrides[rowKey] || rowKey.split('_')[0]}</th>
                   {[data].map((d, i) => 
                     Object.keys(d[keys[0]]).map((colKey, colIndex) => (
-                      <td key={`td-${d[rowKey][colKey]}-${rowIndex}-${colIndex}`}>{cleanUp(d[rowKey][colKey], rowKey)}</td>
+                      <td key={`td-${d[rowKey][colKey]}-${rowIndex}-${colIndex}`}>{cleanUp(d[rowKey][colKey], rowKey, colKey)}</td>
                     ))
                   )}
                 </tr>
