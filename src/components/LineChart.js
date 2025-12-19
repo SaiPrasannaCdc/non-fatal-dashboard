@@ -735,9 +735,9 @@ function LineChart({ params }) {
     var cnt = 0;
     if (currentTimeframe === 'Annual' && !isPeriod) {
       if (parmState === 'US') {
-        for (var i=0;i<Object.keys(countsDataYearly).length;i++) {
-          if (countsDataYearly[i]['year'] == val && countsDataYearly[i]['drug'] === drug) {
-            cnt = countsDataYearly[i]['count'];
+        for (var i=0;i<Object.keys(countsDataYearlyUS).length;i++) {
+          if (countsDataYearlyUS[i]['year'] == val && countsDataYearlyUS[i]['drug'] === drug) {
+            cnt = countsDataYearlyUS[i]['count'];
             break;
           }
         }
@@ -753,9 +753,9 @@ function LineChart({ params }) {
     }
     else if (currentTimeframe === 'Monthly' && !isPeriod) {
       if (parmState === 'US') {
-          for (var i=0;i<Object.keys(countsDataMonthly).length;i++) {
-            if (countsDataMonthly[i].year == currentYear && countsDataMonthly[i].month == val && countsDataMonthly[i].drug == drug) {
-              cnt = countsDataMonthly[i].count;
+          for (var i=0;i<Object.keys(countsDataMonthlyUS).length;i++) {
+            if (countsDataMonthlyUS[i].year == currentYear && countsDataMonthlyUS[i].month == val && countsDataMonthlyUS[i].drug == drug) {
+              cnt = countsDataMonthlyUS[i].count;
               break;
             }
           }
@@ -771,13 +771,15 @@ function LineChart({ params }) {
         }
     }
     else if (isPeriod) {
+
       let arr = val.split(' ');
       let mon = UtilityFunctions.getMonthNumber(arr[0]);
       let yr = arr[1];
       if (parmState === 'US') {
-          for (var i=0;i<Object.keys(countsDataMonthly).length;i++) {
-            if (countsDataMonthly[i].year == yr && countsDataMonthly[i].month == mon && countsDataMonthly[i].drug == drug) {
-              cnt = countsDataMonthly[i].count;
+        let countsDataFinal = currentTimeframe === 'Monthly' ? countsDataMonthlyUS : countsDataYearlyUS;
+          for (var i=0;i<Object.keys(countsDataFinal).length;i++) {
+            if (countsDataFinal[i].year == yr && countsDataFinal[i].month == mon && countsDataFinal[i].drug == drug) {
+              cnt = countsDataFinal[i].count;
               break;
             }
           }
@@ -843,7 +845,7 @@ function LineChart({ params }) {
   }
 
   const getTooltipFragment = (param) => {
-   
+
     let val = isPeriod ? inp.monthNamesPeriod[param] : param;
     let numStates = getNumberOfStates(param)
     var leftComStr = `<table><tr><td><p><strong>Overall</strong>` + '</br>' + '(' + numStates + ' Jurisdictions)' + '</p></td></tr>';
