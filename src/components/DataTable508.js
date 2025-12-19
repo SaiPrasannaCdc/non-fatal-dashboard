@@ -77,11 +77,14 @@ function DataTable508(params) {
 
     var ret = val;
 
-    if (String(val).indexOf('Data suppressed') >= 0)
+    if (String(val) != 'PH' && String(val).indexOf('Data suppressed') >= 0)
       ret = '*';
 
-    if (String(val).indexOf('Data not available') >= 0)
+    if (String(val) != 'PH' && String(val).indexOf('Data not available') >= 0)
       ret = String(yr).includes('2024') ? '§' : '†';
+
+    if (String(val) == 'PH')
+      ret = '';
 
     return ret;
   }

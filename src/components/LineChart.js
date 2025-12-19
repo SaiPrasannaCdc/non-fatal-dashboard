@@ -65,25 +65,27 @@ const getCountsYearly = (data, currentDataSource, drugOptions) => {
   return arr;
 }
 
-const getCountsYearlyState = (data, currentDataSource, currentDrug, compareState) => {
+const getCountsYearlyState = (data, currentDataSource, drugOptions, compareState) => {
 
   var arr = [];
 
-  for (let i=0; i<data.state[currentDataSource][currentDrug]['all'].length; i++)
-  {
-    if (data.state[currentDataSource][currentDrug]['all'][i].state == compareState)
+  Object.keys(drugOptions).forEach(drug => {
+    for (let i=0; i<data.state[currentDataSource][drug]['all'].length; i++)
     {
-      Object.keys(data.state[currentDataSource][currentDrug]['all'][i]).forEach(rec => {
-        arr.push({
-          year: rec,
-          drug: currentDrug,
-          count: data.state[currentDataSource][currentDrug]['all'][i][rec],
-        });
-      })
+      if (data.state[currentDataSource][drug]['all'][i].state == compareState)
+      {
+        Object.keys(data.state[currentDataSource][drug]['all'][i]).forEach(rec => {
+          arr.push({
+            year: rec,
+            drug: drug,
+            count: data.state[currentDataSource][drug]['all'][i][rec],
+          });
+        })
+        
+      } 
       
-    } 
-    
-  }
+    }
+  })
 
   return arr;
 }
@@ -115,32 +117,36 @@ const getCountsMonthly = (data, currentDataSource, drugOptions) => {
       }
     })
   })
+
+
   return arr;
 }
 
-const getCountsMonthlyState = (data, currentDataSource, currentDrug, compareState) => {
+const getCountsMonthlyState = (data, currentDataSource, drugOptions, compareState) => {
   var arr = [];
 
-  Object.keys(data.state[currentDataSource][currentDrug]).forEach(mon => {
-    if (!isNaN(mon)) {
-      for (let i=0; i<Object.keys(data.state[currentDataSource][currentDrug][mon]).length; i++)
-      {
-          if (data.state[currentDataSource][currentDrug][mon][i].state == compareState)
-          {
-            for (let j=0; j<Object.keys(data.state[currentDataSource][currentDrug][mon][i]).length; j++)
+  Object.keys(drugOptions).forEach(drug => {
+    Object.keys(data.state[currentDataSource][drug]).forEach(mon => {
+      if (!isNaN(mon)) {
+        for (let i=0; i<Object.keys(data.state[currentDataSource][drug][mon]).length; i++)
+        {
+            if (data.state[currentDataSource][drug][mon][i].state == compareState)
             {
-              if (Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j] != 'state') {
-                arr.push({
-                  year: Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j],
-                  month: mon,
-                  drug: currentDrug,
-                  count: data.state[currentDataSource][currentDrug][mon][i][Object.keys(data.state[currentDataSource][currentDrug][mon][i])[j]],
-                });
+              for (let j=0; j<Object.keys(data.state[currentDataSource][drug][mon][i]).length; j++)
+              {
+                if (Object.keys(data.state[currentDataSource][drug][mon][i])[j] != 'state') {
+                  arr.push({
+                    year: Object.keys(data.state[currentDataSource][drug][mon][i])[j],
+                    month: mon,
+                    drug: drug,
+                    count: data.state[currentDataSource][drug][mon][i][Object.keys(data.state[currentDataSource][drug][mon][i])[j]],
+                  });
+                }
               }
-            }
-        }
-      } 
-    }
+          }
+        } 
+      }
+    })
   })
 
   return arr;
@@ -355,8 +361,8 @@ function LineChart({ params }) {
 
   const filteredData = fillGaps(filteredDataPre, currentState, compareState, showCompare, currentTimeframe, isPeriod);
 
-  const countsDataYearly = !showCompare ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, currentDrug, compareState);
-  const countsDataMonthly = !showCompare ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, currentDrug, compareState);
+  const countsDataYearly = !showCompare ? (currentState == 'US' ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, drugOptions, currentState)) : getCountsYearlyState(data, currentDataSource, drugOptions, compareState);
+  const countsDataMonthly = !showCompare ? (currentState == 'US' ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, drugOptions, currentState)) : getCountsMonthlyState(data, currentDataSource, drugOptions, compareState);
   
   const yScaleDomainPeriod = (showCompare) ? (UtilityFunctions.calculateYScaleDomainCompare(filteredData, currentDrug, currentState, compareState) * 1.2) : (UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall) * 1.2);
 
@@ -930,6 +936,11 @@ function LineChart({ params }) {
         {
           inp.filteredData['US'].map(d => {
 
+            if (d[currentDrug] == 'PH' && !showCompare && !showOverall)
+            {
+              return '';
+            }
+
             if (inp.currentState === 'US') {
               let numStates = getNumberOfStates(d[specs.xKey])
               let cntC = getCountforDrug(currentDrug, 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
@@ -977,6 +988,11 @@ function LineChart({ params }) {
         {
           
           inp.filteredData[currentState].map(d => {
+
+            if (d[currentDrug] == 'PH' && !showCompare && !showOverall)
+            {
+              return '';
+            }
 
             if (inp.currentState === currentState) {
               let numStates = getNumberOfStates(d[specs.xKey])
