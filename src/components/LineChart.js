@@ -797,10 +797,12 @@ function LineChart({ params }) {
   }
 
   const getText = (val) => {
-    if (val == 'Data not available')
+    if (val == 'Data not available' || val == 'PH')
       return 'Data not available/not reported';
     else if (val == 'Data suppressed*')
       return 'Data suppressed';
+    else if (val === undefined)
+      return 'Data not available/not reported';
     else
       return '';
   }
@@ -916,7 +918,7 @@ function LineChart({ params }) {
   }
   
   const get2024FootNote = (yr, str) => {
-    if (String(yr).substring(0,4) == '2024' && str == 'Data not available' )
+    if (String(yr).substring(0,4) == '2024' && (str == 'Data not available' || str === undefined))
       return '<sup>§</sup>';
     else
       return '';
@@ -952,28 +954,27 @@ function LineChart({ params }) {
         {
           inp.filteredData['US'].map(d => {
 
-            if (d[currentDrug] == 'PH' && !showCompare && !showOverall)
-            {
-              return '';
-            }
-
             if (inp.currentState === 'US') {
               let numStates = getNumberOfStates(d[specs.xKey])
               let cntC = getCountforDrug(currentDrug, 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
               let cntCFinal = isNaN(cntC) ? cntC : Number(cntC).toLocaleString('en-US');
+              let cntCFinalFinal = isNaN(cntC) ? getText(cntCFinal) : cntCFinal;
+              let rateCFinal = isNaN(d[currentDrug]) ? getText(d[currentDrug]) : d[currentDrug];
               var tooltipValues = [];
               if (!currentDrugOnly) {
-                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${d[currentDrug]} (${numStates} Jurisdictions)</p>`);
-                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntCFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${rateCFinal} (${numStates} Jurisdictions)</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntCFinalFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], 'US', currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
                     let cntSFinal = isNaN(cntS) ? cntS : Number(cntS).toLocaleString('en-US');
+                    let cntSFinalFinal = isNaN(cntS) ? getText(cntSFinal) : cntSFinal;
+                    let rateSFinal = isNaN(d[inp.selectedDrugs[i]]) ? getText(d[inp.selectedDrugs[i]]) : d[inp.selectedDrugs[i]];
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
-                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${d[inp.selectedDrugs[i]]} (${numStates} Jurisdictions)</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntSFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${rateSFinal} (${numStates} Jurisdictions)</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntSFinalFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }
@@ -1005,28 +1006,27 @@ function LineChart({ params }) {
           
           inp.filteredData[currentState].map(d => {
 
-            if (d[currentDrug] == 'PH' && !showCompare && !showOverall)
-            {
-              return '';
-            }
-
             if (inp.currentState === currentState) {
               let numStates = getNumberOfStates(d[specs.xKey])
               let cntC = getCountforDrug(currentDrug, currentState, currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
               let cntCFinal = isNaN(cntC) ? cntC : Number(cntC).toLocaleString('en-US');
+              let cntCFinalFinal = isNaN(cntC) ? getText(cntCFinal) : cntCFinal;
+              let rateCFinal = isNaN(d[currentDrug]) ? getText(d[currentDrug]) : d[currentDrug];
               var tooltipValues = [];
               if (!currentDrugOnly) {
-                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Rate</strong>: ${d[currentDrug]}</p>`);
-                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Count</strong>: ${cntCFinal}` + get2024FootNote(d['year'], cntC) + `</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Rate</strong>: ${rateCFinal}</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Count</strong>: ${cntCFinalFinal}` + get2024FootNote(d['year'], cntC) + `</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
                   for (var i in inp.selectedDrugs) {
                     let cntS = getCountforDrug(inp.selectedDrugs[i], currentState, currentTimeframe == 'Annual' ? d['year'] : (!isPeriod ? d['month'] : inp.monthNamesPeriod[d['index']]));
                     let cntSFinal = isNaN(cntS) ? cntS : Number(cntS).toLocaleString('en-US');
+                    let cntSFinalFinal = isNaN(cntS) ? getText(cntSFinal) : cntSFinal;
+                    let rateSFinal = isNaN(d[inp.selectedDrugs[i]]) ? getText(d[inp.selectedDrugs[i]]) : d[inp.selectedDrugs[i]];
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
-                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Rate</strong>: ${d[inp.selectedDrugs[i]]}</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Count</strong>: ${cntSFinal}` + get2024FootNote(d['year'], cntS) + `</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Rate</strong>: ${rateSFinal}</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Count</strong>: ${cntSFinalFinal}` + get2024FootNote(d['year'], cntS) + `</p>` : null);
                     }
                   }
               }
@@ -1112,11 +1112,17 @@ function LineChart({ params }) {
     return val;
   }
 
-  function getSymbol(val) {
+  function getSymbol(val, yr) {
     if (val == 'Data not available')
       return '†';
     else if (val == 'Data suppressed*')
       return '*';
+    else if (val == 'PH') {
+      if (String(yr).includes('2024'))
+        return '§';
+      else
+        return '†';
+    }
     else
       return '';
   }
@@ -1307,7 +1313,7 @@ function LineChart({ params }) {
                               opacity={0.6}
                           />
                           }
-                          {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'])}</text>}
                           {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} />}
                           {(!isNaN(d[currentDrug]) && key != 'US') && currentState == 'US' &&
                             <text 
@@ -1343,7 +1349,7 @@ function LineChart({ params }) {
                           />
                           }
                           {(isNaN(d[currentDrug]) && key != 'US') && 
-                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'])}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && 
                           <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} />}
                         </Group>
@@ -1491,7 +1497,7 @@ function LineChart({ params }) {
                               opacity={0.6}
                           />
                           }
-                          {(isNaN(d[currentDrug]) && key == compareState) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          {(isNaN(d[currentDrug]) && key == compareState) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'])}</text>}
                           {(!isNaN(d[currentDrug]) && key == compareState) && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} />}
                           {(!isNaN(d[currentDrug]) && key != compareState) && currentState == compareState &&
                             <text 
@@ -1527,7 +1533,7 @@ function LineChart({ params }) {
                           />
                           }
                           {(isNaN(d[currentDrug]) && key != compareState) && 
-                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'])}</text>}
                           {(!isNaN(d[currentDrug]) && key != compareState) && 
                           <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} />}
                         </Group>
@@ -1720,7 +1726,7 @@ function LineChart({ params }) {
                               opacity={0.6}
                           />
                           }
-                          {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'])}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && currentState != 'US' && showLabels && 
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
@@ -1745,7 +1751,7 @@ function LineChart({ params }) {
                           />
                           }
                           {(isNaN(d[currentDrug]) && key != 'US') && 
-                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug])}</text>}
+                          <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'])}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && 
                           <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} />}
                         </Group>

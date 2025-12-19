@@ -84,7 +84,10 @@ function DataTable508(params) {
       ret = String(yr).includes('2024') ? '§' : '†';
 
     if (String(val) == 'PH')
-      ret = '';
+      ret = '†';
+
+    if (val === undefined)
+      ret = String(yr).includes('2024') ? '§' : '†';
 
     return ret;
   }
