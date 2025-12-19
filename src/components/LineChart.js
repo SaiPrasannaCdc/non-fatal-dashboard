@@ -514,13 +514,25 @@ function LineChart({ params }) {
         }
         else
         {
-          positionsVar.push({
-              label: drugOptions[selectedDrugs[i]].titleForDropDown, 
-              xpos: specs.xMax + 18,
-              ypos:  specs.yScale(0),
-              yposNew: specs.yScale(0),
-              adjusted: false
-            })
+          if (inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]] == 'PH') {
+            positionsVar.push({
+                label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+                xpos: specs.xMax + 18,
+                ypos:  specs.yScale(getLastKnownDataPoint(inp.currentState, selectedDrugs[i])),
+                yposNew: specs.yScale(getLastKnownDataPoint(inp.currentState, selectedDrugs[i])),
+                adjusted: false
+              })
+          }
+          else
+          {
+            positionsVar.push({
+                label: drugOptions[selectedDrugs[i]].titleForDropDown, 
+                xpos: specs.xMax + 18,
+                ypos:  specs.yScale(0),
+                yposNew: specs.yScale(0),
+                adjusted: false
+              })
+          }
         }
       }
     }
@@ -1084,7 +1096,8 @@ function LineChart({ params }) {
   }
 
   function getLastKnownDataPoint(curState, curDrug) {
-    let val = 0;
+
+    let val = 0;    
     for (var i=inp.filteredData[curState].length - 1;i>0;i--)
     {
       if (!isNaN(inp.filteredData[curState][i][curDrug])) {
@@ -1238,7 +1251,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
+    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === 'PH') ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;
@@ -1425,7 +1438,7 @@ function LineChart({ params }) {
     const compareStateVal = inp.filteredData[compareState].length > 0 ? inp.filteredData[compareState][inp.filteredData[compareState].length - 1][currentDrug] : 'Data suppressed*';
     const seriesLabelPositionCompareState = compareStateVal === 'Data suppressed*' ? getLastKnownDataPoint(compareState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(compareState, currentDrug)) : specs.yScale(compareStateVal);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
+    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === 'PH') ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     return (
       <Fragment>
@@ -1663,7 +1676,7 @@ function LineChart({ params }) {
 
     const seriesLabelPositionUS = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug] : 'Data suppressed*';
-    const seriesLabelPositionState = valueState === 'Data suppressed*' ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
+    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === 'PH') ? getLastKnownDataPoint(inp.currentState, currentDrug) == 0 ? specs.yScale(0) - 30 : specs.yScale(getLastKnownDataPoint(inp.currentState, currentDrug)) : specs.yScale(valueState);
     
     if (seriesLabelPositionUS === undefined)
       return;
@@ -1735,7 +1748,7 @@ function LineChart({ params }) {
                       )
                     })}
                     {(!specs.isSmallViewport && yScaleDomainPeriod > 0) &&  (() => {
-                        let yPos = seriesLabelPositionState;
+                          let yPos = seriesLabelPositionState;
     
                         if (currentState != 'US' && key != 'US') {
                           return (<Group>
