@@ -146,7 +146,7 @@ export const AccessibilityFunctions = {
       if (!showOverall) {
         if (!showCompare)
         { 
-          for (var i=0;i<Object.keys(data[state]).length;i++)
+          for (var i=0;i<Object.keys(data['US']).length;i++)
           {
             let obj = {};
 
@@ -407,7 +407,7 @@ export const AccessibilityFunctions = {
       }
       else
       {
-          for (var i=0;i<Object.keys(data[state]).length;i++)
+          for (var i=0;i<Object.keys(data['US']).length;i++)
           {
             let obj = {};
 

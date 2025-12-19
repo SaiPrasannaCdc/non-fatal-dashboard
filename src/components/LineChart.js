@@ -249,21 +249,111 @@ const getFilteredDataPeriod = (data, currentDataSource, currentState, lookupPeri
   }
 };
 
+const getNewStateDataA = (fdata, state) => {
+    const arStateData = [];
+
+    for (let i = 0; i < fdata['US'].length; ++i) {
+      let yr = fdata['US'][i].year;
+      const result = fdata[state].find(rec => rec.year == yr);
+      if (result == null || result == undefined)
+      {
+        const makeAnObject = Object.keys(fdata['US'][0]).reduce((acc, key) => {
+          acc[key] = 'PH'; 
+          return acc;
+        }, {});
+        makeAnObject.year = yr;
+        arStateData.push(makeAnObject);
+      }
+      else
+      {
+        arStateData.push(result);
+      }
+    }
+
+    return arStateData;
+}
+
+const getNewStateDataM = (fdata, state) => {
+    const arStateData = [];
+
+    for (let i = 0; i < fdata['US'].length; ++i) {
+      let yr = fdata['US'][i].year;
+      let idx = fdata['US'][i].index;
+      const result = fdata[state].find(rec => rec.year == yr);
+      if (result == null || result == undefined)
+      {
+        const makeAnObject = Object.keys(fdata['US'][0]).reduce((acc, key) => {
+          acc[key] = 'PH'; 
+          return acc;
+        }, {});
+        makeAnObject.year = yr;
+        makeAnObject.index = idx;
+        arStateData.push(makeAnObject);
+      }
+      else
+      {
+        result.index = idx;
+        arStateData.push(result);
+      }
+    }
+
+    return arStateData;
+}
+
+const fillGaps = (fdata, state, compState, showCompare, currentTimeframe, isPeriod) => {
+
+  var usKeys = fdata['US'].length;
+  var stateKeys = state != 'US' ? fdata[state].length : null;
+  var compStateKeys = showCompare ? fdata[compState].length : null;
+
+  if (currentTimeframe == 'Annual') {
+    
+    if (state != 'US' && stateKeys < usKeys)
+      fdata[state] = getNewStateDataA(fdata, state);
+
+    if (showCompare && compStateKeys < usKeys) 
+      fdata[compState] = getNewStateDataA(fdata, compState);
+  
+  }
+  else
+  {
+    if (!isPeriod) {
+      if (state != 'US' && stateKeys < usKeys)
+        fdata[state] = getNewStateDataM(fdata, state);
+
+      if (showCompare && compStateKeys < usKeys) 
+        fdata[compState] = getNewStateDataM(fdata, compState);
+    }
+    else {
+      if (state != 'US' && stateKeys < usKeys)
+        fdata[state] = getNewStateDataM(fdata, state);
+
+      if (showCompare && compStateKeys < usKeys) 
+        fdata[compState] = getNewStateDataM(fdata, compState);
+    }
+  }
+
+  return fdata;
+}
+
+
 function LineChart({ params }) {
 
   const { data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showOverall, showCompare, compareState, showPercent, showCount, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
-  const filteredData = {
+  const filteredDataPre = {
     [currentState]: isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, currentState, currentYear)
   }
 
   if (currentState !== 'US') 
-    filteredData['US'] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
+    filteredDataPre['US'] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, 'US', currentYear)
 
   if (showCompare && compareState !== null) 
-    filteredData[compareState] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, compareState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, compareState, currentYear)
+    filteredDataPre[compareState] = isPeriod || (accessible && currentTimeframe == 'Monthly') ? getFilteredDataPeriod(data, currentDataSource, compareState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(data, currentTimeframe, currentDataSource, compareState, currentYear)
+
+  const filteredData = fillGaps(filteredDataPre, currentState, compareState, showCompare, currentTimeframe, isPeriod);
 
   const countsDataYearly = !showCompare ? getCountsYearly(data.sex, currentDataSource, drugOptions) : getCountsYearlyState(data, currentDataSource, currentDrug, compareState);
   const countsDataMonthly = !showCompare ? getCountsMonthly(data.sex, currentDataSource, drugOptions) : getCountsMonthlyState(data, currentDataSource, currentDrug, compareState);
