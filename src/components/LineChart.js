@@ -918,7 +918,7 @@ function LineChart({ params }) {
   }
   
   const get2024FootNote = (yr, str) => {
-    if (String(yr).substring(0,4) == '2024' && str == 'Data not available' )
+    if (String(yr).substring(0,4) == '2024' && (str == 'Data not available' || str === undefined))
       return '<sup>§</sup>';
     else
       return '';
