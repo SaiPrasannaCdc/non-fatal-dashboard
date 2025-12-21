@@ -209,7 +209,7 @@ export default function App(params) {
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { accessible } = params;
-
+  
   const [width, setWidth] = useState(accessible ? 0 : 100);
   
   const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
@@ -1626,6 +1626,11 @@ export default function App(params) {
 
                     if (param == '2024')
                       setCurrentDataType('rate');
+
+                    setCountToggle(false);
+                    setOverallToggle(false);
+                    setCompareToggle(false);
+                    setCompareState('');
                   },
                   options: supportedYears,
                   optionLabel: (key) => key
@@ -1657,11 +1662,13 @@ export default function App(params) {
                   onChange: (param) => {
                     setCurrentState(param);
                     setOnlyCurrentDrug(false);
+
+                    setStateDropdownOptionsCompare(getSupportedStatesForCompare(stateDropdownOptions, param))
+
                     setCountToggle(false);
                     setOverallToggle(false);
                     setCompareToggle(false);
-
-                    setStateDropdownOptionsCompare(getSupportedStatesForCompare(stateDropdownOptions, param))
+                    setCompareState('');
                   },
 
                   options: stateDropdownOptions?.sort((a, b) => {
@@ -1750,6 +1757,7 @@ export default function App(params) {
                           label: 'a Year',
                           value: currentYear,
                           onChange: (param) => {
+
                             if (param === currentYearCompare) {
                               let yearIndex = supportedYears.indexOf(param);
                               yearIndex++;
@@ -1770,6 +1778,10 @@ export default function App(params) {
                               setCurrentState('US');
                               setOnlyCurrentDrug(false);
                             }
+
+                            setCountToggle(false);
+                            setOverallToggle(false);
+                            setCompareToggle(false);
                           },
                           options: supportedYears,
                           optionLabel: (key) => key
@@ -1813,6 +1825,7 @@ export default function App(params) {
                         noSelectPrefix: true,
                         value: currentState,
                         onChange: (param) => {
+                          
                           setCurrentState(param);
                           if (param !== 'US')
                             setOnlyCurrentDrug(true);
