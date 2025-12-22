@@ -185,7 +185,7 @@ function StateChart(params) {
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-           width={width}
+           width={width * 0.99}
            noSort={false}
         />
         </>        

@@ -239,7 +239,7 @@ const UsaMap = ({ params }) => {
             transforms={{
               rate: num => (isNaN(num) ? num : num)
             }}
-              width={width}
+              width={width * 0.99}
               noSort={false}
           />
           </>        
