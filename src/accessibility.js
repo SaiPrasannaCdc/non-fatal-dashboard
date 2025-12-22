@@ -35,7 +35,7 @@ export const AccessibilityFunctions = {
   
     },  
 
-    generateMapData : (data, stateNames, stateName) => {
+    generateMapData : (data, stateNames, stateName, filteredDataCY) => {
 
       let myData = {};
 
@@ -61,6 +61,20 @@ export const AccessibilityFunctions = {
           let st = stateNames[data[Object.keys(data)[i]].state] + '_' + i.toString();
           if (data[Object.keys(data)[i]].state == stateName)
             myData[st] = obj;
+        }
+
+        if (Object.keys(myData).length == 0)
+        {
+          for (var i=0;i<Object.keys(filteredDataCY).length;i++)
+          {
+            let obj = {};
+            obj['county'] = filteredDataCY[Object.keys(filteredDataCY)[i]].county;
+            obj['rate'] = 'PH';
+            obj['count'] = 'PH';
+            let st = stateNames[filteredDataCY[Object.keys(filteredDataCY)[i]].state] + '_' + i.toString();
+            if (filteredDataCY[Object.keys(filteredDataCY)[i]].state == stateName)
+              myData[st] = obj;
+          }
         }
       }
 
