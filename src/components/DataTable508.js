@@ -94,7 +94,7 @@ function DataTable508(params) {
 
   return (
     <>
-      <div style={{'width': width}} className={`table-container-MY${customBackground ? ' custom-background' : ' non-custom-background'} ${extraClasses}`} tabIndex="0">
+      <div style={{'width': width * 0.985}} className={`table-container-MY${customBackground ? ' custom-background' : ' non-custom-background'} ${extraClasses}`} tabIndex="0">
         <table>
           <caption>{caption}</caption>
           <thead>
