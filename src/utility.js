@@ -583,7 +583,7 @@ export const UtilityFunctions = {
     else if (val == 7777) //unfunded
       return -2;
    else if (val == 9999) //data supressed
-      return 0;
+      return -3;
   else
       return val;
   },
@@ -598,7 +598,7 @@ export const UtilityFunctions = {
      if (UtilityFunctions.isCovidPeriod(yrmon))
       return 9;
      else
-      return 0;
+      return -3;
    }
   else
       return val;
