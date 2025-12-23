@@ -69,7 +69,7 @@ function DataTable508(params) {
     if (val == -2)
       ret = 'Unfunded State';
 
-    if (val == 0)
+    if (val == -3)
       ret = 'Data Suppressed';
 
     if (val == 9)
@@ -87,7 +87,7 @@ function DataTable508(params) {
     if (val == -2)
       ret = '**';
 
-    if (val == 0 || val == 9)
+    if (val == -3 || val == 9)
       ret = '*';
 
     return ret;

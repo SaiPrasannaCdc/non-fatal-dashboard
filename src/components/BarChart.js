@@ -218,7 +218,7 @@ function BarChart(params) {
                     ></path>
                     }
                     {
-                      rate == 0 &&
+                      rate == -3 &&
                        <text 
                         className="bar-label"
                         x={5}
@@ -254,7 +254,7 @@ function BarChart(params) {
                         </text>
                     }
                     {
-                      rate > 0 &&
+                      rate >= 0 &&
                         <text 
                           className="bar-label"
                           x={rate < 0 ? 10 : xScale(rate)}
