@@ -176,7 +176,7 @@ function UsaMap (params) {
 
     if (filteredData[stateFipsMapping[id]] == '-2.0') return unfundedColor; 
     if(filteredData[stateFipsMapping[id]] == '-1.0') return unavailableColor;
-    if(filteredData[stateFipsMapping[id]] == '0.0') return suppressedColor;
+    if(filteredData[stateFipsMapping[id]] == '-3.0') return suppressedColor;
     return colorScale(filteredData[stateFipsMapping[id]]);
   }
 
@@ -187,7 +187,7 @@ function UsaMap (params) {
   }
 
   const getRateHTML = (geoId) => {
-    return '<span>' + (filteredData[stateFipsMapping[geoId.substring(0, 2)]]  == '0.0' ? 'Data Suppressed' : filteredData[stateFipsMapping[geoId.substring(0, 2)]]) + '</span></br>'
+    return '<span>' + (filteredData[stateFipsMapping[geoId.substring(0, 2)]]  == '-3.0' ? 'Data Suppressed' : filteredData[stateFipsMapping[geoId.substring(0, 2)]]) + '</span></br>'
   }
 
   const getTooltipFragment = (geoId) => {
@@ -205,6 +205,8 @@ function UsaMap (params) {
         rateStr = `<table><tr><td><p><strong>Data Not Available</strong>` + '</p></td></tr></table>';
       else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == '-2.0')
         rateStr = `<table><tr><td><p><strong>Unfunded State</strong>` + '</p></td></tr></table>';
+      else if (filteredData[stateFipsMapping[geoId.substring(0, 2)]] == '-3.0')
+        rateStr = `<table><tr><td><p><strong>Data Suppressed</strong>` + '</p></td></tr></table>';
     }
       
     return heading + '<table class="tooltipTableUS"><tr><td><div class="containerTT">' + rateStr + '</div></td></tr></table>'
