@@ -1483,7 +1483,7 @@ const getYears = (startYrInp, endYrInp) => {
 
   const handleDrugSelectionsLineChange = (event, drug) => {
 
-    if (currentStateLine == 'US') {
+    if (currentStateLine == 'US' || (currentStateLine != 'US' && !showOverall)) {
       if (selectedDrugsLine.includes(drug)) {
         if (selectedDrugsLine.length > 1) {
           setselectedDrugsLine(selectedDrugsLine.filter(dr=>dr !== drug))

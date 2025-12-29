@@ -92,7 +92,7 @@ export const UtilityFunctions = {
     var usNums = [];
     var stateNums = [];
 
-    if (selectedDrugs?.length == 0 || currentState != 'US') {
+    if (selectedDrugs?.length == 0 || (currentState != 'US' && showOverall)) {
       for (var rec in filteredData["US"])
         usNums.push(filteredData["US"][rec][currentDrug])
 
@@ -120,9 +120,6 @@ export const UtilityFunctions = {
 
     let usmax = usNumsFinal?.length > 0 ? Math.max(...usNumsFinal) : 0;
     let statemax = stateNumsFinal?.length > 0 ? Math.max(...stateNumsFinal) : 0;
-
-    if (currentState != 'US' && !showOverall)
-      return statemax;
 
     if (usmax < statemax)
       return statemax;
