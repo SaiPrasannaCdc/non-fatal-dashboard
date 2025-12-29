@@ -171,69 +171,104 @@ export const AccessibilityFunctions = {
       }
       else
       {
-        for (var i=0;i<Object.keys(data['US']).length;i++)
+        if (showOverall) {
+          for (var i=0;i<Object.keys(data['US']).length;i++)
+          {
+            var stateN = stateNames[state] + (isSVP ? '' : '');
+
+            let obj = {};
+            if (currentDrug == 'all') {
+              if (showOverall)
+                obj['Overall'] = data['US'][i].all;
+
+              obj[stateN] = data[state][i].all;
+            }
+
+            if (currentDrug == 'benzodiazepine') {
+              if (showOverall)
+                  obj['Overall'] = data['US'][i].benzodiazepine;
+
+              obj[stateN] = data[state][i].benzodiazepine;
+            }
+
+            if (currentDrug == 'cocaine') {
+              if (showOverall)
+                obj['Overall'] = data['US'][i].cocaine;
+
+              obj[stateN] = data[state][i].cocaine;
+            }
+
+            if (currentDrug == 'fentanyl') {
+              if (showOverall)
+                obj['Overall'] = data['US'][i].fentanyl;
+
+              obj[stateN] = data[state][i].fentanyl;
+            }
+
+            if (currentDrug == 'heroin') {
+              if (showOverall)
+                obj['Overall'] = data['US'][i].heroin;
+
+              obj[stateN] = data[state][i].heroin;
+            }
+
+            if (currentDrug == 'methamphetamine') {
+              if (showOverall)
+                obj['Overall'] = data['US'][i].methamphetamine;
+
+              obj[stateN] = data[state][i].methamphetamine;
+            }
+
+            if (currentDrug == 'opioids') {
+              if (showOverall)
+              obj['Overall'] = data['US'][i].opioids;
+
+              obj[stateN] = data[state][i].opioids;
+            }
+
+            if (currentDrug == 'stimulants') {
+              if (showOverall)
+              obj['Overall'] = data['US'][i].stimulants;
+
+              obj[stateN] = data[state][i].stimulants;
+            }
+
+            let monyr = UtilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4);
+            myData[monyr] = obj;
+          }
+        }
+        else
         {
-          var stateN = stateNames[state] + (isSVP ? '' : '');
-
+          for (var i=0;i<Object.keys(data[state]).length;i++)
+        {
           let obj = {};
-          if (currentDrug == 'all') {
-            if (showOverall)
-              obj['Overall'] = data['US'][i].all;
+          if (selDrugs.includes('all'))
+            obj['all'] = data[state][i].all;
 
-            obj[stateN] = data[state][i].all;
-          }
+          if (selDrugs.includes('benzodiazepine'))
+            obj['benzodiazepine'] = data[state][i].benzodiazepine;
 
-          if (currentDrug == 'benzodiazepine') {
-            if (showOverall)
-                obj['Overall'] = data['US'][i].benzodiazepine;
+          if (selDrugs.includes('cocaine'))
+            obj['cocaine'] = data[state][i].cocaine;
 
-            obj[stateN] = data[state][i].benzodiazepine;
-          }
+          if (selDrugs.includes('fentanyl'))
+            obj['fentanyl'] = data[state][i].fentanyl;
 
-          if (currentDrug == 'cocaine') {
-            if (showOverall)
-              obj['Overall'] = data['US'][i].cocaine;
+          if (selDrugs.includes('heroin'))
+            obj['heroin'] = data[state][i].heroin;
 
-            obj[stateN] = data[state][i].cocaine;
-          }
+          if (selDrugs.includes('methamphetamine'))
+            obj['methamphetamine'] = data[state][i].methamphetamine;
 
-          if (currentDrug == 'fentanyl') {
-            if (showOverall)
-              obj['Overall'] = data['US'][i].fentanyl;
+          if (selDrugs.includes('opioids'))
+            obj['opioids'] = data[state][i].opioids;
 
-            obj[stateN] = data[state][i].fentanyl;
-          }
+          if (selDrugs.includes('stimulants'))
+            obj['stimulants'] = data[state][i].stimulants;
 
-          if (currentDrug == 'heroin') {
-            if (showOverall)
-              obj['Overall'] = data['US'][i].heroin;
-
-            obj[stateN] = data[state][i].heroin;
-          }
-
-          if (currentDrug == 'methamphetamine') {
-            if (showOverall)
-              obj['Overall'] = data['US'][i].methamphetamine;
-
-            obj[stateN] = data[state][i].methamphetamine;
-          }
-
-          if (currentDrug == 'opioids') {
-            if (showOverall)
-             obj['Overall'] = data['US'][i].opioids;
-
-            obj[stateN] = data[state][i].opioids;
-          }
-
-          if (currentDrug == 'stimulants') {
-            if (showOverall)
-             obj['Overall'] = data['US'][i].stimulants;
-
-            obj[stateN] = data[state][i].stimulants;
-          }
-
-          let monyr = UtilityFunctions.getMonthName(String(Number(data['US'][i].year.substring(4)))) + ' ' + data['US'][i].year.substring(0,4);
+          let monyr = UtilityFunctions.getMonthName(String(Number(data[state][i].year.substring(4)))) + ' ' + data[state][i].year.substring(0,4);
           myData[monyr] = obj;
+        }
         }
       }
 

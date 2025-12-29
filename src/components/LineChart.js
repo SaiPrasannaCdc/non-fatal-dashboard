@@ -928,7 +928,7 @@ const adjustCrowdedLabels = () => {
           }}
           width={width}
           sortBy={true}
-          colSpan={!isSmallViewport ? (currentState == 'US' ? selectedDrugs.length : (showOverall ? 2 : 1)) : null}
+          colSpan={!isSmallViewport ? ((currentState == 'US' || (currentState != 'US' && !showOverall)) ? selectedDrugs.length : (showOverall ? 2 : 1)) : null}
           isSmallViewport={isSmallViewport}
         />
         </> ) : (
