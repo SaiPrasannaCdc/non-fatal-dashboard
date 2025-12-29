@@ -316,7 +316,7 @@ const adjustCrowdedLabels = () => {
         if (!UtilityFunctions.isCovidPeriod(rec.year)) {
           var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]]);
           const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][selectedDrugs[i]] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][selectedDrugs[i]]) : 'Data suppressed*';
-          const yposMod = (valueState === 'Data suppressed*' || valueState === '-1.0' || valueState === '-3.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
+          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
           if (pos !== undefined) {
             positionsVar.push({
                 label: drugOptions[selectedDrugs[i]].titleForDropDown, 
@@ -329,12 +329,14 @@ const adjustCrowdedLabels = () => {
         }
         else {
           var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1 - covidTimeIndex][selectedDrugs[i]]);
+          const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][selectedDrugs[i]] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][selectedDrugs[i]]) : 'Data suppressed*';
+          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
           if (pos !== undefined) {
             positionsVar.push({
                 label: drugOptions[selectedDrugs[i]].titleForDropDown, 
                 xpos: specs.xMax + 18,
-                ypos:  specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1 - covidTimeIndex][selectedDrugs[i]]),
-                yposNew: specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1 - covidTimeIndex][selectedDrugs[i]]),
+                ypos:  yposMod,
+                yposNew: yposMod,
                 adjusted: false
               })
           }
