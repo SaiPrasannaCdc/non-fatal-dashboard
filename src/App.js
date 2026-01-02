@@ -2143,7 +2143,7 @@ const getYears = (startYrInp, endYrInp) => {
         <section>
           <div className="datatable-container-header">
                     <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }} onClick={toggleLineChart}>
-                    <text className="data-bite-header-toggle sub" style={{ backgroundColor: drugColor }}>{getHeaderText()}</text>
+                    <text className="data-bite-header-toggle sub" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }}>{getHeaderText()}</text>
                     {showLineChart && <span>{String.fromCharCode(8722)}</span>}
                     {!showLineChart && <span>{String.fromCharCode(43)}</span>}
                     </button>
