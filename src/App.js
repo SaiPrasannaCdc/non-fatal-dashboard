@@ -1857,7 +1857,7 @@ const getYears = (startYrInp, endYrInp) => {
   if (timelineLine == 'Monthly')
     return (
       <Fragment>
-      <text>
+      <text className="data-bite-header-toggle sub" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }}>
         Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
       </text>
       </Fragment>
@@ -1865,7 +1865,7 @@ const getYears = (startYrInp, endYrInp) => {
     else
       return (
       <Fragment>
-      <text className="data-bite-header">
+      <text className="data-bite-header-toggle sub" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }}>
         Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
       </text>
       </Fragment>
@@ -2143,7 +2143,7 @@ const getYears = (startYrInp, endYrInp) => {
         <section>
           <div className="datatable-container-header">
                     <button className="h2 h2-toggle button-toggle" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }} onClick={toggleLineChart}>
-                    <text className="data-bite-header-toggle sub" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }}>{getHeaderText()}</text>
+                    {getHeaderText()}
                     {showLineChart && <span>{String.fromCharCode(8722)}</span>}
                     {!showLineChart && <span>{String.fromCharCode(43)}</span>}
                     </button>
