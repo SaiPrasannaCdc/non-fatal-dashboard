@@ -42,7 +42,7 @@ const getAgeGroups = (data, currentTimeLine, currentYear, currentMonth) => {
   }
 };
 
-const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth) => {
+const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType) => {
   
   var finalData = [];
   var drug_total = 0;
@@ -58,28 +58,28 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
             {
               switch (currentDrug) {
                 case 'all':
-                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n));
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_drug_OD_n : data[i].total_drug_OD_pct));
                   break;
                 case 'benzodiazepine':
-                   drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
+                   drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Benzo_OD_n : data[i].total_Benzo_OD_pct));
                    break;
                 case 'opioids':
-                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_opioid_OD_n : data[i].total_opioid_OD_pct));
                   break;
                 case 'fentanyl':
-                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Fentanyl_OD_n : data[i].total_Fentanyl_OD_pct));
                   break;
                 case 'heroin':
-                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_heroin_OD_n : data[i].total_heroin_OD_pct));
                   break;
                 case 'stimulants':
-                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_stimulant_OD_n : data[i].total_stimulant_OD_pct));
                   break;
                 case 'cocaine':
-                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Cocaine_OD_n : data[i].total_Cocaine_OD_pct));
                   break;
                 case 'methamphetamine':
-                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
+                  drug_total = Number(drug_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Methamphetamine_OD_n : data[i].total_Methamphetamine_OD_pct));
                   break;
           }
         }
@@ -228,12 +228,12 @@ const getMaxValue = (fdata) => {
 
 function AgeChart(params) {
 
-  const { data, year, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, accessible, widthReduction } = params;
+  const { data, year, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, currentDataType, accessible, widthReduction } = params;
   const isSmallViewport = width < 550 && !widthReduction;
   const [ animated, setAnimated ] = useState(false);
 
   const ageGroups = getAgeGroups(data, currentTimeLine, currentYear, currentMonth)
-  const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeLine, currentYear, currentMonth);
+  const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeLine, currentYear, currentMonth, currentDataType);
   const missingData = getMissingData(data, currentDrug, currentYear, currentMonth);
 
   const margin = {top: 10, bottom: (header ? 10 : !isSmallViewport ? 50 : 90), left: (header ? 0 : 50), right: 10};

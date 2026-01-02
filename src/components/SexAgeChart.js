@@ -8,7 +8,7 @@ import { AccessibilityFunctions } from '../accessibility';
 import DataTable508 from './DataTable508';
 import Utils from '../shared/Utils';
 
-const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth) => {
+const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType) => {
   
   var finalData = [];
   var male_total = 0;
@@ -27,73 +27,73 @@ const getFilteredData = (data, ageGroups, currentDrug, currentTimeframe, current
               switch (currentDrug) {
                 case 'all':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n));
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_drug_OD_n : data[i].total_drug_OD_pct));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_drug_OD_n));
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_drug_OD_n : data[i].total_drug_OD_pct));
                   }
 
                   break;
                 case 'benzodiazepine':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Benzo_OD_n : data[i].total_Benzo_OD_pct));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) +Number(UtilityFunctions.convertValue(data[i].total_Benzo_OD_n));
+                    female_total = Number(female_total) +Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Benzo_OD_n : data[i].total_Benzo_OD_pct));
                   }
 
                   break;
                 case 'opioids':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) +Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
+                    male_total = Number(male_total) +Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_opioid_OD_n : data[i].total_opioid_OD_pct));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_opioid_OD_n));
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_opioid_OD_n : data[i].total_opioid_OD_pct));
                   }
 
                   break;
                 case 'fentanyl':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Fentanyl_OD_n : data[i].total_Fentanyl_OD_pct));
                   } 
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_Fentanyl_OD_n));
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Fentanyl_OD_n : data[i].total_Fentanyl_OD_pct));
                   }
 
                   break;
                 case 'heroin':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) +Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
+                    male_total = Number(male_total) +Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_heroin_OD_n : data[i].total_heroin_OD_pct));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_heroin_OD_n));
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_heroin_OD_n : data[i].total_heroin_OD_pct));
                   }
 
                   break;
                 case 'stimulants':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_stimulant_OD_n : data[i].total_stimulant_OD_pct));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_stimulant_OD_n));
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_stimulant_OD_n : data[i].total_stimulant_OD_pct));
                   }
 
                   break;
                 case 'cocaine':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Cocaine_OD_n : data[i].total_Cocaine_OD_pct));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_Cocaine_OD_n));
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Cocaine_OD_n : data[i].total_Cocaine_OD_pct));
                   }
 
                   break;
                 case 'methamphetamine':
                   if (data[i].Sex == 'Male') {
-                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
+                    male_total = Number(male_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Methamphetamine_OD_n : data[i].total_Methamphetamine_OD_pct));
                   }
                   else if (data[i].Sex == 'Female') {
-                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(data[i].total_Methamphetamine_OD_n));
+                    female_total = Number(female_total) + Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? data[i].total_Methamphetamine_OD_n : data[i].total_Methamphetamine_OD_pct));
                   }
 
                   break;
@@ -285,7 +285,7 @@ function SexAgeChart(params) {
   const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction } = params;
 
   const ageGroups = getAgeGroups(data, currentTimeframe, currentYear, currentMonth)
-  const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth);
+  const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
   const missingData = getMissingData(data, currentDrug, currentYear, currentMonth);
 
   const isSmallViewport = width < 550 && !widthReduction;

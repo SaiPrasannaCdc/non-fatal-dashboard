@@ -187,6 +187,7 @@ export default function App( params ) {
   const [currentYearMap, setCurrentYearMap] = useState('');
   const [currentYearBar, setCurrentYearBar] = useState('');
   const [currentYearSexAge, setCurrentYearSexAge] = useState('');
+  const [currentDataType, setCurrentDataType] = useState('rate');
 
   const [currentMonth, setCurrentMonth] = useState('');
   const [currentMonthMap, setCurrentMonthMap] = useState('');
@@ -1309,6 +1310,7 @@ const getYears = (startYrInp, endYrInp) => {
                 currentTimeLine={sexAgeMonthly}
                 currentYear={currentYearSexAge}
                 currentMonth={currentMonthSexAge}
+                currentDataType={currentDataType}
                 accessible={accessible}
                 widthReduction={(!isSmallViewport && !accessible) ? true : false}
               />
@@ -1316,7 +1318,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
     </>,
-  [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge]);
+  [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge, currentDataType]);
   
   const ageChartMemo = useMemo(() =>
     <>
@@ -1338,6 +1340,7 @@ const getYears = (startYrInp, endYrInp) => {
                 currentTimeLine={sexAgeMonthly}
                 currentYear={currentYearSexAge}
                 currentMonth={currentMonthSexAge}
+                currentDataType={currentDataType}
                 accessible={accessible}
                 widthReduction={(!isSmallViewport && !accessible) ? true : false}
               />
@@ -1345,7 +1348,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
       </div>
       </>,
-  [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge]);
+  [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge, currentDataType]);
         
   const sexAgeChartMemo = useMemo(() =>
     <>
@@ -1358,11 +1361,11 @@ const getYears = (startYrInp, endYrInp) => {
             currentTimeframe={sexAgeMonthly}
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
-            currentDataType={'rate'}
             width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
             height={640} //TODO
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
+            currentDataType={currentDataType}
             accessible={accessible}
             widthReduction={(!isSmallViewport && !accessible) ? true : false}
             />
@@ -1370,7 +1373,7 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
        </div> 
       </>,
-  [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge]);
+  [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge, currentDataType]);
 
   const loading = <div className="loading-container">
       <div className="loading-spinner"></div>
@@ -1483,7 +1486,7 @@ const getYears = (startYrInp, endYrInp) => {
 
   const handleDrugSelectionsLineChange = (event, drug) => {
 
-    if (currentStateLine == 'US') {
+    if (currentStateLine == 'US' || (currentStateLine != 'US' && !showOverall)) {
       if (selectedDrugsLine.includes(drug)) {
         if (selectedDrugsLine.length > 1) {
           setselectedDrugsLine(selectedDrugsLine.filter(dr=>dr !== drug))
@@ -2130,6 +2133,12 @@ const getYears = (startYrInp, endYrInp) => {
         </div>
         {!isSmallViewport &&
         <table>
+            <tr>
+              <td></td>
+              <td style={{'width': '100%', 'textAlign': 'center'}}>
+                <div><small><em>User can adjust the timeframe by moving the point on the time scale</em></small></div>
+              </td>
+            </tr>
              <tr>
               <td style={{'width': '16.8%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
               <td style={{'width': '84%'}}>
@@ -2165,6 +2174,11 @@ const getYears = (startYrInp, endYrInp) => {
         }
         {isSmallViewport &&
         <table>
+            <tr>
+              <td style={{'width': '100%', 'textAlign': 'center'}}>
+                <div><small><em>User can adjust the timeframe by moving the point on the time scale</em></small></div>
+              </td>
+            </tr>
              <tr>
               <td style={{'width': '100%', 'textAlign': 'left', 'verticalAlign': 'top', 'fontWeight': 'bold'}}><div className="select-input">Select Time Period:</div></td>
             </tr>
@@ -3204,6 +3218,14 @@ const getYears = (startYrInp, endYrInp) => {
                           </table>
                       </td>
                       <td style={{'width': '8%'}}></td>
+                    </tr>
+                    <tr>
+                      <td colspan='3'>
+                        Percent
+                          <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'percent' : 'rate')} checked={currentDataType == 'percent' ? true : false} defaultChecked="false"/>
+                        Rate
+                        <br></br>
+                      </td>
                     </tr>
                   </table>
                 }

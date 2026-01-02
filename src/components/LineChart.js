@@ -298,17 +298,15 @@ function LineChart(params) {
 
 const adjustCrowdedLabels = () => {
 
-  if (currentState != 'US')
-    return;
-
-  var yr = inp.filteredData['US'][inp.filteredData['US'].length - 1]['year'];
+  var yr = inp.filteredData[currentState][inp.filteredData[currentState].length - 1]['year'];
   var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(yr) + 1;
-  var allPeriodIsCovid = (inp.filteredData['US'].length  <= covidTimeIndex) ? true : false;
+  var allPeriodIsCovid = (inp.filteredData[currentState].length  <= covidTimeIndex) ? true : false;
+  var endWithCovidPeriod = UtilityFunctions.isCovidPeriod(yr);
 
   if (allPeriodIsCovid)
     return;
 
-    var rec = inp.filteredData['US'][inp.filteredData['US'].length - 1];
+    var rec = inp.filteredData[currentState][inp.filteredData[currentState].length - 1];
     var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(rec.year) + 1;
 
     var positionsVar = [];
@@ -316,26 +314,29 @@ const adjustCrowdedLabels = () => {
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
         if (!UtilityFunctions.isCovidPeriod(rec.year)) {
-          var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]);
+          var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]]);
+          const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][selectedDrugs[i]] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][selectedDrugs[i]]) : 'Data suppressed*';
+          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
           if (pos !== undefined) {
             positionsVar.push({
                 label: drugOptions[selectedDrugs[i]].titleForDropDown, 
                 xpos: specs.xMax + 18,
-                ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
-                yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][selectedDrugs[i]]),
+                ypos:  yposMod,
+                yposNew: yposMod,
                 adjusted: false
               })
           }
         }
         else {
-          
-          var pos = specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][selectedDrugs[i]]);
+          var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1 - covidTimeIndex][selectedDrugs[i]]);
+          const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][selectedDrugs[i]] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][selectedDrugs[i]]) : 'Data suppressed*';
+          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
           if (pos !== undefined) {
             positionsVar.push({
                 label: drugOptions[selectedDrugs[i]].titleForDropDown, 
                 xpos: specs.xMax + 18,
-                ypos:  specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][selectedDrugs[i]]),
-                yposNew: specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][selectedDrugs[i]]),
+                ypos:  yposMod,
+                yposNew: yposMod,
                 adjusted: false
               })
           }
@@ -407,9 +408,6 @@ const adjustCrowdedLabels = () => {
   }
 
   const adjustLinesForLabels = () => {
-
-    if (currentState != 'US')
-      return;
 
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
@@ -614,7 +612,7 @@ const adjustCrowdedLabels = () => {
     if (UtilityFunctions.isCovidPeriod(d['year']))
       return isSmallViewport ? getTooltipCovidSVP() : getTooltipCovid();
 
-    if (inp.currentState !== 'US') {
+    if (inp.currentState !== 'US' && showOverall) {
       if (!showOverall)
         return getTooltipStateFragment(d);
       else
@@ -622,27 +620,65 @@ const adjustCrowdedLabels = () => {
     }
     else
     {
+      if (currentState == 'US')
         return `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>Overall (${getJurisCount(d['year'])} Jurisdictions)</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
-                `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`;
+            `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`;
+      else
+        return `<table class='tooltipTableLC'><tr><td class='bgBlue'><span>${stateNames[currentState]}</span></td></tr><tr><td></td></tr>` + `<tr><td class='alignCenter'><span class='toolTipSpanLC'><strong>${isPeriod ? (inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[specs.xKey]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)))) : inp.currentTimeframe === 'Monthly' ? `${inp.monthNames[d[specs.xKey]]} ${inp.currentYear}` : d[specs.xKey]}</strong></span></td></tr>` + (inp.currentTimeframe === 'Annual' ? 
+            `<tr><td class='alignCenter'><span class='smallFont'>12-month rolling averages starting and ending period</span></td></tr><tr><td>&nbsp;</td></tr>` : '<tr><td>&nbsp;</td></tr>') + `<tr><td>${tooltipValuesSorted.join('')}</td></tr></table>`;
+     
     }
   }
   
-  const buildToolTipValues = (sectionWidth, sectionWidthHalf) => {
-    return (
-      <Fragment>
-        {
-          inp.filteredData['US'].map((d, index) => {
+  const buildToolTipValues = (sectionWidth, sectionWidthHalf, currentState) => {
+    if (currentState == 'US') {
+      return (
+        <Fragment>
+          {
+            inp.filteredData['US'].map((d, index) => {
 
-            if (inp.currentState === 'US') {
-              let numStates = getJurisCount(d['year']);
-              var tooltipValues = [];
-              if (inp.selectedDrugs.length > 0) {
-                  for (var i in inp.selectedDrugs) {
-                      tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == '-3.0' ? 'Data Suppressed' : (d[inp.selectedDrugs[i]] == '-1.0' ? 'Data not available/not reported' : d[inp.selectedDrugs[i]])}</span></div>`);
+              if (inp.currentState === 'US') {
+                let numStates = getJurisCount(d['year']);
+                var tooltipValues = [];
+                if (inp.selectedDrugs.length > 0) {
+                    for (var i in inp.selectedDrugs) {
+                        tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == '-3.0' ? 'Data Suppressed' : (d[inp.selectedDrugs[i]] == '-1.0' ? 'Data not available/not reported' : d[inp.selectedDrugs[i]])}</span></div>`);
+                      }
                     }
+                }
+              
+              let tooltipValuesSorted = sortToolTipValues(tooltipValues)
+
+              return <rect
+                key={`tooltip-section-${d[specs.xKey]}`}
+                fill={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : 'transparent'}
+                strokeWidth={UtilityFunctions.isCovidPeriod(d['year'])  ? 3 : null}
+                stroke={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : null}
+                x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
+                y={0}
+                width={(UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
+                height={specs.yMax}
+                style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') ? 'crispEdges' : ''}}
+                data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
+            })
+          }
+        </Fragment>
+      )
+    }
+    else
+    {
+      return (
+        <Fragment>
+          {
+            inp.filteredData[currentState].map((d, index) => {
+
+            var tooltipValues = [];
+            if (inp.selectedDrugs.length > 0) {
+                for (var i in inp.selectedDrugs) {
+                    tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == '-3.0' ? 'Data Suppressed' : (d[inp.selectedDrugs[i]] == '-1.0' ? 'Data not available/not reported' : d[inp.selectedDrugs[i]])}</span></div>`);
                   }
-              }
-            
+            }
+              
             let tooltipValuesSorted = sortToolTipValues(tooltipValues)
 
             return <rect
@@ -652,14 +688,15 @@ const adjustCrowdedLabels = () => {
               stroke={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : null}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
-              width={(UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
+              width={(UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, currentState) && (index == (inp.filteredData[currentState].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
               height={specs.yMax}
-              style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') ? 'crispEdges' : ''}}
+              style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, currentState) ? 'crispEdges' : ''}}
               data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
           })
-        }
-      </Fragment>
-    )
+          }
+        </Fragment>
+      )
+    }
   }
 
   const buildToolTipValuesPerc = (drug) => {
@@ -748,11 +785,11 @@ const adjustCrowdedLabels = () => {
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] >= 0 && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == 0 ? specs.yScale(0) - 8 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year']) && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == 0 ? specs.yScale(0) - 8 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
                           {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == '-3.0' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
 
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] >= 0 && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && (d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year'])) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-3.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-1.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '†' : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-2.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '**' : ''}</text>}
@@ -764,33 +801,67 @@ const adjustCrowdedLabels = () => {
                         let yPos = seriesLabelPositionUS;
     
                         if(key !== 'US') {
-                          const isOverlapping = seriesLabelPositionState < seriesLabelPositionUS + specs.seriesOverlapMargin && seriesLabelPositionState > seriesLabelPositionUS - specs.seriesOverlapMargin;
-                          if (isOverlapping) {
-                            if (seriesLabelPositionState < seriesLabelPositionUS) {
-                              yPos = seriesLabelPositionUS - specs.seriesSpacing;
-                              if(yPos < specs.seriesOverlapMargin){
+                          if (showOverall) {
+                            const isOverlapping = seriesLabelPositionState < seriesLabelPositionUS + specs.seriesOverlapMargin && seriesLabelPositionState > seriesLabelPositionUS - specs.seriesOverlapMargin;
+                            if (isOverlapping) {
+                              if (seriesLabelPositionState < seriesLabelPositionUS) {
+                                yPos = seriesLabelPositionUS - specs.seriesSpacing;
+                                if(yPos < specs.seriesOverlapMargin){
+                                  yPos = seriesLabelPositionUS + specs.seriesSpacing;
+                                }
+                              } else {
                                 yPos = seriesLabelPositionUS + specs.seriesSpacing;
+                                if(yPos > specs.yMax - specs.seriesOverlapMargin){
+                                  yPos = seriesLabelPositionUS - specs.seriesSpacing;
+                                }
                               }
                             } else {
-                              yPos = seriesLabelPositionUS + specs.seriesSpacing;
-                              if(yPos > specs.yMax - specs.seriesOverlapMargin){
-                                yPos = seriesLabelPositionUS - specs.seriesSpacing;
-                              }
+                              yPos = seriesLabelPositionState;
                             }
-                          } else {
+                          }
+                          else
+                          {
                             yPos = seriesLabelPositionState;
                           }
                         }
     
                         if (currentState != 'US' && !specs.isSmallViewport) {
-                          return <text 
-                            x={specs.xMax + 25} 
-                            y={yPos}
-                            alignmentBaseline="middle" 
-                            fontSize={specs.fontSize} 
-                            fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
-                              {key != 'US' ? inp.stateNames[key] : (showOverall ? 'Overall' : '')}
-                          </text>
+                          if (showOverall) {
+                            return <text 
+                              x={specs.xMax + 25} 
+                              y={yPos}
+                              alignmentBaseline="middle" 
+                              fontSize={specs.fontSize} 
+                              fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
+                                {key != 'US' ? inp.stateNames[key] : (showOverall ? 'Overall' : '')}
+                            </text>
+                          }
+                          else
+                          {
+                            if (key != 'US') {
+                            return (
+                            <Group>
+                              <line
+                                id={`line-leading-${currentDrug}`}
+                                x1={specs.xMax + 4}
+                                y1={yPos}
+                                x2={specs.xMax + 25} 
+                                y2={yPos}
+                                stroke={colorScale[currentDrug]}
+                                strokeWidth={0.5}/>
+                              <text
+                                class='adjustCrowded'
+                                x={specs.xMax + 28} 
+                                y={yPos}
+                                alignmentBaseline="middle" 
+                                fontSize={specs.fontSize} 
+                                fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
+                                  {drugOptions[currentDrug].titleForDropDown}
+                              </text>
+                            </Group>
+                            )
+                          }
+                          }
                         }
                         else if (!specs.isSmallViewport){
                           return (
@@ -820,7 +891,7 @@ const adjustCrowdedLabels = () => {
                   </Group>)
                   }
                   {
-                    !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf)
+                    !showPercent && buildToolTipValues(sectionWidth, sectionWidthHalf, currentState)
                   }
                   {
                     showPercent && 
@@ -857,7 +928,7 @@ const adjustCrowdedLabels = () => {
           }}
           width={width}
           sortBy={true}
-          colSpan={!isSmallViewport ? (currentState == 'US' ? selectedDrugs.length : (showOverall ? 2 : 1)) : null}
+          colSpan={!isSmallViewport ? ((currentState == 'US' || (currentState != 'US' && !showOverall)) ? selectedDrugs.length : (showOverall ? 2 : 1)) : null}
           isSmallViewport={isSmallViewport}
         />
         </> ) : (
@@ -866,15 +937,15 @@ const adjustCrowdedLabels = () => {
           <td style={{width: '85%'}}>
             <svg style={{height: (specs.height - 30), width: '100%'}}>
               <Group top={specs.margin.top} left={specs.margin.left}>
-                {currentState !== 'US' && buildLineForDrug(currentDrug)}
-                {inp.selectedDrugs.includes('all') && currentState === 'US' && buildLineForDrug('all')}
-                {inp.selectedDrugs.includes('opioids') && currentState === 'US' && buildLineForDrug('opioids')}
-                {inp.selectedDrugs.includes('heroin') && currentState === 'US' && buildLineForDrug('heroin')}
-                {inp.selectedDrugs.includes('stimulants') && currentState === 'US' && buildLineForDrug('stimulants')}
-                {inp.selectedDrugs.includes('benzodiazepine') && currentState === 'US' && buildLineForDrug('benzodiazepine')}
-                {inp.selectedDrugs.includes('fentanyl') && currentState === 'US' && buildLineForDrug('fentanyl')}
-                {inp.selectedDrugs.includes('cocaine') && currentState === 'US' && buildLineForDrug('cocaine')}
-                {inp.selectedDrugs.includes('methamphetamine') && currentState === 'US' && buildLineForDrug('methamphetamine')}
+                {currentState !== 'US' && showOverall && buildLineForDrug(currentDrug)}
+                {inp.selectedDrugs.includes('all') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('all')}
+                {inp.selectedDrugs.includes('opioids') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('opioids')}
+                {inp.selectedDrugs.includes('heroin') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('heroin')}
+                {inp.selectedDrugs.includes('stimulants') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('stimulants')}
+                {inp.selectedDrugs.includes('benzodiazepine') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('benzodiazepine')}
+                {inp.selectedDrugs.includes('fentanyl') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('fentanyl')}
+                {inp.selectedDrugs.includes('cocaine') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('cocaine')}
+                {inp.selectedDrugs.includes('methamphetamine') && (currentState === 'US' || (currentState != 'US' && !showOverall)) && buildLineForDrug('methamphetamine')}
                 
                 <AxisLeft
                   scale={specs.yScale}
