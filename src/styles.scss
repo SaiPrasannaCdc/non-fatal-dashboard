@@ -82,12 +82,16 @@ line-height: 1;
 background-color: transparent;
 }
 
-button-toggle {
+.button-toggle {
 padding: 0.75em 1em;
 border-radius: 0;
 line-height: 1;
 background-color: transparent;
 height: inherit!important;
+}
+
+.padSupply {
+padding: 0.5em 8px!important;
 }
 
 button * {
@@ -743,8 +747,8 @@ margin-right: 5px;
 .datatable-container-header {
 //z-index: 10;
 position: relative;
-padding: 0px!important;
 margin: 0px!important;
+padding: 0px!important;
 
 &:before {
 content: "";

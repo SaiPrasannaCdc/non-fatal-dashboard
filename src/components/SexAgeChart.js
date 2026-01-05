@@ -328,8 +328,8 @@ function SexAgeChart(params) {
     const x1Pos = isNaN(d[x1Key]) ? xMaxHalf - 15 : x1Scale(d[x1Key]);
     const x2Pos = isNaN(d[x2Key]) ? xMaxHalf + 15 : x2Scale(d[x2Key]);
 
-    const x1Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${Number(d[x1Key]).toFixed(1)}</p></div>`;
-    const x2Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${Number(d[x2Key]).toFixed(1)}</p></div>`;
+    const x1Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${Number(d[x1Key]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
+    const x2Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${Number(d[x2Key]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
     const x1TipDS = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: Data Suppressed</p></div>`;
     const x2TipDS = `<div class="tooltipTableLC"<p><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: Data Suppressed</p></div>`;
 
@@ -342,23 +342,23 @@ function SexAgeChart(params) {
         {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
         {d[x1Key] == 0 && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} textAnchor="middle" alignmentBaseline="end" fill={'#000000'} fontSize={isSmallViewport ? fontSize : fontSize} data-tip={d[x1Key] == 0 ? x1TipDS : x1Tip}>{d[x1Key] == 0 ? '*' : '†'}</Text>}
         <Text 
-          x={(x1Pos) - (d[x2Key] > 99 ? 48 : 40)} 
+          x={(x1Pos) - (d[x2Key] > 99 ? 53 : (d[x2Key] >= 10 ? 50 : 45))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'start'} 
           fill="#000000"
           fontWeight='normal'
-          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x1Key])?.toFixed(1)}</Text>
+          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x1Key])?.toFixed(1) + (currentDataType == 'rate' ? '' : '%')}</Text>
 
 
         {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
         {d[x1Key] == 0 && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} textAnchor="middle" alignmentBaseline="end" fill={'#000000'} fontSize={isSmallViewport ? fontSize : fontSize} data-tip={d[x2Key] == 0 ? x2TipDS : x2Tip}>{d[x2Key] == 0  ? '*' : '†'}</Text>}
         <Text 
-          x={(x2Pos) + (d[x2Key] > 99 ? 48 : 40)} 
+          x={(x2Pos) + (d[x2Key] > 99 ? 53 : (d[x2Key] >= 10 ? 50 : 45))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="#000000"
           fontWeight='normal' 
-          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x2Key])?.toFixed(1)}</Text>
+          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x2Key])?.toFixed(1) + (currentDataType == 'rate' ? '' : '%')}</Text>
 
 
       </g>
