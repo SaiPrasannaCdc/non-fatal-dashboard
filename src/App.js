@@ -173,8 +173,8 @@ const formatNumber = (val, isFloat = true) => {
 export default function App(params) {
 
   const [data, setData] = useState();
-  const [stateDropdownOptions, setStateDropdownOptions] = useState(false);
-  const [stateDropdownOptionsCompare, setStateDropdownOptionsCompare] = useState(false);
+  const [stateDropdownOptions, setStateDropdownOptions] = useState([]);
+  const [stateDropdownOptionsCompare, setStateDropdownOptionsCompare] = useState([]);
   const [currentDataSource, setCurrentDataSource] = useState('ED');
   const [currentDrug, setCurrentDrug] = useState('alldrug');
   const [selectedDrugsState, setselectedDrugsState] = useState(['alldrug']);
