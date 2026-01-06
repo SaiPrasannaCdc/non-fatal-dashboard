@@ -326,7 +326,7 @@ function SexChart(params) {
                         opacity={d.sex == 'Male' ? 0.4 : 1.0}
                         d={Utils.verticalBarPath(xScale(d.sex), yScale(d.value), xScale.bandwidth(), adjustedHeight - yScale(d.value), xScale.bandwidth() * .1)}
                         fill={drugOptions[currentDrug].color}
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: ${Number(d.value).toFixed(1)}`}
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: ${Number(d.value).toFixed(1) + (currentDataType == 'rate' ? '' : '%')}`}
                       ></path>
                     )}
                     {d.value == 0 && (
@@ -349,7 +349,7 @@ function SexChart(params) {
                           textAnchor="middle"
                           cursor="default"
                           fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-                        >{d.value}</text>
+                        >{d.value + (currentDataType == 'rate' ? '' : '%')}</text>
                       )}
                   </Group>
                 ))}

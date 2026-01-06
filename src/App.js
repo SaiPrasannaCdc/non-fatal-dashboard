@@ -233,6 +233,7 @@ export default function App( params ) {
 
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [showFootNotes, setShowFootNotes] = useState(false);
+  const [showLineChart, setShowLineChart] = useState(true);
 
   const [lookupPeriodStartYearM, setLookupPeriodStartYearM] = useState('');
   const [lookupPeriodStartMonthM, setLookupPeriodStartMonthM] = useState('');
@@ -267,6 +268,8 @@ export default function App( params ) {
   const sexChartRef = useRef();
   const ageChartRef = useRef();
   const sexAgeChartRef = useRef();
+
+  const toggleLineChart = () => setShowLineChart(!showLineChart);
 
   const defaultValueIfEmpty = (v, df) => {
     if (v && v != '') return v;
@@ -1850,6 +1853,25 @@ const getYears = (startYrInp, endYrInp) => {
     return filename.split('?')[0];
   }
 
+  const getHeaderText = () => {
+  if (timelineLine == 'Monthly')
+    return (
+      <Fragment>
+      <text className="data-bite-header-toggle sub" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }}>
+        Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
+      </text>
+      </Fragment>
+      )
+    else
+      return (
+      <Fragment>
+      <text className="data-bite-header-toggle sub" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }}>
+        Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
+      </text>
+      </Fragment>
+      )
+  }
+
   const drugColor = drugOptions[currentDrug].color;
   const usRate = String(getMonthlyValueForCurrentDrug().toFixed(1)); 
   const usPercent = String(getPercentFromPriorMonth().toFixed(1)); 
@@ -2119,24 +2141,19 @@ const getYears = (startYrInp, endYrInp) => {
       </div>
         
         <section>
-          <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsLine)}}>
-            {timelineLine == 'Monthly' &&
-          <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthM)] + ' ' + lookupPeriodStartYearM + ' – ' + monthNames[Number(lookupPeriodEndMonthM)] + ' ' + lookupPeriodEndYearM}
-          </h2>
-          }
-          {timelineLine == 'Annual' &&
-          <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>§</sup> : ''} {selectedDrugsLine.length > 1 ? '' : ('Involving ' + drugOptions[selectedDrugsLine[0]].titleForDropDown)} per 10,000 Total ED Visits, {currentStateLine == 'US' ? ' Overall' : stateNames[currentStateLine]}, {monthNames[Number(lookupPeriodStartMonthA)] + ' ' + lookupPeriodStartYearA + ' – ' + monthNames[Number(lookupPeriodEndMonthA)] + ' ' + lookupPeriodEndYearA}
-          </h2>
-          }
-        </div>
+          <div className="datatable-container-header">
+                    <button className="h2 h2-toggle button-toggle padSupply" style={{ backgroundColor: getHeaderColor(selectedDrugsLine) }} onClick={toggleLineChart}>
+                    {getHeaderText()}
+                    {showLineChart && <span>{String.fromCharCode(8722)}</span>}
+                    {!showLineChart && <span>{String.fromCharCode(43)}</span>}
+                    </button>
+         {showLineChart && <div>         
         {!isSmallViewport &&
         <table>
             <tr>
               <td></td>
               <td style={{'width': '100%', 'textAlign': 'center'}}>
-                <div><small><em>User can adjust the timeframe by moving the point on the time scale</em></small></div>
+                <div><small><em>User can adjust the timeframe by moving the point on the time scale.</em></small></div>
               </td>
             </tr>
              <tr>
@@ -2455,6 +2472,8 @@ const getYears = (startYrInp, endYrInp) => {
         {accessible && isSmallViewport &&
           getFootNotesForData('Line')
         }
+      </div>}
+      </div> 
       </section>
 
       <section>
