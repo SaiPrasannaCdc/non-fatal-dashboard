@@ -1524,16 +1524,16 @@ export default function App(params) {
     ReactTooltip.rebuild();
   });
 
-  if (!data) {
-    return loading;
-  }
+  // if (!data) {
+  //   return loading;
+  // }
 
-  let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.year == currentYear) : undefined;
+  let rateOverdoses = data?.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.year == currentYear) : undefined;
   if (rateOverdoses) {
     rateOverdoses = rateOverdoses[[currentDrug]];
   }
 
-  let totalOverdoses = data.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
+  let totalOverdoses = data?.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
 
   if (totalOverdoses) {
     totalOverdoses = totalOverdoses[currentYear];
@@ -1892,7 +1892,8 @@ export default function App(params) {
               <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>
               <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
             </header>
-            <div className="callouts">
+            {
+              data && <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
                 <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{!isNaN(totalOverdoses) ? totalOverdoses.toLocaleString('en-US') : totalOverdoses}{totalOverdoses == 'Data not available' && currentYear == '2024' && <sup>§</sup>}</span>
                 <div>
@@ -1915,16 +1916,20 @@ export default function App(params) {
                 </div>
               </div>
             </div>
+            }
+            
             <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Overdoses counted in each category may involve multiple substances.</i></small></div>
            {/*  SKV TODO */}
             {<div><sup>§</sup><small><i>Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.</i></small></div>} 
 
-            <section className="first-section">
+            {
+              data && <section className="first-section">
               {lineChartMemo}
               <br></br>
               {!accessible && getFootNotesForData('Line', true)}
               {accessible && getFootNotesForData('Line', true)}
             </section>
+            }
 
           {accessible &&
               <section>
@@ -1955,7 +1960,7 @@ export default function App(params) {
                               {!isSmallViewport && <td style={{'width': '8%'}}></td>}
                             </tr>
                       </table>
-                      {stateBarChartMemo}
+                      {data && stateBarChartMemo}
                       {getFootNotesForData('State', false)}
                     </div>
                   }
@@ -1984,7 +1989,7 @@ export default function App(params) {
                       {!isSmallViewport && <td style={{'width': '8%'}}></td>}
                     </tr>
               </table>
-              {stateBarChartMemo}
+              {data && stateBarChartMemo}
               {getFootNotesForData('State', false)}
             </section>
             }
@@ -2010,7 +2015,7 @@ export default function App(params) {
                     </tr>
               </table>
               <br></br>
-              {sexAgeChartsMemo}
+              {data && sexAgeChartsMemo}
               {getFootNotesForData('Sex', false)}
             </section>
 
@@ -2025,7 +2030,7 @@ export default function App(params) {
                     </button>
                     {showMapTable &&
                       <div className="datatable-body">
-                        {usaMapMemo}
+                        {data && usaMapMemo}
                         {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
                       </div>
                     }
@@ -2033,7 +2038,7 @@ export default function App(params) {
                 }
               </section>
             }
-            {!accessible &&
+            {!accessible && data &&
               <section>
                 {(currentDataSource === 'ED' && currentDrug === 'alldrug') && <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>}
                 {usaMapMemo}
