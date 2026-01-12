@@ -173,8 +173,12 @@ const formatNumber = (val, isFloat = true) => {
 export default function App(params) {
 
   const [data, setData] = useState();
-  const [stateDropdownOptions, setStateDropdownOptions] = useState(false);
-  const [stateDropdownOptionsCompare, setStateDropdownOptionsCompare] = useState(false);
+  const [lineChartData, setLineChartData] = useState();
+  const [stateChartData, setStateChartData] = useState();
+  const [sexAgeChartData, setSexAgeChartData] = useState();
+  const [usamapData, setUsaMapData] = useState();
+  const [stateDropdownOptions, setStateDropdownOptions] = useState([]);
+  const [stateDropdownOptionsCompare, setStateDropdownOptionsCompare] = useState([]);
   const [currentDataSource, setCurrentDataSource] = useState('ED');
   const [currentDrug, setCurrentDrug] = useState('alldrug');
   const [selectedDrugsState, setselectedDrugsState] = useState(['alldrug']);
@@ -1221,8 +1225,11 @@ export default function App(params) {
       });
 
     //set data
-    setData({ state: stateData, year: yearData, sex: sexData, county: countyData, supportedJurisdictions });
-
+    setData({ state: stateData, year: yearData, supportedJurisdictions });
+    setLineChartData({ state: stateData, year: yearData, sex: sexData, supportedJurisdictions });
+    setStateChartData({ year: yearData, supportedJurisdictions });
+    setSexAgeChartData({ sex: sexData });
+    setUsaMapData({ state: stateData, year: yearData, county: countyData, supportedJurisdictions });
     setOnlyCurrentDrug(false);
 
   }
@@ -1436,7 +1443,7 @@ export default function App(params) {
     <>
       <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
         <StateChart
-          data={data}
+          data={stateChartData}
           width={width}
           height={900} //TODO
           el={stateBarChartRef}
@@ -1453,7 +1460,7 @@ export default function App(params) {
         />
       </div>
     </>,
-    [data, width, selectedDrugsState[0], currentDataSource, currentTimeframe, currentMonth, currentYear, currentState]);
+    [stateChartData, width, selectedDrugsState[0], currentDataSource, currentTimeframe, currentMonth, currentYear, currentState]);
 
   const lineChartMemo = useMemo(() =>
     <>
@@ -1466,7 +1473,7 @@ export default function App(params) {
           <td>
             <div class="containerLC">
               <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"}>
-                <LineChart params={{ data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, showOverall, showCompare, compareState, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
+                <LineChart params={{ data: lineChartData, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, showOverall, showCompare, compareState, isPeriod, currentDrugOnly, supportedYears, selectedDrugs, accessible }} />
               </div>
             </div>
           </td>
@@ -1478,7 +1485,7 @@ export default function App(params) {
 
       </table>
     </>,
-    [data, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, showOverall, showCompare, compareState, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
+    [lineChartData, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, showOverall, showCompare, compareState, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
   const sexAgeChartsMemo = useMemo(() =>
     <>
@@ -1489,7 +1496,7 @@ export default function App(params) {
       <div className='subsection marked'>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age and Sex</span>
         <SexAgeCharts
-          data={data}
+          data={sexAgeChartData}
           currentTimeframe={currentTimeframe}
           currentDataSource={currentDataSource}
           currentDrug={selectedDrugsSexAge[0]}
@@ -1502,7 +1509,7 @@ export default function App(params) {
         />
       </div>
     </>,
-    [data, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
+    [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
@@ -1512,9 +1519,9 @@ export default function App(params) {
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true" />
       5 Year Rate
-      <UsaMap params={{ data, stateNames, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width, accessible }} />
+      <UsaMap params={{ data: usamapData, stateNames, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width, accessible }} />
     </> : <></>,
-    [data, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width]);
+    [usamapData, stateNames, currentDataSource, currentState, currentYear, currentYearGroup, currentDrug, supportedYears, width]);
 
   const loading = <div className="loading-container">
     <div className="loading-spinner"></div>
@@ -1524,16 +1531,12 @@ export default function App(params) {
     ReactTooltip.rebuild();
   });
 
-  if (!data) {
-    return loading;
-  }
-
-  let rateOverdoses = data.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.year == currentYear) : undefined;
+  let rateOverdoses = data?.year[currentDataSource][currentState] ? data.year[currentDataSource][currentState][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.year == currentYear) : undefined;
   if (rateOverdoses) {
     rateOverdoses = rateOverdoses[[currentDrug]];
   }
 
-  let totalOverdoses = data.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
+  let totalOverdoses = data?.state[currentDataSource][currentDrug][currentTimeframe === 'Monthly' ? currentMonth : 'all'].find(item => item.state === currentState);
 
   if (totalOverdoses) {
     totalOverdoses = totalOverdoses[currentYear];
@@ -1892,7 +1895,8 @@ export default function App(params) {
               <span className="biggerFont">Trends in {dataSourceOptions[currentDataSource]['title']}</span>
               <h2>Nonfatal {drugOptions[currentDrug]['titleHeader']} Overdoses</h2>
             </header>
-            <div className="callouts">
+            {
+              data && <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
                 <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{!isNaN(totalOverdoses) ? totalOverdoses.toLocaleString('en-US') : totalOverdoses}{totalOverdoses == 'Data not available' && currentYear == '2024' && <sup>§</sup>}</span>
                 <div>
@@ -1915,16 +1919,20 @@ export default function App(params) {
                 </div>
               </div>
             </div>
+            }
+            
             <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Overdoses counted in each category may involve multiple substances.</i></small></div>
            {/*  SKV TODO */}
             {<div><sup>§</sup><small><i>Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.</i></small></div>} 
 
-            <section className="first-section">
+            {
+              lineChartData && <section className="first-section">
               {lineChartMemo}
               <br></br>
               {!accessible && getFootNotesForData('Line', true)}
               {accessible && getFootNotesForData('Line', true)}
             </section>
+            }
 
           {accessible &&
               <section>
@@ -1955,7 +1963,7 @@ export default function App(params) {
                               {!isSmallViewport && <td style={{'width': '8%'}}></td>}
                             </tr>
                       </table>
-                      {stateBarChartMemo}
+                      {stateChartData && stateBarChartMemo}
                       {getFootNotesForData('State', false)}
                     </div>
                   }
@@ -1984,7 +1992,7 @@ export default function App(params) {
                       {!isSmallViewport && <td style={{'width': '8%'}}></td>}
                     </tr>
               </table>
-              {stateBarChartMemo}
+              {stateChartData && stateBarChartMemo}
               {getFootNotesForData('State', false)}
             </section>
             }
@@ -2010,7 +2018,7 @@ export default function App(params) {
                     </tr>
               </table>
               <br></br>
-              {sexAgeChartsMemo}
+              {sexAgeChartData && sexAgeChartsMemo}
               {getFootNotesForData('Sex', false)}
             </section>
 
@@ -2025,7 +2033,7 @@ export default function App(params) {
                     </button>
                     {showMapTable &&
                       <div className="datatable-body">
-                        {usaMapMemo}
+                        {usamapData && usaMapMemo}
                         {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
                       </div>
                     }
@@ -2033,7 +2041,7 @@ export default function App(params) {
                 }
               </section>
             }
-            {!accessible &&
+            {!accessible && usamapData &&
               <section>
                 {(currentDataSource === 'ED' && currentDrug === 'alldrug') && <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>}
                 {usaMapMemo}
