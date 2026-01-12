@@ -389,7 +389,7 @@ function SexAgeChart(params) {
           drugName={drugOptions[currentDrug].titleAll}
         />
         {!isSmallViewport && <table>
-          {(currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) &&
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
           <tr>
             <td>
               <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
@@ -437,13 +437,13 @@ function SexAgeChart(params) {
         />
           {!isSmallViewport && <text x={xMax/2} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
           {!isSmallViewport && <text x={xMax/2} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-          {!isSmallViewport && (currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
+          {!isSmallViewport && (!UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={xMax/2} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>}
           {!isSmallViewport && <text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
           {!isSmallViewport && <text x={xMax/2} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
 
           {isSmallViewport && <text x={-50} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
           {isSmallViewport && <text x={-50} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-          {isSmallViewport && (currentDataType == 'rate' && !UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={-50} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>}
+          {isSmallViewport && (!UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={-50} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>}
           {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
           {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
           {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 150 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
