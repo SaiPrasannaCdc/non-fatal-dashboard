@@ -213,7 +213,7 @@ export default function App(params) {
   const [timeframeChanged, setTimeframeChanged] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { accessible } = params;
-  
+
   const [width, setWidth] = useState(accessible ? 0 : 100);
   
   const dataPath = window.location.origin.includes('localhost') ? '/data/' : '/overdose-prevention/data-dashboards/dose-discharge-dashboard/data/';
@@ -262,7 +262,7 @@ export default function App(params) {
     }
   }
 
-    const getFileNameFromPath = (path) => {
+  const getFileNameFromPath = (path) => {
     if(!path){
       return 'DOSE_DIS_Dashboard_Download.xlsx';
     }
