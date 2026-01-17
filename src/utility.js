@@ -684,6 +684,14 @@ export const UtilityFunctions = {
       return ret;
   },
 
+  dataIsSupressedEthn : (fdata) => {
+    var ret = false;
+    if (fdata == 9999)
+        ret = true;
+    
+    return ret;
+  },
+
   allDataIsSupressedMap : (fdata) => {
 
       var ret = true;
