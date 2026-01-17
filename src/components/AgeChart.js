@@ -281,7 +281,7 @@ function AgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
+            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
             'Sex': !isSmallViewport ? 'By Age (In years)' : 'By Age',
             '0–14': '<15'
           }}
@@ -289,9 +289,10 @@ function AgeChart(params) {
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-          height={350}
+          height={'auto'}
           width={width}
           isSmallViewport={isSmallViewport}
+          currentDataType={currentDataType}
         />
         {!isSmallViewport && <table>
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
@@ -306,7 +307,7 @@ function AgeChart(params) {
         {isSmallViewport && <table>
           <tr>
               <td>
-                <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
+                <div><span><small><sup>‡</sup>{(currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
               </td>
             </tr>
             <br></br>

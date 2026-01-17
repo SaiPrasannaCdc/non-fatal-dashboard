@@ -1430,7 +1430,7 @@ const getYears = (startYrInp, endYrInp) => {
     <>
    <div className={"column column-right"}>
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity ({jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
+          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ''}</span>}
           <div class='' ref={sexAgeChartRef}>
             <EthnicityChart 
             data={ethnicityData}
@@ -3431,6 +3431,14 @@ const getYears = (startYrInp, endYrInp) => {
                             </td>
                           </tr>
                           </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan='3'>
+                        Percent
+                          <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'percent' : 'rate')} checked={currentDataType == 'percent' ? true : false} defaultChecked="false"/>
+                        Rate
+                        <br></br>
                       </td>
                     </tr>
                   </table>

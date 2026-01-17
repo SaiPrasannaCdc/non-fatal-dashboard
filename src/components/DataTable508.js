@@ -3,9 +3,12 @@ import '../css/DataTable508.css';
 
 function DataTable508(params) {
 
-  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, sortBy, isSmallViewport, colSpan, drugName } = params;
+  const { data, rates, cutoffData, cutoffKey, highlight, xAxisKey, suffixes, transforms, caption, customBackground, extraClasses, years, extraCols, width, height, sortBy, isSmallViewport, colSpan, drugName, currentDataType } = params;
 
   const labelOverrides = params.labelOverrides || {};
+
+  if (data === undefined || Object.keys(data).length == 0)
+    return null;
 
   const isArray = Array.isArray(data);
 
@@ -75,7 +78,7 @@ function DataTable508(params) {
     if (val == 9)
       ret = 'Data Suppressed§';
 
-    return ret;
+    return isNaN(ret) ? ret : (ret + (currentDataType == 'percent' ? '%' : ''));
   }
 
   const cleanUpSVP = (val) => {
@@ -90,6 +93,9 @@ function DataTable508(params) {
     if (val == -3 || val == 9)
       ret = '*';
 
+    if (!isNaN(ret))
+      ret = ret + (currentDataType == 'percent' ? '%' : '')
+
     return ret;
   }
 
@@ -101,10 +107,10 @@ function DataTable508(params) {
           <thead>
           <tr>
               <th className={'keepSticky'} scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
-              {colSpan != null && <th key={'abcd'} scope="col" colspan={colSpan} className={'centerAlign'}>{'Rate of suspected nonfatal overdoses' + (drugName != null ? ' involving ' + drugName : '') + ' per 10,000 Total ED Visits'}</th>}
+              {colSpan != null && <th key={'abcd'} scope="col" colspan={colSpan} className={'centerAlign'}>{(currentDataType == 'percent' ? 'Percent' : 'Rate') + ' of suspected nonfatal overdoses' + (drugName != null ? ' involving ' + drugName : '') + ' per 10,000 Total ED Visits'}</th>}
             </tr>
             <tr>
-              {!isArray && [data].map((d, index) => 
+              {!isArray && data && [data].map((d, index) => 
                 Object.keys(d[keys[0]]).map(rowKey => (
                   <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}{isSmallViewport ? <sup>‡</sup> : ''}</th>
                 )
@@ -112,7 +118,7 @@ function DataTable508(params) {
             </tr>
           </thead>
           <tbody>
-            {!isArray && keys.map((rowKey, rowIndex) => (
+            {!isArray && keys && keys.map((rowKey, rowIndex) => (
                 <tr key={`tr-${rowKey}-${rowIndex}`} className={rowKey === highlight ? 'highlight' : ''}>
                   <th key={`th-${rowKey}-${rowIndex}`} scope="row">{labelOverrides[rowKey] || rowKey.split('_')[0]}</th>
                   {[data].map((d, i) => 

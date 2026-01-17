@@ -372,7 +372,7 @@ function SexAgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
+            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
             'Age Group': !isSmallViewport ? 'By Age (In years) and Sex' : 'By Age and Sex',
             'Female': !isSmallViewport ? 'Female' : 'Female',
             'Male': !isSmallViewport ? 'Male' : 'Male',
@@ -382,11 +382,12 @@ function SexAgeChart(params) {
           transforms={{
             rate: num => UtilityFunctions.toFixed(num)
           }}
-          height={390}
+          height={'auto'}
           width={width}
           isSmallViewport={isSmallViewport}
           colSpan={!isSmallViewport ? 2 : null}
           drugName={drugOptions[currentDrug].titleAll}
+          currentDataType={currentDataType}
         />
         {!isSmallViewport && <table>
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
@@ -401,7 +402,7 @@ function SexAgeChart(params) {
         {isSmallViewport && <table>
           <tr>
               <td>
-                <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
+                <div><span><small><sup>‡</sup>{(currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
               </td>
             </tr>
             <br></br>
