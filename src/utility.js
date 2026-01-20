@@ -714,6 +714,37 @@ export const UtilityFunctions = {
     }
 
     return result;
-  }
+  },
 
+  lastPointIsNaN : (fdata, cdrug) => {
+  
+    if (fdata[fdata.length - 1][cdrug] > 0)
+      return false;
+    else
+      return true;
+  },
+
+  lastValidPointY : (fdata, cdrug) => {
+    var ret = fdata[fdata.length-1][cdrug];
+    for (var x=fdata.length-1;x>0;x--)
+    {
+      if (fdata[x][cdrug] > 0) {
+        ret = fdata[x][cdrug];
+        break;
+      }
+    }
+    return ret;
+  },
+
+  lastValidPointX : (fdata, cdrug) => {
+    var ret = fdata.length-1;
+    for (var x=fdata.length-1;x>0;x--)
+    {
+      if (fdata[x][cdrug] > 0) {
+        ret = x;
+        break;
+      }
+    }
+    return ret;
+  },
 }
