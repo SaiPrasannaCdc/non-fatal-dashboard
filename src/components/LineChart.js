@@ -764,6 +764,7 @@ const adjustCrowdedLabels = () => {
     const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][currentDrug] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug]) : 'Data suppressed*';
     const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === '-1.0' || valueState === '-3.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
 
+
     if (seriesLabelPositionUS === undefined)
       return;
     
@@ -827,14 +828,28 @@ const adjustCrowdedLabels = () => {
     
                         if (currentState != 'US' && !specs.isSmallViewport) {
                           if (showOverall) {
-                            return <text 
+                            return (
+                            <Group>
+                             { UtilityFunctions.lastPointIsNaN(inp.filteredData[key], currentDrug) &&
+                                <text 
+                                x={specs.xScale(UtilityFunctions.lastValidPointX(inp.filteredData[key], currentDrug)) + 60} 
+                                y={specs.yScale(UtilityFunctions.lastValidPointY(inp.filteredData[key], currentDrug))}
+                                alignmentBaseline="middle" 
+                                fontSize={specs.fontSize} 
+                                fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
+                                  {key != 'US' ? inp.stateNames[key] : ''}
+                                </text>
+                            }
+                             <text 
                               x={specs.xMax + 25} 
                               y={yPos}
                               alignmentBaseline="middle" 
                               fontSize={specs.fontSize} 
                               fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
-                                {key != 'US' ? inp.stateNames[key] : (showOverall ? 'Overall' : '')}
+                                {key != 'US' ? (inp.stateNames[key] ) : (showOverall ? 'Overall' : '')}
                             </text>
+                            </Group>
+                            )
                           }
                           else
                           {

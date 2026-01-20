@@ -1988,6 +1988,14 @@ border-radius: 50%;
 display: inline-block;
 }
 
+.notSelectedState {
+height: 20px;
+width: 20px;
+background-color: lightgray;
+border-radius: 50%;
+display: inline-block;
+}
+
 .alignCenterTT {
     text-align: center;
     border-bottom: solid 2px;

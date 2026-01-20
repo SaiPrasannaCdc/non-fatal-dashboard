@@ -233,6 +233,7 @@ export default function App( params ) {
   const [selectedDrugsBar, setselectedDrugsBar] = useState(['benzodiazepine', 'opioids', 'fentanyl', 'heroin', 'stimulants', 'cocaine', 'methamphetamine']);
   const [selectedDrugsLine, setselectedDrugsLine] = useState(['all']);
   const [selectedDrugsSexAge, setselectedDrugsSexAge] = useState(['all']);
+  const [selectedDrugsState, setselectedDrugsState] = useState(['all']);
 
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [showFootNotes, setShowFootNotes] = useState(false);
@@ -1248,7 +1249,7 @@ const getYears = (startYrInp, endYrInp) => {
         height={900} 
         el={stateBarChartRef}
         currentState={currentState}
-        currentDrug={currentDrug}
+        currentDrug={selectedDrugsState[0]}
         currentTimeframe={timeline}
         currentMonth={currentMonth}
         currentYear={currentYear}
@@ -1260,7 +1261,7 @@ const getYears = (startYrInp, endYrInp) => {
         />
     </div>
   </>,
-  [width, currentDrug, timeline, currentMonth, currentYear, currentState, stateSort]);
+  [width, selectedDrugsState[0], timeline, currentMonth, currentYear, currentState, stateSort]);
 
   const drugsBarChartMemo = useMemo(() =>
     <>
@@ -1652,6 +1653,16 @@ const getYears = (startYrInp, endYrInp) => {
     }
   }
 
+  const handleDrugSelectionsStateChange = (event, drug) => {
+    if (timeline == 'Annual') {
+      setselectedDrugsState([drug])
+    }
+    else
+    {
+      setselectedDrugsState([drug])
+    }
+  }
+
   const getDrugControlsSexAge = () => {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
@@ -1700,6 +1711,67 @@ const getYears = (startYrInp, endYrInp) => {
                       <div class={`drugDiv-${drug[0]}`}>
                         <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
                         <label key={drug[0]} class={(sexAgeMonthly == 'Monthly' && (drug[0] != 'all' && drug[0] != 'opioids' && drug[0] != 'stimulants')) ? "lblDrugGray" : "lblDrug"}>{drug[1].titleForDropDown}</label>
+                      </div>
+                      <br></br>
+                      </div>
+                      
+                  ))
+                }
+                </div>
+                </Fragment>
+              </Fragment>
+          )
+    }
+  }
+
+  const getDrugControlsState = () => {
+    const entries = Object.entries(drugOptions);
+    entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
+
+    if (!isSmallViewport) {
+    return (
+      <Fragment>
+        <Fragment>
+          <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index < 4 &&
+                <div class={`drugDiv-${drug[0]}`}>
+                  <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                  <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                </div>
+                
+            ))
+          }
+          </div>
+        </Fragment>
+        <Fragment>
+        <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index >= 4 &&
+              <div class={`drugDiv-${drug[0]}`}>
+                      <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                      <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                    </div>
+            ))
+          }
+          </div>
+        </Fragment>
+      </Fragment>
+    )
+  }
+  else {
+    return (
+            <Fragment>
+                <Fragment>
+                  <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                  {
+                  entries.map((drug, index) => (
+                    <div>
+                      <div class={`drugDiv-${drug[0]}`}>
+                        <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                        <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
                       </div>
                       <br></br>
                       </div>
@@ -3093,6 +3165,29 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               }
             </tr>
+            <tr>
+              <td colspan={accessible ? 5 : 4}>
+                <table>
+                  <tr>
+                      <td style={{'width': '8%'}}></td>
+                      <td style={{'width': '84%'}}>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                              {getDrugControlsState()}
+                            </td>
+                          </tr>
+                          </table>
+                      </td>
+                      <td style={{'width': '8%'}}></td>
+                    </tr>
+                </table>
+              </td>
+            </tr>
           </table>
           }
           {isSmallViewport &&
@@ -3160,6 +3255,23 @@ const getYears = (startYrInp, endYrInp) => {
                 </table>
               </td>
             </tr>
+            <tr>
+                      <td>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '100%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'left', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                              {getDrugControlsState()}
+                            </td>
+                          </tr>
+                          </table>
+                      </td>
+                    </tr>
             <br></br>
             {accessible &&
             <tr>
