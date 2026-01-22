@@ -5,6 +5,7 @@ import debounce from 'lodash.debounce';
 import * as XLSX from 'xlsx';
 import StateChart from './components/StateChart';
 import BarChart from './components/BarChart';
+import EthnicityChart from './components/EthnicityChart';
 import LineChart from './components/LineChart';
 import Slider from 'rc-slider';
 import UsaMap from './components/UsaMap';
@@ -174,7 +175,7 @@ const drugOptions = {
 
 export default function App( params ) {
 
-  const { accessible, dataUrl } = params;
+  const { accessible, dataUrl, ethnDataUrl} = params;
 
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugOptions)[0]);
   const [timeline, setTimeline] = useState('Monthly');
@@ -204,6 +205,8 @@ export default function App( params ) {
   const [monthsForDropDownSexAge, setMonthsForDropDownSexAge] = useState([]); 
   const [yearsForDropDown, setYearsForDropDown] = useState([]); 
   const [jurisCountData, setJurisCountData] = useState([]);
+  const [jurisEthnCountData, setJurisEthnCountData] = useState([]);
+  const [ethnicityData, setEthnicityData] = useState([]);
   const [jurisCount, setJurisCount] = useState([]);
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
   const [jurisForDropDownLine, setJurisForDropDownLine] = useState([]);
@@ -230,6 +233,7 @@ export default function App( params ) {
   const [selectedDrugsBar, setselectedDrugsBar] = useState(['benzodiazepine', 'opioids', 'fentanyl', 'heroin', 'stimulants', 'cocaine', 'methamphetamine']);
   const [selectedDrugsLine, setselectedDrugsLine] = useState(['all']);
   const [selectedDrugsSexAge, setselectedDrugsSexAge] = useState(['all']);
+  const [selectedDrugsState, setselectedDrugsState] = useState(['all']);
 
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [showFootNotes, setShowFootNotes] = useState(false);
@@ -268,6 +272,7 @@ export default function App( params ) {
   const sexChartRef = useRef();
   const ageChartRef = useRef();
   const sexAgeChartRef = useRef();
+  const ethnicityChartRef = useRef();
 
   const toggleLineChart = () => setShowLineChart(!showLineChart);
 
@@ -332,7 +337,7 @@ export default function App( params ) {
     }
   };
 
-  const prepareData = (stData, usData, jurisCntData) => {
+  const prepareData = (stData, usData, ethnData, jurisCntData, jurisEthnCntData) => {
 
     let tempKeyedRawDataMonthly = [];
     let tempKeyedRawDataAnnual = [];
@@ -341,6 +346,10 @@ export default function App( params ) {
 
     //juris count data 
     setJurisCountData(jurisCntData);
+    setJurisEthnCountData(jurisEthnCntData);
+
+    //Ethnicity data 
+    setEthnicityData(ethnData);
 
     //us data
     for(let y=0;y<Object.keys(usData.Monthly['US']).length;y++)
@@ -567,6 +576,9 @@ export default function App( params ) {
       const binaryData = await (await fetch(dataUrl)).arrayBuffer();
       const wb = XLSX.read(binaryData);
 
+      const ethnbinaryData = await (await fetch(ethnDataUrl)).arrayBuffer();
+      const wbethn = XLSX.read(ethnbinaryData);
+      
       //Populate state data
       let supportedJurisdictions = {};
 
@@ -609,7 +621,7 @@ export default function App( params ) {
       let columnHeadersOverall = columnInfoOverall.columnHeaders;
       let columnsOverall = columnInfoOverall.columns;
       let getValueOverall = (key, k) => overallSheet[columnHeadersOverall[key] + k].v;
-
+      
       let overallData = {};
       let datasetNodeOverall;
 
@@ -648,7 +660,44 @@ export default function App( params ) {
 
       }
 
-      prepareData(stateData, overallData, jurisCountsData);
+      //Populate ethnicity data
+      const ethnSheet = wbethn.Sheets['Sheet1'];
+      let columnInfoEthn = getColumnsInfo(ethnSheet);
+      let columnHeadersEthn = columnInfoEthn.columnHeaders;
+      let columnsEthn = columnInfoEthn.columns;
+      let getValueEthn = (key, k) => ethnSheet[columnHeadersEthn[key] + k].v;
+
+      let ethnData = {};
+      let datasetNodeEthn;
+
+      for (let i = 2; i <= columnsEthn; i++) {
+       
+        datasetNodeEthn = createIfUndefined(ethnData, getValueEthn('rate_time', i), {});
+        datasetNodeEthn = createIfUndefined(datasetNodeEthn, getValueEthn('geoid', i), {});
+        datasetNodeEthn = createIfUndefined(datasetNodeEthn, getValueEthn('month', i), []);
+        datasetNodeEthn = createIfUndefined(datasetNodeEthn, getValueEthn('race_ethnicity', i), []);
+        
+        let yearDatumEthn = { year: getValueEthn('year', i) };
+        Object.keys(drugOptions).forEach(drug => {
+            yearDatumEthn[drug] = formatNumber(getValueEthn(drugOptions[drug].rateColumn, i));
+            yearDatumEthn[drug + '_pct'] = formatNumber(getValueEthn(drugOptions[drug].percentageColumn, i));
+        });
+        datasetNodeEthn.push(yearDatumEthn);
+      }
+
+      let jurisEthnCountsData = {};
+
+      for (let x = 2; x <= columnsEthn; x++) {
+        let mon = String(getValueEthn('month', x)).padStart(2, '0');
+        let yr = getValueEthn('year', x);
+        let rt = getValueEthn('rate_time', x);
+        let count = getValueEthn('jurisdiction_count', x);
+
+       jurisEthnCountsData[yr + mon + rt] = count;
+
+      }
+
+      prepareData(stateData, overallData, ethnData, jurisCountsData, jurisEthnCountsData);
       
     }
 
@@ -1200,7 +1249,7 @@ const getYears = (startYrInp, endYrInp) => {
         height={900} 
         el={stateBarChartRef}
         currentState={currentState}
-        currentDrug={currentDrug}
+        currentDrug={selectedDrugsState[0]}
         currentTimeframe={timeline}
         currentMonth={currentMonth}
         currentYear={currentYear}
@@ -1212,7 +1261,7 @@ const getYears = (startYrInp, endYrInp) => {
         />
     </div>
   </>,
-  [width, currentDrug, timeline, currentMonth, currentYear, currentState, stateSort]);
+  [width, selectedDrugsState[0], timeline, currentMonth, currentYear, currentState, stateSort]);
 
   const drugsBarChartMemo = useMemo(() =>
     <>
@@ -1300,7 +1349,7 @@ const getYears = (startYrInp, endYrInp) => {
     <>
     <div className="column column-right">
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          {!accessible && <span className="individual-header margin-top">By Sex</span>}
+          {!accessible && <span className="individual-header margin-top">By Sex ({jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={sexChartRef}>
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
@@ -1327,7 +1376,7 @@ const getYears = (startYrInp, endYrInp) => {
     <>
     <div className="column column-right">
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          {!accessible && <span className="individual-header margin-top">By Age (In years)</span>}
+          {!accessible && <span className="individual-header margin-top">By Age (In years) ({jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
           <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={ageChartRef}>
             <AgeChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
@@ -1357,7 +1406,7 @@ const getYears = (startYrInp, endYrInp) => {
     <>
     <div className={"column column-right"}>
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          {!accessible && <span className="individual-header margin-top">By Age (In years) and Sex</span>}
+          {!accessible && <span className="individual-header margin-top">By Age (In years) and Sex ({jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
           <div class='' ref={sexAgeChartRef}>
             <SexAgeChart 
             data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
@@ -1377,6 +1426,32 @@ const getYears = (startYrInp, endYrInp) => {
        </div> 
       </>,
   [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge, currentDataType]);
+
+  const EthnicityChartMemo = useMemo(() =>
+    <>
+   <div className={"column column-right"}>
+        <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
+          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ''}</span>}
+          <div class='' ref={sexAgeChartRef}>
+            <EthnicityChart 
+            data={ethnicityData}
+            currentTimeframe={sexAgeMonthly}
+            currentYear={currentYearSexAge}
+            currentMonth={currentMonthSexAge}
+            width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
+            height={640} //TODO
+            currentDrug={selectedDrugsSexAge[0]} 
+            drugOptions={drugOptions} 
+            currentDataType={currentDataType}
+            accessible={accessible}
+            widthReduction={(!isSmallViewport && !accessible) ? true : false}
+            />
+          </div>
+        </div>
+    </div> 
+  </>,
+  [sexAgeMonthly, currentYearSexAge, currentMonthSexAge, width, selectedDrugsSexAge, currentDataType]);
+
 
   const loading = <div className="loading-container">
       <div className="loading-spinner"></div>
@@ -1578,6 +1653,16 @@ const getYears = (startYrInp, endYrInp) => {
     }
   }
 
+  const handleDrugSelectionsStateChange = (event, drug) => {
+    if (timeline == 'Annual') {
+      setselectedDrugsState([drug])
+    }
+    else
+    {
+      setselectedDrugsState([drug])
+    }
+  }
+
   const getDrugControlsSexAge = () => {
     const entries = Object.entries(drugOptions);
     entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
@@ -1626,6 +1711,67 @@ const getYears = (startYrInp, endYrInp) => {
                       <div class={`drugDiv-${drug[0]}`}>
                         <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsSexAgeChange(event, drug[0]) }}></span>
                         <label key={drug[0]} class={(sexAgeMonthly == 'Monthly' && (drug[0] != 'all' && drug[0] != 'opioids' && drug[0] != 'stimulants')) ? "lblDrugGray" : "lblDrug"}>{drug[1].titleForDropDown}</label>
+                      </div>
+                      <br></br>
+                      </div>
+                      
+                  ))
+                }
+                </div>
+                </Fragment>
+              </Fragment>
+          )
+    }
+  }
+
+  const getDrugControlsState = () => {
+    const entries = Object.entries(drugOptions);
+    entries.sort((a, b) => a[1].lineChartOrder - b[1].lineChartOrder);
+
+    if (!isSmallViewport) {
+    return (
+      <Fragment>
+        <Fragment>
+          <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index < 4 &&
+                <div class={`drugDiv-${drug[0]}`}>
+                  <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                  <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                </div>
+                
+            ))
+          }
+          </div>
+        </Fragment>
+        <Fragment>
+        <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+          {
+            entries.map((drug, index) => (
+              index >= 4 &&
+              <div class={`drugDiv-${drug[0]}`}>
+                      <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                      <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
+                    </div>
+            ))
+          }
+          </div>
+        </Fragment>
+      </Fragment>
+    )
+  }
+  else {
+    return (
+            <Fragment>
+                <Fragment>
+                  <div style={{width: '100%!important', float: 'left', display: 'inline-block'}}>
+                  {
+                  entries.map((drug, index) => (
+                    <div>
+                      <div class={`drugDiv-${drug[0]}`}>
+                        <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                        <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
                       </div>
                       <br></br>
                       </div>
@@ -3019,6 +3165,29 @@ const getYears = (startYrInp, endYrInp) => {
               </td>
               }
             </tr>
+            <tr>
+              <td colspan={accessible ? 5 : 4}>
+                <table>
+                  <tr>
+                      <td style={{'width': '8%'}}></td>
+                      <td style={{'width': '84%'}}>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '23%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'right', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '65px', paddingTop: '5px'}}>
+                              {getDrugControlsState()}
+                            </td>
+                          </tr>
+                          </table>
+                      </td>
+                      <td style={{'width': '8%'}}></td>
+                    </tr>
+                </table>
+              </td>
+            </tr>
           </table>
           }
           {isSmallViewport &&
@@ -3086,6 +3255,23 @@ const getYears = (startYrInp, endYrInp) => {
                 </table>
               </td>
             </tr>
+            <tr>
+                      <td>
+                        <table style={{'border':'solid 2px gray', 'padding':'10px', 'borderRadius': '10px'}}>
+                          <tr>
+                            <td style={{'width': '100%', 'verticalAlign': 'top'}}>
+                              <div style={{'fontWeight': 'bold', 'textAlign': 'left', 'paddingTop': '3px', 'paddingLeft': '3px'}} className="select-input">Select Drug Syndrome:</div>
+                              <div style={{'textAlign': 'left'}} className="select-input"><em>Click One</em></div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="drugsDivTop" style={{textAlign: 'left', verticalAlign: 'top', paddingLeft: '15px', paddingTop: '5px'}}>
+                              {getDrugControlsState()}
+                            </td>
+                          </tr>
+                          </table>
+                      </td>
+                    </tr>
             <br></br>
             {accessible &&
             <tr>
@@ -3118,12 +3304,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
           {sexAgeMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, and Race/Ethnicity, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
           }
           {sexAgeMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, in {jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, and Race/Ethnicity, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
           }
         </div>
@@ -3359,6 +3545,14 @@ const getYears = (startYrInp, endYrInp) => {
                           </table>
                       </td>
                     </tr>
+                    <tr>
+                      <td colspan='3'>
+                        Percent
+                          <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'percent' : 'rate')} checked={currentDataType == 'percent' ? true : false} defaultChecked="false"/>
+                        Rate
+                        <br></br>
+                      </td>
+                    </tr>
                   </table>
                 }
 
@@ -3379,6 +3573,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {sexAgeChartMemo}
                 </td>
                 <td style={{width: '50%'}}>
+                  {EthnicityChartMemo}
                 </td>
               </tr>
             </table>
@@ -3396,8 +3591,13 @@ const getYears = (startYrInp, endYrInp) => {
                 </td>
               </tr>
               <tr>
-                <td style={{width: '0%'}}>
+                <td style={{width: '100%'}}>
                   {sexAgeChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {EthnicityChartMemo}
                 </td>
               </tr>
             </table>
@@ -3421,6 +3621,11 @@ const getYears = (startYrInp, endYrInp) => {
                   {sexAgeChartMemo}
                 </td>
               </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {EthnicityChartMemo}
+                </td>
+              </tr>
             </table>
           }
           {accessible && isSmallViewport &&
@@ -3438,8 +3643,13 @@ const getYears = (startYrInp, endYrInp) => {
               </tr>
               <br></br>
               <tr>
-                <td style={{width: '0%'}}>
+                <td style={{width: '100%'}}>
                   {sexAgeChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {EthnicityChartMemo}
                 </td>
               </tr>
             </table>

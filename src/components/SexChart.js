@@ -191,10 +191,11 @@ const getMaxValue = (fdata) => {
 
     let vals = [];
     for (let x=0;x<Object.keys(fdata).length;x++) {
+      if (Number(fdata[x].value) > 0)
         vals.push(Number(fdata[x].value));
     }
     
-    return Math.max(...vals);
+    return vals.length > 0 ? Math.max(...vals) : 0.84;
   }
 
 function SexChart(params) {
@@ -254,16 +255,17 @@ function SexChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? 'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : 'Rate',
+            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
             'Sex': 'By Sex'
           }}
           xAxisKey={'Sex'}
           transforms={{
-            rate: num => UtilityFunctions.toFixed(num)
+            rate: num => (UtilityFunctions.toFixed(num) + (currentDataType == 'rate' ? '' : '%'))
           }}
           height={'auto'}
           width={width}
           isSmallViewport={isSmallViewport}
+          currentDataType={currentDataType}
         />
         {!isSmallViewport && <table>
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
@@ -279,7 +281,7 @@ function SexChart(params) {
         {isSmallViewport && <table>
           <tr>
               <td>
-                <div><span><small><sup>‡</sup>{'Rate of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
+                <div><span><small><sup>‡</sup>{(currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
               </td>
             </tr>
             <br></br>
@@ -315,7 +317,7 @@ function SexChart(params) {
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.sex}`} className="animate-bars">
-                    {d.value > 0 && (
+                    {d.value >= 0 && (
                       <path
                         key={`cause-bar-${d.sex}`}
                         className={`animated-bar vertical ${animated ? 'animated' : ''}`}
@@ -329,7 +331,7 @@ function SexChart(params) {
                         data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: ${Number(d.value).toFixed(1) + (currentDataType == 'rate' ? '' : '%')}`}
                       ></path>
                     )}
-                    {d.value == 0 && (
+                    {d.value == -3.0 && (
                       <text
                         x={xScale(d.sex) + halfBandwidth}
                         y={adjustedHeight - 10}
@@ -340,7 +342,18 @@ function SexChart(params) {
                         data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: Data Suppressed`}
                       >*</text>
                     )}
-                    {d.value > 0 && (
+                    {d.value == -1.0 && (
+                      <text
+                        x={xScale(d.sex) + halfBandwidth}
+                        y={adjustedHeight - 10}
+                        fill="#000000"
+                        fontWeight='normal'
+                        textAnchor="middle"
+                        cursor="default"
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: Data not available/not reported`}
+                      >†</text>
+                    )}
+                    {d.value >= 0 && (
                         <text
                           x={xScale(d.sex) + halfBandwidth}
                           y={yScale(d.value) - 10}
