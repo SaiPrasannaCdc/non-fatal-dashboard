@@ -317,7 +317,7 @@ function SexChart(params) {
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.sex}`} className="animate-bars">
-                    {d.value > 0 && (
+                    {d.value >= 0 && (
                       <path
                         key={`cause-bar-${d.sex}`}
                         className={`animated-bar vertical ${animated ? 'animated' : ''}`}
@@ -353,7 +353,7 @@ function SexChart(params) {
                         data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: Data not available/not reported`}
                       >†</text>
                     )}
-                    {d.value > 0 && (
+                    {d.value >= 0 && (
                         <text
                           x={xScale(d.sex) + halfBandwidth}
                           y={yScale(d.value) - 10}

@@ -344,7 +344,7 @@ function AgeChart(params) {
 
                 {filteredData.map(d => (
                   <Group key={`group-${d.ageN}`} className="animate-bars">
-                    {d.value > 0 && (
+                    {d.value >= 0 && (
                       <path
                         key={`cause-bar-${d.ageN}`}
                         className={`animated-bar vertical ${animated ? 'animated' : ''}`}
@@ -379,7 +379,7 @@ function AgeChart(params) {
                         data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age Group: ${d.ageN}<br/><br/>Overdoses: Data not available/not reported`}
                       >†</text>
                     )}
-                    {d.value > 0 && (
+                    {d.value >= 0 && (
                         <text
                           x={xScale(d.ageN) + halfBandwidth}
                           y={yScale(d.value) - 10}
