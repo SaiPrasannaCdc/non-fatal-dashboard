@@ -8,6 +8,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 import StateChart from './components/StateChart';
 import LineChart from './components/LineChart';
 import SexAgeCharts from './components/SexAgeCharts';
+import EthnicityChart from './components/EthnicityChart';
 import UsaMap from './components/UsaMap';
 import Select from './components/Select';
 import Datatable from './components/Datatable';
@@ -162,9 +163,10 @@ const createIfUndefined = (object, key, value) => {
 const formatNumber = (val, isFloat = true) => {
   let numericVal = isFloat ? parseFloat(val) : parseInt(val);
   if (isNaN(numericVal)) {
-    if (val == 'NA')
+    if (val == 'NA' || val == 'not available')
       return 'Data not available';
-    return 'Data suppressed*';
+    else
+      return 'Data suppressed*';
   } else {
     return (isFloat ? (Math.round(numericVal * 10) / 10).toFixed(1) : numericVal);
   }
@@ -177,6 +179,7 @@ export default function App(params) {
   const [stateChartData, setStateChartData] = useState();
   const [sexAgeChartData, setSexAgeChartData] = useState();
   const [usamapData, setUsaMapData] = useState();
+  const [ethnicityData, setEthnicityData] = useState();
   const [stateDropdownOptions, setStateDropdownOptions] = useState([]);
   const [stateDropdownOptionsCompare, setStateDropdownOptionsCompare] = useState([]);
   const [currentDataSource, setCurrentDataSource] = useState('ED');
@@ -1045,6 +1048,7 @@ export default function App(params) {
     let yearData = {};
     let sexData = {};
     let countyData = {};
+    let ethnicityData = {};
 
     await fetch(dataPath + 'Jurisdiction_Counts_Rates.json')
       .then(res => res.json())
@@ -1224,12 +1228,52 @@ export default function App(params) {
         }
       });
 
+      await fetch(dataPath + 'Overall_By_Race_Ethnicity.json')
+      .then(res => res.json())
+      .then(data => {
+
+        let columns = data.length;
+        let getValue = (key, i) => data[i][key];
+
+        for (let i = 0; i < columns; i++) {
+          let year = getValue('year', i);
+          let ds = getValue('dataset', i);
+          createIfUndefined(ethnicityData, year, {});
+          createIfUndefined(ethnicityData[year], ds, {});
+          ethnicityData[year][ds][getValue('race_ethnicity_category', i)] = {
+            race_ethnicity_category: getValue('race_ethnicity_category', i),
+            jurisdiction: getValue('jurisdiction', i),
+            jurisdiction_count_figure: getValue('jurisdiction_count_figure', i),
+            month: getValue('month', i), 
+            time_frame: getValue('time_frame', i), 
+            population: formatNumber(getValue('population', i)),
+            count_alldrug: formatNumber(getValue('count_alldrug', i)), 
+            count_opioid: formatNumber(getValue('count_opioid', i)), 
+            count_fentanyl: formatNumber(getValue('count_fentanyl', i)), 
+            count_heroin: formatNumber(getValue('count_heroin', i)), 
+            count_stimulant: formatNumber(getValue('count_stimulant', i)), 
+            count_cocaine: formatNumber(getValue('count_cocaine', i)), 
+            count_methamphetamine: formatNumber(getValue('count_methamphetamine', i)), 
+            count_benzodiazepine: formatNumber(getValue('count_benzodiazepine', i)), 
+            rate_alldrug: formatNumber(getValue('rate_alldrug', i)), 
+            rate_opioid: formatNumber(getValue('rate_opioid', i)), 
+            rate_fentanyl: formatNumber(getValue('rate_fentanyl', i)), 
+            rate_heroin: formatNumber(getValue('rate_heroin', i)), 
+            rate_stimulant: formatNumber(getValue('rate_stimulant', i)),
+            rate_cocaine: formatNumber(getValue('rate_cocaine', i)), 
+            rate_methamphetamine: formatNumber(getValue('rate_methamphetamine', i)), 
+            rate_benzodiazepine: formatNumber(getValue('rate_benzodiazepine', i)),  
+          };
+        }
+      });
+
     //set data
     setData({ state: stateData, year: yearData, supportedJurisdictions });
     setLineChartData({ state: stateData, year: yearData, sex: sexData, supportedJurisdictions });
     setStateChartData({ year: yearData, supportedJurisdictions });
     setSexAgeChartData({ sex: sexData });
     setUsaMapData({ state: stateData, year: yearData, county: countyData, supportedJurisdictions });
+    setEthnicityData({ ethnicityData: ethnicityData });
     setOnlyCurrentDrug(false);
 
   }
@@ -1510,6 +1554,26 @@ export default function App(params) {
       </div>
     </>,
     [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
+
+    const ethnicityChartsMemo = useMemo(() =>
+    <>
+      <div className='subsection marked'>
+        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity</span>
+        <EthnicityChart
+          data={ethnicityData}
+          currentTimeframe={currentTimeframe}
+          currentDataSource={currentDataSource}
+          currentDrug={selectedDrugsSexAge[0]}
+          currentYear={currentYear}
+          currentMonth={currentMonth}
+          currentDataType={currentDataType}
+          width={width}
+          drugOptions={drugOptions}
+          accessible={accessible} 
+        />
+      </div>
+    </>,
+    [ethnicityData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
@@ -2019,6 +2083,8 @@ export default function App(params) {
               </table>
               <br></br>
               {sexAgeChartData && sexAgeChartsMemo}
+              {getFootNotesForData('Sex', false)}
+              {ethnicityData && ethnicityChartsMemo}
               {getFootNotesForData('Sex', false)}
             </section>
 
