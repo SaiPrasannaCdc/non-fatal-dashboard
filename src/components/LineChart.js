@@ -266,7 +266,7 @@ function LineChart(params) {
     range: [10, specs.xMax]
   });
   specs['yScale'] = scaleLinear({
-    domain: [0, yScaleDomainPeriod == 0 ? 0.8 : yScaleDomainPeriod], 
+    domain: [0, yScaleDomainPeriod <= 0 ? 0.8 : yScaleDomainPeriod], 
     range: [specs.yMax, 0],
   });
 
@@ -316,7 +316,7 @@ const adjustCrowdedLabels = () => {
         if (!UtilityFunctions.isCovidPeriod(rec.year)) {
           var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]]);
           const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][selectedDrugs[i]] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][selectedDrugs[i]]) : 'Data suppressed*';
-          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
+          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0' || valueState === '-2.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
           if (pos !== undefined) {
             positionsVar.push({
                 label: drugOptions[selectedDrugs[i]].titleForDropDown, 
@@ -330,7 +330,7 @@ const adjustCrowdedLabels = () => {
         else {
           var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1 - covidTimeIndex][selectedDrugs[i]]);
           const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][selectedDrugs[i]] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][selectedDrugs[i]]) : 'Data suppressed*';
-          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
+          const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0' || valueState === '-2.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
           if (pos !== undefined) {
             positionsVar.push({
                 label: drugOptions[selectedDrugs[i]].titleForDropDown, 
@@ -549,8 +549,8 @@ const adjustCrowdedLabels = () => {
     let stStr = inp.currentTimeframe === 'Monthly' ? `${inp.monthNamesPeriod[d[[specs.xKey]]]}` : (!isSmallViewport ? UtilityFunctions.getPeriod(d['year'].substring(0,4), d['year'].substring(4)) : UtilityFunctions.getPeriodM(d['year'].substring(0,4), d['year'].substring(4)));
     stStr = stStr + ', ' + drugOptions[inp.selectedDrugs[0]].titleForDropDown;
     let msgStr = inp.currentTimeframe === 'Monthly' ? '' : `&nbsp<span class='smallFont alignCenter'>12-month rolling averages starting and ending period</span>`;
-    let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateUS == 0 ? 'Data Suppressed' : (rateUS == '-1.0' ? 'Data not available/not reported' : rateUS)} (${getJurisCount(d['year'])} Jurisdictions)</p>`
-    let midStr2 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + stateNames[currentState] + `</strong>: ${rateSt == '-3.0' ? 'Data Suppressed' : (rateSt == '-1.0' ? 'Data not available/not reported' : rateSt)}</p>`
+    let midStr1 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + 'Overall' + `</strong>: ${rateUS == 0 ? 'Data Suppressed' : (rateUS == '-1.0' ? 'Data not available/not reported' : (rateUS == '-2.0' ? 'Unfunded State' : rateUS))} (${getJurisCount(d['year'])} Jurisdictions)</p>`
+    let midStr2 = `<p class='alignLeft'><strong class=${inp.selectedDrugs[0] + 'ToolTip'}>` + stateNames[currentState] + `</strong>: ${rateSt == '-3.0' ? 'Data Suppressed' : (rateSt == '-1.0' ? 'Data not available/not reported' : (rateSt == '-2.0' ? 'Unfunded State' : rateSt))}</p>`
     let parStr = `</strong></span>` + midStr1 + midStr2 + `</td></tr></table>`;
     return str + stStr + `</td></tr><tr><td class='alignCenter'>` + msgStr + parStr;
   }
@@ -642,7 +642,7 @@ const adjustCrowdedLabels = () => {
                 var tooltipValues = [];
                 if (inp.selectedDrugs.length > 0) {
                     for (var i in inp.selectedDrugs) {
-                        tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == '-3.0' ? 'Data Suppressed' : (d[inp.selectedDrugs[i]] == '-1.0' ? 'Data not available/not reported' : d[inp.selectedDrugs[i]])}</span></div>`);
+                        tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == '-3.0' ? 'Data Suppressed' : (d[inp.selectedDrugs[i]] == '-1.0' ? 'Data not available/not reported' : (d[inp.selectedDrugs[i]] == '-2.0' ? 'Unfunded State' : d[inp.selectedDrugs[i]]))}</span></div>`);
                       }
                     }
                 }
@@ -675,7 +675,7 @@ const adjustCrowdedLabels = () => {
             var tooltipValues = [];
             if (inp.selectedDrugs.length > 0) {
                 for (var i in inp.selectedDrugs) {
-                    tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == '-3.0' ? 'Data Suppressed' : (d[inp.selectedDrugs[i]] == '-1.0' ? 'Data not available/not reported' : d[inp.selectedDrugs[i]])}</span></div>`);
+                    tooltipValues.push(`<div class='toolTipPad'><span><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + `</strong>: ${d[inp.selectedDrugs[i]] == '-3.0' ? 'Data Suppressed' : (d[inp.selectedDrugs[i]] == '-1.0' ? 'Data not available/not reported' : (d[inp.selectedDrugs[i]] == '-2.0' ? 'Unfunded State' : d[inp.selectedDrugs[i]]))}</span></div>`);
                   }
             }
               
@@ -762,7 +762,7 @@ const adjustCrowdedLabels = () => {
 
     const seriesLabelPositionUS = endWithCovidPeriod && !allPeriodIsCovid ? specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][currentDrug]) : specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][currentDrug] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug]) : 'Data suppressed*';
-    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === '-1.0' || valueState === '-3.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
+    const seriesLabelPositionState = (valueState === 'Data suppressed*' || valueState === '-1.0' || valueState === '-3.0' || valueState === '-2.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
 
 
     if (seriesLabelPositionUS === undefined)
@@ -780,17 +780,17 @@ const adjustCrowdedLabels = () => {
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] >= 0 && (dNext[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodNoLine(dNext['year'], d['year'])) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
-                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] >= 0 && (dNext[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodNoLine(dNext['year'], d['year'])) > 0 && key != 'US') && 
-                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year']) && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == 0 ? specs.yScale(0) - 8 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year']) && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == 0 ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
                           {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == '-3.0' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
 
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && (d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year'])) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == '0.0' ? specs.yScale(0) - 16 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && (d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year'])) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-3.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-1.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '†' : ''}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-2.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '**' : ''}</text>}
@@ -825,14 +825,14 @@ const adjustCrowdedLabels = () => {
                             yPos = seriesLabelPositionState;
                           }
                         }
-    
+
                         if (currentState != 'US' && !specs.isSmallViewport) {
                           if (showOverall) {
                             return (
                             <Group>
-                             { UtilityFunctions.lastPointIsNaN(inp.filteredData[key], currentDrug) &&
+                             { UtilityFunctions.lastPointIsNaN(inp.filteredData[key], currentDrug) && UtilityFunctions.enoughYdiff(inp.filteredData[key], currentDrug, yScaleDomainPeriod) &&
                                 <text 
-                                x={specs.xScale(UtilityFunctions.lastValidPointX(inp.filteredData[key], currentDrug)) + 60} 
+                                x={specs.xScale(UtilityFunctions.lastValidPointX(inp.filteredData[key], currentDrug)) + 40} 
                                 y={specs.yScale(UtilityFunctions.lastValidPointY(inp.filteredData[key], currentDrug))}
                                 alignmentBaseline="middle" 
                                 fontSize={specs.fontSize} 
@@ -865,7 +865,7 @@ const adjustCrowdedLabels = () => {
                                 stroke={colorScale[currentDrug]}
                                 strokeWidth={0.5}/>
                               <text
-                                class='adjustCrowded'
+                                class={'adjustCrowded'}
                                 x={specs.xMax + 28} 
                                 y={yPos}
                                 alignmentBaseline="middle" 

@@ -238,14 +238,18 @@ const getMaxValue = (fdata) => {
   let maleVals = [];
   let femaleVals = [];
   for (let x=0;x<Object.keys(fdata).length;x++) {
-      maleVals.push(Number(fdata[x].M));
-      femaleVals.push(Number(fdata[x].F))
+      if (Number(fdata[x].M) > 0)
+        maleVals.push(Number(fdata[x].M));
+      if (Number(fdata[x].F) > 0)
+        femaleVals.push(Number(fdata[x].F))
   }
 
-  if (Math.max(...maleVals) < Math.max(...femaleVals))
-    return Math.max(...femaleVals);
+  let maleMax = maleVals.length > 0 ? Math.max(...maleVals) : 0.84;
+  let femaleMax = femaleVals.length > 0 ? Math.max(...femaleVals) : 0.84;
+  if (maleMax < femaleMax)
+    return femaleMax;
   else
-    return Math.max(...maleVals);
+    return maleMax;
 }
 
 
@@ -325,8 +329,8 @@ function SexAgeChart(params) {
 
   const getBar = (d) => {
 
-    const x1Pos = isNaN(d[x1Key]) ? xMaxHalf - 15 : x1Scale(d[x1Key] * 0.75);
-    const x2Pos = isNaN(d[x2Key]) ? xMaxHalf + 15 : x2Scale(d[x2Key] * 0.75);
+    const x1Pos = d[x1Key] < 0 ? xMaxHalf - 15 : x1Scale(d[x1Key] * 0.75);
+    const x2Pos = d[x2Key] < 0 ? xMaxHalf + 15 : x2Scale(d[x2Key] * 0.75);
 
     const x1Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${Number(d[x1Key]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
     const x2Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${Number(d[x2Key]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
@@ -340,7 +344,26 @@ function SexAgeChart(params) {
       <g key={d[yKey]}>
 
         {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
-        {d[x1Key] == 0 && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} textAnchor="middle" alignmentBaseline="end" fill={'#000000'} fontSize={isSmallViewport ? fontSize : fontSize} data-tip={d[x1Key] == 0 ? x1TipDS : x1Tip}>{d[x1Key] == 0 ? '*' : '†'}</Text>}
+        {d[x1Key] == -3.0 && 
+          <Text 
+          x={x1Pos} 
+          y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} 
+          textAnchor="middle" 
+          alignmentBaseline="end" fill={'#000000'} 
+          fontSize={isSmallViewport ? fontSize : fontSize} 
+          data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: Female<br/><br/>Overdoses: Data Suppressed`}>*</Text>
+        }
+        {d[x1Key] == -1.0 && 
+          <Text 
+          x={x1Pos} 
+          y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} 
+          textAnchor="middle" 
+          alignmentBaseline="end" 
+          fill={'#000000'} 
+          fontSize={isSmallViewport ? fontSize : fontSize} 
+          data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: Female<br/><br/>Overdoses: Data not available/not reported`}>†</Text>
+        }
+        {d[x1Key] > 0 &&
         <Text 
           x={(x1Pos) - (d[x2Key] > 99 ? 53 : (d[x2Key] >= 10 ? 50 : 45))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
@@ -348,10 +371,30 @@ function SexAgeChart(params) {
           fill="#000000"
           fontWeight='normal'
           fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x1Key])?.toFixed(1) + (currentDataType == 'rate' ? '' : '%')}</Text>
+        }
 
-
-        {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
-        {d[x1Key] == 0 && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} textAnchor="middle" alignmentBaseline="end" fill={'#000000'} fontSize={isSmallViewport ? fontSize : fontSize} data-tip={d[x2Key] == 0 ? x2TipDS : x2Tip}>{d[x2Key] == 0  ? '*' : '†'}</Text>}
+        {d[x2Key] > 0 && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
+        {d[x2Key] == -3.0 && 
+        <Text 
+        x={x2Pos} 
+        y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} 
+        textAnchor="middle" 
+        alignmentBaseline="end" 
+        fill={'#000000'} 
+        fontSize={isSmallViewport ? fontSize : fontSize} 
+        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: Male<br/><br/>Overdoses: Data Suppressed`}>*</Text>
+        }
+        {d[x2Key] == -1.0 && 
+        <Text 
+        x={x2Pos} 
+        y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 8} 
+        textAnchor="middle" 
+        alignmentBaseline="end" 
+        fill={'#000000'} 
+        fontSize={isSmallViewport ? fontSize : fontSize} 
+        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: Male<br/><br/>Overdoses: Data not available/not reported`}>†</Text>
+        }
+        {d[x2Key] > 0 &&
         <Text 
           x={(x2Pos) + (d[x2Key] > 99 ? 53 : (d[x2Key] >= 10 ? 50 : 45))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
@@ -359,7 +402,7 @@ function SexAgeChart(params) {
           fill="#000000"
           fontWeight='normal' 
           fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{Number(d[x2Key])?.toFixed(1) + (currentDataType == 'rate' ? '' : '%')}</Text>
-
+        }
 
       </g>
     )

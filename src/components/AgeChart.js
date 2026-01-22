@@ -220,10 +220,11 @@ const getMaxValue = (fdata) => {
 
     let vals = [];
     for (let x=0;x<Object.keys(fdata).length;x++) {
+      if (Number(fdata[x].value) > 0)
         vals.push(Number(fdata[x].value));
     }
     
-    return Math.max(...vals);
+    return vals.length > 0 ? Math.max(...vals) : 0.84;
   }
 
 function AgeChart(params) {
@@ -356,7 +357,7 @@ function AgeChart(params) {
                         data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age: ${d.ageN}<br/><br/>Overdoses: ${Number(d.value).toFixed(1) + (currentDataType == 'rate' ? '' : '%')}`}
                       ></path>
                     )}
-                    {d.value == 0 && (
+                    {d.value == -3.0 && (
                       <text
                         x={xScale(d.ageN) + halfBandwidth}
                         y={adjustedHeight - 10}
@@ -366,6 +367,17 @@ function AgeChart(params) {
                         cursor="default"
                         data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age Group: ${d.ageN}<br/><br/>Overdoses: Data Suppressed`}
                       >*</text>
+                    )}
+                    {d.value == -1.0 && (
+                      <text
+                        x={xScale(d.ageN) + halfBandwidth}
+                        y={adjustedHeight - 10}
+                        fill="#000000"
+                        fontWeight='normal'
+                        textAnchor="middle"
+                        cursor="default"
+                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age Group: ${d.ageN}<br/><br/>Overdoses: Data not available/not reported`}
+                      >†</text>
                     )}
                     {d.value > 0 && (
                         <text
