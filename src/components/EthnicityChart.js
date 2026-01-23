@@ -1,17 +1,31 @@
-import React from 'react';
-import { Text } from '@visx/text';
+import { useState, useEffect } from 'react';
 import { Group } from '@visx/group';
-import { scaleBand, scaleLinear } from '@visx/scale';
-import { AxisBottom,AxisLeft } from '@visx/axis';
+import { scaleLinear, scaleBand } from '@visx/scale';
+import { AxisLeft, AxisBottom } from '@visx/axis';
+import { Text } from '@visx/text';
+import Utils from '../shared/Utils';
+import '../css/StateChart.css';
 import { UtilityFunctions } from '../utility';
 import { AccessibilityFunctions } from '../accessibility';
 import DataTable508 from './DataTable508';
-import Utils from '../shared/Utils';
 
+const getEthnGroups = (data, currentDataSource, currentYear, currentMonth) => {
 
-const getFilteredData = (data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType, width) => {
+  var ethnData = [];
+
+    for(let i=0;i<Object.keys(data.ethnicityData[currentYear][currentDataSource]).length;i++) {
+      var ethnGrp = Object.keys(data.ethnicityData[currentYear][currentDataSource])[i];
+      ethnData.push(ethnGrp);
+     }
+
+    return ethnData;
+
+};
+
+const getFilteredData = (data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType) => {
   
-  var finalData = [];
+  var finalData = {};
+  var finalDataBeforeSort = [];
   var val = 0;
 
   for (let x=0;x<ethnGroups.length;x++) {
@@ -96,141 +110,92 @@ const getFilteredData = (data, currentDataSource, ethnGroups, currentDrug, curre
         break;
     }
 
-    prefinalData['ethn'] = ethnGroups[x];
     prefinalData['ethnN'] = ethnN;
     prefinalData['sortOrder'] = sortOrder;
-    prefinalData['val'] = String(val);
+    prefinalData['rate'] = String(val);
 
-    finalData.push(prefinalData);
+    finalDataBeforeSort.push(prefinalData);
+
   }
 
-  var sortedFinalData = sortByKey(finalData, 'sortOrder');
+  const sorted = [...finalDataBeforeSort].sort((a, b) => b.sortOrder - a.sortOrder);
+  for (var i=0;i<sorted.length;i++)
+    finalData[sorted[i].ethnN] = sorted[i];
 
-  return sortedFinalData;
-};
-
-function sortByKey(array, key) {
-  return array.sort(function(a, b) {
-    const x = a[key];
-    const y = b[key];
-    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-  });
-}
-
-const getMaxValue = (fdata) => {
-
-  let vals = [];
-  for (let x=0;x<Object.keys(fdata).length;x++) {
-    if (!isNaN(fdata[x].val) && Number(fdata[x].val) > 0)
-      vals.push(Number(fdata[x].val));
-  }
-
-  return Math.max(...vals);
-}
-
-
-const getEthnGroups = (data, currentDataSource, currentYear, currentMonth) => {
-
-  var ethnData = [];
-
-    for(let i=0;i<Object.keys(data.ethnicityData[currentYear][currentDataSource]).length;i++) {
-      var ethnGrp = Object.keys(data.ethnicityData[currentYear][currentDataSource])[i];
-      ethnData.push(ethnGrp);
-     }
-
-    return ethnData;
-
+  return finalData;
 };
 
 function EthnicityChart(params) {
 
-  const { data, currentTimeframe, currentDataSource, currentDrug, currentYear, currentMonth, currentDataType, width, drugOptions, accessible } = params;
+  const viewportCutoff = 600;
 
-  const ethnGroups = getEthnGroups(data, currentDataSource, currentYear, currentMonth)
-  const filteredData = getFilteredData(data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
+  const [ animated, setAnimated ] = useState(true);
+
+  const { data, width, height, el, currentDrug, currentDataSource, currentTimeframe, currentDataType, currentMonth, currentYear, drugOptions, accessible } = params;
 
   const isSmallViewport = width < 550;
-  const height = 550;
-  const fontSize = 16;
-  const margin = { top: 50, bottom: 145, left: isSmallViewport ? 200 : 300, right: isSmallViewport ? 0 : 15 };
 
-  const xMax = width - margin.left - margin.right;
-  const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
-  const adjustedWidth = width - margin.left - margin.right;
+  const ethnGroups = getEthnGroups(data, currentDataSource, currentYear, currentMonth)
+  const dataRates = getFilteredData(data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
 
-  const xKey = 'val';
-  const yKey = 'ethnN';
+  const dataKeys = Object.keys(dataRates || {}).filter(name => name !== 'max' && name !== 'min');
+  const maxValue = UtilityFunctions.calculateMax(dataRates) ;
+  const max = maxValue> 0 ? maxValue : 1;
 
-  let overallMax = getMaxValue(filteredData) * 1.5;
-  if(overallMax === 0) overallMax = 1;
+  const margin = {top: 10, bottom: 0, left: (isSmallViewport ? 150 : 430), right: 10};
+  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 20)*(1.5));
+  const adjustedWidth = width - margin.left - margin.right - 100; 
+  const heightNew = height * ((Object.keys(dataKeys).length / 20)*(1.55));
 
   const xScale = scaleLinear({
-    range: [0, xMax],
-    domain: [0, overallMax]
+    domain: [0, max * (isSmallViewport ? 1.3 : 1.1)],
+    range: [ 0, adjustedWidth ]
   });
 
   const yScale = scaleBand({
-    range: [0, yMax],
-    domain: filteredData.map(d => d[yKey]),
-    padding: .2,
+    range: [ adjustedHeight, 0 ],
+    domain: dataKeys, 
+    padding: 0.30
   });
 
-  const getBar = (d) => {
+  const onScroll = () => {
+    if(el.current && !animated && window.scrollY + window.innerHeight > el.current.getBoundingClientRect().top - document.body.getBoundingClientRect().top + 50){
+      window.removeEventListener('scroll', onScroll);
+      setAnimated(true);
+    }
+  };
 
-    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey]);
+  useEffect(() => {
+    window.addEventListener('scroll', onScroll);
+    setTimeout(onScroll, 50); // eslint-disable-next-line
+  }, []);
 
-    const xTip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ${Number(d[xKey]).toFixed(1)}</p></div>`;
+  useEffect(() => {
+    if(animated) {
+      setAnimated(false);
+      setTimeout(() => {
+        setAnimated(true);
+      }, 50);
+    } // eslint-disable-next-line
+  }, [currentDrug, currentDataSource, currentYear]);
 
-    return (
-      <g key={d[yKey]}>
-
-        {!isNaN(d[xKey]) && d[xKey] >= 0 && <path d={Utils.horizontalBarPath(true, isSmallViewport ? 15 : 50, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
-        {!isNaN(d[xKey]) && Number(d[xKey]) >= 0 && 
-        <Text 
-          x={((xPos + (isSmallViewport ? 10 : 55) + (currentDataType == 'rate' ? 35 : 45)))} 
-          y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
-          textAnchor={'end'} 
-          fill="#000000"
-          fontWeight='normal' 
-          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{currentDataType == 'rate' ? Number(d[xKey])?.toFixed(1) : Number(d[xKey])?.toFixed(0)}
-          </Text>
-        }
-        {/* {Number(d[xKey])?.toFixed(1) == -3.0 &&
-            <Text 
-            x={(isSmallViewport ? 20 : 55)}
-            y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
-            textAnchor={'end'} 
-            fill={drugOptions[currentDrug].color}
-            fontWeight='normal' 
-            fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Suppressed`}>*
-            </Text>
-        } */}
-        {(d[xKey] == 'Data not available') &&
-            <Text 
-            x={(isSmallViewport ? 20 : 55)}
-            y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
-            textAnchor={'end'} 
-            fill={drugOptions[currentDrug].color}
-            fontWeight='normal' 
-            fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Not Available/Not Reported`}>†
-            </Text>
-        }
-
-
-      </g>
-    )
+  const formatToolTip = (val) => {
+      if (val.includes('Data suppressed'))
+          return 'Data suppressed';
+      else if (val.includes('Data not available'))
+        return 'Data not available/not reported';
+      else
+        return ''
   }
 
-  return (
+  return width > 0 && (
     <>
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateEthnChartData(filteredData)}
+          data={AccessibilityFunctions.generateEthnChartData(dataRates)}
           labelOverrides={{
-            'val': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
+            'val': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
             'Age Group': !isSmallViewport ? 'By Race/Ethnicity' : 'By Race/Ethnicity',
           }}
           xAxisKey={'Age Group'}
@@ -242,36 +207,87 @@ function EthnicityChart(params) {
           isSmallViewport={isSmallViewport}
           currentDataType={currentDataType}
         />
-        </>        
+        </>  
       ) : (
-      <svg style={{ height }}>
-        <Group top={margin.top} left={margin.left}>
-          <Group>
-            {filteredData.map((d) => getBar(d, false))}
-          </Group>
-          <AxisLeft
-          scale={yScale}
-          tickLabelProps={() => ({
-            fontSize: 'medium',
-            fill: '#000066',
-            textAnchor: 'end',
-            verticalAnchor: 'middle',
-            angle: (isSmallViewport ? 45 : 0),
-          })}
-          left={!isSmallViewport ? 50 : 15}
-          hideTicks
-          hideAxisLine
-        />
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + 100} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + 120} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
-        </Group>
-      </svg>
+        <svg
+          id="state-chart" 
+          width={width} 
+          height={heightNew + 50}>
+            <Group top={margin.top} left={margin.left}>
+              {dataKeys.map(d => {
+                const name = d;
+                const rate = dataRates[name].rate;
+                const toolTip = isNaN(dataRates[name].rate) ? formatToolTip(dataRates[name].rate) : (currentDataType == 'rate' ? dataRates[name].rate : Number(dataRates[name].rate).toFixed(0));
+
+                return (
+                  <Group key={`bar-${name}`}>
+                    <path 
+                      className={`animated-bar ${animated ? 'animated' : ''}`}
+                      style={{
+                        'transition': animated ? 'transform 1s ease-in-out' : '',
+                        'transformOrigin': `0px 0px`,
+                        outline: 'none'
+                      }}
+                      d={Utils.horizontalBarPath(true, 0, yScale(name), rate < 0 ? 10 : xScale(rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
+                      fill={drugOptions[currentDrug].color}
+                      stroke={drugOptions[currentDrug].color}
+                      strokeWidth="3"
+                      opacity={1}
+                      data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
+                      Rate: ${isNaN(rate) ? toolTip : (currentDataType == 'rate' ? Number(Number(rate).toFixed(1)).toLocaleString() : Number(Number(rate).toFixed(0)).toLocaleString())}</div>`}
+                    ></path>
+                    <text 
+                      className="bar-label"
+                      x={isNaN(rate) ? 0 : xScale(rate)}
+                      y={yScale(name)}
+                      dy={isNaN(rate) ? 28 : 25}
+                      dx={isNaN(rate) ? 0 : 5}
+                      data-tip={isNaN(rate) ? `<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>Rate: ${toolTip}</div>` : ''}>
+                        {isNaN(rate) ? (toolTip?.includes('Data suppressed') ? '*' : '—') : (currentDataType == 'rate' ? Number(Number(rate).toFixed(1)).toLocaleString() : Number(Number(rate).toFixed(0)).toLocaleString())}
+                    </text>
+                  </Group>
+                )}
+              )}
+              <AxisLeft 
+                scale={yScale}
+                tickValues={dataKeys}
+                  tickLabelProps={() => ({
+                  fontSize: 'medium',
+                  fill: '#000066',
+                  textAnchor: 'end',
+                  verticalAnchor: 'middle',
+                  angle: (isSmallViewport ? 45 : 0),
+                })}
+                left={-5}
+                hideTicks
+                hideAxisLine
+              >
+              </AxisLeft>
+              <AxisBottom
+                top={adjustedHeight}
+                scale={xScale}
+                numTicks={width < viewportCutoff ? 1 : null}
+                tickStroke="none"
+                labelProps={{
+                  fontSize: 'medium',
+                  textAnchor: width < viewportCutoff ? 'end' : 'middle',
+                  transform: 'translate(0, 40)'
+                }}
+                tickLabelProps={() => ({
+                  fontSize: 'medium',
+                  textAnchor: 'middle',
+                  transform: 'translate(0, 10)'
+                })}
+              />
+              {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Suspected Nonfatal Overdoses Involving'}</text>}
+              {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ' + (currentDataSource == 'ED' ? 'ED visits' : 'Inpatient Hospitalizations')}</text>}
+              {currentDataType == 'count' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Suspected Nonfatal Overdoses Involving'}</text>}
+              {currentDataType == 'count' && <text width={adjustedWidth} y={adjustedHeight + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ' + (currentDataSource == 'ED' ? 'ED visits' : 'Inpatient Hospitalizations')}</text>}
+            </Group>
+        </svg>
       )}
     </>
-  )
+  );
 }
 
-export default EthnicityChart
+export default EthnicityChart;

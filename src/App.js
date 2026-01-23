@@ -230,6 +230,7 @@ export default function App(params) {
   const isSmallViewport = width < viewportCutoffSmall;
 
   const stateBarChartRef = useRef();
+  const ethnicityChartRef = useRef();
 
   const drugColor = drugOptions[currentDrug].color;
 
@@ -1285,6 +1286,7 @@ export default function App(params) {
   }, []);
 
   const getFootNotesForData = (chart, addl) => {
+    if (chart != 'Ethnicity') {
     return (
       <div className="datatable-body">
         <table style={{ width: '100%' }}>
@@ -1296,6 +1298,19 @@ export default function App(params) {
         </table>
       </div>
     )
+  }
+  else
+  {
+    return (
+      <div className="datatable-body">
+        <table style={{ width: '100%' }}>
+          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
+          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'— Data not available/not reported'}</td></tr>
+          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Scale of the figure may change based on the data selected'}</td></tr>
+        </table>
+      </div>
+    )
+  }
   }
 
   const drugTab = (drugName, drugLabel) => (
@@ -1555,25 +1570,27 @@ export default function App(params) {
     </>,
     [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
 
-    const ethnicityChartsMemo = useMemo(() =>
+  const ethnicityChartMemo = useMemo(() =>
     <>
-      <div className='subsection marked'>
+      <div className='subsection marked' ref={ethnicityChartRef}>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity</span>
         <EthnicityChart
           data={ethnicityData}
-          currentTimeframe={currentTimeframe}
-          currentDataSource={currentDataSource}
-          currentDrug={selectedDrugsSexAge[0]}
-          currentYear={currentYear}
-          currentMonth={currentMonth}
-          currentDataType={currentDataType}
           width={width}
+          height={900} //TODO
+          el={ethnicityChartRef}
+          currentDrug={selectedDrugsSexAge[0]}
+          currentDataSource={currentDataSource}
+          currentTimeframe={currentTimeframe}
+          currentDataType={currentDataType}
+          currentMonth={currentMonth}
+          currentYear={currentYear}
           drugOptions={drugOptions}
-          accessible={accessible} 
+          accessible={accessible}
         />
       </div>
     </>,
-    [ethnicityData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
+    [ethnicityData, width, selectedDrugsSexAge[0], currentDataSource, currentTimeframe, currentDataType, currentMonth, currentYear]);
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
@@ -2084,8 +2101,9 @@ export default function App(params) {
               <br></br>
               {sexAgeChartData && sexAgeChartsMemo}
               {getFootNotesForData('Sex', false)}
-              {ethnicityData && ethnicityChartsMemo}
-              {getFootNotesForData('Sex', false)}
+              <br></br>
+              {ethnicityData && ethnicityChartMemo}
+              {getFootNotesForData('Ethnicity', false)}
             </section>
 
             {accessible &&
