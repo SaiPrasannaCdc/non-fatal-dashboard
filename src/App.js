@@ -1654,13 +1654,7 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const handleDrugSelectionsStateChange = (event, drug) => {
-    if (timeline == 'Annual') {
       setselectedDrugsState([drug])
-    }
-    else
-    {
-      setselectedDrugsState([drug])
-    }
   }
 
   const getDrugControlsSexAge = () => {
@@ -1770,7 +1764,7 @@ const getYears = (startYrInp, endYrInp) => {
                   entries.map((drug, index) => (
                     <div>
                       <div class={`drugDiv-${drug[0]}`}>
-                        <span class={(selectedDrugsSexAge.includes(drug[0])) ? drug[0] : 'notSelectedSexAge'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
+                        <span class={(selectedDrugsState.includes(drug[0])) ? drug[0] : 'notSelectedState'} onClick={(event) => { handleDrugSelectionsStateChange(event, drug[0]) }}></span>
                         <label key={drug[0]} class={"lblDrug"}>{drug[1].titleForDropDown}</label>
                       </div>
                       <br></br>
