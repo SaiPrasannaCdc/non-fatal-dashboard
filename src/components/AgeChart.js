@@ -397,16 +397,13 @@ function AgeChart(params) {
                   top={adjustedHeight}
                   scale={xScale}
                   tickStroke="transparent"
-                  tickLabelProps={(value) => ({
-                    fill: '#000066',
+                  tickLabelProps={() => ({
                     fontSize: 'medium',
-                    textAnchor: (isSmallViewport ? 'start' : 'start'),
+                    fill: '#000066',
+                    textAnchor: (isSmallViewport ? 'start' : 'middle'),
+                    verticalAnchor: (isSmallViewport ? 'middle' : ''),
                     angle: (isSmallViewport ? 90 : 0),
-                    verticalAnchor: 'middle',
                   })}
-                  labelProps={{
-                    textAnchor: 'middle',                    
-                  }}
                 />
               </>
             )
