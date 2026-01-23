@@ -3567,7 +3567,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {sexAgeChartMemo}
                 </td>
                 <td style={{width: '50%'}}>
-                  {EthnicityChartMemo}
+                  {/* {EthnicityChartMemo} */}
                 </td>
               </tr>
             </table>
@@ -3591,7 +3591,7 @@ const getYears = (startYrInp, endYrInp) => {
               </tr>
               <tr>
                 <td style={{width: '100%'}}>
-                  {EthnicityChartMemo}
+                  {/* {EthnicityChartMemo} */}
                 </td>
               </tr>
             </table>
@@ -3617,7 +3617,7 @@ const getYears = (startYrInp, endYrInp) => {
               </tr>
               <tr>
                 <td style={{width: '100%'}}>
-                  {EthnicityChartMemo}
+                  {/* {EthnicityChartMemo} */}
                 </td>
               </tr>
             </table>
@@ -3643,7 +3643,7 @@ const getYears = (startYrInp, endYrInp) => {
               </tr>
               <tr>
                 <td style={{width: '100%'}}>
-                  {EthnicityChartMemo}
+                  {/* {EthnicityChartMemo} */}
                 </td>
               </tr>
             </table>
