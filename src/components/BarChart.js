@@ -223,7 +223,7 @@ function BarChart(params) {
                         className="bar-label"
                         x={5}
                         y={yScale(name)}
-                        dy="22"
+                        dy={(selectedDrugs.length < 3 ? (selectedDrugs.length == 1 ? ((adjustedHeight/selectedDrugs.length - 15)) : ((adjustedHeight/selectedDrugs.length) - 5)) : (adjustedHeight/selectedDrugs.length))}
                         dx={rate == 0 ? "0" : "5"}
                         fill="black"
                         data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Suppressed`}>*
@@ -235,7 +235,7 @@ function BarChart(params) {
                         className="bar-label"
                         x={5}
                         y={yScale(name)}
-                        dy="22"
+                        dy={(selectedDrugs.length < 3 ? (selectedDrugs.length == 1 ? ((adjustedHeight/selectedDrugs.length - 15)) : ((adjustedHeight/selectedDrugs.length) - 5)) : (adjustedHeight/selectedDrugs.length))}
                         dx={"0"}
                         fill="black"
                         data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Data Not Available/Not Reported`}>†
@@ -247,7 +247,7 @@ function BarChart(params) {
                         className="bar-label"
                         x={5}
                         y={yScale(name)}
-                        dy="22"
+                        dy={(selectedDrugs.length < 3 ? (selectedDrugs.length == 1 ? ((adjustedHeight/selectedDrugs.length - 15)) : ((adjustedHeight/selectedDrugs.length) - 5)) : (adjustedHeight/selectedDrugs.length))}
                         dx={"0"}
                         fill="black"
                         data-tip={`<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: Unfunded State`}>**
@@ -259,9 +259,10 @@ function BarChart(params) {
                           className="bar-label"
                           x={rate < 0 ? 10 : xScale(rate)}
                           y={yScale(name)}
-                          dy="20"
+                          dy={(selectedDrugs.length < 3 ? (selectedDrugs.length == 1 ? ((adjustedHeight/selectedDrugs.length - 15)) : ((adjustedHeight/selectedDrugs.length) - 5)) : (adjustedHeight/selectedDrugs.length))}
                           dx={rate == 0 ? "0" : (!isSmallViewport ? "15" : "5")}
-                          fill="black">
+                          fill="black"
+                          data-tip={rate == 0 ? `<strong>${drugOptions[stateKey].titleAll}</strong><br/><br/>Rate: ` + (Math.round(rate * 100) / 100).toFixed(1) : ''}>
                             {(Math.round(rate * 100) / 100).toFixed(1)}
                       </text>
                     }
