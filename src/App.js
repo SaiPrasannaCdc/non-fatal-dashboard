@@ -177,6 +177,9 @@ export default function App( params ) {
 
   const { accessible, dataUrl, ethnDataUrl} = params;
 
+  const Excel_Sheet_Name_OverallBySexAge = "Overall by Sex & Age";
+  const Excel_Sheet_Name_Jurisdiction = "Jurisdiction";
+
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugOptions)[0]);
   const [timeline, setTimeline] = useState('Monthly');
   const [timelineBar, setTimelineBar] = useState('Monthly');
@@ -582,7 +585,7 @@ export default function App( params ) {
       //Populate state data
       let supportedJurisdictions = {};
 
-      const stateSheet = wb.Sheets['Jurisdiction'];
+      const stateSheet = wb.Sheets[Excel_Sheet_Name_Jurisdiction];
       let columnInfoSt = getColumnsInfo(stateSheet);
       let columnHeadersSt = columnInfoSt.columnHeaders;
       let columnsSt = columnInfoSt.columns;
@@ -616,7 +619,7 @@ export default function App( params ) {
       }
 
       //Populate overall data
-      const overallSheet = wb.Sheets['Overall'];
+      const overallSheet = wb.Sheets[Excel_Sheet_Name_OverallBySexAge];
       let columnInfoOverall = getColumnsInfo(overallSheet);
       let columnHeadersOverall = columnInfoOverall.columnHeaders;
       let columnsOverall = columnInfoOverall.columns;
