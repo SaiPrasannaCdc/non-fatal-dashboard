@@ -398,7 +398,7 @@ function SexAgeChart(params) {
         }
         {d[x2Key] >= 0 &&
         <Text 
-          x={(x2Pos) + (d[x2Key] > 99 ? 53 : (d[x2Key] >= 10 ? 50 : 45)) + (d[x2Key] == 0.0 ? 0 : 0)} 
+          x={(x2Pos) + (d[x2Key] > 99 ? 53 : (d[x2Key] >= 10 ? 50 : 45))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="#000000"
