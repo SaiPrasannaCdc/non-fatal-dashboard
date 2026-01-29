@@ -78,6 +78,9 @@ function DataTable508(params) {
     if (val == 9)
       ret = 'Data Suppressed§';
 
+    if (val == -9)
+      ret = 'Data not available';
+
     return isNaN(ret) ? ret : (ret + (currentDataType == 'percent' ? '%' : ''));
   }
 
@@ -92,6 +95,9 @@ function DataTable508(params) {
 
     if (val == -3 || val == 9)
       ret = '*';
+
+    if (val == -9)
+      ret = '—';
 
     if (!isNaN(ret))
       ret = ret + (currentDataType == 'percent' ? '%' : '')
