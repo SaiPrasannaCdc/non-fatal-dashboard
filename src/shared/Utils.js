@@ -21,6 +21,40 @@ const Utils = {
       Q${x} ${y}, ${x + cornerWidth} ${y}`
   },
 
+  horizontalBarPathDem: (rightRounded, x, y, width, height, strokeWidth, cornerWidth) => {
+    const xEnd = x + width;
+    const yEnd = y + height;
+    
+    return rightRounded ?
+      `M${x} ${y}
+      L${xEnd - cornerWidth} ${y}
+      Q${xEnd} ${y}, ${xEnd} ${y + cornerWidth}
+      L${xEnd} ${yEnd - cornerWidth} 
+      Q${xEnd} ${yEnd}, ${xEnd - cornerWidth} ${yEnd}
+      L${x} ${y + height}`
+    :
+      `M${x + cornerWidth} ${y} 
+      L${xEnd} ${y} 
+      L${xEnd} ${yEnd} 
+      L${x + cornerWidth} ${yEnd} 
+      Q${x} ${yEnd}, ${x} ${yEnd - cornerWidth}
+      L${x} ${y + cornerWidth}
+      Q${x} ${y}, ${x + cornerWidth} ${y}`
+  },
+
+    horizontalBarPathDem_NR: (x, y, width, height) => {
+    const xEnd = x + width;
+    const yEnd = y + height;
+    
+    return `M${x + 0.1} ${y} 
+      L${xEnd} ${y} 
+      L${xEnd} ${yEnd} 
+      L${x + 0.1} ${yEnd} 
+      Q${x} ${yEnd}, ${x} ${yEnd - 0.1}
+      L${x} ${y+ 0.1}
+      Q${x} ${y}, ${x + 0.1} ${y}`
+  },
+
    verticalBarPath: (x, y, width, height, cornerWidth, invisible = false, adjustedZero = false) => {
 
     if(invisible)

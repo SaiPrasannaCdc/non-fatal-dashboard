@@ -135,7 +135,7 @@ const getFilteredData = (data, ethnGroups, currentDrug, currentTimeframe, curren
         sortOrder = 3; 
         break;
       case 'NHOPI, NH':
-        ethnN = 'Native Hawaiian or other Pacific Islander'; 
+        ethnN = 'NH/PI'; 
         sortOrder = 4; 
         break;
       case 'Multiple/Other, NH':
@@ -166,7 +166,7 @@ const getFilteredData = (data, ethnGroups, currentDrug, currentTimeframe, curren
   return sortedFinalData;
 };
 
-const getFilteredDataDummy = (data, ethnGroups, currentMonth) => {
+const getFilteredDataDummy = (data, ethnGroups) => {
   
   var finalData = [];
   var val = 0;
@@ -175,11 +175,11 @@ const getFilteredDataDummy = (data, ethnGroups, currentMonth) => {
     
    val = 0;
 
-    for(let i=0;i<Object.keys(data.Monthly.US[currentMonth]).length;i++) {
-      var ethnGrp = Object.keys(data.Monthly.US[currentMonth])[i];
-      for (let j=0;j<Object.keys(data.Monthly.US[currentMonth][ethnGrp]).length;j++) {
+    for(let i=0;i<Object.keys(data.Monthly.US[10]).length;i++) {
+      var ethnGrp = Object.keys(data.Monthly.US[10])[i];
+      for (let j=0;j<Object.keys(data.Monthly.US[10][ethnGrp]).length;j++) {
             
-          if (data.Monthly.US[currentMonth][ethnGrp][j].year == '2025')
+          if (data.Monthly.US[10][ethnGrp][j].year == '2025')
           {
             if (ethnGrp === ethnGroups[x])
                   val = -9;
@@ -206,7 +206,7 @@ const getFilteredDataDummy = (data, ethnGroups, currentMonth) => {
         sortOrder = 3; 
         break;
       case 'NHOPI, NH':
-        ethnN = 'Native Hawaiian or other Pacific Islander'; 
+        ethnN = 'NH/PI'; 
         sortOrder = 4; 
         break;
       case 'Multiple/Other, NH':
@@ -399,16 +399,16 @@ const getEthnGroups = (data, currentTimeLine, currentYear, currentMonth) => {
   }
 };
 
-const getEthnGroupsDummy = (data, currentMonth) => {
+const getEthnGroupsDummy = (data) => {
 
   var ethnData = [];
 
-      for(let i=0;i<Object.keys(data.Monthly.US[currentMonth]).length;i++) {
-      var ethnGrp = Object.keys(data.Monthly.US[currentMonth])[i];
-      for (let j=0;j<Object.keys(data.Monthly.US[currentMonth][ethnGrp]).length;j++) {
-        if (data.Monthly.US[currentMonth][ethnGrp][j].year == '2025')
+      for(let i=0;i<Object.keys(data.Monthly.US[10]).length;i++) {
+      var ethnGrp = Object.keys(data.Monthly.US[10])[i];
+      for (let j=0;j<Object.keys(data.Monthly.US[10][ethnGrp]).length;j++) {
+        if (data.Monthly.US[10][ethnGrp][j].year == '2025')
         {
-          if (data.Monthly.US[currentMonth][ethnGrp][j] && !ethnData.includes(ethnGrp))
+          if (data.Monthly.US[10][ethnGrp][j] && !ethnData.includes(ethnGrp))
             ethnData.push(ethnGrp);
         }
       }
@@ -424,8 +424,8 @@ function EthnicityChart(params) {
   const filteredDataReal = getFilteredData(data, ethnGroupsReal, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
   const missingDataReal = getMissingData(data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType);
 
-  const ethnGroupsDummy = getEthnGroupsDummy(data, currentMonth);
-  const filteredDataDummy = getFilteredDataDummy(data, ethnGroupsDummy, currentMonth);
+  const ethnGroupsDummy = getEthnGroupsDummy(data);
+  const filteredDataDummy = getFilteredDataDummy(data, ethnGroupsDummy);
   const missingDataDummy = '';
 
   const filteredData = ethnGroupsReal.length == 0 ? filteredDataDummy : filteredDataReal; 
@@ -469,6 +469,17 @@ function EthnicityChart(params) {
     return 'race and/or ethnicity data during this time period.'
   };
 
+  const getMissingNoteSVP1 = (mdata) => {
+    return 'Note: ' + mdata + `% of nonfatal ${drugOptions[currentDrug].titleSingular} overdoses`
+  };
+
+  const getMissingNoteSVP2 = (mdata) => {
+    return 'are missing race and/or ethnicity data'
+  };
+
+  const getMissingNoteSVP3 = (mdata) => {
+    return 'during this time period.'
+  };
 
   const getBar = (d) => {
 
@@ -479,7 +490,7 @@ function EthnicityChart(params) {
     return (
       <g key={d[yKey]}>
 
-        {d[xKey] >= 0 && <path d={Utils.horizontalBarPath(true, isSmallViewport ? 15 : 50, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
+        {d[xKey] >= 0 && <path d={Utils.horizontalBarPathDem(true, isSmallViewport ? 15 : 50, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
         {Number(d[xKey]) >= 0 && 
         <Text 
           x={((xPos + (isSmallViewport ? 10 : 55) + (currentDataType == 'rate' ? 35 : 45)))} 
@@ -550,10 +561,18 @@ function EthnicityChart(params) {
           currentDataType={currentDataType}
         />
         {!isSmallViewport && Object.keys(filteredData).length > 0 && <table>
-          {!UtilityFunctions.dataIsSupressedEthn(filteredData) &&
+          {dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData) &&
           <tr>
             <td>
               <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
+            </td>
+          </tr>
+          }
+          {!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData) &&
+          <tr>
+            <td>
+              <div><span><small><i><sup>*</sup>{getMissingNote1(missingData)}</i></small></span></div>
+              <div><span><small><i><sup> </sup>{getMissingNote2(missingData)}</i></small></span></div>
             </td>
           </tr>
           }
@@ -568,9 +587,13 @@ function EthnicityChart(params) {
             <br></br>
                     <tr>
                       <td>
+                        {(dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNoteSVP1(missingData)}</i></small></span></div> }
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNoteSVP2(missingData)}</i></small></span></div> }
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNoteSVP3(missingData)}</i></small></span></div> }
+                        {<br></br>}
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        {!UtilityFunctions.dataIsSupressedEthn(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
-                        <span></span>
+                        <div><span><small><i><sup>—</sup>Data not available.</i></small></span></div>
                       </td>
                     </tr>
                 </table>
@@ -589,9 +612,9 @@ function EthnicityChart(params) {
             fill: '#000066',
             textAnchor: 'end',
             verticalAnchor: 'middle',
-            angle: (isSmallViewport ? 45 : 0),
+            /* angle: (isSmallViewport ? 45 : 0), */
           })}
-          left={!isSmallViewport ? 50 : 15}
+          left={!isSmallViewport ? 50 : 5}
           hideTicks
           hideAxisLine
         />
@@ -600,14 +623,17 @@ function EthnicityChart(params) {
           {!isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={adjustedWidth/10} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote1(missingData)}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={adjustedWidth/10} y={yMax + 100} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote2(missingData)}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
 
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={-200} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + (!UtilityFunctions.dataIsSupressedEthn(missingData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + (!UtilityFunctions.dataIsSupressedEthn(missingData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + (!UtilityFunctions.dataIsSupressedEthn(missingData) ? 150 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={-200} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote1(missingData)}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={-200} y={yMax + 100} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote2(missingData)}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>} 
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy &&!UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
         </Group>
       </svg>
       )}

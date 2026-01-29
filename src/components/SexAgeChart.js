@@ -340,10 +340,13 @@ function SexAgeChart(params) {
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
 
+    const corner1 = xMaxHalf - x1Pos < 3 ? false : true;
+    const corner2 = x2Pos - xMaxHalf < 3 ? false : true;
+
     return (
       <g key={d[yKey]}>
 
-        {d[x1Key] > 0 && <path d={Utils.horizontalBarPath(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
+        {d[x1Key] > 0 && <path d={corner1 ? Utils.horizontalBarPathDem(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth())} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
         {d[x1Key] == -3.0 && 
           <Text 
           x={x1Pos} 
@@ -375,7 +378,7 @@ function SexAgeChart(params) {
           </Text>
         }
 
-        {d[x2Key] > 0 && <path d={Utils.horizontalBarPath(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
+        {d[x2Key] > 0 && <path d={corner2 ? Utils.horizontalBarPathDem(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf + (!corner2 ? 1 : 0)), yScale.bandwidth())} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
         {d[x2Key] == -3.0 && 
         <Text 
         x={x2Pos} 
