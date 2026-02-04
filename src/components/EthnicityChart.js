@@ -112,7 +112,7 @@ const getFilteredData = (data, currentDataSource, ethnGroups, currentDrug, curre
 
     prefinalData['ethnN'] = ethnN;
     prefinalData['sortOrder'] = sortOrder;
-    prefinalData['rate'] = String(val);
+    prefinalData['rate'] = isNaN(val) ? val : (currentDataType == 'rate' ? String(Number(val).toFixed(1)) : String(Number(val).toFixed(0)));
 
     finalDataBeforeSort.push(prefinalData);
 
@@ -142,7 +142,7 @@ function EthnicityChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 10, bottom: 0, left: (isSmallViewport ? 150 : 430), right: 10};
+  const margin = {top: 10, bottom: 0, left: (isSmallViewport ? 150 : 230), right: 10};
   const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 20)*(1.5));
   const adjustedWidth = width - margin.left - margin.right - 100; 
   const heightNew = height * ((Object.keys(dataKeys).length / 20)*(1.55));
@@ -180,6 +180,7 @@ function EthnicityChart(params) {
   }, [currentDrug, currentDataSource, currentYear]);
 
   const formatToolTip = (val) => {
+
       if (val.includes('Data suppressed'))
           return 'Data suppressed';
       else if (val.includes('Data not available'))
@@ -210,14 +211,14 @@ function EthnicityChart(params) {
         </>  
       ) : (
         <svg
-          id="state-chart" 
+          id="ethnicity-chart" 
           width={width} 
           height={heightNew + 50}>
             <Group top={margin.top} left={margin.left}>
               {dataKeys.map(d => {
                 const name = d;
                 const rate = dataRates[name].rate;
-                const toolTip = isNaN(dataRates[name].rate) ? formatToolTip(dataRates[name].rate) : (currentDataType == 'rate' ? dataRates[name].rate : Number(dataRates[name].rate).toFixed(0));
+                const toolTip = isNaN(dataRates[name].rate) ? formatToolTip(dataRates[name].rate) : (currentDataType == 'rate' ? Number(dataRates[name].rate).toFixed(1) : Number(dataRates[name].rate).toFixed(0));
 
                 return (
                   <Group key={`bar-${name}`}>
@@ -234,7 +235,7 @@ function EthnicityChart(params) {
                       strokeWidth="3"
                       opacity={1}
                       data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                      Rate: ${isNaN(rate) ? toolTip : (currentDataType == 'rate' ? Number(Number(rate).toFixed(1)).toLocaleString() : Number(Number(rate).toFixed(0)).toLocaleString())}</div>`}
+                      Rate: ${isNaN(rate) ? toolTip : (currentDataType == 'rate' ? Number(rate).toFixed(1) : Number(Number(rate).toFixed(0)).toLocaleString())}</div>`}
                     ></path>
                     <text 
                       className="bar-label"
@@ -243,7 +244,7 @@ function EthnicityChart(params) {
                       dy={isNaN(rate) ? 28 : 25}
                       dx={isNaN(rate) ? 0 : 5}
                       data-tip={isNaN(rate) ? `<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>Rate: ${toolTip}</div>` : ''}>
-                        {isNaN(rate) ? (toolTip?.includes('Data suppressed') ? '*' : '—') : (currentDataType == 'rate' ? Number(Number(rate).toFixed(1)).toLocaleString() : Number(Number(rate).toFixed(0)).toLocaleString())}
+                        {isNaN(rate) ? (toolTip?.includes('Data suppressed') ? '*' : '—') : (currentDataType == 'rate' ? Number(rate).toFixed(1) : Number(Number(rate).toFixed(0)).toLocaleString())}
                     </text>
                   </Group>
                 )}
