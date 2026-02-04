@@ -1301,15 +1301,28 @@ export default function App(params) {
   }
   else
   {
-    return (
-      <div className="datatable-body">
-        <table style={{ width: '100%' }}>
-          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
-          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'— Data not available/not reported'}</td></tr>
-          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Scale of the figure may change based on the data selected'}</td></tr>
-        </table>
-      </div>
-    )
+    if (!accessible) {
+      return (
+        <div className="datatable-body">
+          <table style={{ width: '100%' }}>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'— Data not available/not reported'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Scale of the figure may change based on the data selected'}</td></tr>
+          </table>
+        </div>
+      )
+    }
+    else
+    {
+      return (
+        <div className="datatable-body">
+          <table style={{ width: '100%' }}>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}</td></tr>
+          </table>
+        </div>
+      )
+    }
   }
   }
 

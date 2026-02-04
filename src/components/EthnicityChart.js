@@ -142,8 +142,8 @@ function EthnicityChart(params) {
   const maxValue = UtilityFunctions.calculateMax(dataRates) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 10, bottom: 0, left: (isSmallViewport ? 150 : 230), right: 10};
-  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 20)*(1.5));
+  const margin = {top: 40, bottom: 0, left: (isSmallViewport ? 150 : 230), right: 10};
+  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 25)*(1.5));
   const adjustedWidth = width - margin.left - margin.right - 100; 
   const heightNew = height * ((Object.keys(dataKeys).length / 20)*(1.55));
 
@@ -155,7 +155,7 @@ function EthnicityChart(params) {
   const yScale = scaleBand({
     range: [ adjustedHeight, 0 ],
     domain: dataKeys, 
-    padding: 0.30
+    padding: 0.20
   });
 
   const onScroll = () => {
@@ -207,6 +207,7 @@ function EthnicityChart(params) {
           width={width}
           isSmallViewport={isSmallViewport}
           currentDataType={currentDataType}
+          noSort={true}
         />
         </>  
       ) : (
@@ -267,17 +268,18 @@ function EthnicityChart(params) {
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}
-                numTicks={width < viewportCutoff ? 1 : null}
+                numTicks={width < viewportCutoff ? (width <= 375 ? 1 : 2) : null}
                 tickStroke="none"
                 labelProps={{
                   fontSize: 'medium',
                   textAnchor: width < viewportCutoff ? 'end' : 'middle',
-                  transform: 'translate(0, 40)'
+                  transform: 'translate(0, 40)',
                 }}
                 tickLabelProps={() => ({
                   fontSize: 'medium',
                   textAnchor: 'middle',
-                  transform: 'translate(0, 10)'
+                  transform: 'translate(0, 10)',
+                  
                 })}
               />
               {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Suspected Nonfatal Overdoses Involving'}</text>}
