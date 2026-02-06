@@ -576,5 +576,24 @@ export const AccessibilityFunctions = {
 
     return myData;
   
+    },
+    
+    generateEthnChartData : (data) => {
+      let myData = {};
+
+      const sortedArray = Object.values(data).sort((a, b) => {
+        return a.sortOrder - b.sortOrder;
+      });
+
+      for (var i=0;i<sortedArray.length;i++)
+      {
+        let obj = {};
+        let ethn = sortedArray[i].ethnN;
+        obj['val'] = sortedArray[i].rate;
+        myData[ethn] = obj;
+      }
+
+      return myData;
+  
     },  
 }
