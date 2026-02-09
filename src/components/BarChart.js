@@ -168,6 +168,16 @@ function BarChart(params) {
       return 'per 10,000 Total ED Visits';
   }
 
+if (UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
+  {
+    return (
+      <>
+      <br></br><br></br>
+      <div style={{ height: height + 40, width: width, textAlign: 'left', verticalAlign: 'middle', backgroundColor: 'lightgray', fontWeight: 'bold', borderRadius: '15px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents the COVID-19 pademic and is distinct from data suppression for other reasons.</p></div>
+      </>
+      )
+  }
+
   return width > 0 && (
     <>
     {accessible ? (

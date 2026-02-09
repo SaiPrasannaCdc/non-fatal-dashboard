@@ -1249,7 +1249,7 @@ const getYears = (startYrInp, endYrInp) => {
         data={timeline == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
         dataOverall={timeline == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
         width={width} 
-        height={900} 
+        height={!UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')) ? 900 : 400} 
         el={stateBarChartRef}
         currentState={currentState}
         currentDrug={selectedDrugsState[0]}
@@ -1272,7 +1272,7 @@ const getYears = (startYrInp, endYrInp) => {
       <BarChart
         data={currentStateBar === 'US' ? (timelineBar == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly) : (timelineBar == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly)}
         width={width} 
-        height={830} 
+        height={!UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) ? 830 : 400} 
         el={drugsBarChartRef}
         currentState={currentStateBar}
         selectedDrugs={selectedDrugsBar}
@@ -1358,7 +1358,7 @@ const getYears = (startYrInp, endYrInp) => {
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-                height={!isSmallViewport ? 640 : 600} //TODO
+                height={!isSmallViewport ? (!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400) : 600}
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
                 drugOptions={drugOptions}
@@ -1386,7 +1386,7 @@ const getYears = (startYrInp, endYrInp) => {
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-                height={640} //TODO
+                height={!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400} //TODO
                 header={false}
                 el={ageChartRef}
                 overallMax={100}
@@ -1417,7 +1417,7 @@ const getYears = (startYrInp, endYrInp) => {
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
             width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-            height={640} //TODO
+            height={!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400} //TODO
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
             currentDataType={currentDataType}
@@ -1434,7 +1434,7 @@ const getYears = (startYrInp, endYrInp) => {
     <>
    <div className={"column column-right"}>
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ''}</span>}
+          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {Number(currentYearSexAge) > 2022 && jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ''}{Number(currentYearSexAge) <= 2022 && (' (0 Jurisdictions)')}</span>}
           <div class='' ref={sexAgeChartRef}>
             <EthnicityChart 
             data={ethnicityData}
@@ -1442,7 +1442,7 @@ const getYears = (startYrInp, endYrInp) => {
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
             width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-            height={640} //TODO
+            height={!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400} //TODO
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
             currentDataType={currentDataType}
@@ -1791,7 +1791,10 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
 
-  const getFootNotesForData = (chart) => {
+  const getFootNotesForData = (chart, isCovidPeriod) => {
+
+    if (isCovidPeriod)
+      return null;
 
     if (!isSmallViewport) {
       return (
@@ -2613,7 +2616,7 @@ const getYears = (startYrInp, endYrInp) => {
           </table>
         }
         {accessible && isSmallViewport &&
-          getFootNotesForData('Line')
+          getFootNotesForData('Line', UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
         }
       </div>}
       </div> 
@@ -2858,7 +2861,7 @@ const getYears = (startYrInp, endYrInp) => {
               }
         {drugsBarChartMemo}
         {!accessible && <br></br>}
-        {!accessible && !isSmallViewport &&
+        {!accessible && !isSmallViewport && !UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '15%'}}></td>
@@ -2873,7 +2876,7 @@ const getYears = (startYrInp, endYrInp) => {
           </tr>
         </table>
         }
-        {!accessible && isSmallViewport &&
+        {!accessible && isSmallViewport && !UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '100%'}}>
@@ -2886,7 +2889,7 @@ const getYears = (startYrInp, endYrInp) => {
           </tr>
         </table>
         }
-        {accessible && !isSmallViewport &&
+        {accessible && !isSmallViewport && !UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '100%'}}>
@@ -2896,7 +2899,7 @@ const getYears = (startYrInp, endYrInp) => {
         </table>
         }
         {accessible && isSmallViewport &&
-          getFootNotesForData('Bar')
+          getFootNotesForData('Bar', UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')))
         }
       </section>
 
@@ -3077,7 +3080,7 @@ const getYears = (startYrInp, endYrInp) => {
           {usaMapMemo}
 
         {accessible && isSmallViewport &&
-          getFootNotesForData()
+          getFootNotesForData('', UtilityFunctions.isCovidPeriod(currentYearMap + String(currentMonthMap).padStart(2, '0')))
         }
       </section>
 
@@ -3292,8 +3295,8 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
           }
           {stateBarChartMemo}
-          {!accessible && getFootNotesForData()}
-          {accessible && isSmallViewport && getFootNotesForData('State')}
+          {!accessible && getFootNotesForData('State', UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))}
+          {accessible && isSmallViewport && getFootNotesForData('State', UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))}
           {/* State Chart End */}
 
        <section>

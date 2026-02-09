@@ -485,7 +485,7 @@ function EthnicityChart(params) {
 
     const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey] * (width <= 430 ? 0.5 : 0.6));
 
-    const xTip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ${Number(d[xKey]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
+    const xTip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ${Number(d[xKey]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
 
     return (
       <g key={d[yKey]}>
@@ -509,7 +509,7 @@ function EthnicityChart(params) {
             fill={drugOptions[currentDrug].color}
             fontWeight='normal' 
             fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Suppressed`}>*
+            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Suppressed`}>*
             </Text>
         }
         {Number(d[xKey])?.toFixed(1) == -1.0 &&
@@ -520,7 +520,7 @@ function EthnicityChart(params) {
             fill={drugOptions[currentDrug].color}
             fontWeight='normal' 
             fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Not Available/Not Reported`}>†
+            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Not Available/Not Reported`}>†
             </Text>
         }
         {Number(d[xKey])?.toFixed(1) == -9.0 &&
@@ -531,7 +531,7 @@ function EthnicityChart(params) {
             fill={drugOptions[currentDrug].color}
             fontWeight='normal' 
             fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Not Available`}>—
+            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Not Available`}>—
             </Text>
         }
 
@@ -540,7 +540,27 @@ function EthnicityChart(params) {
     )
   }
 
-  
+  if (Number(currentYear) < 2023)
+  {
+    if (UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
+    {
+      return (
+      <>
+      <br></br><br></br>
+      <div style={{ height: height + 40, width: width, textAlign: 'left', verticalAlign: 'middle', backgroundColor: 'lightgray', fontWeight: 'bold', borderRadius: '15px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents the COVID-19 pademic and is distinct from data suppression for other reasons.</p></div>
+      </>
+      )
+    }
+    else {
+      return (
+      <>
+      <br></br><br></br>
+      <div style={{ height: height + 40, width: width, textAlign: 'left', verticalAlign: 'middle', backgroundColor: 'lightgray', fontWeight: 'bold', borderRadius: '15px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons.</p></div>
+      </>
+      )
+    }
+  }
+
   return (
     <>
     {accessible ? (
@@ -600,7 +620,7 @@ function EthnicityChart(params) {
         }
         </>        
       ) : (
-      <svg style={{ height: height + 40 }}>
+      <svg style={{ height: height + 140 }}>
         <Group top={margin.top} left={margin.left}>
           <Group>
             {filteredData.map((d) => getBar(d, false))}
@@ -625,6 +645,10 @@ function EthnicityChart(params) {
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 210 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'race/ethnicity data during the selected time period, as well as those'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 230 : 180)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'who do not participate in DOSE-SYS or who do not have data for this time period.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 250 : 200)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'This figure excludes data from [X, Y and Z].'}</text>}
 
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
@@ -638,8 +662,8 @@ function EthnicityChart(params) {
       </svg>
       )}
     </>
-  )
-  }
-
+    )
+ 
+}
 
 export default EthnicityChart
