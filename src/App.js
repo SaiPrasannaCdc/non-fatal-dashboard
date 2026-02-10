@@ -1249,7 +1249,7 @@ const getYears = (startYrInp, endYrInp) => {
         data={timeline == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
         dataOverall={timeline == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
         width={width} 
-        height={(accessible && !UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0'))) ? 900 : 400} 
+        height={(!UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0'))) ? 900 : 400} 
         el={stateBarChartRef}
         currentState={currentState}
         currentDrug={selectedDrugsState[0]}
