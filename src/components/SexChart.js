@@ -247,7 +247,7 @@ function SexChart(params) {
     setTimeout(onScroll, 50); // eslint-disable-next-line
   }, []);
 
-  if (UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
+  if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
     {
       return (
         <>

@@ -1249,7 +1249,7 @@ const getYears = (startYrInp, endYrInp) => {
         data={timeline == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
         dataOverall={timeline == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
         width={width} 
-        height={!UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')) ? 900 : 400} 
+        height={(accessible && !UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0'))) ? 900 : 400} 
         el={stateBarChartRef}
         currentState={currentState}
         currentDrug={selectedDrugsState[0]}
@@ -1793,7 +1793,7 @@ const getYears = (startYrInp, endYrInp) => {
 
   const getFootNotesForData = (chart, isCovidPeriod) => {
 
-    if (isCovidPeriod)
+    if (!accessible && isCovidPeriod)
       return null;
 
     if (!isSmallViewport) {

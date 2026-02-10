@@ -458,7 +458,8 @@ function EthnicityChart(params) {
   });
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata + '% of data are missing'
+    //return 'Note: ' + mdata + '% of data are missing'
+    return ''
   };
 
   const getMissingNote1 = (mdata) => {
@@ -540,7 +541,7 @@ function EthnicityChart(params) {
     )
   }
 
-  if (Number(currentYear) < 2023)
+  if (Number(currentYear) < 2023 && !accessible)
   {
     if (UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
     {
@@ -584,7 +585,8 @@ function EthnicityChart(params) {
           {dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData) &&
           <tr>
             <td>
-              <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
+              {/* <div><span><small><i><sup></sup>{getMissingNote(missingData)}</i></small></span></div> */}
+              <div><span><small><i><sup></sup></i></small></span></div>
             </td>
           </tr>
           }
@@ -593,6 +595,7 @@ function EthnicityChart(params) {
             <td>
               <div><span><small><i><sup>*</sup>{getMissingNote1(missingData)}</i></small></span></div>
               <div><span><small><i><sup> </sup>{getMissingNote2(missingData)}</i></small></span></div>
+              <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y and Z].'}</i></small></span></div>
             </td>
           </tr>
           }
@@ -607,13 +610,15 @@ function EthnicityChart(params) {
             <br></br>
                     <tr>
                       <td>
-                        {(dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+{/*                         {(dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> } */}
                         {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNoteSVP1(missingData)}</i></small></span></div> }
                         {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNoteSVP2(missingData)}</i></small></span></div> }
                         {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{getMissingNoteSVP3(missingData)}</i></small></span></div> }
                         {<br></br>}
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
                         <div><span><small><i><sup>—</sup>Data not available.</i></small></span></div>
+                        {<br></br>}
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y and Z].'}</i></small></span></div>}
                       </td>
                     </tr>
                 </table>
@@ -657,7 +662,12 @@ function EthnicityChart(params) {
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>} 
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy &&!UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected. The race/ethnicity figure excludes'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 210 : 180)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'data from jurisdictions that had >= 15% missing'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 230 : 200)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'race/ethnicity data during the selected time period,'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 250 : 220)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'as well as those who do not participate in DOSE-SYS'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 270 : 240)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'or who do not have data for this time period.'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 290 : 260)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'This figure excludes data from [X, Y and Z].'}</text>}
         </Group>
       </svg>
       )}

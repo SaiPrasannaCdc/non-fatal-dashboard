@@ -415,7 +415,7 @@ function SexAgeChart(params) {
     )
   }
 
-  if (UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
+  if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
     {
       return (
         <>
