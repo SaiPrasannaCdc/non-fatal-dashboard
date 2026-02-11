@@ -1,3 +1,5 @@
+import React, {Fragment} from 'react';
+
 export const covidPeriod = ['202003', '202004', '202005', '202006', '202007', '202008'];
 
 export const UtilityFunctions = {
@@ -759,5 +761,26 @@ export const UtilityFunctions = {
     return (ret != fdata.length-1 && ret/yMax > 0.3) ? true : false;
   },
   
-  
+  getCovidGrayBox : (hgt, wid) => {
+    return (
+      <Fragment>
+        <>
+        <br></br><br></br>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', verticalAlign: 'middle', backgroundColor: 'lightgray', fontWeight: 'bold', borderRadius: '15px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents the COVID-19 pademic and is distinct from data suppression for other reasons.</p></div>
+        </>
+        </Fragment>
+        )
+  },
+
+  getNoDataGrayBoxForEthn : (hgt, wid) => {
+    return (
+      <Fragment>
+        <>
+        <br></br><br></br>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', verticalAlign: 'middle', backgroundColor: 'lightgray', fontWeight: 'bold', borderRadius: '15px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons.</p></div>
+        </>
+        </Fragment>
+        )
+  },
+
 }
