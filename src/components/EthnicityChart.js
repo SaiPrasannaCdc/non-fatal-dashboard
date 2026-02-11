@@ -253,35 +253,35 @@ const getMissingData = (data, currentTimeframe, currentDrug, currentYear, curren
             {
               switch (currentDrug) {
                 case 'all':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.all : dataRec.all_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.all_pct : dataRec.all_pct));
 
                   break;
                 case 'benzodiazepine':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.benzodiazepine : dataRec.benzodiazepine_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.benzodiazepine_pct : dataRec.benzodiazepine_pct));
 
                   break;
                 case 'opioids':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.opioids : dataRec.opioids_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.opioids_pct : dataRec.opioids_pct));
 
                   break;
                 case 'fentanyl':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.fentanyl : dataRec.fentanyl_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.fentanyl_pct : dataRec.fentanyl_pct));
 
                   break;
                 case 'heroin':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.heroin : dataRec.heroin_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.heroin_pct : dataRec.heroin_pct));
 
                   break;
                 case 'stimulants':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.stimulants: dataRec.stimulants_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.stimulants_pct: dataRec.stimulants_pct));
 
                   break;
                 case 'cocaine':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.cocaine : dataRec.cocaine_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.cocaine_pct : dataRec.cocaine_pct));
   
                   break;
                 case 'methamphetamine':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.methamphetamine : dataRec.methamphetamine_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.methamphetamine_pct : dataRec.methamphetamine_pct));
 
                   break;
           }
@@ -303,35 +303,35 @@ const getMissingData = (data, currentTimeframe, currentDrug, currentYear, curren
             {
               switch (currentDrug) {
                 case 'all':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.all : dataRec.all_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.all_pct : dataRec.all_pct));
 
                   break;
                 case 'benzodiazepine':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.benzodiazepine : dataRec.benzodiazepine_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.benzodiazepine_pct : dataRec.benzodiazepine_pct));
 
                   break;
                 case 'opioids':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.opioids : dataRec.opioids_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.opioids_pct : dataRec.opioids_pct));
 
                   break;
                 case 'fentanyl':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.fentanyl : dataRec.fentanyl_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.fentanyl_pct : dataRec.fentanyl_pct));
 
                   break;
                 case 'heroin':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.heroin : dataRec.heroin_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.heroin_pct : dataRec.heroin_pct));
 
                   break;
                 case 'stimulants':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.stimulants : dataRec.stimulants_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.stimulants_pct : dataRec.stimulants_pct));
 
                   break;
                 case 'cocaine':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.cocaine : dataRec.cocaine_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.cocaine_pct : dataRec.cocaine_pct));
   
                   break;
                 case 'methamphetamine':
-                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.methamphetamine : dataRec.methamphetamine_pct));
+                    val = Number(UtilityFunctions.convertValue(currentDataType == 'rate' ? dataRec.methamphetamine_pct : dataRec.methamphetamine_pct));
 
                   break;
           }
@@ -625,7 +625,7 @@ function EthnicityChart(params) {
         }
         </>        
       ) : (
-      <svg style={{ height: height + 140 }}>
+      <svg style={{ height: height + (!isSmallViewport ? 140 : 160) }}>
         <Group top={margin.top} left={margin.left}>
           <Group>
             {filteredData.map((d) => getBar(d, false))}
@@ -650,7 +650,7 @@ function EthnicityChart(params) {
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">§</tspan>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing'}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 210 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'race/ethnicity data during the selected time period, as well as those'}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 230 : 180)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'who do not participate in DOSE-SYS or who do not have data for this time period.'}</text>}
           {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 250 : 200)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'This figure excludes data from [X, Y and Z].'}</text>}
@@ -662,12 +662,13 @@ function EthnicityChart(params) {
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>} 
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy &&!UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected. The race/ethnicity figure excludes'}</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 210 : 180)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'data from jurisdictions that had >= 15% missing'}</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 230 : 200)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'race/ethnicity data during the selected time period,'}</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 250 : 220)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'as well as those who do not participate in DOSE-SYS'}</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 270 : 240)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'or who do not have data for this time period.'}</text>}
-          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 290 : 260)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'This figure excludes data from [X, Y and Z].'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 210 : 180)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">§</tspan>{'The race/ethnicity figure excludes data from'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 230 : 200)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'jurisdictions that had >= 15% missing'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 250 : 220)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'race/ethnicity data during the selected time'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 270 : 240)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'period, as well as those who do not participate'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 290 : 260)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'in DOSE-SYS or who do not have data for this time'}</text>}
+          {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax + ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 310 : 280)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'period. This figure excludes data from [X, Y and Z].'}</text>}
         </Group>
       </svg>
       )}

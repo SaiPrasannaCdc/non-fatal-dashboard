@@ -477,7 +477,7 @@ function SexAgeChart(params) {
         }
         </>        
       ) : (
-      <svg style={{ height: height + 40 }}>
+      <svg style={{ height: height + (!isSmallViewport ? 140 : 10) }}>
         <Group top={margin.top} left={margin.left}>
           <Text x={x1Scale(0) - 15} y={0} fill={'#000066'} textAnchor="end">Female</Text>
           <Text x={x2Scale(0) + 15} y={0} fill={'#000066'} >Male</Text>

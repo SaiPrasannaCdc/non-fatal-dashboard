@@ -1434,7 +1434,7 @@ const getYears = (startYrInp, endYrInp) => {
     <>
    <div className={"column column-right"}>
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {Number(currentYearSexAge) > 2022 && jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ''}{Number(currentYearSexAge) <= 2022 && (' (0 Jurisdictions)')}</span>}
+          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {Number(currentYearSexAge) > 2022 && jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ' (0 Jurisdictions)'}{(UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) || Number(currentYearSexAge) < 2023) ? null : <sup>§</sup>}</span>}
           <div class='' ref={sexAgeChartRef}>
             <EthnicityChart 
             data={ethnicityData}
@@ -3621,6 +3621,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {sexAgeChartMemo}
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {EthnicityChartMemo}
@@ -3647,6 +3648,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {sexAgeChartMemo}
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {EthnicityChartMemo}
