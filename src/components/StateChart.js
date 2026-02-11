@@ -216,6 +216,9 @@ function StateChart(params) {
       return drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits';
   }
 
+  if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
+    return UtilityFunctions.getCovidGrayBox(height, width);
+
   return width > 0 && (
     <>
     {accessible ? (

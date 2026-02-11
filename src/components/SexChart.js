@@ -247,6 +247,9 @@ function SexChart(params) {
     setTimeout(onScroll, 50); // eslint-disable-next-line
   }, []);
 
+  if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
+    return UtilityFunctions.getCovidGrayBox(height, width);
+    
   return width > 0 && 
       (
         <div id="sex-chart">
@@ -382,9 +385,9 @@ function SexChart(params) {
             )
             {!isSmallViewport && <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
             {!isSmallViewport && <text x={adjustedWidth/2} y={height - 90} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-            {!isSmallViewport && !UtilityFunctions.allDataIsSupressed(filteredData) && <text x={adjustedWidth/2} y={height - 60} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote(missingData)}</text>} 
-            {!isSmallViewport && <text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-            {!isSmallViewport && <text x={adjustedWidth/2} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
+            {!isSmallViewport && !UtilityFunctions.allDataIsSupressed(filteredData) && <text x={0} y={height - 60} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>} 
+            {!isSmallViewport && <text x={0} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
+            {!isSmallViewport && <text x={0} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
 
             {isSmallViewport && <text x={-50} y={height - 130} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
             {isSmallViewport && <text x={-50} y={height - 110} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
