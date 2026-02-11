@@ -434,7 +434,7 @@ function EthnicityChart(params) {
 
   const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const margin = { top: 50, bottom: 145, left: isSmallViewport ? 200 : 300, right: isSmallViewport ? 0 : 15 };
+  const margin = { top: 50, bottom: 145, left: isSmallViewport ? 200 : 180, right: isSmallViewport ? 0 : 15 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
@@ -484,7 +484,7 @@ function EthnicityChart(params) {
 
   const getBar = (d) => {
 
-    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey] * (width <= 430 ? 0.5 : 0.6));
+    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey] * (width <= 430 ? 0.5 : 0.9));
 
     const xTip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ${Number(d[xKey]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
 
@@ -630,17 +630,17 @@ function EthnicityChart(params) {
           hideTicks
           hideAxisLine
         />
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={adjustedWidth/10} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote1(missingData)}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={adjustedWidth/10} y={yMax + 100} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle">{getMissingNote2(missingData)}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10">§</tspan>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 210 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'race/ethnicity data during the selected time period, as well as those'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 230 : 180)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'who do not participate in DOSE-SYS or who do not have data for this time period.'}</text>}
-          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 250 : 200)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="middle"><tspan baselineShift="super" fontSize="10"></tspan>{'This figure excludes data from [X, Y and Z].'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 50} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 50} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={-150} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote1(missingData)}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && (!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) && <text x={-150} y={yMax + 100} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote2(missingData)}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-150} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 130 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-150} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 150 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">—</tspan>{'Data not available.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-150} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 170 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-150} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 190 : 140)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">§</tspan>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-150} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 210 : 160)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10"></tspan>{'race/ethnicity data during the selected time period, as well as those'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-150} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 230 : 180)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10"></tspan>{'who do not participate in DOSE-SYS or who do not have data for this time period.'}</text>}
+          {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-150} y={yMax+ ((!dummy && !UtilityFunctions.dataIsSupressedEthn(missingData)) ? 250 : 200)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10"></tspan>{'This figure excludes data from [X, Y and Z].'}</text>}
 
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
           {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-200} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
