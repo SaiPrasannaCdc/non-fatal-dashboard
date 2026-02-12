@@ -418,7 +418,7 @@ const getEthnGroupsDummy = (data) => {
 
 function EthnicityChart(params) {
 
-  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction, isEthnGrayBox } = params;
+  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction } = params;
 
   const ethnGroupsReal = getEthnGroups(data, currentTimeframe, currentYear, currentMonth)
   const filteredDataReal = getFilteredData(data, ethnGroupsReal, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
