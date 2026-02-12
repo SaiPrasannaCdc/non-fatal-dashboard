@@ -1242,6 +1242,12 @@ const getYears = (startYrInp, endYrInp) => {
       )
   }
 
+  const isEthnGrayBox = () => {
+    return (UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) || Number(currentYearSexAge) < 2023);
+  }
+
+  (UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) || Number(currentYearSexAge) < 2023)
+
   const stateBarChartMemo = useMemo(() =>
     <>
    <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
@@ -1353,7 +1359,7 @@ const getYears = (startYrInp, endYrInp) => {
     <div className="column column-right">
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           {!accessible && <span className="individual-header margin-top">By Sex ({jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
-          <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={sexChartRef}>
+          <div class={currentState === 'US' ? "chartDivAllDem" : "chartDivAllDem"} ref={sexChartRef}>
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
@@ -1380,7 +1386,7 @@ const getYears = (startYrInp, endYrInp) => {
     <div className="column column-right">
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           {!accessible && <span className="individual-header margin-top">By Age (In years) ({jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
-          <div class={currentState === 'US' ? "chartDivAll" : "chartDivAll"} ref={ageChartRef}>
+          <div class={currentState === 'US' ? "chartDivAllDem" : "chartDivAllDem"} ref={ageChartRef}>
             <AgeChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 maxes={{'month': 6150,'quarter': 17726}}
@@ -1410,7 +1416,7 @@ const getYears = (startYrInp, endYrInp) => {
     <div className={"column column-right"}>
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           {!accessible && <span className="individual-header margin-top">By Age (In years) and Sex ({jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
-          <div class='' ref={sexAgeChartRef}>
+          <div class='chartDivAllDem' ref={sexAgeChartRef}>
             <SexAgeChart 
             data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
             currentTimeframe={sexAgeMonthly}
@@ -1423,6 +1429,7 @@ const getYears = (startYrInp, endYrInp) => {
             currentDataType={currentDataType}
             accessible={accessible}
             widthReduction={(!isSmallViewport && !accessible) ? true : false}
+            isEthnGrayBox={isEthnGrayBox()}
             />
           </div>
         </div>
@@ -1434,8 +1441,8 @@ const getYears = (startYrInp, endYrInp) => {
     <>
    <div className={"column column-right"}>
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
-          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {Number(currentYearSexAge) > 2022 && jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ' (0 Jurisdictions)'}{(UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) || Number(currentYearSexAge) < 2023) ? null : <sup>§</sup>}</span>}
-          <div class='' ref={sexAgeChartRef}>
+          {!accessible && <span className="individual-header margin-top">By Race/Ethnicity {Number(currentYearSexAge) > 2022 && jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? '(' + jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] + ' Jurisdictions)' : ' (0 Jurisdictions)'}{isEthnGrayBox() ? null : <sup>§</sup>}</span>}
+          <div class='chartDivAllDem' ref={ethnicityChartRef}>
             <EthnicityChart 
             data={ethnicityData}
             currentTimeframe={sexAgeMonthly}
@@ -1448,6 +1455,7 @@ const getYears = (startYrInp, endYrInp) => {
             currentDataType={currentDataType}
             accessible={accessible}
             widthReduction={(!isSmallViewport && !accessible) ? true : false}
+            isEthnGrayBox={isEthnGrayBox()}
             />
           </div>
         </div>
@@ -3680,6 +3688,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <li><strong>Drug overdose visit numbers are not mutually exclusive</strong> but rather reflect nesting of drug categories and some drug overdose visits involved multiple substances (e.g., a given drug overdose ED visit could have involved both opioids and stimulants).</li>
                 <li>DOSE-SYS data could be suppressed for a variety of reasons. For example, rates based on 1-19 overdose counts are suppressed to avoid sharing information that could be identifiable and because of possible instability of rate estimates. For more information, please see <a target="_blank" href="https://www.cdc.gov/nchs/data/statnt/statnt24.pdf">Healthy People 2010 Criteria for Data Suppression</a>.  Additionally, data are shown for the time period beginning January 2019 and exclude several months during the onset of the COVID-19 pandemic (i.e., March 2020-August 2020) for all jurisdictions. Other situations when data coverage was incomplete may also lead to data suppression.</li>
                 <li>This dashboard shows ED visits for suspected nonfatal drug overdoses of unintentional or undetermined intent. For full definitions, query syntax, and technical briefs, see: <a target="_blank" href="https://knowledgerepository.syndromicsurveillance.org/search/syndrome?keys=overdose%20od2a%202.0&sort_by=field_submitting_author_organiza&sort_order=DESC&f%5B0%5D=submitting_author_organization%3ACDC&page=1">Knowledge Repository</a>.</li>
+                <li>The DOSE-SYS dashboard presents combined race and ethnicity data from 2023 onward. Data for 2018-2022 are excluded due to significant missingness (47% in 2018 among participating jurisdictions, decreasing to &lt;10% in 2023). Jurisdictions with 15% or greater missingness and observations with unknown race/ethnicity during the selected period are not included in the figures. Reported race and ethnicity data may originate from patient self-reports, representatives, or clinical providers.</li>
               </ol>
             </div>}
         </div>
