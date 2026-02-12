@@ -434,7 +434,7 @@ function EthnicityChart(params) {
 
   const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 200 : 180, right: isSmallViewport ? 0 : 15 };
+  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 190 : 180, right: isSmallViewport ? 0 : 15 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
@@ -484,17 +484,17 @@ function EthnicityChart(params) {
 
   const getBar = (d) => {
 
-    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey] * (width <= 430 ? 0.5 : 0.9));
+    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey] * (width <= 430 ? 0.6 : 0.9));
 
     const xTip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ${Number(d[xKey]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
 
     return (
       <g key={d[yKey]}>
 
-        {d[xKey] >= 0 && <path d={Utils.horizontalBarPathDem(true, isSmallViewport ? 15 : 50, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
+        {d[xKey] >= 0 && <path d={Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 50, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
         {Number(d[xKey]) >= 0 && 
         <Text 
-          x={((xPos + (isSmallViewport ? 10 : 55) + (currentDataType == 'rate' ? 35 : 45)))} 
+          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 18 : 10) : (Number(d[xKey]) >= 100 ? 65 : 55)) + (currentDataType == 'rate' ? 35 : 45)))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="#000000"
