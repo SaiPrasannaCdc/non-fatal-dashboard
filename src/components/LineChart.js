@@ -919,6 +919,9 @@ const adjustCrowdedLabels = () => {
       )
   }
 
+  if (!accessible && (UtilityFunctions.isCovidPeriod(lookupPeriodStartYear + String(lookupPeriodStartMonth).padStart(2, '0')) && UtilityFunctions.isCovidPeriod(lookupPeriodEndYear + String(lookupPeriodEndMonth).padStart(2, '0'))))
+    return UtilityFunctions.getCovidGrayBox(400 , width);
+
   return (
     <>
     {accessible ? (
