@@ -3576,6 +3576,7 @@ const getYears = (startYrInp, endYrInp) => {
                   {ageChartMemo}
                 </td>
               </tr>
+              <br></br>
               <tr>
                 <td style={{width: '50%'}}>
                   {sexAgeChartMemo}
