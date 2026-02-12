@@ -286,7 +286,7 @@ const getAgeGroups = (data, currentTimeLine, currentYear, currentMonth) => {
 
 function SexAgeChart(params) {
 
-  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction } = params;
+  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction, isEthnGrayBox } = params;
 
   const ageGroups = getAgeGroups(data, currentTimeframe, currentYear, currentMonth)
   const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
@@ -294,7 +294,7 @@ function SexAgeChart(params) {
 
   const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const margin = { top: 50, bottom: 145, left: 50, right: 15 };
+  const margin = { top: 15, bottom: 145, left: 50, right: 15 };
 
   const xMax = width - margin.left - margin.right;
   const xMaxHalf = xMax / 2;
@@ -470,7 +470,7 @@ function SexAgeChart(params) {
         }
         </>        
       ) : (
-      <svg style={{ height: height + (!isSmallViewport ? 140 : 10) }}>
+      <svg style={{ height: height + (!isSmallViewport ? (isEthnGrayBox ? 10: 140) : 10) }}>
         <Group top={margin.top} left={margin.left}>
           <Text x={x1Scale(0) - 15} y={0} fill={'#000066'} textAnchor="end">Female</Text>
           <Text x={x2Scale(0) + 15} y={0} fill={'#000066'} >Male</Text>
