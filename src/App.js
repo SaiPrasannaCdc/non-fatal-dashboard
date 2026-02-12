@@ -1246,8 +1246,6 @@ const getYears = (startYrInp, endYrInp) => {
     return (UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) || Number(currentYearSexAge) < 2023);
   }
 
-  (UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) || Number(currentYearSexAge) < 2023)
-
   const stateBarChartMemo = useMemo(() =>
     <>
    <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
