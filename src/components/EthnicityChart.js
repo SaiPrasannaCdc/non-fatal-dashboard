@@ -196,8 +196,8 @@ function EthnicityChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateEthnChartData(dataRates)}
           labelOverrides={{
-            'val': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
-            'Age Group': !isSmallViewport ? 'By Race/Ethnicity' : 'By Race/Ethnicity',
+            'val': !isSmallViewport ? (currentDataType == 'rate' ? `Rate per 100,000 persons` : 'Count') : (currentDataType == 'rate' ? 'Rate per 100,000 persons' : 'Count'),
+            'Age Group': !isSmallViewport ? 'Race/Ethnicity' : 'Race/Ethnicity',
           }}
           xAxisKey={'Age Group'}
           transforms={{
@@ -214,7 +214,7 @@ function EthnicityChart(params) {
         <svg
           id="ethnicity-chart" 
           width={width} 
-          height={heightNew + 50}>
+          height={heightNew - 20}>
             <Group top={margin.top} left={margin.left}>
               {dataKeys.map(d => {
                 const name = d;
@@ -236,7 +236,7 @@ function EthnicityChart(params) {
                       strokeWidth="3"
                       opacity={1}
                       data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                      Rate: ${isNaN(rate) ? toolTip : (currentDataType == 'rate' ? Number(rate).toFixed(1) : Number(Number(rate).toFixed(0)).toLocaleString())}</div>`}
+                      ${currentDataType == 'rate' ? 'Rate:' : 'Count:'} ${isNaN(rate) ? toolTip : (currentDataType == 'rate' ? Number(rate).toFixed(1) : Number(Number(rate).toFixed(0)).toLocaleString())}</div>`}
                     ></path>
                     <text 
                       className="bar-label"
@@ -282,10 +282,8 @@ function EthnicityChart(params) {
                   
                 })}
               />
-              {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Suspected Nonfatal Overdoses Involving'}</text>}
-              {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ' + (currentDataSource == 'ED' ? 'ED visits' : 'Inpatient Hospitalizations')}</text>}
-              {currentDataType == 'count' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Suspected Nonfatal Overdoses Involving'}</text>}
-              {currentDataType == 'count' && <text width={adjustedWidth} y={adjustedHeight + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ' + (currentDataSource == 'ED' ? 'ED visits' : 'Inpatient Hospitalizations')}</text>}
+              {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Rate per 100,000 persons'}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {currentDataType == 'count' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Count'}</text>}
             </Group>
         </svg>
       )}

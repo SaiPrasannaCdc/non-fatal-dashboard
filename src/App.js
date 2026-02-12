@@ -1308,6 +1308,7 @@ export default function App(params) {
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'— Data not available/not reported'}</td></tr>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Scale of the figure may change based on the data selected'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
           </table>
         </div>
       )
@@ -1319,6 +1320,7 @@ export default function App(params) {
           <table style={{ width: '100%' }}>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
           </table>
         </div>
       )
@@ -1586,7 +1588,7 @@ export default function App(params) {
   const ethnicityChartMemo = useMemo(() =>
     <>
       <div className='subsection marked' ref={ethnicityChartRef}>
-        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity</span>
+        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity<sup>§</sup></span>
         <EthnicityChart
           data={ethnicityData}
           width={width}
@@ -2196,6 +2198,7 @@ export default function App(params) {
                 <li><strong>Rates beginning in 2021 may not be directly comparable to prior years.</strong> The <a target="_blank" href="https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html">U.S. Census Bureau</a> instituted new methodology to calculate population estimates beginning with 2021 data. The new methodology, referred to as differential privacy, ensures that data from individuals and individual households remain confidential.</li>
                 <li><strong>Jurisdictions submitting data to DOSE are funded to provide data coverage accounting for at least 80% of facilities within a jurisdiction;</strong> however, some jurisdictions’ coverage was lower (i.e., between 60%-&lt;80%). Thus, these results should be interpreted with caution and likely represent an underestimation in counts and rates. Jurisdictions with 60-&lt;80% ED facility coverage include IN (2020 only), LA (2018-2021), and MT (2018-2024). Jurisdictions with 60-&lt;80% inpatient hospital facility coverage include MT (2018-2024) and UT (2018-2023). Jurisdictions with &lt;60% facility coverage are not posted on the DOSE dashboard.</li>
                 <li><strong>There are several important caveats to consider</strong> when viewing the {!accessible ? 'figures' : 'tables'} included in this dashboard and interpreting trends over time. Care-seeking behavior changed during the COVID-19 pandemic, which could influence whether persons sought treatment for an overdose in an ED or hospital setting. Additionally, although coding is standardized under the International Classification of Diseases, 10th Revision, Clinical Modification (ICD-10-CM), the practice of assigning specific codes instead of others (e.g., poisoning codes versus use disorder codes) may vary by facility and state and over time. Some diagnosis codes may lack specificity, which can limit the ability to identify the specific drugs involved in an overdose; new diagnosis codes may also be added each year, which could improve specificity over time.</li>
+                <li><strong>Jurisdictions with 15% or greater race/ethnicity missingness and observations with unknown race/ethnicity during the selected period are not included in the figures.</strong> Reported race and ethnicity data may originate from patient self-reports, representatives, or clinical providers.</li>
               </ul>
             </div>}
         </div>

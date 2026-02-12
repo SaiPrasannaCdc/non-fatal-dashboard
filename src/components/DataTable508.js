@@ -106,7 +106,7 @@ function DataTable508(params) {
             <tr>
               {!isArray && [data].map((d, index) => 
                 Object.keys(d[keys[0]]).map(rowKey => (
-                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}{labelOverrides[rowKey]?.endsWith('visits per 100,000 persons') ? <sup>5</sup> : (supScript !=  null ? <sup>{supScript}</sup> : '')}</th>
+                  <th key={`th-${rowKey}`} scope="col" className={'rightAlign'}>{labelOverrides[rowKey] || formatLabel(rowKey)}{(labelOverrides[rowKey]?.endsWith('visits per 100,000 persons') || labelOverrides[rowKey]?.endsWith('Rate per 100,000 persons')) ? <sup>5</sup> : (supScript !=  null ? <sup>{supScript}</sup> : '')}</th>
                 )
               ))}
             </tr>
