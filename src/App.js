@@ -1359,7 +1359,7 @@ const getYears = (startYrInp, endYrInp) => {
     <div className="column column-right">
         <div className={!accessible ? "subsection marked " : " " + (!accessible ? (selectedDrugsSexAge[0] + 'ToolTip') : '')}>
           {!accessible && <span className="individual-header margin-top">By Sex ({jurisCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly]} Jurisdictions)</span>}
-          <div class={currentState === 'US' ? "chartDivAllDem" : "chartDivAllDem"} ref={sexChartRef}>
+          <div className="chartDivAllDem" ref={sexChartRef}>
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
