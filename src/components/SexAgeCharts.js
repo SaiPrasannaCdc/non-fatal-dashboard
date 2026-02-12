@@ -23,8 +23,8 @@ function SexAgeCharts(params) {
   const xMaxHalf = xMax / 2;
   const yMax = height - margin.top - margin.bottom;
 
-  const x1Key = 'M';
-  const x2Key = 'F';
+  const x1Key = 'F';
+  const x2Key = 'M';
   const yKey = 'age';
 
   let overallMax = data.sex[currentDataSource][currentDrug][`max${currentTimeframe}`][currentDataType];
@@ -60,8 +60,8 @@ function SexAgeCharts(params) {
     const x1Pos = isNaN(d[x1Key]) ? xMaxHalf - 15 : x1Scale(d[x1Key]);
     const x2Pos = isNaN(d[x2Key]) ? xMaxHalf + 15 : x2Scale(d[x2Key]);
 
-    const x1Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${isNaN(d[x1Key]) ? formatToolTip(d[x1Key]) : d[x1Key].toLocaleString()}</p></div>`;
-    const x2Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${isNaN(d[x2Key]) ? formatToolTip(d[x2Key]) : d[x2Key].toLocaleString()}</p></div>`;
+    const x1Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${isNaN(d[x1Key]) ? formatToolTip(d[x1Key]) : d[x1Key].toLocaleString()}</p></div>`;
+    const x2Tip = `<div class="tooltipTableLC"><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>${currentDataType === 'count' ? 'Overdoses' : 'Rate'}</strong>: ${isNaN(d[x2Key]) ? formatToolTip(d[x2Key]) : d[x2Key].toLocaleString()}</p></div>`;
 
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
@@ -113,8 +113,8 @@ function SexAgeCharts(params) {
       ) : (
       <svg style={{ height }}>
         <Group top={margin.top} left={margin.left}>
-          <Text x={x1Scale(0) - 15} y={0} textAnchor="end">Male</Text>
-          <Text x={x2Scale(0) + 15} y={0}>Female</Text>
+          <Text x={x1Scale(0) - 15} y={0} textAnchor="end">Female</Text>
+          <Text x={x2Scale(0) + 15} y={0}>Male</Text>
           <Group>
             {filteredData.map((d) => getBar(d, false))}
           </Group>
