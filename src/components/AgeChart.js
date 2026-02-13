@@ -266,7 +266,7 @@ function AgeChart(params) {
   };
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' +  mdata['percent'] + '% of data are missing.'
+    return 'Note: ' + mdata['percent'] + '% of nonfatal ' + drugOptions[currentDrug].titleSingular.toLowerCase() + ' overdoses are missing age data during this time period.';
   };
 
   useEffect(() => {

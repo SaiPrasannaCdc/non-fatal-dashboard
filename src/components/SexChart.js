@@ -238,7 +238,7 @@ function SexChart(params) {
   };
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata['percent'] + '% of data are missing.'
+    return 'Note: ' + mdata['percent'] + '% of nonfatal ' + drugOptions[currentDrug].titleSingular.toLowerCase() + ' overdoses are missing sex data during this time period.';
   };
   
 
