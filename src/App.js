@@ -1292,7 +1292,7 @@ export default function App(params) {
         <table style={{ width: '100%' }}>
           <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
           <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
-          {(chart == 'Line' || chart == 'Sex') && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.'}</td></tr>}
+          {/* {(chart == 'Line' || chart == 'Sex') && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.'}</td></tr>} */}
           {/* SKV TODO what should be the symbol for rate below*/}
           {addl && showPercent && !accessible && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
         </table>
@@ -1562,7 +1562,7 @@ export default function App(params) {
   const sexAgeChartsMemo = useMemo(() =>
     <>
       Count
-      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} checked={currentDataType == 'count' ? true : false} defaultChecked="false" disabled={currentYear == '2024' ? true : false}/>
+      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} checked={currentDataType == 'count' ? true : false} defaultChecked="false" /* disabled={currentYear == '2024' ? true : false} *//>
       Rate
       <br></br>
       <div className='subsection marked'>
@@ -1721,8 +1721,8 @@ export default function App(params) {
                       setOnlyCurrentDrug(false);
                     }
 
-                    if (param == '2024')
-                      setCurrentDataType('rate');
+                    /* if (param == '2024')
+                      setCurrentDataType('rate'); */
 
                     setCountToggle(false);
                     setOverallToggle(false);
@@ -1992,7 +1992,7 @@ export default function App(params) {
             {
               data && <div className="callouts">
               <div style={{ 'borderLeft': '5px solid' + drugColor }}>
-                <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{!isNaN(totalOverdoses) ? totalOverdoses.toLocaleString('en-US') : totalOverdoses}{totalOverdoses == 'Data not available' && currentYear == '2024' && <sup>§</sup>}</span>
+                <span className={!isNaN(totalOverdoses) ? "callout" : 'calloutSmall'} style={{ 'color': drugColor }}>{!isNaN(totalOverdoses) ? totalOverdoses.toLocaleString('en-US') : totalOverdoses}{/* {totalOverdoses == 'Data not available' && currentYear == '2024' && <sup>§</sup>} */}</span>
                 <div>
                   <span className='data-bite-title' style={{ color: drugColor }}>{stateNames[currentState]}</span>
                   <p>{currentTimeframe} number of nonfatal {drugOptions[currentDrug]['titleSingular'].toLowerCase()} overdose {dataSourceOptions[currentDataSource]['titleLowerCase']} in <strong>{currentTimeframe !== 'Annual' && monthNames[currentMonth]} {currentYear}</strong></p>
@@ -2017,7 +2017,7 @@ export default function App(params) {
             
             <div><sup>1</sup><small><i>Overall rate is calculated per 100,000 persons using U.S. Census population denominators. Overdoses counted in each category may involve multiple substances.</i></small></div>
            {/*  SKV TODO */}
-            {<div><sup>§</sup><small><i>Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.</i></small></div>} 
+            {/* {<div><sup>§</sup><small><i>Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.</i></small></div>}  */}
 
             {
               lineChartData && <section className="first-section">

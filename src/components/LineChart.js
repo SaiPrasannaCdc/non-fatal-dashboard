@@ -920,9 +920,9 @@ function LineChart({ params }) {
   }
   
   const get2024FootNote = (yr, str) => {
-    if (String(yr).substring(0,4) == '2024' && (str == 'Data not available' || str === undefined))
+    /* if (String(yr).substring(0,4) == '2024' && (str == 'Data not available' || str === undefined))
       return '<sup>§</sup>';
-    else
+    else */
       return '';
   }
 
@@ -965,7 +965,7 @@ function LineChart({ params }) {
               var tooltipValues = [];
               if (!currentDrugOnly) {
                 tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Rate</strong>: ${rateCFinal} (${numStates} Jurisdictions)</p>`);
-                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntCFinalFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntC) + `</p>`);
+                tooltipValues.push(`<p class='smallerFont'><strong class=${currentDrug + 'ToolTip'}>` + drugOptions[currentDrug].titleForDropDown + ` Overall Count</strong>: ${cntCFinalFinal} (${numStates} Jurisdictions)</p>`);
               }
 
               if (inp.selectedDrugs.length > 0) {
@@ -976,7 +976,7 @@ function LineChart({ params }) {
                     let rateSFinal = isNaN(d[inp.selectedDrugs[i]]) ? getText(d[inp.selectedDrugs[i]]) : d[inp.selectedDrugs[i]];
                     if (!inp.selectedDrugs[i].includes(currentDrug)){
                       tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Rate</strong>: ${rateSFinal} (${numStates} Jurisdictions)</p>` : null);
-                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntSFinalFinal} (${numStates} Jurisdictions)` + get2024FootNote(d['year'], cntS) + `</p>` : null);
+                      tooltipValues.push(!currentDrugOnly ? `<p class='smallerFont'><strong class=${inp.selectedDrugs[i] + 'ToolTip'}>` + drugOptions[inp.selectedDrugs[i]].titleForDropDown + ` Overall Count</strong>: ${cntSFinalFinal} (${numStates} Jurisdictions)</p>` : null);
                     }
                   }
               }
@@ -1121,9 +1121,9 @@ function LineChart({ params }) {
     else if (val == 'Data suppressed*')
       return '*';
     else if (val == 'PH') {
-      if (String(yr).includes('2024')) 
+      /* if (String(yr).includes('2024')) 
         return key == 'US' ? '§' : '†';
-      else
+      else */
         return '†';
     }
     else
