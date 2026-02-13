@@ -212,6 +212,9 @@ function LineChart(params) {
     filteredData['US'] = isPeriod ? getFilteredDataPeriod(dataOverall, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(dataOverall, 'US', String(lookupPeriodStartYear), String(lookupPeriodEndYear))
   }
 
+  if (filteredData['US'].length == 0) //SKV TODO bug fix 
+    return null;
+
   const tmpyScaleDomainPeriod = UtilityFunctions.calculateYScaleDomain(filteredData, currentDrug, selectedDrugs, currentState, showOverall);
   const yScaleDomainPeriod = (tmpyScaleDomainPeriod == -1 ? 1 : (tmpyScaleDomainPeriod * 1.2));
 
@@ -299,21 +302,21 @@ function LineChart(params) {
 const adjustCrowdedLabels = () => {
 
   var yr = inp.filteredData[currentState][inp.filteredData[currentState].length - 1]['year'];
-  var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(yr) + 1;
-  var allPeriodIsCovid = (inp.filteredData[currentState].length  <= covidTimeIndex) ? true : false;
-  var endWithCovidPeriod = UtilityFunctions.isCovidPeriod(yr);
+  var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(currentTimeframe, yr) + 1;
+  var allPeriodIsCovid = (inp.filteredData[currentState].length <= covidTimeIndex) ? true : false;
+  var endWithCovidPeriod = UtilityFunctions.isCovidPeriodLine(currentTimeframe, yr);
 
   if (allPeriodIsCovid)
     return;
 
     var rec = inp.filteredData[currentState][inp.filteredData[currentState].length - 1];
-    var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(rec.year) + 1;
+    var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(currentTimeframe, rec.year) + 1;
 
     var positionsVar = [];
     const allLabels = document?.getElementsByClassName("adjustCrowded");
     if (selectedDrugs !== undefined && selectedDrugs != null) {
       for (var i=0; i<selectedDrugs?.length; i++) {
-        if (!UtilityFunctions.isCovidPeriod(rec.year)) {
+        if (!UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, Number(rec.year.substring(0,4)), Number(rec.year.substring(4)))) {
           var pos = specs.yScale(inp.filteredData[currentState][inp.filteredData[currentState].length - 1][selectedDrugs[i]]);
           const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][selectedDrugs[i]] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][selectedDrugs[i]]) : 'Data suppressed*';
           const yposMod = (valueState === 'Data suppressed*' || valueState === undefined || valueState === '-1.0' || valueState === '-3.0' || valueState === '0.0' || valueState === '-2.0') ? specs.yScale(0) - 15 : specs.yScale(valueState);
@@ -609,7 +612,7 @@ const adjustCrowdedLabels = () => {
   }
 
   const getDataTip = (d, tooltipValuesSorted) => {
-    if (UtilityFunctions.isCovidPeriod(d['year']))
+    if (UtilityFunctions.isCovidPeriodLine(currentTimeframe, d['year']))
       return isSmallViewport ? getTooltipCovidSVP() : getTooltipCovid();
 
     if (inp.currentState !== 'US' && showOverall) {
@@ -651,14 +654,14 @@ const adjustCrowdedLabels = () => {
 
               return <rect
                 key={`tooltip-section-${d[specs.xKey]}`}
-                fill={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : 'transparent'}
-                strokeWidth={UtilityFunctions.isCovidPeriod(d['year'])  ? 3 : null}
-                stroke={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : null}
+                fill={UtilityFunctions.isCovidPeriodLine(currentTimeframe, d['year'])  ? '#E7E7E7' : 'transparent'}
+                strokeWidth={UtilityFunctions.isCovidPeriodLine(currentTimeframe, d['year'])  ? 3 : null}
+                stroke={UtilityFunctions.isCovidPeriodLine(currentTimeframe, d['year'])  ? '#E7E7E7' : null}
                 x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
                 y={0}
-                width={(UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
+                width={(UtilityFunctions.doesEndWithCovidPeriod(currentTimeframe, inp.filteredData, 'US') && (index == (inp.filteredData['US'].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
                 height={specs.yMax}
-                style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, 'US') ? 'crispEdges' : ''}}
+                style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(currentTimeframe, inp.filteredData, 'US') ? 'crispEdges' : ''}}
                 data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
             })
           }
@@ -683,14 +686,14 @@ const adjustCrowdedLabels = () => {
 
             return <rect
               key={`tooltip-section-${d[specs.xKey]}`}
-              fill={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : 'transparent'}
-              strokeWidth={UtilityFunctions.isCovidPeriod(d['year'])  ? 3 : null}
-              stroke={UtilityFunctions.isCovidPeriod(d['year'])  ? '#E7E7E7' : null}
+              fill={UtilityFunctions.isCovidPeriodLine(currentTimeframe, d['year'])  ? '#E7E7E7' : 'transparent'}
+              strokeWidth={UtilityFunctions.isCovidPeriodLine(currentTimeframe, d['year'])  ? 3 : null}
+              stroke={UtilityFunctions.isCovidPeriodLine(currentTimeframe, d['year'])  ? '#E7E7E7' : null}
               x={Math.max(0, specs.xScale(d[specs.xKey]) - sectionWidthHalf)}
               y={0}
-              width={(UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, currentState) && (index == (inp.filteredData[currentState].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
+              width={(UtilityFunctions.doesEndWithCovidPeriod(currentTimeframe, inp.filteredData, currentState) && (index == (inp.filteredData[currentState].length - 1))) ? (sectionWidth/2) : (sectionWidth)}
               height={specs.yMax}
-              style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(inp.filteredData, currentState) ? 'crispEdges' : ''}}
+              style={{outline: 'none', shapeRendering: UtilityFunctions.doesEndWithCovidPeriod(currentTimeframe, inp.filteredData, currentState) ? 'crispEdges' : ''}}
               data-tip={getDataTip(d, tooltipValuesSorted)}></rect>
           })
           }
@@ -756,9 +759,9 @@ const adjustCrowdedLabels = () => {
     const sectionWidthHalf = sectionWidth / 2;
 
     var yr = inp.filteredData['US'][inp.filteredData['US'].length - 1]['year'];
-    var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(yr) + 1;
+    var covidTimeIndex = UtilityFunctions.getCovidPeriodIndex(currentTimeframe, yr) + 1;
     var allPeriodIsCovid = (inp.filteredData['US'].length  <= covidTimeIndex) ? true : false;
-    var endWithCovidPeriod = UtilityFunctions.isCovidPeriod(yr);
+    var endWithCovidPeriod = UtilityFunctions.isCovidPeriodLine(currentTimeframe, yr);
 
     const seriesLabelPositionUS = endWithCovidPeriod && !allPeriodIsCovid ? specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1 - covidTimeIndex][currentDrug]) : specs.yScale(inp.filteredData['US'][inp.filteredData['US'].length - 1][currentDrug]);
     const valueState = inp.filteredData[inp.currentState].length > 0 ? (endWithCovidPeriod && !allPeriodIsCovid ? inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1 - covidTimeIndex][currentDrug] : inp.filteredData[inp.currentState][inp.filteredData[inp.currentState].length - 1][currentDrug]) : 'Data suppressed*';
@@ -779,21 +782,21 @@ const adjustCrowdedLabels = () => {
 
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] >= 0 && (dNext[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodNoLine(dNext['year'], d['year'])) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] >= 0 && (dNext[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodNoLine(currentTimeframe, dNext['year'], d['year'])) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] >= 0 && (dNext[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodNoLine(dNext['year'], d['year'])) > 0 && key != 'US') && 
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] >= 0 && (dNext[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodNoLine(currentTimeframe, dNext['year'], d['year'])) > 0 && key != 'US') && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={''} fill={''} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year']) && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == 0 ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
-                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == '-3.0' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, Number(d['year'].substring(0,4)), Number(d['year'].substring(4))) && (currentState == 'US' || (currentState != 'US' && showOverall))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == 0 ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
+                          {(!isNaN(d[currentDrug]) && key == 'US' && d[currentDrug] == '-3.0' && (currentState == 'US' || (currentState != 'US' && showOverall))) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, Number(d['year'].substring(0,4)), Number(d['year'].substring(4))) ? '*' : ''}</text>}
 
                           {(!isNaN(d[currentDrug]) && key != 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(d[currentDrug])-8} stroke={'lightblue'} fill={'lightblue'} fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>{showLabels ? d[currentDrug] : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && (d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriod(d['year'])) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-3.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '*' : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-1.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '†' : ''}</text>}
-                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-2.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriod(d['year']) ? '**' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && (d[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, Number(d['year'].substring(0,4)), Number(d['year'].substring(4)))) && <Circle cx={specs.xScale(d[specs.xKey])} cy={d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])} r={4} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} />}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-3.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, Number(d['year'].substring(0,4)), Number(d['year'].substring(4))) ? '*' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-1.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, Number(d['year'].substring(0,4)), Number(d['year'].substring(4))) ? '†' : ''}</text>}
+                          {(!isNaN(d[currentDrug]) && key != 'US') && d[currentDrug] == '-2.0' && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} fontSize={16} fontWeight={'bold'} textAnchor={i == 0 ? 'right' : 'middle'}>{!UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, Number(d['year'].substring(0,4)), Number(d['year'].substring(4))) ? '**' : ''}</text>}
 
                         </Group>
                         )
@@ -919,7 +922,7 @@ const adjustCrowdedLabels = () => {
       )
   }
 
-  if (!accessible && (UtilityFunctions.isCovidPeriod(lookupPeriodStartYear + String(lookupPeriodStartMonth).padStart(2, '0')) && UtilityFunctions.isCovidPeriod(lookupPeriodEndYear + String(lookupPeriodEndMonth).padStart(2, '0'))))
+  if (!accessible && (UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, lookupPeriodStartYear, lookupPeriodStartMonth)) && UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, lookupPeriodEndYear, lookupPeriodEndMonth))
     return UtilityFunctions.getCovidGrayBox(400 , width);
 
   return (

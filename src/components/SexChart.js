@@ -247,8 +247,8 @@ function SexChart(params) {
     setTimeout(onScroll, 50); // eslint-disable-next-line
   }, []);
 
-  if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
-    return UtilityFunctions.getCovidGrayBox(height, width);
+  if (!accessible && UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
+        return UtilityFunctions.getCovidGrayBox(height, width);
     
   return width > 0 && 
       (

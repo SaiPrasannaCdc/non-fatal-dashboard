@@ -415,8 +415,8 @@ function SexAgeChart(params) {
     )
   }
 
-  if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
-    return UtilityFunctions.getCovidGrayBox(height, width);
+  if (!accessible && UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
+        return UtilityFunctions.getCovidGrayBox(height, width);
 
   return (
     <>

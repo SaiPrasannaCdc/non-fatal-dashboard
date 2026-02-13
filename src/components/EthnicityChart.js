@@ -533,8 +533,8 @@ function EthnicityChart(params) {
 
   if (Number(currentYear) < 2023 && !accessible)
   {
-    if (UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
-      return UtilityFunctions.getCovidGrayBox(height, width);
+    if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
+        return UtilityFunctions.getCovidGrayBox(height, width);
     else 
       return UtilityFunctions.getNoDataGrayBoxForEthn(height, width);
   }
