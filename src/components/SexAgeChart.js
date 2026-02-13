@@ -470,8 +470,9 @@ function SexAgeChart(params) {
         }
         </>        
       ) : (
-      <svg style={{ height: height + (!isSmallViewport ? (isEthnGrayBox ? 10: 140) : 10) }}>
-        <Group top={margin.top} left={margin.left}>
+      <Group>
+        <svg style={{ height: height - 60 }}>
+          <Group top={margin.top} left={margin.left}>
           <Text x={x1Scale(0) - 15} y={0} fill={'#000066'} textAnchor="end">Female</Text>
           <Text x={x2Scale(0) + 15} y={0} fill={'#000066'} >Male</Text>
           <Group>
@@ -489,20 +490,24 @@ function SexAgeChart(params) {
           hideTicks
           hideAxisLine
         />
-          {!isSmallViewport && <text x={xMax/2} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
-          {!isSmallViewport && <text x={xMax/2} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-          {!isSmallViewport && (!UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={0} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>}
-          {!isSmallViewport && <text x={0} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>}
-          {!isSmallViewport && <text x={0} y={yMax+ (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start"><tspan baselineShift="super" fontSize="10">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>}
-
-          {isSmallViewport && <text x={-50} y={yMax+ 30} fill={'#000066'} fontSize={13} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
-          {isSmallViewport && <text x={-50} y={yMax+ 50} fill={'#000066'} fontSize={13} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-          {isSmallViewport && (!UtilityFunctions.allDataIsSupressedSA(filteredData)) && <text x={-50} y={yMax + 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor="start">{getMissingNote(missingData)}</text>}
-          {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 110 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-          {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 130 : 100)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
-          {isSmallViewport && <text x={-50} y={yMax + (!UtilityFunctions.allDataIsSupressedSA(filteredData) ? 150 : 120)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
+          {<text x={xMax/2} y={yMax+ 30} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
+          {<text x={xMax/2} y={yMax+ 50} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
         </Group>
       </svg>
+      <div style={{height: (isEthnGrayBox ? '100px' : '230px')}}>
+        <table>
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
+            <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
+          }
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
+            <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
+          }
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
+            <tr><td><small><i><sup>†</sup>{'Scale of the figure may change based on the data selected.'}</i></small></td></tr>
+          }
+        </table>
+      </div>
+    </Group>
       )}
     </>
   )

@@ -775,7 +775,7 @@ export const UtilityFunctions = {
     return (
       <Fragment>
         <>
-        <div style={{ height: hgt, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons.</p></div>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons.</p></div>
         </>
         </Fragment>
         )

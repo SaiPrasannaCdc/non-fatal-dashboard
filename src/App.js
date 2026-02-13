@@ -211,6 +211,7 @@ export default function App( params ) {
   const [jurisEthnCountData, setJurisEthnCountData] = useState([]);
   const [ethnicityData, setEthnicityData] = useState([]);
   const [jurisCount, setJurisCount] = useState([]);
+  const [jurisExcludedData, setJurisExcludedData] = useState([]);
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
   const [jurisForDropDownLine, setJurisForDropDownLine] = useState([]);
   const [jurisForDropDownMap, setJurisForDropDownMap] = useState([]);
@@ -340,7 +341,7 @@ export default function App( params ) {
     }
   };
 
-  const prepareData = (stData, usData, ethnData, jurisCntData, jurisEthnCntData) => {
+  const prepareData = (stData, usData, ethnData, jurisCntData, jurisEthnCntData, jurisExcludedEthnData) => {
 
     let tempKeyedRawDataMonthly = [];
     let tempKeyedRawDataAnnual = [];
@@ -353,6 +354,9 @@ export default function App( params ) {
 
     //Ethnicity data 
     setEthnicityData(ethnData);
+
+    //Ethnicity juris excluded 
+    setJurisExcludedData(jurisExcludedEthnData);
 
     //us data
     for(let y=0;y<Object.keys(usData.Monthly['US']).length;y++)
@@ -664,7 +668,7 @@ export default function App( params ) {
       }
 
       //Populate ethnicity data
-      const ethnSheet = wbethn.Sheets['Sheet1'];
+      const ethnSheet = wbethn.Sheets['Race_Ethnicity'];
       let columnInfoEthn = getColumnsInfo(ethnSheet);
       let columnHeadersEthn = columnInfoEthn.columnHeaders;
       let columnsEthn = columnInfoEthn.columns;
@@ -700,7 +704,19 @@ export default function App( params ) {
 
       }
 
-      prepareData(stateData, overallData, ethnData, jurisCountsData, jurisEthnCountsData);
+      let jurisExcludedEthnData = {};
+
+      for (let x = 2; x <= columnsEthn; x++) {
+        let mon = String(getValueEthn('month', x)).padStart(2, '0');
+        let yr = getValueEthn('year', x);
+        let rt = getValueEthn('rate_time', x);
+        let jurisExclude = getValueEthn('jurisdictions_excluded', x);
+
+       jurisExcludedEthnData[yr + mon + rt] = jurisExclude;
+
+      }
+
+      prepareData(stateData, overallData, ethnData, jurisCountsData, jurisEthnCountsData, jurisExcludedEthnData);
       
     }
 
@@ -1443,9 +1459,11 @@ const getYears = (startYrInp, endYrInp) => {
           <div class='chartDivAllDem' ref={ethnicityChartRef}>
             <EthnicityChart 
             data={ethnicityData}
+            dataJurisExcl={jurisExcludedData}
             currentTimeframe={sexAgeMonthly}
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
+            stateNames={stateNames}
             width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
             height={!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400} //TODO
             currentDrug={selectedDrugsSexAge[0]} 
