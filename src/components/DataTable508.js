@@ -81,13 +81,15 @@ function DataTable508(params) {
       ret = '*';
 
     if (String(val) != 'PH' && String(val).indexOf('Data not available') >= 0)
-      ret = String(yr).includes('2024') ? '§' : '†';
+      /* ret = String(yr).includes('2024') ? '§' : '†'; */
+      ret = '†';
 
     if (String(val) == 'PH')
       ret = '†';
 
     if (val === undefined)
-      ret = String(yr).includes('2024') ? (String(val).indexOf('state') ? '†' : '§') : '†';
+      ret = '†';
+      /* ret = String(yr).includes('2024') ? (String(val).indexOf('state') ? '†' : '§') : '†'; */
 
     return ret;
   }
