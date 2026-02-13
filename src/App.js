@@ -2115,8 +2115,8 @@ export default function App(params) {
               {sexAgeChartData && sexAgeChartsMemo}
               {getFootNotesForData('Sex', false)}
               <br></br>
-              {ethnicityData && ethnicityChartMemo}
-              {getFootNotesForData('Ethnicity', false)}
+              {/* {ethnicityData && ethnicityChartMemo}
+              {getFootNotesForData('Ethnicity', false)} */}
             </section>
 
             {accessible &&
