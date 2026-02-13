@@ -2429,8 +2429,11 @@ const getYears = (startYrInp, endYrInp) => {
                               setTimelineLine('Monthly');
                               setPeriodToggle(true);
                               setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']);
+                              setEndUSMonthYearForSliderM(keyedRawUSDataMonthly[keyedRawUSDataMonthly.length - 1]['YYYYMM']);
                               setLookupPeriodStartYearM('2023');
                               setLookupPeriodStartMonthM('1');
+                              setLookupPeriodEndYearM(keyedRawUSDataMonthly[keyedRawUSDataMonthly.length - 1]['YYYYMM'].substring(0,4));
+                              setLookupPeriodEndMonthM(Number(keyedRawUSDataMonthly[keyedRawUSDataMonthly.length - 1]['YYYYMM'].substring(4)));
                             }} />
                           <label
                             htmlFor="radioUSMonthlyLine">Monthly</label>
@@ -2449,8 +2452,11 @@ const getYears = (startYrInp, endYrInp) => {
                             setTimelineLine('Annual');
                             setPeriodToggle(false);
                             setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']);
+                            setEndUSMonthYearForSliderA(keyedRawUSDataAnnual[keyedRawUSDataAnnual.length - 1]['YYYYMM']);
                             setLookupPeriodStartYearA('2023');
                             setLookupPeriodStartMonthA('1');
+                            setLookupPeriodEndYearA(keyedRawUSDataAnnual[keyedRawUSDataAnnual.length - 1]['YYYYMM'].substring(0,4));
+                            setLookupPeriodEndMonthA(Number(keyedRawUSDataAnnual[keyedRawUSDataAnnual.length - 1]['YYYYMM'].substring(4)));
                           }} 
                           />
                           <label
@@ -2500,6 +2506,8 @@ const getYears = (startYrInp, endYrInp) => {
                               setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']);
                               setLookupPeriodStartYearM('2023');
                               setLookupPeriodStartMonthM('1');
+                              setLookupPeriodEndYearM('2023');
+                              setLookupPeriodEndMonthM('1');
                             }} />
                           <label htmlFor="radioUSMonthlyLine">Monthly</label>
                           &nbsp;&nbsp;
@@ -2516,6 +2524,8 @@ const getYears = (startYrInp, endYrInp) => {
                             setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']);
                             setLookupPeriodStartYearA('2023');
                             setLookupPeriodStartMonthA('1');
+                            setLookupPeriodEndYearA('2023');
+                            setLookupPeriodEndMonthA('1');
                           }} 
                           />
                           <label htmlFor="radioUSAnnualLine">Annual</label>
