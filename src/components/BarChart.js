@@ -87,7 +87,7 @@ function BarChart(params) {
 
     const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentState, selectedDrugs, currentYear, currentMonth, drugOptions, accessible, sortBy } = params;
+  const { data, width, height, el, currentState, selectedDrugs, currentTimeframe, currentYear, currentMonth, drugOptions, accessible, sortBy } = params;
 
   const isSmallViewport = width < 550;
  
@@ -168,8 +168,8 @@ function BarChart(params) {
       return 'per 10,000 Total ED Visits';
   }
 
-if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
-  return UtilityFunctions.getCovidGrayBox(height, width);
+if (!accessible && UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
+      return UtilityFunctions.getCovidGrayBox(height, width);
 
   return width > 0 && (
     <>

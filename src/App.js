@@ -211,6 +211,7 @@ export default function App( params ) {
   const [jurisEthnCountData, setJurisEthnCountData] = useState([]);
   const [ethnicityData, setEthnicityData] = useState([]);
   const [jurisCount, setJurisCount] = useState([]);
+  const [jurisExcludedData, setJurisExcludedData] = useState([]);
   const [jurisForDropDown, setJurisForDropDown] = useState([]);
   const [jurisForDropDownLine, setJurisForDropDownLine] = useState([]);
   const [jurisForDropDownMap, setJurisForDropDownMap] = useState([]);
@@ -340,7 +341,7 @@ export default function App( params ) {
     }
   };
 
-  const prepareData = (stData, usData, ethnData, jurisCntData, jurisEthnCntData) => {
+  const prepareData = (stData, usData, ethnData, jurisCntData, jurisEthnCntData, jurisExcludedEthnData) => {
 
     let tempKeyedRawDataMonthly = [];
     let tempKeyedRawDataAnnual = [];
@@ -353,6 +354,9 @@ export default function App( params ) {
 
     //Ethnicity data 
     setEthnicityData(ethnData);
+
+    //Ethnicity juris excluded 
+    setJurisExcludedData(jurisExcludedEthnData);
 
     //us data
     for(let y=0;y<Object.keys(usData.Monthly['US']).length;y++)
@@ -664,7 +668,7 @@ export default function App( params ) {
       }
 
       //Populate ethnicity data
-      const ethnSheet = wbethn.Sheets['Sheet1'];
+      const ethnSheet = wbethn.Sheets['Race_Ethnicity'];
       let columnInfoEthn = getColumnsInfo(ethnSheet);
       let columnHeadersEthn = columnInfoEthn.columnHeaders;
       let columnsEthn = columnInfoEthn.columns;
@@ -700,7 +704,19 @@ export default function App( params ) {
 
       }
 
-      prepareData(stateData, overallData, ethnData, jurisCountsData, jurisEthnCountsData);
+      let jurisExcludedEthnData = {};
+
+      for (let x = 2; x <= columnsEthn; x++) {
+        let mon = String(getValueEthn('month', x)).padStart(2, '0');
+        let yr = getValueEthn('year', x);
+        let rt = getValueEthn('rate_time', x);
+        let jurisExclude = getValueEthn('jurisdictions_excluded', x);
+
+       jurisExcludedEthnData[yr + mon + rt] = jurisExclude;
+
+      }
+
+      prepareData(stateData, overallData, ethnData, jurisCountsData, jurisEthnCountsData, jurisExcludedEthnData);
       
     }
 
@@ -1243,7 +1259,7 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const isEthnGrayBox = () => {
-    return (UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) || Number(currentYearSexAge) < 2023);
+    return (UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) || Number(currentYearSexAge) < 2023);
   }
 
   const stateBarChartMemo = useMemo(() =>
@@ -1253,7 +1269,7 @@ const getYears = (startYrInp, endYrInp) => {
         data={timeline == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly}
         dataOverall={timeline == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
         width={width} 
-        height={(!UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0'))) ? 900 : 400} 
+        height={(!UtilityFunctions.isCovidPeriodGrayBox(timeline, currentYear, currentMonth)) ? 900 : 400} 
         el={stateBarChartRef}
         currentState={currentState}
         currentDrug={selectedDrugsState[0]}
@@ -1275,11 +1291,12 @@ const getYears = (startYrInp, endYrInp) => {
    <div id="bar-chart-container" className="chart-container" ref={drugsBarChartRef}>
       <BarChart
         data={currentStateBar === 'US' ? (timelineBar == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly) : (timelineBar == 'Annual' ? keyedRawDataAnnual :  keyedRawDataMonthly)}
-        width={width} 
-        height={!UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) ? 830 : 400} 
+        width={width}
+        height={!UtilityFunctions.isCovidPeriodGrayBox(timelineBar, currentYearBar, currentMonthBar) ? 830 : 400} 
         el={drugsBarChartRef}
         currentState={currentStateBar}
         selectedDrugs={selectedDrugsBar}
+        currentTimeframe={timelineBar}
         currentYear={currentYearBar}
         currentMonth={currentMonthBar} 
         drugOptions={drugOptions}
@@ -1362,7 +1379,7 @@ const getYears = (startYrInp, endYrInp) => {
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-                height={!isSmallViewport ? (!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400) : 600}
+                height={!isSmallViewport ? (!UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) ? 640 : 400) : 600}
                 el={sexChartRef}
                 currentDrug={selectedDrugsSexAge[0]} 
                 drugOptions={drugOptions}
@@ -1390,7 +1407,7 @@ const getYears = (startYrInp, endYrInp) => {
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-                height={!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400} //TODO
+                height={!UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) ? 640 : 400} 
                 header={false}
                 el={ageChartRef}
                 overallMax={100}
@@ -1421,7 +1438,7 @@ const getYears = (startYrInp, endYrInp) => {
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
             width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-            height={!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400} //TODO
+            height={!UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) ? 640 : 400} 
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
             currentDataType={currentDataType}
@@ -1443,11 +1460,13 @@ const getYears = (startYrInp, endYrInp) => {
           <div class='chartDivAllDem' ref={ethnicityChartRef}>
             <EthnicityChart 
             data={ethnicityData}
+            dataJurisExcl={jurisExcludedData}
             currentTimeframe={sexAgeMonthly}
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
+            stateNames={stateNames}
             width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-            height={!UtilityFunctions.isCovidPeriod(currentYearSexAge + String(currentMonthSexAge).padStart(2, '0')) ? 640 : 400} //TODO
+            height={!UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) ? 640 : 400} 
             currentDrug={selectedDrugsSexAge[0]} 
             drugOptions={drugOptions} 
             currentDataType={currentDataType}
@@ -1789,8 +1808,8 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const hasCovidPeriod = () => {
-    if   ((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
-         (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA)))
+    if   ((timelineLine == 'Monthly' && UtilityFunctions.containsCovidPeriod(timelineLine, lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM)) ||
+         (timelineLine == 'Annual' && UtilityFunctions.containsCovidPeriod(timelineLine, lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA)))
       return true;
     else
       return false;
@@ -2287,7 +2306,7 @@ const getYears = (startYrInp, endYrInp) => {
           <span className="callout" style={{'color': drugColor}}>{jurisCount}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating</span>
-            <p>Funded states with reported Data</p>
+            <p>Funded states with reported data</p>
           </div>
         </div>
       </div>
@@ -2410,8 +2429,11 @@ const getYears = (startYrInp, endYrInp) => {
                               setTimelineLine('Monthly');
                               setPeriodToggle(true);
                               setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']);
+                              setEndUSMonthYearForSliderM(keyedRawUSDataMonthly[keyedRawUSDataMonthly.length - 1]['YYYYMM']);
                               setLookupPeriodStartYearM('2023');
                               setLookupPeriodStartMonthM('1');
+                              setLookupPeriodEndYearM(keyedRawUSDataMonthly[keyedRawUSDataMonthly.length - 1]['YYYYMM'].substring(0,4));
+                              setLookupPeriodEndMonthM(Number(keyedRawUSDataMonthly[keyedRawUSDataMonthly.length - 1]['YYYYMM'].substring(4)));
                             }} />
                           <label
                             htmlFor="radioUSMonthlyLine">Monthly</label>
@@ -2430,8 +2452,11 @@ const getYears = (startYrInp, endYrInp) => {
                             setTimelineLine('Annual');
                             setPeriodToggle(false);
                             setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']);
+                            setEndUSMonthYearForSliderA(keyedRawUSDataAnnual[keyedRawUSDataAnnual.length - 1]['YYYYMM']);
                             setLookupPeriodStartYearA('2023');
                             setLookupPeriodStartMonthA('1');
+                            setLookupPeriodEndYearA(keyedRawUSDataAnnual[keyedRawUSDataAnnual.length - 1]['YYYYMM'].substring(0,4));
+                            setLookupPeriodEndMonthA(Number(keyedRawUSDataAnnual[keyedRawUSDataAnnual.length - 1]['YYYYMM'].substring(4)));
                           }} 
                           />
                           <label
@@ -2481,6 +2506,8 @@ const getYears = (startYrInp, endYrInp) => {
                               setStartUSMonthYearForSliderM(keyedRawUSDataMonthly[0]['YYYYMM']);
                               setLookupPeriodStartYearM('2023');
                               setLookupPeriodStartMonthM('1');
+                              setLookupPeriodEndYearM('2023');
+                              setLookupPeriodEndMonthM('1');
                             }} />
                           <label htmlFor="radioUSMonthlyLine">Monthly</label>
                           &nbsp;&nbsp;
@@ -2497,6 +2524,8 @@ const getYears = (startYrInp, endYrInp) => {
                             setStartUSMonthYearForSliderA(keyedRawUSDataAnnual[0]['YYYYMM']);
                             setLookupPeriodStartYearA('2023');
                             setLookupPeriodStartMonthA('1');
+                            setLookupPeriodEndYearA('2023');
+                            setLookupPeriodEndMonthA('1');
                           }} 
                           />
                           <label htmlFor="radioUSAnnualLine">Annual</label>
@@ -2867,7 +2896,7 @@ const getYears = (startYrInp, endYrInp) => {
               }
         {drugsBarChartMemo}
         {!accessible && <br></br>}
-        {!accessible && !isSmallViewport && !UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) &&
+        {!accessible && !isSmallViewport && !UtilityFunctions.isCovidPeriodGrayBox(timelineBar, currentYearBar, currentMonthBar) &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '15%'}}></td>
@@ -2882,7 +2911,7 @@ const getYears = (startYrInp, endYrInp) => {
           </tr>
         </table>
         }
-        {!accessible && isSmallViewport && !UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) &&
+        {!accessible && isSmallViewport && !UtilityFunctions.isCovidPeriodGrayBox(timelineBar, currentYearBar, currentMonthBar) &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '100%'}}>
@@ -2895,7 +2924,7 @@ const getYears = (startYrInp, endYrInp) => {
           </tr>
         </table>
         }
-        {accessible && !isSmallViewport && !UtilityFunctions.isCovidPeriod(currentYearBar + String(currentMonthBar).padStart(2, '0')) &&
+        {accessible && !isSmallViewport && !UtilityFunctions.isCovidPeriodGrayBox(timelineBar, currentYearBar, currentMonthBar) &&
         <table style={{width: '100%'}}>
           <tr>
             <td style={{width: '100%'}}>
@@ -3301,8 +3330,8 @@ const getYears = (startYrInp, endYrInp) => {
             </table>
           }
           {stateBarChartMemo}
-          {!accessible && getFootNotesForData('State', UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))}
-          {accessible && isSmallViewport && getFootNotesForData('State', UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))}
+          {!accessible && getFootNotesForData('State', UtilityFunctions.isCovidPeriodGrayBox(timeline, currentYear, currentMonth))}
+          {accessible && isSmallViewport && getFootNotesForData('State', UtilityFunctions.isCovidPeriodGrayBox(timeline, currentYear, currentMonth))}
           {/* State Chart End */}
 
        <section>

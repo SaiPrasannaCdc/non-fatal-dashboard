@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react';
 
 export const covidPeriod = ['202003', '202004', '202005', '202006', '202007', '202008'];
+export const covidPeriodAnnual = ['202003', '202004', '202005', '202006', '202007', '202008', '202009', '202010', '202011', '202012', '202101', '202102', '202103', '202104', '202105', '202106', '202107'];
 
 export const UtilityFunctions = {
 
@@ -632,32 +633,70 @@ export const UtilityFunctions = {
     return covidPeriod.includes(yearmon);
   },
 
-  doesEndWithCovidPeriod : (data, st) => {
-    var cnt = data[st].length;
-    return covidPeriod.includes(data[st][cnt - 1]['year']);
+  isCovidPeriodLine : (timeFrame, yearmon) => {
+    if (timeFrame == 'Monthly')
+      return covidPeriod.includes(yearmon);
+    else
+      return covidPeriodAnnual.includes(yearmon);
   },
 
-  containsCovidPeriod : (stYr, stMon, endYr, endMon)  => {
+  isCovidPeriodAnnual : (yearmon) => {
+    return covidPeriodAnnual.includes(yearmon);
+  },
+
+  isCovidPeriodGrayBox : (currentTimeLine, currentYear, currentMonth) => {
+    return ((currentTimeLine == 'Monthly' && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0'))) ||
+      (currentTimeLine == 'Annual' && UtilityFunctions.isCovidPeriodAnnual(currentYear + String(currentMonth).padStart(2, '0'))));
+  },
+
+  doesEndWithCovidPeriod : (timeFrame, data, st) => {
+    var cnt = data[st].length;
+    if (timeFrame == 'Monthly')
+      return covidPeriod.includes(data[st][cnt - 1]['year']);
+    else
+      return covidPeriodAnnual.includes(data[st][cnt - 1]['year']);
+  },
+
+  containsCovidPeriod : (timeFrame, stYr, stMon, endYr, endMon)  => {
     var monthsArray = UtilityFunctions.generateYYMMArray(Number(stYr), Number(stMon), Number(endYr), Number(endMon));
     var ret = false;
     for(let j=0;j<monthsArray.length;j++) {
-      if (UtilityFunctions.isCovidPeriod(monthsArray[j]))
-        ret = true;
+      if (timeFrame == 'Monthly') {
+        if (UtilityFunctions.isCovidPeriod(monthsArray[j]))
+          ret = true;
+      }
+      else {
+        if (UtilityFunctions.isCovidPeriodAnnual(monthsArray[j]))
+          ret = true;
+      }
     }
     return ret;
   },
 
-  isCovidPeriodNoLine : (nextPoint, curPoint) => {
+  isCovidPeriodNoLine : (timeFrame, nextPoint, curPoint) => {
 
-    if (UtilityFunctions.isCovidPeriod(nextPoint))
+    if (timeFrame == 'Monthly') {
+      if (UtilityFunctions.isCovidPeriod(nextPoint))
+        return true;
+
+      if (UtilityFunctions.isCovidPeriod(curPoint))
+        return true;
+    }
+    else
+    {
+      if (UtilityFunctions.isCovidPeriodAnnual(nextPoint))
       return true;
 
-    if (UtilityFunctions.isCovidPeriod(curPoint))
+    if (UtilityFunctions.isCovidPeriodAnnual(curPoint))
       return true;
+    }
   },
 
-  getCovidPeriodIndex : (yr) => {
-    return covidPeriod.indexOf(yr);
+  getCovidPeriodIndex : (timeFrame, yr) => {
+    if (timeFrame == 'Monthly')
+      return covidPeriod.indexOf(yr);
+    else
+      return covidPeriodAnnual.indexOf(yr);
   },
 
   allDataIsSupressed : (fdata) => {
@@ -775,7 +814,7 @@ export const UtilityFunctions = {
     return (
       <Fragment>
         <>
-        <div style={{ height: hgt, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons.</p></div>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons.</p></div>
         </>
         </Fragment>
         )

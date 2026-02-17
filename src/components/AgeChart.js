@@ -266,7 +266,7 @@ function AgeChart(params) {
   };
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' +  mdata['percent'] + '% of data are missing.'
+    return 'Note: ' + mdata['percent'] + '% of nonfatal ' + drugOptions[currentDrug].titleSingular.toLowerCase() + ' overdoses are missing age data during this time period.';
   };
 
   useEffect(() => {
@@ -274,7 +274,7 @@ function AgeChart(params) {
     setTimeout(onScroll, 50); // eslint-disable-next-line
   }, []);
 
-  if (!accessible && UtilityFunctions.isCovidPeriod(currentYear + String(currentMonth).padStart(2, '0')))
+  if (!accessible && UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
       return UtilityFunctions.getCovidGrayBox(height, width);
     
   return width > 0 && 
@@ -326,7 +326,8 @@ function AgeChart(params) {
         }
         </>        
       ) : (
-        <svg width={width} height={height + 10}>
+      <Group>
+        <svg width={width} height={height - 60}>
           <Group top={margin.top} left={margin.left}>
             (
               <>
@@ -411,21 +412,24 @@ function AgeChart(params) {
               </>
             )
 
-            {!isSmallViewport && <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={13} textAnchor={!isSmallViewport ? "middle" : "start"}>Suspected Nonfatal Overdoses Involving </text>}
-            {!isSmallViewport && <text x={adjustedWidth/2} y={height - 90} fill={'#000066'} fontSize={13} textAnchor={"middle"}>{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-            {!isSmallViewport && !UtilityFunctions.allDataIsSupressed(filteredData) && <text x={0} y={height - 60} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{getMissingNote(missingData)}</text>}
-            {!isSmallViewport && <text x={0} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-            {!isSmallViewport && <text x={0} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data selected.'}</text>} 
-            
-            {isSmallViewport && <text x={-50} y={height - 130} fill={'#000066'} fontSize={13} textAnchor={"start"}>Suspected Nonfatal Overdoses Involving </text>}
-            {isSmallViewport && <text x={-50} y={height - 110} fill={'#000066'} fontSize={13} textAnchor={"start"}>{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-            {isSmallViewport && !UtilityFunctions.allDataIsSupressed(filteredData) && <text x={-50} y={height - 80} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{getMissingNote(missingData)}</text>}  
-            {isSmallViewport && <text x={-50} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 50 : 80)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="10">*</tspan>{'Data suppressed.'}</text>} 
-            {isSmallViewport && <text x={-50} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 30 : 60)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}><tspan baselineShift="super" fontSize="8">†</tspan>{'Scale of the figure may change based on the data'}</text>} 
-            {isSmallViewport && <text x={-50} y={height - (!UtilityFunctions.allDataIsSupressed(filteredData) ? 10 : 40)} fontSize={fontSize - 4} fill={'#000000'} textAnchor={"start"}>{'selected.'}</text>}
-
+            {<text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={!isSmallViewport ? "middle" : "start"}>Suspected Nonfatal Overdoses Involving </text>}
+            {<text x={adjustedWidth/2} y={height - 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
           </Group>
         </svg>
+        <div>
+          <table>
+            {!UtilityFunctions.allDataIsSupressed(filteredData) &&
+              <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
+            }
+            {!UtilityFunctions.allDataIsSupressed(filteredData) &&
+              <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
+            }
+            {!UtilityFunctions.allDataIsSupressed(filteredData) &&
+              <tr><td><small><i><sup>†</sup>{'Scale of the figure may change based on the data selected.'}</i></small></td></tr>
+            }
+          </table>
+        </div>
+        </Group>
       )}
       </div>
     );
