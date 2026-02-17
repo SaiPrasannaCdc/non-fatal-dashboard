@@ -589,7 +589,7 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         let ethn = sortedArray[i].ethnN;
-        obj['val'] = isNaN(sortedArray[i].rate) ? sortedArray[i].rate : Number(sortedArray[i].rate).toLocaleString('en-US'); ;
+        obj['val'] = isNaN(sortedArray[i].rate) ? sortedArray[i].rate : Number(sortedArray[i].rate).toLocaleString('en-US');
         myData[ethn] = obj;
       }
 
