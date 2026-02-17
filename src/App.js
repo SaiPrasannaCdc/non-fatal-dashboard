@@ -2306,7 +2306,7 @@ const getYears = (startYrInp, endYrInp) => {
           <span className="callout" style={{'color': drugColor}}>{jurisCount}</span>
           <div>
             <span className='data-bite-title' style={{ color: drugColor }}>Jurisdictions Participating</span>
-            <p>Funded states with reported Data</p>
+            <p>Funded states with reported data</p>
           </div>
         </div>
       </div>
