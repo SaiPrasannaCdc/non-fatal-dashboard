@@ -7,7 +7,9 @@ import ResizeObserver from 'resize-observer-polyfill';
 
 import StateChart from './components/StateChart';
 import LineChart from './components/LineChart';
-import SexAgeCharts from './components/SexAgeCharts';
+import SexAgeChart from './components/SexAgeChart';
+import SexChart from './components/SexChart';
+import AgeChart from './components/AgeChart';
 import EthnicityChart from './components/EthnicityChart';
 import UsaMap from './components/UsaMap';
 import Select from './components/Select';
@@ -178,6 +180,8 @@ export default function App(params) {
   const [lineChartData, setLineChartData] = useState();
   const [stateChartData, setStateChartData] = useState();
   const [sexAgeChartData, setSexAgeChartData] = useState();
+  const [sexChartData, setSexChartData] = useState();
+  const [ageChartData, setAgeChartData] = useState();
   const [usamapData, setUsaMapData] = useState();
   const [ethnicityData, setEthnicityData] = useState();
   const [stateDropdownOptions, setStateDropdownOptions] = useState([]);
@@ -230,6 +234,9 @@ export default function App(params) {
   const isSmallViewport = width < viewportCutoffSmall;
 
   const stateBarChartRef = useRef();
+  const sexChartRef = useRef();
+  const ageChartRef = useRef();
+  const sexAgeChartRef = useRef();
   const ethnicityChartRef = useRef();
 
   const drugColor = drugOptions[currentDrug].color;
@@ -1048,6 +1055,8 @@ export default function App(params) {
     let stateData = {};
     let yearData = {};
     let sexData = {};
+    let sexDataOnly = {};
+    let ageDataOnly = {};
     let countyData = {};
     let ethnicityData = {};
 
@@ -1209,6 +1218,55 @@ export default function App(params) {
         }));
       });
 
+    await fetch(dataPath + 'Overall_By_Sex_Only_Age_Only.json')
+      .then(res => res.json())
+      .then(data => {
+        let columns = data.length;
+        let getValue = (key, i) => data[i][key];
+
+        //Populate sex data only
+        for (let i = 0; i < columns; i++) {
+          createIfUndefined(sexDataOnly, getValue('dataset', i), createNewDrugObject(false));
+          Object.keys(drugOptions).forEach(drug => {
+            let datasetNode = sexDataOnly[getValue('dataset', i)];
+            datasetNode = createIfUndefined(datasetNode[drug], getValue('year', i), {});
+            datasetNode = createIfUndefined(datasetNode, getValue('month', i), {});
+            let datasetNodeCount = createIfUndefined(datasetNode, 'count', []);
+            let datasetNodeRate = createIfUndefined(datasetNode, 'rate', []);
+            if (getValue('sex', i) !== 'Total') {
+              let datasetDatumCount = datasetNodeCount.find(datum => datum.age === getValue('sex', i));
+              if (!datasetDatumCount) {
+                datasetDatumCount = { sex: getValue('sex', i) }
+                datasetNodeCount.push(datasetDatumCount);
+              }
+              datasetDatumCount[getValue('sex', i)] = formatNumber(getValue('count_' + drug, i), false);
+              datasetNodeRate[getValue('sex', i)] = formatNumber(getValue('rate_' + drug, i), false);
+            }
+          });
+        }
+
+        //Populate age data only
+        for (let i = 0; i < columns; i++) {
+          createIfUndefined(ageDataOnly, getValue('dataset', i), createNewDrugObject(false));
+          Object.keys(drugOptions).forEach(drug => {
+            let datasetNode = ageDataOnly[getValue('dataset', i)];
+            datasetNode = createIfUndefined(datasetNode[drug], getValue('year', i), {});
+            datasetNode = createIfUndefined(datasetNode, getValue('month', i), {});
+            let datasetNodeCount = createIfUndefined(datasetNode, 'count', []);
+            let datasetNodeRate = createIfUndefined(datasetNode, 'rate', []);
+            if (getValue('age', i) !== 'Total') {
+              let datasetDatumCount = datasetNodeCount.find(datum => datum.age === getValue('age', i));
+              if (!datasetDatumCount) {
+                datasetDatumCount = { age: getValue('age', i) }
+                datasetNodeCount.push(datasetDatumCount);
+              }
+              datasetDatumCount[getValue('age', i)] = formatNumber(getValue('count_' + drug, i), false);
+              datasetNodeRate[getValue('age', i)] = formatNumber(getValue('rate_' + drug, i), false);
+            }
+          });
+        }
+      });
+
     await fetch(dataPath + 'County_Counts_Rates.json')
       .then(res => res.json())
       .then(data => {
@@ -1272,7 +1330,9 @@ export default function App(params) {
     setData({ state: stateData, year: yearData, supportedJurisdictions });
     setLineChartData({ state: stateData, year: yearData, sex: sexData, supportedJurisdictions });
     setStateChartData({ year: yearData, supportedJurisdictions });
-    setSexAgeChartData({ sex: sexData });
+    setSexAgeChartData({ sexAge: sexData });
+    setSexChartData({ sex: sexDataOnly });
+    setAgeChartData({ age: ageDataOnly });
     setUsaMapData({ state: stateData, year: yearData, county: countyData, supportedJurisdictions });
     setEthnicityData({ ethnicityData: ethnicityData });
     setOnlyCurrentDrug(false);
@@ -1561,15 +1621,61 @@ export default function App(params) {
     </>,
     [lineChartData, monthNames, stateNames, drugOptions, currentTimeframe, currentDataSource, currentDrug, currentState, currentYear, currentMonth, width, stateDropdownOptions, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showLabels, showPercent, showCount, showOverall, showCompare, compareState, isPeriod, currentDrugOnly, supportedYears, selectedDrugs]);
 
-  const sexAgeChartsMemo = useMemo(() =>
+   const sexChartMemo = useMemo(() =>
     <>
-      Count
-      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} checked={currentDataType == 'count' ? true : false} defaultChecked="false" /* disabled={currentYear == '2024' ? true : false} *//>
-      Rate
-      <br></br>
+      <div className='subsection marked'>
+        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Sex</span>
+        <div className="chartDivAllDem" ref={sexChartRef}>
+        <SexChart
+          data={sexChartData}
+          currentTimeframe={currentTimeframe}
+          currentDataSource={currentDataSource}
+          currentDrug={selectedDrugsSexAge[0]}
+          currentYear={currentYear}
+          currentMonth={currentMonth}
+          currentDataType={currentDataType}
+          width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
+          height={640} 
+          el={sexChartRef}
+          drugOptions={drugOptions}
+          accessible={accessible}
+          widthReduction={(!isSmallViewport && !accessible) ? true : false} 
+        />
+      </div>
+      </div>
+    </>,
+    [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
+    
+    const ageChartMemo = useMemo(() =>
+    <>
+      <div className='subsection marked'>
+        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age</span>
+        <div className="chartDivAllDem" ref={ageChartRef}>
+        <AgeChart
+          data={ageChartData}
+          width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
+          height={640} 
+          el={ageChartRef}
+          currentDrug={selectedDrugsSexAge[0]}
+          drugOptions={drugOptions}
+          currentTimeLine={currentTimeframe}
+          currentDataSource={currentDataSource}
+          currentYear={currentYear}
+          currentMonth={currentMonth}
+          currentDataType={currentDataType}
+          accessible={accessible}
+          widthReduction={(!isSmallViewport && !accessible) ? true : false} 
+        />
+      </div>
+      </div>
+    </>,
+    [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
+
+  const sexAgeChartMemo = useMemo(() =>
+    <>
       <div className='subsection marked'>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age and Sex</span>
-        <SexAgeCharts
+        <SexAgeChart
           data={sexAgeChartData}
           currentTimeframe={currentTimeframe}
           currentDataSource={currentDataSource}
@@ -1577,9 +1683,11 @@ export default function App(params) {
           currentYear={currentYear}
           currentMonth={currentMonth}
           currentDataType={currentDataType}
-          width={width}
+          width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
+          height={640} 
           drugOptions={drugOptions}
-          accessible={accessible} 
+          accessible={accessible}
+          widthReduction={(!isSmallViewport && !accessible) ? true : false} 
         />
       </div>
     </>,
@@ -1591,7 +1699,7 @@ export default function App(params) {
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity<sup>§</sup></span>
         <EthnicityChart
           data={ethnicityData}
-          width={width}
+          width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
           height={900} //TODO
           el={ethnicityChartRef}
           currentDrug={selectedDrugsSexAge[0]}
@@ -1602,6 +1710,7 @@ export default function App(params) {
           currentYear={currentYear}
           drugOptions={drugOptions}
           accessible={accessible}
+          widthReduction={(!isSmallViewport && !accessible) ? true : false}
         />
       </div>
     </>,
@@ -2114,11 +2223,46 @@ export default function App(params) {
                     </tr>
               </table>
               <br></br>
-              {sexAgeChartData && sexAgeChartsMemo}
-              {getFootNotesForData('Sex', false)}
+              <table>
+                <tr>
+                  <td>
+                    Count
+                      <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentDataType(e.target.checked ? 'count' : 'rate')} checked={currentDataType == 'count' ? true : false} defaultChecked="false" /* disabled={currentYear == '2024' ? true : false} *//>
+                    Rate
+                    <br></br>
+                  </td>
+                </tr>
+              </table>
+              {!accessible && !isSmallViewport &&
+                <table>
+                  <tr>
+                    <td style={{width: '50%'}}>
+                      {sexChartData && sexChartMemo}
+                      {getFootNotesForData('Sex', false)}
+                    </td>
+                    <td style={{width: '50%'}}>
+                      {ageChartData && ageChartMemo}
+                      {getFootNotesForData('Sex', false)}
+                    </td>
+                  </tr>
+                  <br></br>
+                  <tr>
+                    <td style={{width: '50%'}}>
+                      {sexAgeChartData && sexAgeChartMemo}
+                      {getFootNotesForData('Sex', false)}
+                    </td>
+                    <td style={{width: '50%'}}>
+                      {ethnicityData && ethnicityChartMemo}
+                      {getFootNotesForData('Ethnicity', false)}
+                    </td>
+                  </tr>
+                </table>
+              }
+              
+              
               <br></br>
-              {/* {ethnicityData && ethnicityChartMemo}
-              {getFootNotesForData('Ethnicity', false)} */}
+              
+              
             </section>
 
             {accessible &&

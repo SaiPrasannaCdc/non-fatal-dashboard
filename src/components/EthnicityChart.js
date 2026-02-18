@@ -131,9 +131,9 @@ function EthnicityChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentDrug, currentDataSource, currentTimeframe, currentDataType, currentMonth, currentYear, drugOptions, accessible } = params;
+  const { data, width, height, el, currentDrug, currentDataSource, currentTimeframe, currentDataType, currentMonth, currentYear, drugOptions, accessible, widthReduction } = params;
 
-  const isSmallViewport = width < 550;
+  const isSmallViewport = width < 550 && !widthReduction;
 
   const ethnGroups = getEthnGroups(data, currentDataSource, currentYear, currentMonth)
   const dataRates = getFilteredData(data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
