@@ -529,7 +529,7 @@ function EthnicityChart(params) {
         }
         {Number(d[xKey])?.toFixed(1) == -9.0 &&
             <Text 
-            x={(isSmallViewport ? 10 : 40)}
+            x={(isSmallViewport ? 20 : 50)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
