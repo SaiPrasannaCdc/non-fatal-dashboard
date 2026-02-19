@@ -461,15 +461,28 @@ function EthnicityChart(params) {
     return 'Note: ' + mdata + `% of nonfatal ${drugOptions[currentDrug].titleSingular.toLowerCase()} overdoses are missing race and/or ethnicity data during this time period.`
   };
 
+  const areJurisExcluded = () => {
+
+    var states = [];
+    var juris = dataJurisExcl[currentYear + String(currentMonth).padStart(2, '0') + currentTimeframe]?.replaceAll(' ', '');
+    const arr = juris?.split(",");
+    if (arr) return true;
+    else return false;
+  }
+
   const getJurisExcluded = () => {
 
     var states = [];
-    var juris = dataJurisExcl[currentYear + String(currentMonth).padStart(2, '0') + currentTimeframe].replaceAll(' ', '');
-    const arr = juris.split(",");
-    for (var i=0; i<arr.length; i++) {
-      states.push(stateNames[arr[i]]);
+    var juris = dataJurisExcl[currentYear + String(currentMonth).padStart(2, '0') + currentTimeframe]?.replaceAll(' ', '');
+    const arr = juris?.split(",");
+    if (arr) {
+      for (var i=0; i<arr.length; i++) {
+        states.push(stateNames[arr[i]]);
+      }
+      return states.join(', ').replace(/(,)([^,]*)$/, " and$2");;
     }
-    return states.join(', ').replace(/(,)([^,]*)$/, " and$2");;
+    else
+     return '';
   }
 
   const getBar = (d) => {
@@ -570,7 +583,7 @@ function EthnicityChart(params) {
           <tr>
             <td>
               <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
-              <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from ' + getJurisExcluded() + '.'}</i></small></span></div>
+              <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></span></div>
             </td>
           </tr>
           }
@@ -589,7 +602,7 @@ function EthnicityChart(params) {
                         {<br></br>}
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
                         {<br></br>}
-                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from ' + getJurisExcluded() + '.'}</i></small></span></div>}
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period.  ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></span></div>}
                       </td>
                     </tr>
                 </table>
@@ -622,7 +635,7 @@ function EthnicityChart(params) {
           </Group>
         </svg>
         {!isEthnGrayBox &&
-        <div style={{height: '230px'}}>
+        <div style={{height: !isSmallViewport ? '230px' : '480px'}}>
             <table>
               {Object.keys(filteredData).length > 0 &&
                 <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
@@ -634,7 +647,7 @@ function EthnicityChart(params) {
                 <tr><td><small><i><sup>†</sup>{'Scale of the figure may change based on the data selected.'}</i></small></td></tr>
               }
               {Object.keys(filteredData).length > 0 &&
-                <tr><td><small><i><sup>§</sup>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from ' + getJurisExcluded() + '.'}</i></small></td></tr>
+                <tr><td><small><i><sup>§</sup>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period.  ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></td></tr>
               }
             </table>
           </div>
