@@ -434,21 +434,21 @@ function EthnicityChart(params) {
 
   const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 190 : 180, right: isSmallViewport ? 0 : 15 };
+  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 120 : 110, right: isSmallViewport ? 0 : 15 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
-  const adjustedWidth = width - margin.left - margin.right;
+  const adjustedWidth = width - margin.left - margin.right - 75;
 
   const xKey = 'val';
   const yKey = 'ethnN';
 
-  let overallMax = getMaxValue(filteredData) * 1.5;
+  let overallMax = getMaxValue(filteredData);
   if(overallMax === 0) overallMax = 1;
 
   const xScale = scaleLinear({
-    range: [0, xMax],
-    domain: [0, overallMax]
+    domain: [0, overallMax  * 1.2],
+    range: [0, adjustedWidth]
   });
 
   const yScale = scaleBand({
@@ -487,17 +487,17 @@ function EthnicityChart(params) {
 
   const getBar = (d) => {
 
-    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey] * (width <= 430 ? 0.6 : 0.9));
+    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey]);
 
     const xTip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ${Number(d[xKey]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
 
     return (
       <g key={d[yKey]}>
 
-        {d[xKey] >= 0 && <path d={Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 50, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
+        {d[xKey] >= 0 && <path d={d[xKey] < 0.9 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
         {Number(d[xKey]) >= 0 && 
         <Text 
-          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 18 : 10) : (Number(d[xKey]) >= 100 ? 65 : 55)) + (currentDataType == 'rate' ? 35 : 45)))} 
+          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 13 : 5) : (Number(d[xKey]) >= 100 ? 60 : 50)) + (currentDataType == 'rate' ? 30 : 40)))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="#000000"
@@ -507,7 +507,7 @@ function EthnicityChart(params) {
         }
           {Number(d[xKey])?.toFixed(1) == -3.0 &&
             <Text 
-            x={(isSmallViewport ? 20 : 55)}
+            x={(isSmallViewport ? 10 : 40)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
@@ -518,7 +518,7 @@ function EthnicityChart(params) {
         }
         {Number(d[xKey])?.toFixed(1) == -1.0 &&
             <Text 
-            x={(isSmallViewport ? 20 : 55)}
+            x={(isSmallViewport ? 10 : 40)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
@@ -529,7 +529,7 @@ function EthnicityChart(params) {
         }
         {Number(d[xKey])?.toFixed(1) == -9.0 &&
             <Text 
-            x={(isSmallViewport ? 20 : 65)}
+            x={(isSmallViewport ? 10 : 40)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
@@ -549,7 +549,7 @@ function EthnicityChart(params) {
     if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
         return UtilityFunctions.getCovidGrayBox(height, width);
     else 
-      return UtilityFunctions.getNoDataGrayBoxForEthn(height, width);
+      return UtilityFunctions.getNoDataGrayBoxForEthn(height + 40, width);
   }
 
   return (
@@ -610,7 +610,7 @@ function EthnicityChart(params) {
         </>        
       ) : (
         <Group>
-          <svg style={{ height: height - 60 }}>
+          <svg style={{ height: height - 30 }}>
           <Group top={margin.top} left={margin.left}>
             <Group>
               {filteredData.map((d) => getBar(d, false))}
@@ -622,16 +622,32 @@ function EthnicityChart(params) {
               fill: '#000066',
               textAnchor: 'end',
               verticalAnchor: 'middle',
-              /* angle: (isSmallViewport ? 45 : 0), */
+              angle: (45),
             })}
-            left={!isSmallViewport ? 50 : 5}
+            left={!isSmallViewport ? 35 : 5}
             hideTicks
             hideAxisLine
           />
-            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 50} y={yMax+ 30} fill={'#000066'} fontSize={fontSize} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
-            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 50} y={yMax+ 50} fill={'#000066'} fontSize={fontSize} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-180} y={yMax+ 30} fill={'#000066'} fontSize={fontSize * .8} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
-            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-180} y={yMax+ 50} fill={'#000066'} fontSize={fontSize * .8} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+          <AxisBottom
+                top={yMax}
+                scale={xScale}
+                left={!isSmallViewport ? 35 : 5}
+                numTicks={isSmallViewport ? 3 : null}
+                tickLabelProps={(value) => {
+                  return {
+                    style: {
+                      transform: 'rotate(-60deg)',
+                      transformOrigin: `${xScale(value)}px ${18}px`,
+                      textAnchor: 'end',
+                      fontSize: fontSize
+                    }
+                  }
+                }}
+              />
+            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 150} y={yMax+ 70} fill={'#000066'} fontSize={fontSize} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
+            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 150} y={yMax+ 90} fill={'#000066'} fontSize={fontSize} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-100} y={yMax+ 70} fill={'#000066'} fontSize={fontSize * .8} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
+            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-100} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * .8} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
           </Group>
         </svg>
         {!isEthnGrayBox &&

@@ -412,8 +412,8 @@ function AgeChart(params) {
               </>
             )
 
-            {<text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={!isSmallViewport ? "middle" : "start"}>Suspected Nonfatal Overdoses Involving </text>}
-            {<text x={adjustedWidth/2} y={height - 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+            {<text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Suspected Nonfatal Overdoses Involving </text>}
+            {<text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
           </Group>
         </svg>
         <div>

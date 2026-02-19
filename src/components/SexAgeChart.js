@@ -329,8 +329,8 @@ function SexAgeChart(params) {
 
   const getBar = (d) => {
 
-    const x1Pos = d[x1Key] < 0 ? xMaxHalf - 15 : x1Scale(d[x1Key] * 0.75);
-    const x2Pos = d[x2Key] < 0 ? xMaxHalf + 15 : x2Scale(d[x2Key] * 0.75);
+    const x1Pos = d[x1Key] < 0 ? xMaxHalf - 15 : x1Scale(d[x1Key]);
+    const x2Pos = d[x2Key] < 0 ? xMaxHalf + 15 : x2Scale(d[x2Key]);
 
     const x1Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Female</p><p><strong>Overdoses</strong>: ${Number(d[x1Key]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
     const x2Tip = `<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Age</strong>: ${d[yKey]}</p><p><strong>Sex</strong>: Male</p><p><strong>Overdoses</strong>: ${Number(d[x2Key]).toFixed(1)}${currentDataType == 'rate' ? '' : '%'}</p></div>`;
@@ -340,8 +340,8 @@ function SexAgeChart(params) {
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
 
-    const corner1 = xMaxHalf - x1Pos < 3 ? false : true;
-    const corner2 = x2Pos - xMaxHalf < 3 ? false : true;
+    const corner1 = (xMaxHalf - x1Pos) < 3 ? false : true;
+    const corner2 = (x2Pos - xMaxHalf) < 3 ? false : true;
 
     return (
       <g key={d[yKey]}>
@@ -471,7 +471,7 @@ function SexAgeChart(params) {
         </>        
       ) : (
       <Group>
-        <svg style={{ height: height - 60 }}>
+        <svg style={{ height: height - 30 }}>
           <Group top={margin.top} left={margin.left}>
           <Text x={x1Scale(0) - 15} y={0} fill={'#000066'} textAnchor="end">Female</Text>
           <Text x={x2Scale(0) + 15} y={0} fill={'#000066'} >Male</Text>
@@ -486,15 +486,45 @@ function SexAgeChart(params) {
             textAnchor: 'end',
             verticalAnchor: 'middle',
           })}
-          left={!isSmallViewport ? 50 : 10}
+          left={!isSmallViewport ? 30 : 10}
           hideTicks
           hideAxisLine
         />
-          {<text x={xMax/2} y={yMax+ 30} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
-          {<text x={xMax/2} y={yMax+ 50} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+        <AxisBottom
+            top={yMax}
+            scale={x1Scale}
+            numTicks={isSmallViewport ? 3 : null}
+            tickLabelProps={(value) => {
+              return {
+                style: {
+                  transform: 'rotate(-60deg)',
+                  transformOrigin: `${x1Scale(value)}px ${18}px`,
+                  textAnchor: 'end',
+                  fontSize: fontSize
+                }
+              }
+            }}
+          />
+          <AxisBottom
+            top={yMax}
+            scale={x2Scale}
+            numTicks={isSmallViewport ? 3 : null}
+            tickLabelProps={(value) => {
+              return {
+                style: {
+                  transform: 'rotate(-60deg)',
+                  transformOrigin: `${x2Scale(value)}px ${18}px`,
+                  textAnchor: 'end',
+                  fontSize: fontSize
+                }
+              }
+            }}
+          />
+          {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 70} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
+          {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
         </Group>
       </svg>
-      <div style={{height: (isEthnGrayBox ? '100px' : (isSmallViewport ? '160px' : '300px'))}}>
+      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? '160px' : '100px') : (isSmallViewport ? '160px' : '300px'))}}>
         <table>
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
