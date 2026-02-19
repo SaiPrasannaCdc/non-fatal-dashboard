@@ -635,7 +635,7 @@ function EthnicityChart(params) {
           </Group>
         </svg>
         {!isEthnGrayBox &&
-        <div style={{height: !isSmallViewport ? '230px' : '480px'}}>
+        <div style={{height: !isSmallViewport ? '300px' : '480px'}}>
             <table>
               {Object.keys(filteredData).length > 0 &&
                 <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>

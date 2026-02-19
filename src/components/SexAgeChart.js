@@ -494,7 +494,7 @@ function SexAgeChart(params) {
           {<text x={xMax/2} y={yMax+ 50} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
         </Group>
       </svg>
-      <div style={{height: (isEthnGrayBox ? '100px' : '230px')}}>
+      <div style={{height: (isEthnGrayBox ? '100px' : (isSmallViewport ? '160px' : '300px'))}}>
         <table>
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
