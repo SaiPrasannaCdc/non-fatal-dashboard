@@ -648,9 +648,9 @@ function EthnicityChart(params) {
                 tickLabelProps={(value) => {
                   return {
                     style: {
-                      /* transform: 'rotate(-60deg)', */
+                      transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''),
                       transformOrigin: `${xScale(value)}px ${18}px`,
-                      textAnchor: 'end',
+                      textAnchor: 'middle',
                       fontSize: fontSize,
                       fill: '#000066',
                     }
@@ -664,7 +664,7 @@ function EthnicityChart(params) {
           </Group>
         </svg>
         {!isEthnGrayBox &&
-        <div style={{height: !isSmallViewport ? '300px' : '480px'}}>
+        <div style={{height: !isSmallViewport ? '300px' : '520px'}}>
             <table>
               {Object.keys(filteredData).length > 0 &&
                 <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>

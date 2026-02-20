@@ -509,9 +509,9 @@ function SexAgeChart(params) {
             tickLabelProps={(value) => {
               return {
                 style: {
-                  /* transform: 'rotate(-60deg)', */
+                  transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''),
                   transformOrigin: `${x1Scale(value)}px ${18}px`,
-                  textAnchor: 'end',
+                  textAnchor: 'middle',
                   fontSize: fontSize,
                   fill: '#000066',
                 }
@@ -529,9 +529,9 @@ function SexAgeChart(params) {
             tickLabelProps={(value) => {
               return {
                 style: {
-                  /* transform: 'rotate(-60deg)', */
+                  transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''),
                   transformOrigin: `${x2Scale(value)}px ${18}px`,
-                  textAnchor: 'end',
+                  textAnchor: 'middle',
                   fontSize: fontSize,
                   fill: '#000066',
                 }
