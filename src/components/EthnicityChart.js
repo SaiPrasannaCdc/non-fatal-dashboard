@@ -458,7 +458,7 @@ function EthnicityChart(params) {
   });
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata + `% of nonfatal ${drugOptions[currentDrug].titleSingular.toLowerCase()} overdoses are missing race and/or ethnicity data during this time period.`
+    return 'Note: ' + mdata + `% of nonfatal ${drugOptions[currentDrug].titleSingular.toLowerCase()} overdoses are missing race and/or ethnicity data during this time period.` + (currentDataType == 'percent' ? ' Percentages in the figure may not add up to 100% due to missingness.' : '')
   };
 
   const areJurisExcluded = () => {
@@ -483,6 +483,14 @@ function EthnicityChart(params) {
     }
     else
      return '';
+  }
+
+  const getFormattedValue = (val) => {
+
+    if (currentDataType == 'rate')
+      return val;
+    else
+       return val + '%';
   }
 
   const getBar = (d) => {
@@ -632,22 +640,27 @@ function EthnicityChart(params) {
                 top={yMax}
                 scale={xScale}
                 left={!isSmallViewport ? 35 : 5}
-                numTicks={isSmallViewport ? 3 : null}
+                numTicks={isSmallViewport ? 3 : 6}
+                tickStroke="none"
+                tickFormat={value => 
+                      getFormattedValue(value)
+                } 
                 tickLabelProps={(value) => {
                   return {
                     style: {
-                      transform: 'rotate(-60deg)',
+                      /* transform: 'rotate(-60deg)', */
                       transformOrigin: `${xScale(value)}px ${18}px`,
                       textAnchor: 'end',
-                      fontSize: fontSize
+                      fontSize: fontSize,
+                      fill: '#000066',
                     }
                   }
                 }}
               />
-            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 150} y={yMax+ 70} fill={'#000066'} fontSize={fontSize} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
-            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 150} y={yMax+ 90} fill={'#000066'} fontSize={fontSize} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
-            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-100} y={yMax+ 70} fill={'#000066'} fontSize={fontSize * .8} textAnchor="start">Suspected Nonfatal Overdoses Involving </text>}
-            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={-100} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * .8} textAnchor="start">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 150} y={yMax+ 70} fill={'#000066'} fontSize={fontSize} textAnchor="middle">{currentDataType == 'rate' ? 'Suspected Nonfatal Overdoses Involving' : 'Percent of suspected Nonfatal Overdoses'} </text>}
+            {!isSmallViewport && Object.keys(filteredData).length > 0 && <text x={adjustedWidth/10 + 150} y={yMax+ 90} fill={'#000066'} fontSize={fontSize} textAnchor="middle">{(currentDataType == 'rate' ?  '' : 'Involving ') + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ?  ' per 10,000 Total ED visits' : '')}</text>}
+            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={10} y={yMax+ 70} fill={'#000066'} fontSize={fontSize * .8} textAnchor="middle">{currentDataType == 'rate' ? 'Suspected Nonfatal Overdoses Involving' : 'Percent of suspected Nonfatal Overdoses'} </text>}
+            {isSmallViewport && Object.keys(filteredData).length > 0 && <text x={10} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * .8} textAnchor="middle">{(currentDataType == 'rate' ?  '' : 'Involving ') + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ?  ' per 10,000 Total ED visits' : '')}</text>}
           </Group>
         </svg>
         {!isEthnGrayBox &&

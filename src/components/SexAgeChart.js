@@ -324,8 +324,16 @@ function SexAgeChart(params) {
   });
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata['percent'] + '% of nonfatal ' + drugOptions[currentDrug].titleSingular.toLowerCase() + ' overdoses are missing age and/or sex data during this time period.';
+    return 'Note: ' + mdata['percent'] + '% of nonfatal ' + drugOptions[currentDrug].titleSingular.toLowerCase() + ' overdoses are missing age and/or sex data during this time period.'   + (currentDataType == 'percent' ? ' Percentages in the figure may not add up to 100% due to missingness.' : '');
   };
+
+  const getFormattedValue = (val) => {
+
+    if (currentDataType == 'rate')
+      return val;
+    else
+       return val + '%';
+  }
 
   const getBar = (d) => {
 
@@ -493,14 +501,19 @@ function SexAgeChart(params) {
         <AxisBottom
             top={yMax}
             scale={x1Scale}
-            numTicks={isSmallViewport ? 3 : null}
+            numTicks={isSmallViewport ? 3 : 6}
+            tickStroke="none"
+            tickFormat={value => 
+                      getFormattedValue(value)
+            }
             tickLabelProps={(value) => {
               return {
                 style: {
-                  transform: 'rotate(-60deg)',
+                  /* transform: 'rotate(-60deg)', */
                   transformOrigin: `${x1Scale(value)}px ${18}px`,
                   textAnchor: 'end',
-                  fontSize: fontSize
+                  fontSize: fontSize,
+                  fill: '#000066',
                 }
               }
             }}
@@ -508,23 +521,28 @@ function SexAgeChart(params) {
           <AxisBottom
             top={yMax}
             scale={x2Scale}
-            numTicks={isSmallViewport ? 3 : null}
+            numTicks={isSmallViewport ? 3 : 6}
+            tickStroke="none"
+            tickFormat={value => 
+                      getFormattedValue(value)
+            }
             tickLabelProps={(value) => {
               return {
                 style: {
-                  transform: 'rotate(-60deg)',
+                  /* transform: 'rotate(-60deg)', */
                   transformOrigin: `${x2Scale(value)}px ${18}px`,
                   textAnchor: 'end',
-                  fontSize: fontSize
+                  fontSize: fontSize,
+                  fill: '#000066',
                 }
               }
             }}
           />
-          {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 70} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
-          {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+          {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 70} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{currentDataType == 'rate' ? 'Suspected Nonfatal Overdoses Involving' : 'Percent of suspected Nonfatal Overdoses' }</text>}
+          {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{(currentDataType == 'rate' ?  '' : 'Involving ') + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ?  ' per 10,000 Total ED visits' : '')}</text>}
         </Group>
       </svg>
-      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? '160px' : '100px') : (isSmallViewport ? '160px' : '300px'))}}>
+      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : '100px') : (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : '300px'))}}>
         <table>
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>

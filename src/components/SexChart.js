@@ -209,7 +209,7 @@ function SexChart(params) {
   const filteredData = getFilteredData(data, currentDrug, currentYear, currentMonth, currentDataType);
   const missingData = getMissingData(data, currentDrug, currentYear, currentMonth);
 
-  const margin = {top: 10, bottom: 50, left: 50, right: 10};
+  const margin = {top: 10, bottom: 50, left: currentDataType == 'rate' ? 50 : (isSmallViewport ? 100: 130), right: 10};
   const adjustedHeight = height - margin.top - margin.bottom - 120;
   const adjustedWidth = width - margin.left - margin.right;
   const fontSize = 16;
@@ -238,9 +238,16 @@ function SexChart(params) {
   };
 
   const getMissingNote = (mdata) => {
-    return 'Note: ' + mdata['percent'] + '% of nonfatal ' + drugOptions[currentDrug].titleSingular.toLowerCase() + ' overdoses are missing sex data during this time period.';
+    return 'Note: ' + mdata['percent'] + '% of nonfatal ' + drugOptions[currentDrug].titleSingular.toLowerCase() + ' overdoses are missing sex data during this time period.' + (currentDataType == 'percent' ? ' Percentages in the figure may not add up to 100% due to missingness.' : '');
   };
   
+  const getFormattedValue = (val) => {
+
+    if (currentDataType == 'rate')
+      return val;
+    else
+       return val + '%';
+  } 
 
   useEffect(() => {
     window.addEventListener('scroll', onScroll);
@@ -316,6 +323,9 @@ function SexChart(params) {
                     fontSize: 'medium',
                     textAnchor: 'middle'
                   })}
+                  tickFormat={value => 
+                      getFormattedValue(value)
+                  }
                   labelOffset={60}
                 />
 
@@ -384,8 +394,14 @@ function SexChart(params) {
                 />
               </>
             )
-            {<text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
-            {<text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
+            
+            
+            {currentDataType != 'rate' && !isSmallViewport && <text width={adjustedHeight} x={(margin.left / -2) - 3} y={adjustedHeight / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${margin.left / 2}px ${adjustedHeight / 2}px`}}>Percent of suspected Nonfatal</text>}
+            {currentDataType != 'rate' && !isSmallViewport && <text width={adjustedHeight} x={((margin.left / -2) - 3) + 20} y={adjustedHeight / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${(margin.left / 2) - 20}px ${adjustedHeight / 2}px`}}>overdoses Involving {drugOptions[currentDrug].titleAll} </text>}
+            {currentDataType != 'rate' && isSmallViewport && <text width={adjustedHeight} x={(margin.left / -2) + 18} y={adjustedHeight / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${(margin.left / 2) + 18}px ${adjustedHeight / 2}px`}}>Percent of suspected Nonfatal</text>}
+            {currentDataType != 'rate' && isSmallViewport && <text width={adjustedHeight} x={((margin.left / -2) + 18) + 20} y={adjustedHeight / 2.2} textAnchor="middle" style={{transform: 'rotate(-90deg)', fill: '#000066', transformOrigin: `-${(margin.left / 2) + 18 - 20}px ${adjustedHeight / 2}px`}}>overdoses Involving {drugOptions[currentDrug].titleAll} </text>}
+            {currentDataType == 'rate' && <text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">Suspected Nonfatal Overdoses Involving </text>}
+            {currentDataType == 'rate' && <text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{drugOptions[currentDrug].titleAll} per 10,000 Total ED visits</text>}
           </Group>
         </svg>
         <div>
