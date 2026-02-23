@@ -501,7 +501,7 @@ function SexAgeChart(params) {
         <AxisBottom
             top={yMax}
             scale={x1Scale}
-            numTicks={isSmallViewport ? 3 : 6}
+            numTicks={3}
             tickStroke="none"
             tickFormat={value => 
                       getFormattedValue(value)
@@ -509,7 +509,7 @@ function SexAgeChart(params) {
             tickLabelProps={(value) => {
               return {
                 style: {
-                  transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''),
+                  transform: (isSmallViewport ? 'rotate(-60deg)' : ''),
                   transformOrigin: `${x1Scale(value)}px ${18}px`,
                   textAnchor: 'middle',
                   fontSize: fontSize,
@@ -521,7 +521,7 @@ function SexAgeChart(params) {
           <AxisBottom
             top={yMax}
             scale={x2Scale}
-            numTicks={isSmallViewport ? 3 : 6}
+            numTicks={3}
             tickStroke="none"
             tickFormat={value => 
                       getFormattedValue(value)
@@ -529,7 +529,7 @@ function SexAgeChart(params) {
             tickLabelProps={(value) => {
               return {
                 style: {
-                  transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''),
+                  transform: (isSmallViewport ? 'rotate(-60deg)' : ''),
                   transformOrigin: `${x2Scale(value)}px ${18}px`,
                   textAnchor: 'middle',
                   fontSize: fontSize,
@@ -542,7 +542,7 @@ function SexAgeChart(params) {
           {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{(currentDataType == 'rate' ?  '' : 'Involving ') + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ?  ' per 10,000 Total ED visits' : '')}</text>}
         </Group>
       </svg>
-      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : '100px') : (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : '300px'))}}>
+      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : (currentDataType == 'rate' ? '100px' : '140px')) : (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : '300px'))}}>
         <table>
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>

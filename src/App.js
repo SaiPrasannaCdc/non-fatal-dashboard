@@ -1259,7 +1259,7 @@ const getYears = (startYrInp, endYrInp) => {
   }
 
   const isEthnGrayBox = () => {
-    return (UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) || Number(currentYearSexAge) < 2023);
+    return (UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) || Number(currentYearSexAge) < 2023) || (Number(currentYearSexAge) == 2023 && Number(currentMonthSexAge) < 12 && sexAgeMonthly == 'Annual');
   }
 
   const stateBarChartMemo = useMemo(() =>
