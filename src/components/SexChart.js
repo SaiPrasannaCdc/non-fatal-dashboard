@@ -161,6 +161,7 @@ function SexChart(params) {
                         x={xScale(d.sex) + halfBandwidth}
                         y={adjustedHeight - 10}
                         fontWeight='normal'
+                        fill={drugOptions[currentDrug].color}
                         textAnchor="middle"
                         cursor="default"
                         data-tip={`<strong>Sex: </strong>${d.sex}<br/><br/><strong>Overdoses: </strong>` + d.value + '<br/><br/>'}
