@@ -125,7 +125,7 @@ function AgeChart(params) {
           {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateAgeChartData(filteredData)}
+          data={AccessibilityFunctions.generateAgeChartData(filteredData, currentDataType)}
           labelOverrides={{
             'rate': (currentDataType == 'rate' ? 'Rate per 100,000 persons' : 'Count'),
             'Sex': !isSmallViewport ? 'By Age (In years)' : 'By Age',
@@ -140,21 +140,6 @@ function AgeChart(params) {
           isSmallViewport={isSmallViewport}
           currentDataType={currentDataType}
         />
-        {isSmallViewport && <table>
-          <tr>
-              <td>
-                <div><span><small><sup>‡</sup>{(currentDataType == 'rate' ? 'Rate per 100,000 persons' : 'Count')}</small></span></div>
-              </td>
-            </tr>
-            <br></br>
-                    <tr>
-                      <td>
-                        <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        <span></span>
-                      </td>
-                    </tr>
-                </table>
-        }
         </>        
       ) : (
       <Group>
@@ -195,7 +180,7 @@ function AgeChart(params) {
                       <text
                         x={xScale(d.ageN) + halfBandwidth}
                         y={adjustedHeight - 10}
-                        fill="#000000"
+                        fill={drugOptions[currentDrug].color}
                         fontWeight='normal'
                         textAnchor="middle"
                         cursor="default"
@@ -228,8 +213,8 @@ function AgeChart(params) {
                 />
               </>
             )
-            {currentDataType == 'rate' && <text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan> </text>}
-            {currentDataType == 'count' && <text x={adjustedWidth/2} y={height - 110} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Count</text>}
+            {currentDataType == 'rate' && <text x={adjustedWidth/2} y={height - (!isSmallViewport ? 110 : 90)} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan> </text>}
+            {currentDataType == 'count' && <text x={adjustedWidth/2} y={height - (!isSmallViewport ? 110 : 90)} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Count</text>}
           </Group>
         </svg>
         </Group>

@@ -152,7 +152,7 @@ function EthnicityChart(params) {
 
   const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const margin = { top: 50, bottom: 125, left: isSmallViewport ? 120 : 110, right: isSmallViewport ? 0 : 15 };
+  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 120 : 110, right: isSmallViewport ? 0 : 15 };
 
   const ethnGroups = getEthnGroups(data, currentDataSource, currentYear, currentMonth)
   const filteredData = getFilteredData(data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
@@ -207,10 +207,8 @@ function EthnicityChart(params) {
 
       if (val.includes('suppressed'))
           return 'Data suppressed';
-      else if (val.includes('not available'))
+      else if (val.includes('not available') || val.includes('NA'))
         return 'Data not available/not reported';
-      else if (val.includes('NA'))
-        return 'Data not available';
       else
         return ''
   }
@@ -225,7 +223,7 @@ function EthnicityChart(params) {
     return (
       <g key={d[yKey]}>
 
-        {!isNaN(d[xKey]) && d[xKey] >= 0 && <path d={d[xKey] < 0.9 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
+        {!isNaN(d[xKey]) && d[xKey] >= 0 && <path d={(d[xKey]/overallMax) < 0.01 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
         {!isNaN(d[xKey]) && Number(d[xKey]) >= 0 && 
         <Text 
           x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 13 : 5) : (Number(d[xKey]) >= 100 ? 60 : 50)) + (currentDataType == 'rate' ? 30 : 40)))} 
@@ -238,13 +236,13 @@ function EthnicityChart(params) {
         }
           {isNaN(d[xKey]) &&
             <Text 
-            x={(isSmallViewport ? 10 : 40)}
+            x={(isSmallViewport ? 10 : 45)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
             fontWeight='normal' 
-            fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: Data Suppressed`}>*
+            fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2}
+            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ` + formatToolTip(d[xKey])}>{formatToolTip(d[xKey]).includes('suppressed') ? '*' : (formatToolTip(d[xKey]).includes('available') ? '†' : '')}
             </Text>
         }
      </g>
@@ -257,7 +255,7 @@ function EthnicityChart(params) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateEthnChartData(filteredData)}
+          data={AccessibilityFunctions.generateEthnChartData(filteredData, currentDataType)}
           labelOverrides={{
             'val': !isSmallViewport ? (currentDataType == 'rate' ? `Rate per 100,000 persons` : 'Count') : (currentDataType == 'rate' ? 'Rate per 100,000 persons' : 'Count'),
             'Age Group': !isSmallViewport ? 'Race/Ethnicity' : 'Race/Ethnicity',
@@ -302,28 +300,28 @@ function EthnicityChart(params) {
                 tickLabelProps={(value) => {
                   return {
                     style: {
-                      transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''),
+                      transform: (currentDataType == 'count' ? 'rotate(-60deg)' : ''),
                       transformOrigin: `${xScale(value)}px ${18}px`,
-                      textAnchor: 'middle',
+                      textAnchor: (currentDataType == 'count' ? 'end' : 'middle'),
                       fontSize: fontSize,
                     }
                   }
                 }}
               />
-              {currentDataType == 'rate' && <text width={adjustedWidth} y={yMax + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Rate per 100,000 persons'}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
-              {currentDataType == 'count' && <text width={adjustedWidth} y={yMax + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Count'}</text>}
+              {currentDataType == 'rate' && <text width={adjustedWidth} y={yMax + 90} x={(adjustedWidth/2)} fontSize={fontSize} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Rate per 100,000 persons'}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {currentDataType == 'count' && <text width={adjustedWidth} y={yMax + 90} x={(adjustedWidth/2)} fontSize={fontSize} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Count'}</text>}
             </Group>
         </svg>
-        <div style={{height: !isSmallViewport ? '300px' : '520px'}}>
+        <div style={{height: !isSmallViewport ? '160px' : '200px'}}>
             <table>
               {Object.keys(filteredData).length > 0 &&
-                <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
+                <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
               }
               {Object.keys(filteredData).length > 0 &&
-                <tr><td><small><i><sup>†</sup>{'Data not avaialbe/not reported.'}</i></small></td></tr>
+                <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
               }
               {Object.keys(filteredData).length > 0 &&
-                <tr><td><small><i><sup>§</sup>{'The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</i></small></td></tr>
+                <tr><td style={{ textAlign: 'left', fontSize: '15px' }}>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
               }
             </table>
             </div>

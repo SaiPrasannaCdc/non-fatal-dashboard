@@ -1579,6 +1579,10 @@ export default function App(params) {
     setCurrentDrug(val);
   }
 
+  const getJurisCount = () => {
+    return ethnicityData.ethnicityData[currentYear][currentDataSource]['Hispanic, Any Race']['jurisdiction_count_figure'];
+  }
+
   const stateBarChartMemo = useMemo(() =>
     <>
       <div id="state-chart-container" className="chart-container" ref={stateBarChartRef}>
@@ -1705,8 +1709,8 @@ export default function App(params) {
   const ethnicityChartMemo = useMemo(() =>
     <>
       <div className='subsection marked'>
-        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity<sup>§</sup></span>
-        <div className="chartDivAllDem" ref={ageChartRef}>
+        <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity {'(' + getJurisCount() + ' Jurisdictions)'}<sup>§</sup></span>
+        <div className="chartDivAllDem" ref={ethnicityChartRef}>
         <EthnicityChart
           data={ethnicityData}
           width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
@@ -2270,21 +2274,25 @@ export default function App(params) {
               <tr>
                 <td style={{width: '100%'}}>
                   {sexChartData && sexChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <tr>
                 <td style={{width: '100%'}}>
                   {ageChartData && ageChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <tr>
                 <td style={{width: '100%'}}>
                   {sexAgeChartData && sexAgeChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <tr>
                 <td style={{width: '100%'}}>
                   {ethnicityData && ethnicityChartMemo}
+                  {getFootNotesForData('Ethnicity', false)}
                 </td>
               </tr>
             </table>
@@ -2294,12 +2302,14 @@ export default function App(params) {
               <tr>
                 <td style={{width: '100%'}}>
                   {sexChartData && sexChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {ageChartData && ageChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <br></br>
@@ -2321,24 +2331,28 @@ export default function App(params) {
               <tr>
                 <td style={{width: '100%'}}>
                   {sexChartData && sexChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {ageChartData && ageChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {sexAgeChartData && sexAgeChartMemo}
+                  {getFootNotesForData('Sex', false)}
                 </td>
               </tr>
               <br></br>
               <tr>
                 <td style={{width: '100%'}}>
                   {ethnicityData && ethnicityChartMemo}
+                  {getFootNotesForData('Ethnicity', false)}
                 </td>
               </tr>
             </table>

@@ -165,6 +165,28 @@ function StateChart(params) {
         return ''
   }
 
+  const getXAxisLabelED1 = () => {
+      return 'Rate of nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase();
+  }
+
+  const getXAxisLabelED2 = () => {
+      return 'visits per 100,000 persons';
+  }
+
+  const getXAxisLabelHOSP1 = () => {
+      return 'Rate of nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase();
+  }
+
+  const getXAxisLabelHOSP2 = () => {
+        return 'inpatient hospitalizations';
+
+  }
+
+  const getXAxisLabelHOSP3 = () => {
+        return 'per 100,000 persons';
+
+  }
+
   const formatToolTip = (val) => {
       if (val.includes('Data suppressed'))
           return 'Data suppressed';
@@ -261,7 +283,12 @@ function StateChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">5</tspan></text>
+              {!isSmallViewport && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {isSmallViewport && currentDataSource == 'ED' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelED1()}</text>}
+              {isSmallViewport && currentDataSource == 'ED' && <text width={adjustedWidth} y={adjustedHeight + 95} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelED2()}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {isSmallViewport && currentDataSource == 'HOSP' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelHOSP1()}</text>}
+              {isSmallViewport && currentDataSource == 'HOSP' && <text width={adjustedWidth} y={adjustedHeight + 95} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelHOSP2()}</text>}
+              {isSmallViewport && currentDataSource == 'HOSP' && <text width={adjustedWidth} y={adjustedHeight + 120} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelHOSP3()}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}

@@ -84,15 +84,15 @@ function SexAgeChart(params) {
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
 
-    const corner1 = (xMaxHalf - x1Pos) < 3 ? false : true;
-    const corner2 = (x2Pos - xMaxHalf) < 3 ? false : true;
+    const corner1 = (d[x1Key]/overallMax) <  0.02 ? false : true;
+    const corner2 = (d[x1Key]/overallMax) < 0.02 ? false : true;
 
     return (
       <g key={d[yKey]}>
         {!isNaN(d[x1Key]) && <path d={corner1 ? Utils.horizontalBarPathDem(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth())} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
         {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x1Tip}>{d[x1Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
         {!isNaN(d[x1Key]) && <Text 
-          x={((x1Pos) - (d[x1Key] > 99 ? 53 : (d[x1Key] >= 10 ? 50 : 45))) + (d[x1Key] == 0.0 ? (currentDataType == 'rate' ? 15 : 2) : 0)} 
+          x={((x1Pos) - (d[x1Key] > 99 ? 58 : (d[x1Key] >= 10 ? 50 : 45))) + (d[x1Key] == 0.0 ? (currentDataType == 'rate' ? 15 : 2) : 0)} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'start'}  
           fill="black" 
@@ -103,7 +103,7 @@ function SexAgeChart(params) {
         {!isNaN(d[x2Key]) && <path d={corner2 ? Utils.horizontalBarPathDem(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf + (!corner2 ? 1 : 0)), yScale.bandwidth())} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
         {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
         {!isNaN(d[x1Key]) && <Text 
-          x={(x2Pos) + (d[x2Key] > 99 ? 53 : (d[x2Key] >= 10 ? 50 : 45))} 
+          x={(x2Pos) + (d[x2Key] > 99 ? 58 : (d[x2Key] >= 10 ? 50 : 45))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="black" 
@@ -119,7 +119,7 @@ function SexAgeChart(params) {
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateSexChartData(filteredData)}
+          data={AccessibilityFunctions.generateSexAgeChartData(filteredData, currentDataType)}
           labelOverrides={{
             'rate1': 'Rate1 of nonfatal all drug visits per 100,000 persons',
             'rate2': 'Rate2 of nonfatal all drug visits per 100,000 persons'
@@ -129,7 +129,7 @@ function SexAgeChart(params) {
             rate: num => UtilityFunctions.toFixed(num)
           }}
           width={width}
-          colSpan={!isSmallViewport ? 2 : null}
+          colSpan={2}
           isSmallViewport={isSmallViewport}
           hdr={currentDataType == 'count' ? 'Count' : null}
           noSort={true}
@@ -163,9 +163,9 @@ function SexAgeChart(params) {
             tickLabelProps={(value) => {
               return {
                 style: {
-                  transform: (isSmallViewport ? 'rotate(-60deg)' : ''),
+                  transform: (currentDataType == 'count' ? 'rotate(-60deg)' : ''),
                   transformOrigin: `${x1Scale(value)}px ${18}px`,
-                  textAnchor: 'middle',
+                  textAnchor: (currentDataType == 'count' ? 'end' : 'middle'),
                   fontSize: fontSize,
                 }
               }
@@ -179,9 +179,9 @@ function SexAgeChart(params) {
             tickLabelProps={(value) => {
               return {
                 style: {
-                  transform: (isSmallViewport ? 'rotate(-60deg)' : ''),
+                  transform: (currentDataType == 'count' ? 'rotate(-60deg)' : ''),
                   transformOrigin: `${x2Scale(value)}px ${18}px`,
-                  textAnchor: 'middle',
+                  textAnchor: (currentDataType == 'count' ? 'end' : 'middle'),
                   fontSize: fontSize
                 }
               }
@@ -191,13 +191,13 @@ function SexAgeChart(params) {
           {currentDataType == 'rate' && <text x={xMax/2} y={yMax+ 90} fontSize={fontSize} textAnchor="middle">{'Rate per 100,000 persons'}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
         </Group>
       </svg>
-      <div style={{height: ((isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : '300px'))}}>
+      <div style={{height: isSmallViewport ? '60px' : '160px'}}>
         <table>
           {Object.keys(filteredData).length > 0 &&
-            <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
           }
           {Object.keys(filteredData).length > 0 &&
-                <tr><td><small><i><sup>†</sup>{'Data not avaialbe/not reported.'}</i></small></td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
           }
         </table>
       </div>

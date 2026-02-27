@@ -105,9 +105,9 @@ function SexChart(params) {
           {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateSexChartData(filteredData)}
+          data={AccessibilityFunctions.generateSexChartData(filteredData, currentDataType)}
           labelOverrides={{
-            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
+            'rate': (currentDataType == 'rate' ? 'Rate per 100,000 persons' : 'Count'),
             'Sex': 'By Sex'
           }}
           xAxisKey={'Sex'}
@@ -119,21 +119,6 @@ function SexChart(params) {
           isSmallViewport={isSmallViewport}
           currentDataType={currentDataType}
         />
-        {isSmallViewport && <table>
-          <tr>
-              <td>
-                <div><span><small><sup>‡</sup>{(currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits.'}</small></span></div>
-              </td>
-            </tr>
-            <br></br>
-            <tr>
-              <td>
-                <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                <span></span>
-              </td>
-            </tr>
-        </table>
-        }
         </>        
       ) : (
       <Group>
@@ -206,7 +191,7 @@ function SexChart(params) {
                 />
               </>
             )
-            {currentDataType == 'rate' && <text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan> </text>}
+            {currentDataType == 'rate' && <text x={adjustedWidth/2} y={height - 110} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan> </text>}
             {currentDataType == 'count' && <text x={adjustedWidth/2} y={height - 110} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Count</text>}
           </Group>
         </svg>
