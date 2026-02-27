@@ -151,7 +151,7 @@ function SexAgeChart(params) {
             textAnchor: 'end',
             verticalAnchor: 'middle'
           })}
-          left={!isSmallViewport ? 30 : 10}
+          left={10}
           hideTicks
           hideAxisLine
         />
