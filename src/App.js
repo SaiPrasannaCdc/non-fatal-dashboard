@@ -177,8 +177,9 @@ export default function App( params ) {
 
   const { accessible, dataUrl, ethnDataUrl} = params;
 
-  const Excel_Sheet_Name_OverallBySexAge = "Overall by Sex & Age";
+  const Excel_Sheet_Name_OverallBySexAge = "Overall";
   const Excel_Sheet_Name_Jurisdiction = "Jurisdiction";
+  const Excel_Sheet_Name_RaceEthnicity = "Race_Ethnicity";
 
   const [currentDrug, setCurrentDrug] = useState(Object.keys(drugOptions)[0]);
   const [timeline, setTimeline] = useState('Monthly');
@@ -668,7 +669,7 @@ export default function App( params ) {
       }
 
       //Populate ethnicity data
-      const ethnSheet = wbethn.Sheets['Race_Ethnicity'];
+      const ethnSheet = wbethn.Sheets[Excel_Sheet_Name_RaceEthnicity];
       let columnInfoEthn = getColumnsInfo(ethnSheet);
       let columnHeadersEthn = columnInfoEthn.columnHeaders;
       let columnsEthn = columnInfoEthn.columns;
