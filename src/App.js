@@ -168,7 +168,7 @@ const formatNumber = (val, isFloat = true) => {
     if (val == 'NA' || val == 'not available')
       return 'Data not available';
     else
-      return 'Data suppressed*';
+      return 'Data suppressed';
   } else {
     return (isFloat ? (Math.round(numericVal * 10) / 10).toFixed(1) : numericVal);
   }
@@ -1346,47 +1346,53 @@ export default function App(params) {
   }, []);
 
   const getFootNotesForData = (chart, addl) => {
+
     if (chart != 'Ethnicity') {
-    return (
-      <div className="datatable-body">
-        <table style={{ width: '100%' }}>
-          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
-          <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
-          {/* {(chart == 'Line' || chart == 'Sex') && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.'}</td></tr>} */}
-          {/* SKV TODO what should be the symbol for rate below*/}
-          {addl && showPercent && !accessible && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
-        </table>
-      </div>
-    )
-  }
-  else
-  {
-    if (!accessible) {
+        if (chart == 'Map') {
+          return (
+                <div className="datatable-body">
+                  <table style={{ width: '100%' }}>
+                    <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
+                    <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
+                </table>
+              <br></br>
+
+              <ul>
+                <li>The county-level heat map is available for the rate (1-year and 5-year) of ED visits for nonfatal all drug overdoses. At the county level, only rates for nonfatal overdoses involving ‘all drugs’ are available; other drug categories are suppressed due to small counts.</li>
+                <li>Hover over a state/county to view ED visits occurring within that state.</li>
+                <li>The county heat map uses patient county of residence data. State and county-level counts and rates include only in-state residents who visit in-state facilities. Visits to out-of-state facilities are not included, which may result in underestimation—particularly for counties bordering other states.</li>
+              </ul>
+            </div>
+          )
+      }
+    else{
       return (
         <div className="datatable-body">
           <table style={{ width: '100%' }}>
-            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
-            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'— Data not available/not reported'}</td></tr>
-            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Scale of the figure may change based on the data selected'}</td></tr>
-            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
+            {/* {(chart == 'Line' || chart == 'Sex') && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Overall monthly and annual counts from 2024 (i.e., 2024 data for all participating jurisdictions combined) will be suppressed until all jurisdictions on the DOSE-DIS dashboard have submitted data.'}</td></tr>} */}
+            {/* SKV TODO what should be the symbol for rate below*/}
+            {addl && showPercent && !accessible && <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ Rate per 100,000 persons'}<sup>5</sup></td></tr>}
           </table>
         </div>
       )
     }
-    else
-    {
+  }
+  else
+  {
       return (
         <div className="datatable-body">
           <table style={{ width: '100%' }}>
-            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}</td></tr>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
           </table>
         </div>
-      )
-    }
+        )
+      }
   }
-  }
+
 
   const drugTab = (drugName, drugLabel) => (
     <button
@@ -1644,7 +1650,7 @@ export default function App(params) {
       </div>
       </div>
     </>,
-    [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
+    [sexChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
     
     const ageChartMemo = useMemo(() =>
     <>
@@ -1653,28 +1659,29 @@ export default function App(params) {
         <div className="chartDivAllDem" ref={ageChartRef}>
         <AgeChart
           data={ageChartData}
-          width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-          height={640} 
-          el={ageChartRef}
-          currentDrug={selectedDrugsSexAge[0]}
-          drugOptions={drugOptions}
-          currentTimeLine={currentTimeframe}
+          currentTimeframe={currentTimeframe}
           currentDataSource={currentDataSource}
+          currentDrug={selectedDrugsSexAge[0]}
           currentYear={currentYear}
           currentMonth={currentMonth}
           currentDataType={currentDataType}
+          width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
+          height={640} 
+          el={ageChartRef}
+          drugOptions={drugOptions}
           accessible={accessible}
-          widthReduction={(!isSmallViewport && !accessible) ? true : false} 
+          widthReduction={(!isSmallViewport && !accessible) ? true : false}  
         />
       </div>
       </div>
     </>,
-    [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
+    [ageChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
 
   const sexAgeChartMemo = useMemo(() =>
     <>
       <div className='subsection marked'>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Age and Sex</span>
+        <div className="chartDivAllDem" ref={sexAgeChartRef}>
         <SexAgeChart
           data={sexAgeChartData}
           currentTimeframe={currentTimeframe}
@@ -1685,22 +1692,25 @@ export default function App(params) {
           currentDataType={currentDataType}
           width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
           height={640} 
+          el={sexAgeChartRef}
           drugOptions={drugOptions}
           accessible={accessible}
           widthReduction={(!isSmallViewport && !accessible) ? true : false} 
         />
+      </div>
       </div>
     </>,
     [sexAgeChartData, currentTimeframe, currentDataSource, selectedDrugsSexAge[0], currentYear, currentMonth, currentDataType, width]);
 
   const ethnicityChartMemo = useMemo(() =>
     <>
-      <div className='subsection marked' ref={ethnicityChartRef}>
+      <div className='subsection marked'>
         <span className="individual-header margin-top-small-viewport" style={{ color: drugColor }}>By Race/Ethnicity<sup>§</sup></span>
+        <div className="chartDivAllDem" ref={ageChartRef}>
         <EthnicityChart
           data={ethnicityData}
           width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
-          height={900} //TODO
+          height={640} //TODO
           el={ethnicityChartRef}
           currentDrug={selectedDrugsSexAge[0]}
           currentDataSource={currentDataSource}
@@ -1713,13 +1723,12 @@ export default function App(params) {
           widthReduction={(!isSmallViewport && !accessible) ? true : false}
         />
       </div>
+      </div>
     </>,
     [ethnicityData, width, selectedDrugsSexAge[0], currentDataSource, currentTimeframe, currentDataType, currentMonth, currentYear]);
 
   const usaMapMemo = useMemo(() =>
     (currentDataSource === 'ED' && currentDrug === 'alldrug') ? <>
-      {!accessible && <div><small><i>The county-level heat map is only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. The county heat map uses patient county of residence data. By hovering, the heat map shows ED visits within each state: county-level numbers reflect in-state residents, while state-level numbers include both in-state residents and out-of-state residents (individuals residing in other states but visiting in-state facilities).</i></small></div>}
-      {accessible && <div><small><i>The county-level tables are only available for the rate (annual and 5-year) of ED visits for nonfatal all drug overdoses due to substantial suppression that would result if other comparisons were made. This table uses patient county of residence data. County-level numbers reflect in-state residents who visited in-state facilities.</i></small></div>}
       <br></br>
       1 Year Rate
       <input className="data-type-checkbox" type="checkbox" onChange={e => setCurrentYearGroup(e.target.checked ? 'one' : 'all')} defaultChecked="true" />
@@ -2249,19 +2258,92 @@ export default function App(params) {
                   <tr>
                     <td style={{width: '50%'}}>
                       {sexAgeChartData && sexAgeChartMemo}
-                      {getFootNotesForData('Sex', false)}
                     </td>
                     <td style={{width: '50%'}}>
                       {ethnicityData && ethnicityChartMemo}
-                      {getFootNotesForData('Ethnicity', false)}
                     </td>
                   </tr>
                 </table>
               }
-              
-              
+              {accessible && !isSmallViewport &&
+            <table>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexChartData && sexChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ageChartData && ageChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexAgeChartData && sexAgeChartMemo}
+                </td>
+              </tr>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ethnicityData && ethnicityChartMemo}
+                </td>
+              </tr>
+            </table>
+          }
+          {!accessible && isSmallViewport &&
+            <table>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexChartData && sexChartMemo}
+                </td>
+              </tr>
               <br></br>
-              
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ageChartData && ageChartMemo}
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexAgeChartData && sexAgeChartMemo}
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ethnicityData && ethnicityChartMemo}
+                </td>
+              </tr>
+            </table>
+          }
+          {accessible && isSmallViewport &&
+            <table>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexChartData && sexChartMemo}
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ageChartData && ageChartMemo}
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {sexAgeChartData && sexAgeChartMemo}
+                </td>
+              </tr>
+              <br></br>
+              <tr>
+                <td style={{width: '100%'}}>
+                  {ethnicityData && ethnicityChartMemo}
+                </td>
+              </tr>
+            </table>
+          }
+              <br></br>
               
             </section>
 
@@ -2277,7 +2359,7 @@ export default function App(params) {
                     {showMapTable &&
                       <div className="datatable-body">
                         {usamapData && usaMapMemo}
-                        {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
+                        {(currentDataSource == 'ED' && currentDrug == 'alldrug') && getFootNotesForData('Map', false)}
                       </div>
                     }
                 </div>
@@ -2288,7 +2370,7 @@ export default function App(params) {
               <section>
                 {(currentDataSource === 'ED' && currentDrug === 'alldrug') && <h2 className="data-bite-header sub" style={{ backgroundColor: drugColor }}>{getSubBannerText('usaMap')}<sup>3,4</sup>?</h2>}
                 {usaMapMemo}
-                {(accessible && (currentDataSource == 'ED' && currentDrug == 'alldrug')) && getFootNotesForData('Map', false)}
+                {(currentDataSource == 'ED' && currentDrug == 'alldrug') && getFootNotesForData('Map', false)}
               </section>
             }
           </>

@@ -33,13 +33,13 @@ const getFilteredData = (data, currentDrug, currentDataSource, currentYear, curr
   var femaleData = {};
 
   femaleData['sex'] = 'Female';
-  femaleData['value'] = isNaN(female_total) ? female_total : String((female_total)?.toFixed(1)); 
+  femaleData['value'] = isNaN(female_total) ? female_total : String(Number(female_total)?.toFixed(1)); 
   finalData.push(femaleData);
 
   maleData['sex'] = 'Male';
-  maleData['value'] = isNaN(male_total) ? male_total : String((male_total)?.toFixed(1)); 
+  maleData['value'] = isNaN(male_total) ? male_total : String(Number(male_total)?.toFixed(1)); 
   finalData.push(maleData);
-
+  
   return finalData;
 };
 
@@ -145,7 +145,6 @@ function SexChart(params) {
                   scale={yScale}
                   tickLabelProps={() => ({
                     fontSize: 'medium',
-                    fill: '#000066',
                     textAnchor: 'end',
                     transform: 'translate(-5, 5)'
                   })}
@@ -169,30 +168,28 @@ function SexChart(params) {
                         opacity={d.sex == 'Male' ? 0.4 : 1.0}
                         d={Utils.verticalBarPath(xScale(d.sex), yScale(d.value), xScale.bandwidth(), adjustedHeight - yScale(d.value), xScale.bandwidth() * .1)}
                         fill={drugOptions[currentDrug].color}
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: ` + (currentDataType == 'rate' ? Number((Number(d.value).toFixed(1))).toLocaleString() : Number((Number(d.value).toFixed(0))).toLocaleString()) + '<br/><br/>'}
+                        data-tip={`<strong>Sex: </strong>${d.sex}<br/><br/><strong>Overdoses: </strong>` + (currentDataType == 'rate' ? UtilityFunctions.formatRate(d.value, 1) : UtilityFunctions.formatCount(d.value, 0)) + '<br/><br/>'}
                       ></path>
                     )}
                     {isNaN(d.value) && (
                       <text
                         x={xScale(d.sex) + halfBandwidth}
                         y={adjustedHeight - 10}
-                        fill="#000000"
                         fontWeight='normal'
                         textAnchor="middle"
                         cursor="default"
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Sex: ${d.sex}<br/><br/>Overdoses: ` + d.value + '<br/><br/>'}
+                        data-tip={`<strong>Sex: </strong>${d.sex}<br/><br/><strong>Overdoses: </strong>` + d.value + '<br/><br/>'}
                       >*</text>
                     )}
                     {!isNaN(d.value) && d.value >= 0 && (
                         <text
                           x={xScale(d.sex) + halfBandwidth}
                           y={yScale(d.value) - 10}
-                          fill="#000000"
                           fontWeight='normal'
                           textAnchor="middle"
                           cursor="default"
                           fontSize={isSmallViewport ? fontSize * .8 : fontSize}
-                        >{(currentDataType == 'rate' ? Number(d.value).toFixed(1).toLocaleString() : Number(d.value).toFixed(0).toLocaleString())}</text>
+                        >{(currentDataType == 'rate' ? UtilityFunctions.formatRate(d.value, 1) : UtilityFunctions.formatCount(d.value, 0))}</text>
                       )}
                   </Group>
                 ))}
@@ -203,23 +200,16 @@ function SexChart(params) {
                   tickStroke="transparent"
                   tickLabelProps={() => ({
                     fontSize: 'medium',
-                    fill: '#000066',
                     textAnchor: 'middle',
                     transform: 'translate(0, 10)'
                   })}
                 />
               </>
             )
-            {currentDataType == 'rate' && <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={!isSmallViewport ? "middle" : "start"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
-            {currentDataType == 'count' && <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Count</text>}
+            {currentDataType == 'rate' && <text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan> </text>}
+            {currentDataType == 'count' && <text x={adjustedWidth/2} y={height - 110} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Count</text>}
           </Group>
         </svg>
-        <div>
-          <table>
-              <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
-              <tr><td><small><i><sup>†</sup>{'Scale of the figure may change based on the data selected.'}</i></small></td></tr>
-          </table>
-        </div>
       </Group>
       )}
       </div>

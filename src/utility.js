@@ -473,4 +473,18 @@ export const UtilityFunctions = {
     return strStates.includes(state);
   },
 
+  formatRate: (val, pos )=> {
+    return Number(Number(val).toFixed(pos)).toLocaleString(undefined, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
+    })
+  },
+
+  formatCount: (val, pos )=> {
+    return Number(Number(val).toFixed(pos)).toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+  },
+
 }

@@ -101,6 +101,9 @@ function StateChart(params) {
   const adjustedWidth = width - margin.left - margin.right - 100; 
   const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.55));
 
+  const isSmallViewport = width < 550;
+  const fontSize = 16;
+
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
       if(parseFloat(dataRates[a].rate) > parseFloat(dataRates[b].rate)) return 1;
@@ -223,7 +226,7 @@ function StateChart(params) {
                         }
                       }}
                       data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                      Rate: ${isNaN(rate) ? toolTip : Number(rate).toFixed(1)}</div>`}
+                      Rate: ${isNaN(rate) ? toolTip : Number(rate).toFixed(1)}<br/><br/></div>`}
                     ></path>
                     <text 
                       className="bar-label"
@@ -231,7 +234,9 @@ function StateChart(params) {
                       y={yScale(name)}
                       dy={isNaN(rate) ? 15 : 12}
                       dx={isNaN(rate) ? 0 : 5}
-                      data-tip={`<strong>${name}</strong><br/><br/>Rate: ${toolTip}`}>
+                      fill={isNaN(rate) ? drugOptions[currentDrug].color : ''}
+                      fontSize={isNaN(rate) ? (isSmallViewport ? fontSize * 1.6 : fontSize * 1.2) : ''}
+                      data-tip={`<strong>${name}</strong><br/><br/>Rate: ${toolTip}<br/><br/>`}>
                         {isNaN(rate) ? (toolTip?.includes('Data suppressed') ? '*' : '†') : rate}
                     </text>
                   </Group>

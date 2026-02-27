@@ -77,24 +77,25 @@ const getMaxValue = (fdata) => {
 
 function AgeChart(params) {
 
-  const { data, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentDataSource, currentYear, currentMonth, currentDataType, accessible, widthReduction } = params;
+  const { data, width, height, el, currentDrug, drugOptions, currentTimeLine, currentDataSource, currentYear, currentMonth, currentDataType, accessible, widthReduction } = params;
+  
   const isSmallViewport = width < 550 && !widthReduction;
+
   const [ animated, setAnimated ] = useState(false);
 
   const ageGroups = getAgeGroups(data, currentDrug, currentDataSource, currentYear, currentDataType)
   const filteredData = getFilteredData(data, ageGroups, currentDrug, currentDataSource, currentYear, currentDataType);
 
-  const margin = {top: 10, bottom: (header ? 10 : !isSmallViewport ? 50 : 90), left: (header ? 0 : (currentDataType == 'rate' ? 50 : 100)), right: 10};
+  const margin = {top: 10, bottom: 50, left: (currentDataType == 'rate' ? 50 : 100), right: 10};
   const adjustedHeight = height - margin.top - margin.bottom - 120;
   const adjustedWidth = width - margin.left - margin.right;
   const fontSize = 16;
 
-  
   const xScale = scaleBand({
-    domain: filteredData.map(d => d.ageN),
-    range: [ header ? 5 : 0, adjustedWidth ],
-    padding: header ? 0 : 0.35
-  });
+      domain: filteredData.map(d => d.ageN),
+      range: [ 0, adjustedWidth ],
+      padding: 0.35
+    });
 
   const max = getMaxValue(filteredData) * 1.2;
 
@@ -166,7 +167,6 @@ function AgeChart(params) {
                   tickLabelProps={() => ({
                     fontSize: 'medium',
                     textAnchor: 'end',
-                    fill: '#000066',
                     transform: 'translate(-5, 5)'
                   })}
                   labelProps={() => ({
@@ -188,7 +188,7 @@ function AgeChart(params) {
                         }}
                         d={Utils.verticalBarPath(xScale(d.ageN), yScale(d.value), xScale.bandwidth(), adjustedHeight - yScale(d.value), xScale.bandwidth() * .1)}
                         fill={drugOptions[currentDrug].color}
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age: ${d.ageN}<br/><br/>Overdoses: ` + (currentDataType == 'rate' ? Number(d.value).toFixed(1).toLocaleString() : Number(d.value).toFixed(0).toLocaleString()) + '<br/><br/>'}
+                        data-tip={`<strong>Age: </strong>${d.ageN}<br/><br/><strong>Overdoses: </strong>` + (currentDataType == 'rate' ? UtilityFunctions.formatRate(d.value, 1) : UtilityFunctions.formatCount(d.value, 0)) + '<br/><br/>'}
                       ></path>
                     )}
                     {isNaN(d.value) && (
@@ -206,12 +206,11 @@ function AgeChart(params) {
                         <text
                           x={xScale(d.ageN) + halfBandwidth}
                           y={yScale(d.value) - 10}
-                          fill="#000000"
                           fontWeight='normal'
                           textAnchor="middle"
                           fontSize={isSmallViewport ? fontSize * .8 : fontSize}
                           cursor="default"
-                        >{currentDataType == 'rate' ? Number(d.value).toFixed(1).toLocaleString() : Number(d.value).toFixed(0).toLocaleString()}</text>
+                        >{(currentDataType == 'rate' ? UtilityFunctions.formatRate(d.value, 1) : UtilityFunctions.formatCount(d.value, 0))}</text>
                       )}
                   </Group>
                 ))}
@@ -222,7 +221,6 @@ function AgeChart(params) {
                   tickStroke="transparent"
                   tickLabelProps={() => ({
                     fontSize: 'medium',
-                    fill: '#000066',
                     textAnchor: (isSmallViewport ? 'start' : 'middle'),
                     verticalAnchor: (isSmallViewport ? 'middle' : ''),
                     angle: (isSmallViewport ? 90 : 0),
@@ -230,17 +228,10 @@ function AgeChart(params) {
                 />
               </>
             )
-
-            {currentDataType == 'rate' && <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={!isSmallViewport ? "middle" : "start"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan></text>}
-            {currentDataType == 'count' && <text x={adjustedWidth/2} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Count</text>}
+            {currentDataType == 'rate' && <text x={!isSmallViewport ? adjustedWidth/2 : 80} y={height - 110} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Rate per 100,000 persons<tspan baselineShift="super" fontSize="10">5</tspan> </text>}
+            {currentDataType == 'count' && <text x={adjustedWidth/2} y={height - 110} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor={"middle"}>Count</text>}
           </Group>
         </svg>
-        <div>
-          <table>
-              <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
-              <tr><td><small><i><sup>†</sup>{'Scale of the figure may change based on the data selected.'}</i></small></td></tr>
-          </table>
-        </div>
         </Group>
       )}
       </div>
