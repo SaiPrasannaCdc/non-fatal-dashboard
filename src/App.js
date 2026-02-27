@@ -1580,7 +1580,7 @@ export default function App(params) {
   }
 
   const getJurisCount = () => {
-    return ethnicityData.ethnicityData[currentYear][currentDataSource]['Hispanic, Any Race']['jurisdiction_count_figure'];
+    return ethnicityData?.ethnicityData[currentYear][currentDataSource]['Hispanic, Any Race']['jurisdiction_count_figure'];
   }
 
   const stateBarChartMemo = useMemo(() =>

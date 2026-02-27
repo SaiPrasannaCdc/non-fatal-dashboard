@@ -184,8 +184,8 @@ function AgeChart(params) {
                         fontWeight='normal'
                         textAnchor="middle"
                         cursor="default"
-                        data-tip={`<strong>${drugOptions[currentDrug].titleAll}</strong><br/><br/>Age Group: ${d.ageN}<br/><br/>Overdoses: ` + d.value + '<br/><br/>'}
-                      >*</text>
+                        data-tip={`<strong>Age Group: </strong>${d.ageN}<br/><br/><strong>Overdoses: </strong>` + d.value + '<br/><br/>'}
+                      >{d.value?.includes('suppressed') ? '*' : (d.value?.includes('available') ? '†' : '')}</text>
                     )}
                     {!isNaN(d.value) && d.value >= 0 && (
                         <text

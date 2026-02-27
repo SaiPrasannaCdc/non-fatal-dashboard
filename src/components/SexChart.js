@@ -165,7 +165,7 @@ function SexChart(params) {
                         textAnchor="middle"
                         cursor="default"
                         data-tip={`<strong>Sex: </strong>${d.sex}<br/><br/><strong>Overdoses: </strong>` + d.value + '<br/><br/>'}
-                      >*</text>
+                      >{d.value?.includes('suppressed') ? '*' : (d.value?.includes('available') ? '†' : '')}</text>
                     )}
                     {!isNaN(d.value) && d.value >= 0 && (
                         <text

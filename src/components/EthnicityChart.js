@@ -242,7 +242,7 @@ function EthnicityChart(params) {
             fill={drugOptions[currentDrug].color}
             fontWeight='normal' 
             fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2}
-            data-tip={`<div class="tooltipTableLC"><p><strong>${drugOptions[currentDrug].titleAll}</strong></p><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ` + formatToolTip(d[xKey])}>{formatToolTip(d[xKey]).includes('suppressed') ? '*' : (formatToolTip(d[xKey]).includes('available') ? '†' : '')}
+            data-tip={`<div class="tooltipTableLC"><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ` + formatToolTip(d[xKey])}>{formatToolTip(d[xKey]).includes('suppressed') ? '*' : (formatToolTip(d[xKey]).includes('available') ? '†' : '')}
             </Text>
         }
      </g>

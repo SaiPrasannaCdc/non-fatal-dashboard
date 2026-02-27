@@ -26,8 +26,8 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         let age = data[i].age;
-        obj['Female'] = isNaN(data[i].F) ? data[i].F : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].F) : UtilityFunctions.formatCount(data[i].F));
-        obj['Male'] = isNaN(data[i].M) ? data[i].M : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].M) : UtilityFunctions.formatCount(data[i].M));
+        obj['Female'] = isNaN(data[i].F) ? data[i].F : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].F, 1) : UtilityFunctions.formatCount(data[i].F, 0));
+        obj['Male'] = isNaN(data[i].M) ? data[i].M : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].M, 1) : UtilityFunctions.formatCount(data[i].M, 0));
         myData[age] = obj;
       }
 
@@ -41,7 +41,7 @@ export const AccessibilityFunctions = {
       for (var i=0;i<data.length;i++)
       {
         let obj = {};
-        obj['rate'] = isNaN(data[i].value) ? data[i].value : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].value) : UtilityFunctions.formatCount(data[i].value));
+        obj['rate'] = isNaN(data[i].value) ? data[i].value : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].value, 1) : UtilityFunctions.formatCount(data[i].value, 0));
         myData[data[i].sex] = obj;
       }
 
@@ -55,7 +55,7 @@ export const AccessibilityFunctions = {
       for (var i=0;i<data.length;i++)
       {
         let obj = {};
-        obj['rate'] = isNaN(data[i].value) ? data[i].value : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].value) : UtilityFunctions.formatCount(data[i].value));
+        obj['rate'] = isNaN(data[i].value) ? data[i].value : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].value, 1) : UtilityFunctions.formatCount(data[i].value, 0));
         myData[data[i].ageN] = obj;
       }
 
@@ -618,7 +618,7 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         let ethn = sortedArray[i].ethnN;
-        obj['val'] = isNaN(sortedArray[i].rate) ? sortedArray[i].rate : (currentDataType == 'rate' ? UtilityFunctions.formatRate(sortedArray[i].rate) : UtilityFunctions.formatCount(sortedArray[i].rate));
+        obj['val'] = isNaN(sortedArray[i].rate) ? sortedArray[i].rate : (currentDataType == 'rate' ? UtilityFunctions.formatRate(sortedArray[i].rate, 1) : UtilityFunctions.formatCount(sortedArray[i].rate, 0));
         myData[ethn] = obj;
       }
 

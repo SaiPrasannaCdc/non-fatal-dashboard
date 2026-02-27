@@ -84,13 +84,13 @@ function SexAgeChart(params) {
     const alignEndFirst = x1Pos > (xMaxHalf - 50);
     const alignEndSecond = x2Pos - xMaxHalf > 55;
 
-    const corner1 = (d[x1Key]/overallMax) <  0.02 ? false : true;
-    const corner2 = (d[x1Key]/overallMax) < 0.02 ? false : true;
+    const corner1 = ((d[x1Key]/overallMax) <  0.02 || isNaN(d[x1Key])) ? false : true;
+    const corner2 = ((d[x2Key]/overallMax) <  0.02 || isNaN(d[x2Key])) ? false : true;
 
     return (
       <g key={d[yKey]}>
         {!isNaN(d[x1Key]) && <path d={corner1 ? Utils.horizontalBarPathDem(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth())} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
-        {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x1Tip}>{d[x1Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
+        {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x1Tip}>{d[x1Key]?.includes('Data suppressed') ? '*' : (d[x1Key]?.includes('available') ? '†' : '')}</Text>}
         {!isNaN(d[x1Key]) && <Text 
           x={((x1Pos) - (d[x1Key] > 99 ? 58 : (d[x1Key] >= 10 ? 50 : 45))) + (d[x1Key] == 0.0 ? (currentDataType == 'rate' ? 15 : 2) : 0)} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
@@ -101,8 +101,8 @@ function SexAgeChart(params) {
           }
 
         {!isNaN(d[x2Key]) && <path d={corner2 ? Utils.horizontalBarPathDem(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf + (!corner2 ? 1 : 0)), yScale.bandwidth())} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
-        {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : '†'}</Text>}
-        {!isNaN(d[x1Key]) && <Text 
+        {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : (d[x2Key]?.includes('available') ? '†' : '')}</Text>}
+        {!isNaN(d[x2Key]) && <Text 
           x={(x2Pos) + (d[x2Key] > 99 ? 58 : (d[x2Key] >= 10 ? 50 : 45))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
