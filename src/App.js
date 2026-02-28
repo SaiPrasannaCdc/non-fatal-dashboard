@@ -1350,18 +1350,21 @@ export default function App(params) {
     if (chart != 'Ethnicity') {
         if (chart == 'Map') {
           return (
+            <div>
                 <div className="datatable-body">
                   <table style={{ width: '100%' }}>
                     <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
                     <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
                 </table>
-              <br></br>
-
-              <ul>
-                <li>The county-level heat map is available for the rate (1-year and 5-year) of ED visits for nonfatal all drug overdoses. At the county level, only rates for nonfatal overdoses involving ‘all drugs’ are available; other drug categories are suppressed due to small counts.</li>
-                <li>Hover over a state/county to view ED visits occurring within that state.</li>
-                <li>The county heat map uses patient county of residence data. State and county-level counts and rates include only in-state residents who visit in-state facilities. Visits to out-of-state facilities are not included, which may result in underestimation—particularly for counties bordering other states.</li>
-              </ul>
+                </div>
+                <br></br>
+                <div>
+                  <ul className='mapBullets'>
+                    <li>The county-level heat map is available for the rate (1-year and 5-year) of ED visits for nonfatal all drug overdoses. At the county level, only rates for nonfatal overdoses involving ‘all drugs’ are available; other drug categories are suppressed due to small counts.</li>
+                    <li>Hover over a state/county to view ED visits occurring within that state.</li>
+                    <li>The county heat map uses patient county of residence data. State and county-level counts and rates include only in-state residents who visit in-state facilities. Visits to out-of-state facilities are not included, which may result in underestimation—particularly for counties bordering other states.</li>
+                  </ul>
+              </div>
             </div>
           )
       }

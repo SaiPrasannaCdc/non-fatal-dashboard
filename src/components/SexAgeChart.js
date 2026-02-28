@@ -92,7 +92,7 @@ function SexAgeChart(params) {
         {!isNaN(d[x1Key]) && <path d={corner1 ? Utils.horizontalBarPathDem(false, x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(x1Pos, yScale(d[yKey]), (xMaxHalf - x1Pos), yScale.bandwidth())} fill={isNaN(d[x1Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} data-tip={x1Tip} />}
         {isNaN(d[x1Key]) && <Text x={x1Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x1Tip}>{d[x1Key]?.includes('Data suppressed') ? '*' : (d[x1Key]?.includes('available') ? '†' : '')}</Text>}
         {!isNaN(d[x1Key]) && <Text 
-          x={((x1Pos) - (d[x1Key] > 99 ? 58 : (d[x1Key] >= 10 ? 50 : 45))) + (d[x1Key] == 0.0 ? (currentDataType == 'rate' ? 15 : 2) : 0)} 
+          x={((x1Pos) - (d[x1Key] > 99 ? (!isSmallViewport ? 58 : 38) : (d[x1Key] >= 10 ? (!isSmallViewport ? 50 : 30) : (!isSmallViewport ? 45 : 25)))) + (d[x1Key] == 0.0 ? (currentDataType == 'rate' ? (15) : (2)) : 0)} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'start'}  
           fill="black" 
@@ -103,7 +103,7 @@ function SexAgeChart(params) {
         {!isNaN(d[x2Key]) && <path d={corner2 ? Utils.horizontalBarPathDem(true, xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf), yScale.bandwidth(), 3, yScale.bandwidth() * .1) : Utils.horizontalBarPathDem_NR(xMaxHalf, yScale(d[yKey]), (x2Pos - xMaxHalf + (!corner2 ? 1 : 0)), yScale.bandwidth())} fill={isNaN(d[x2Key]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={0.4} data-tip={x2Tip} />}
         {isNaN(d[x2Key]) && <Text x={x2Pos} y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 15} textAnchor="middle" alignmentBaseline="end" fill={drugOptions[currentDrug].color} fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2} data-tip={x2Tip}>{d[x2Key]?.includes('Data suppressed') ? '*' : (d[x2Key]?.includes('available') ? '†' : '')}</Text>}
         {!isNaN(d[x2Key]) && <Text 
-          x={(x2Pos) + (d[x2Key] > 99 ? 58 : (d[x2Key] >= 10 ? 50 : 45))} 
+          x={(x2Pos) + (d[x2Key] > 99 ? (!isSmallViewport ? 58 : 38) : (d[x2Key] >= 10 ? (!isSmallViewport ? 50 : 30) : (!isSmallViewport ? 45 : 25)))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="black" 
