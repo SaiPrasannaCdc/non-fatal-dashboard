@@ -1900,3 +1900,7 @@ padding-left: 2px!important;
 .mapBullets {
     list-style-type:disc!important;
 }
+
+.mapBullets li::marker {
+    color: black!important;
+}
