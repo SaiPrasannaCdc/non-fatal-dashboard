@@ -24,8 +24,7 @@ const getEthnGroups = (data, currentDataSource, currentYear, currentMonth) => {
 
 const getFilteredData = (data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType) => {
   
-  var finalData = {};
-  var finalDataBeforeSort = [];
+  var finalData = [];
   var val = 0;
 
   for (let x=0;x<ethnGroups.length;x++) {
@@ -114,16 +113,34 @@ const getFilteredData = (data, currentDataSource, ethnGroups, currentDrug, curre
     prefinalData['sortOrder'] = sortOrder;
     prefinalData['rate'] = isNaN(val) ? val : (currentDataType == 'rate' ? String(Number(val).toFixed(1)) : String(Number(val).toFixed(0)));
 
-    finalDataBeforeSort.push(prefinalData);
+    finalData.push(prefinalData);
+  }
+
+    var sortedFinalData = sortByKey(finalData, 'sortOrder');
+
+    return sortedFinalData;
 
   }
 
-  const sorted = [...finalDataBeforeSort].sort((a, b) => b.sortOrder - a.sortOrder);
-  for (var i=0;i<sorted.length;i++)
-    finalData[sorted[i].ethnN] = sorted[i];
 
-  return finalData;
-};
+function sortByKey(array, key) {
+  return array.sort(function(a, b) {
+    const x = a[key];
+    const y = b[key];
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+  });
+}
+
+const getMaxValue = (fdata) => {
+
+  let vals = [];
+  for (let x=0;x<Object.keys(fdata).length;x++) {
+     if (!isNaN(fdata[x].rate)) 
+        vals.push(Number(fdata[x].rate));
+  }
+
+  return Math.max(...vals);
+}
 
 function EthnicityChart(params) {
 
@@ -131,31 +148,38 @@ function EthnicityChart(params) {
 
   const [ animated, setAnimated ] = useState(true);
 
-  const { data, width, height, el, currentDrug, currentDataSource, currentTimeframe, currentDataType, currentMonth, currentYear, drugOptions, accessible } = params;
+  const { data, width, height, el, currentDrug, currentDataSource, currentTimeframe, currentDataType, currentMonth, currentYear, drugOptions, accessible, widthReduction } = params;
 
-  const isSmallViewport = width < 550;
+  const isSmallViewport = width < 550 && !widthReduction;
+  const fontSize = 16;
+  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 120 : 110, right: isSmallViewport ? 0 : 15 };
 
   const ethnGroups = getEthnGroups(data, currentDataSource, currentYear, currentMonth)
-  const dataRates = getFilteredData(data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
+  const filteredData = getFilteredData(data, currentDataSource, ethnGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
 
-  const dataKeys = Object.keys(dataRates || {}).filter(name => name !== 'max' && name !== 'min');
-  const maxValue = UtilityFunctions.calculateMax(dataRates) ;
+  const dataKeys = Object.keys(filteredData || {}).filter(name => name !== 'max' && name !== 'min');
+  const maxValue = UtilityFunctions.calculateMax(filteredData) ;
   const max = maxValue> 0 ? maxValue : 1;
 
-  const margin = {top: 40, bottom: 0, left: (isSmallViewport ? 150 : 230), right: 10};
-  const adjustedHeight = (height - margin.top - margin.bottom - 100) * ((Object.keys(dataKeys).length / 25)*(1.5));
-  const adjustedWidth = width - margin.left - margin.right - 100; 
-  const heightNew = height * ((Object.keys(dataKeys).length / 20)*(1.55));
+  const xMax = width - margin.left - margin.right;
+  const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
+  const adjustedWidth = width - margin.left - margin.right - 75;
+
+  const xKey = 'rate';
+  const yKey = 'ethnN';
+
+  let overallMax = getMaxValue(filteredData);
+  if(overallMax === 0) overallMax = 1;
 
   const xScale = scaleLinear({
-    domain: [0, max * (isSmallViewport ? 1.3 : 1.1)],
-    range: [ 0, adjustedWidth ]
+    domain: [0, overallMax  * 1.2],
+    range: [0, adjustedWidth]
   });
 
   const yScale = scaleBand({
-    range: [ adjustedHeight, 0 ],
-    domain: dataKeys, 
-    padding: 0.20
+    range: [0, yMax],
+    domain: filteredData.map(d => d[yKey]),
+    padding: .2,
   });
 
   const onScroll = () => {
@@ -181,23 +205,60 @@ function EthnicityChart(params) {
 
   const formatToolTip = (val) => {
 
-      if (val.includes('Data suppressed'))
+      if (val.includes('suppressed'))
           return 'Data suppressed';
-      else if (val.includes('Data not available'))
+      else if (val.includes('not available') || val.includes('NA'))
         return 'Data not available/not reported';
       else
         return ''
   }
+
+  const getBar = (d) => {
+
+
+    const xPos = isNaN(d[xKey]) ? 15 : xScale(d[xKey]);
+
+    const xTip = `<div class="tooltipTableLC"><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ${(currentDataType == 'rate' ? UtilityFunctions.formatRate(d[xKey], 1) : UtilityFunctions.formatCount(d[xKey], 0))}</p></div>`;
+
+    return (
+      <g key={d[yKey]}>
+
+        {!isNaN(d[xKey]) && d[xKey] >= 0 && <path d={(d[xKey]/overallMax) < 0.01 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
+        {!isNaN(d[xKey]) && Number(d[xKey]) >= 0 && 
+        <Text 
+          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 13 : 5) : (Number(d[xKey]) >= 100 ? 60 : 50)) + (currentDataType == 'rate' ? 30 : 40)))} 
+          y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
+          textAnchor={'end'} 
+          fill="#000000"
+          fontWeight='normal' 
+          fontSize={isSmallViewport ? fontSize * .8 : fontSize}>{(currentDataType == 'rate' ? UtilityFunctions.formatRate(d[xKey], 1) : UtilityFunctions.formatCount(d[xKey], 0))}
+          </Text>
+        }
+          {isNaN(d[xKey]) &&
+            <Text 
+            x={(isSmallViewport ? 10 : 45)}
+            y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
+            textAnchor={'end'} 
+            fill={drugOptions[currentDrug].color}
+            fontWeight='normal' 
+            fontSize={isSmallViewport ? fontSize * 1.6 : fontSize * 1.2}
+            data-tip={`<div class="tooltipTableLC"><p><strong>Race/Ethnicity</strong>: ${d[yKey]}</p><p><strong>Overdoses</strong>: ` + formatToolTip(d[xKey])}>{formatToolTip(d[xKey]).includes('suppressed') ? '*' : (formatToolTip(d[xKey]).includes('available') ? '†' : '')}
+            </Text>
+        }
+     </g>
+    )
+  }
+
 
   return width > 0 && (
     <>
     {accessible ? (
         <>
         <DataTable508
-          data={AccessibilityFunctions.generateEthnChartData(dataRates)}
+          data={AccessibilityFunctions.generateEthnChartData(filteredData, currentDataType)}
           labelOverrides={{
-            'val': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
-            'Age Group': !isSmallViewport ? 'By Race/Ethnicity' : 'By Race/Ethnicity',
+            'val': !isSmallViewport ? (currentDataType == 'rate' ? `Rate per 100,000 persons` : 'Count') : (currentDataType == 'rate' ? 'Rate per 100,000 persons' : 'Count'),
+            'Age Group': !isSmallViewport ? 'Race/Ethnicity' : 'Race/Ethnicity',
           }}
           xAxisKey={'Age Group'}
           transforms={{
@@ -211,83 +272,61 @@ function EthnicityChart(params) {
         />
         </>  
       ) : (
-        <svg
-          id="ethnicity-chart" 
-          width={width} 
-          height={heightNew + 50}>
+        <Group>
+        <svg style={{ height: height - 30 }}> 
             <Group top={margin.top} left={margin.left}>
-              {dataKeys.map(d => {
-                const name = d;
-                const rate = dataRates[name].rate;
-                const toolTip = isNaN(dataRates[name].rate) ? formatToolTip(dataRates[name].rate) : (currentDataType == 'rate' ? Number(dataRates[name].rate).toFixed(1) : Number(dataRates[name].rate).toFixed(0));
+              <Group>
+              {filteredData.map((d) => getBar(d, false))}
+              </Group>
+              <AxisLeft
+            scale={yScale}
+            tickLabelProps={() => ({
+              fontSize: 'medium',
+              textAnchor: 'end',
+              verticalAnchor: 'middle',
+              angle: (45),
+            })}
+            left={!isSmallViewport ? 35 : 5}
+            hideTicks
+            hideAxisLine
+          />
 
-                return (
-                  <Group key={`bar-${name}`}>
-                    <path 
-                      className={`animated-bar ${animated ? 'animated' : ''}`}
-                      style={{
-                        'transition': animated ? 'transform 1s ease-in-out' : '',
-                        'transformOrigin': `0px 0px`,
-                        outline: 'none'
-                      }}
-                      d={Utils.horizontalBarPath(true, 0, yScale(name), rate < 0 ? 10 : xScale(rate), yScale.bandwidth(), 3, yScale.bandwidth() * .1)}
-                      fill={drugOptions[currentDrug].color}
-                      stroke={drugOptions[currentDrug].color}
-                      strokeWidth="3"
-                      opacity={1}
-                      data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                      Rate: ${isNaN(rate) ? toolTip : (currentDataType == 'rate' ? Number(rate).toFixed(1) : Number(Number(rate).toFixed(0)).toLocaleString())}</div>`}
-                    ></path>
-                    <text 
-                      className="bar-label"
-                      x={isNaN(rate) ? 0 : xScale(rate)}
-                      y={yScale(name)}
-                      dy={isNaN(rate) ? 28 : 25}
-                      dx={isNaN(rate) ? 0 : 5}
-                      data-tip={isNaN(rate) ? `<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>Rate: ${toolTip}</div>` : ''}>
-                        {isNaN(rate) ? (toolTip?.includes('Data suppressed') ? '*' : '—') : (currentDataType == 'rate' ? Number(rate).toFixed(1) : Number(Number(rate).toFixed(0)).toLocaleString())}
-                    </text>
-                  </Group>
-                )}
-              )}
-              <AxisLeft 
-                scale={yScale}
-                tickValues={dataKeys}
-                  tickLabelProps={() => ({
-                  fontSize: 'medium',
-                  fill: '#000066',
-                  textAnchor: 'end',
-                  verticalAnchor: 'middle',
-                  angle: (isSmallViewport ? 45 : 0),
-                })}
-                left={-5}
-                hideTicks
-                hideAxisLine
-              >
-              </AxisLeft>
               <AxisBottom
-                top={adjustedHeight}
+                top={yMax}
                 scale={xScale}
-                numTicks={width < viewportCutoff ? (width <= 375 ? 1 : 2) : null}
+                left={!isSmallViewport ? 35 : 5}
+                numTicks={isSmallViewport ? 3 : 6}
                 tickStroke="none"
-                labelProps={{
-                  fontSize: 'medium',
-                  textAnchor: width < viewportCutoff ? 'end' : 'middle',
-                  transform: 'translate(0, 40)',
+                tickLabelProps={(value) => {
+                  return {
+                    style: {
+                      transform: (currentDataType == 'count' ? 'rotate(-60deg)' : ''),
+                      transformOrigin: `${xScale(value)}px ${18}px`,
+                      textAnchor: (currentDataType == 'count' ? 'end' : 'middle'),
+                      fontSize: fontSize,
+                    }
+                  }
                 }}
-                tickLabelProps={() => ({
-                  fontSize: 'medium',
-                  textAnchor: 'middle',
-                  transform: 'translate(0, 10)',
-                  
-                })}
               />
-              {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Suspected Nonfatal Overdoses Involving'}</text>}
-              {currentDataType == 'rate' && <text width={adjustedWidth} y={adjustedHeight + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ' + (currentDataSource == 'ED' ? 'ED visits' : 'Inpatient Hospitalizations')}</text>}
-              {currentDataType == 'count' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Suspected Nonfatal Overdoses Involving'}</text>}
-              {currentDataType == 'count' && <text width={adjustedWidth} y={adjustedHeight + 90} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{drugOptions[currentDrug].titleForDropDown + ' per 10,000 Total ' + (currentDataSource == 'ED' ? 'ED visits' : 'Inpatient Hospitalizations')}</text>}
+              {currentDataType == 'rate' && <text width={adjustedWidth} y={yMax + 90} x={(adjustedWidth/2)} fontSize={fontSize} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Rate per 100,000 persons'}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {currentDataType == 'count' && <text width={adjustedWidth} y={yMax + 90} x={(adjustedWidth/2)} fontSize={fontSize} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{'Count'}</text>}
             </Group>
         </svg>
+        <div style={{height: !isSmallViewport ? '160px' : '200px'}}>
+            <table>
+              {Object.keys(filteredData).length > 0 &&
+                <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
+              }
+              {Object.keys(filteredData).length > 0 &&
+                <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
+              }
+              {Object.keys(filteredData).length > 0 &&
+                <tr><td style={{ textAlign: 'left', fontSize: '15px' }}>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
+              }
+            </table>
+            </div>
+            </Group>
+          
       )}
     </>
   );

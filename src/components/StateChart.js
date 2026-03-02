@@ -101,6 +101,9 @@ function StateChart(params) {
   const adjustedWidth = width - margin.left - margin.right - 100; 
   const heightNew = height * ((Object.keys(dataKeys).length / 50)*(1.55));
 
+  const isSmallViewport = width < 550;
+  const fontSize = 16;
+
   const sort = (a,b) => {
     if (!isNaN(dataRates[a].rate) && !isNaN(dataRates[b].rate)) {
       if(parseFloat(dataRates[a].rate) > parseFloat(dataRates[b].rate)) return 1;
@@ -160,6 +163,28 @@ function StateChart(params) {
         return 'Rate of nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' inpatient hospitalizations per 100,000 persons';
       else
         return ''
+  }
+
+  const getXAxisLabelED1 = () => {
+      return 'Rate of nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase();
+  }
+
+  const getXAxisLabelED2 = () => {
+      return 'visits per 100,000 persons';
+  }
+
+  const getXAxisLabelHOSP1 = () => {
+      return 'Rate of nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase();
+  }
+
+  const getXAxisLabelHOSP2 = () => {
+        return 'inpatient hospitalizations';
+
+  }
+
+  const getXAxisLabelHOSP3 = () => {
+        return 'per 100,000 persons';
+
   }
 
   const formatToolTip = (val) => {
@@ -223,7 +248,7 @@ function StateChart(params) {
                         }
                       }}
                       data-tip={`<div class="tooltipTableLC"><strong>${name}</strong><br/><br/>
-                      Rate: ${isNaN(rate) ? toolTip : Number(rate).toFixed(1)}</div>`}
+                      Rate: ${isNaN(rate) ? toolTip : Number(rate).toFixed(1)}<br/><br/></div>`}
                     ></path>
                     <text 
                       className="bar-label"
@@ -231,7 +256,9 @@ function StateChart(params) {
                       y={yScale(name)}
                       dy={isNaN(rate) ? 15 : 12}
                       dx={isNaN(rate) ? 0 : 5}
-                      data-tip={`<strong>${name}</strong><br/><br/>Rate: ${toolTip}`}>
+                      fill={isNaN(rate) ? drugOptions[currentDrug].color : ''}
+                      fontSize={isNaN(rate) ? (isSmallViewport ? fontSize * 1.6 : fontSize * 1.2) : ''}
+                      data-tip={`<strong>${name}</strong><br/><br/>Rate: ${toolTip}<br/><br/>`}>
                         {isNaN(rate) ? (toolTip?.includes('Data suppressed') ? '*' : '†') : rate}
                     </text>
                   </Group>
@@ -256,7 +283,12 @@ function StateChart(params) {
                   </g>
                 )}
               </AxisLeft>
-              <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">5</tspan></text>
+              {!isSmallViewport && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabel()}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {isSmallViewport && currentDataSource == 'ED' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelED1()}</text>}
+              {isSmallViewport && currentDataSource == 'ED' && <text width={adjustedWidth} y={adjustedHeight + 95} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelED2()}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
+              {isSmallViewport && currentDataSource == 'HOSP' && <text width={adjustedWidth} y={adjustedHeight + 70} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelHOSP1()}</text>}
+              {isSmallViewport && currentDataSource == 'HOSP' && <text width={adjustedWidth} y={adjustedHeight + 95} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelHOSP2()}</text>}
+              {isSmallViewport && currentDataSource == 'HOSP' && <text width={adjustedWidth} y={adjustedHeight + 120} x={(adjustedWidth/2)} textAnchor="middle" style={{ transformOrigin: `-${margin.left / 2}px ${adjustedWidth / 2}px`}}>{getXAxisLabelHOSP3()}<tspan baselineShift="super" fontSize="10">5</tspan></text>}
               <AxisBottom
                 top={adjustedHeight}
                 scale={xScale}

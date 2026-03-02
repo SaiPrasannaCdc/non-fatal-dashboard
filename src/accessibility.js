@@ -18,7 +18,7 @@ export const AccessibilityFunctions = {
   
     },  
 
-    generateSexChartData : (data) => {
+    generateSexAgeChartData : (data, currentDataType) => {
 
       let myData = {};
 
@@ -26,14 +26,43 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         let age = data[i].age;
-        obj['Female'] = isNaN(data[i].F) ? data[i].F : Number(data[i].F).toLocaleString('en-US');
-        obj['Male'] = isNaN(data[i].M) ? data[i].M : Number(data[i].M).toLocaleString('en-US');
+        obj['Female'] = isNaN(data[i].F) ? data[i].F : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].F, 1) : UtilityFunctions.formatCount(data[i].F, 0));
+        obj['Male'] = isNaN(data[i].M) ? data[i].M : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].M, 1) : UtilityFunctions.formatCount(data[i].M, 0));
         myData[age] = obj;
       }
 
       return myData;
   
     },  
+
+    generateSexChartData : (data, currentDataType) => {
+      let myData = {};
+
+      for (var i=0;i<data.length;i++)
+      {
+        let obj = {};
+        obj['rate'] = isNaN(data[i].value) ? data[i].value : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].value, 1) : UtilityFunctions.formatCount(data[i].value, 0));
+        myData[data[i].sex] = obj;
+      }
+
+      return myData;
+  
+    },  
+
+    generateAgeChartData : (data, currentDataType) => {
+      let myData = {};
+
+      for (var i=0;i<data.length;i++)
+      {
+        let obj = {};
+        obj['rate'] = isNaN(data[i].value) ? data[i].value : (currentDataType == 'rate' ? UtilityFunctions.formatRate(data[i].value, 1) : UtilityFunctions.formatCount(data[i].value, 0));
+        myData[data[i].ageN] = obj;
+      }
+
+
+      return myData;
+  
+    }, 
 
     generateMapData : (data, stateNames, stateName, filteredDataCY) => {
 
@@ -578,7 +607,7 @@ export const AccessibilityFunctions = {
   
     },
     
-    generateEthnChartData : (data) => {
+    generateEthnChartData : (data, currentDataType) => {
       let myData = {};
 
       const sortedArray = Object.values(data).sort((a, b) => {
@@ -589,7 +618,7 @@ export const AccessibilityFunctions = {
       {
         let obj = {};
         let ethn = sortedArray[i].ethnN;
-        obj['val'] = isNaN(sortedArray[i].rate) ? sortedArray[i].rate : Number(sortedArray[i].rate).toLocaleString('en-US');
+        obj['val'] = isNaN(sortedArray[i].rate) ? sortedArray[i].rate : (currentDataType == 'rate' ? UtilityFunctions.formatRate(sortedArray[i].rate, 1) : UtilityFunctions.formatCount(sortedArray[i].rate, 0));
         myData[ethn] = obj;
       }
 
