@@ -1378,6 +1378,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div className="chartDivAllDem" ref={sexChartRef}>
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+                jurisCountData={jurisCountData}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
                 height={!isSmallViewport ? (!UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) ? 640 : 400) : 600}
@@ -1405,6 +1406,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div class={currentState === 'US' ? "chartDivAllDem" : "chartDivAllDem"} ref={ageChartRef}>
             <AgeChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+                jurisCountData={jurisCountData}
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
@@ -1435,6 +1437,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div class='chartDivAllDem' ref={sexAgeChartRef}>
             <SexAgeChart 
             data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+            jurisCountData={jurisCountData}
             currentTimeframe={sexAgeMonthly}
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
@@ -1474,6 +1477,7 @@ const getYears = (startYrInp, endYrInp) => {
             accessible={accessible}
             widthReduction={(!isSmallViewport && !accessible) ? true : false}
             isEthnGrayBox={isEthnGrayBox()}
+            jurisCount={Number(currentYearSexAge) > 2022 && jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] : '0'}
             />
           </div>
         </div>
@@ -2545,7 +2549,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                 </td>
               </tr>
               <br></br>
@@ -2839,7 +2843,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}</span>
+                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                 </td>
               </tr>
               <br></br>
@@ -3107,7 +3111,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table>
                 <tr>
                   <td style={{'textAlign': 'center'}}>
-                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}</span>
+                    <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                   </td>
                 </tr>
                 <br></br>
@@ -3325,7 +3329,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYear, currentMonth)}</span>
+                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                 </td>
               </tr>
             </table>
@@ -3340,12 +3344,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
           {sexAgeMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, and Race/Ethnicity, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, Sex and Age, and Race/Ethnicity, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
           }
           {sexAgeMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, and Race/Ethnicity, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, Sex and Age, and Race/Ethnicity, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
           }
         </div>
@@ -3425,7 +3429,7 @@ const getYears = (startYrInp, endYrInp) => {
                             <table>
                               <tr>
                                 <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
-                                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                                 </td>
                               </tr>
                               <br></br>
@@ -3546,7 +3550,7 @@ const getYears = (startYrInp, endYrInp) => {
                             <table>
                               <tr>
                                 <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
-                                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                                 </td>
                               </tr>
                               <br></br>

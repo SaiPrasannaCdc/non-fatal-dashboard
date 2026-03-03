@@ -229,7 +229,7 @@ const getMaxValue = (fdata) => {
 
 function AgeChart(params) {
 
-  const { data, year, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, currentDataType, accessible, widthReduction } = params;
+  const { data, jurisCountData, year, width, height, header, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, currentDataType, accessible, widthReduction } = params;
   const isSmallViewport = width < 550 && !widthReduction;
   const [ animated, setAnimated ] = useState(false);
 
@@ -282,7 +282,7 @@ function AgeChart(params) {
     setTimeout(onScroll, 50); // eslint-disable-next-line
   }, []);
 
-  if (!accessible && UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
+  if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
       return UtilityFunctions.getCovidGrayBox(height, width);
     
   return width > 0 && 
@@ -293,8 +293,8 @@ function AgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
-            'Sex': !isSmallViewport ? 'By Age (In years)' : 'By Age',
+            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ? ' per 10,000 Total ED Visits' : '') : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
+            'Sex': (!isSmallViewport ? 'By Age (In years) (' : 'By Age ') + ((jurisCountData != null && Object.keys(jurisCountData).length > 0) ? jurisCountData[currentYear + currentMonth.padStart(2, '0') + currentTimeLine] : '0') + ' Jurisdictions)',
             '0–14': '<15'
           }}
           xAxisKey={'Sex'}
@@ -355,6 +355,7 @@ function AgeChart(params) {
                       getFormattedValue(value)
                   }
                   labelOffset={60}
+                  numTicks={5}
                 />
 
                 {filteredData.map(d => (

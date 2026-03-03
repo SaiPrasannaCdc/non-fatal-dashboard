@@ -286,7 +286,7 @@ const getAgeGroups = (data, currentTimeLine, currentYear, currentMonth) => {
 
 function SexAgeChart(params) {
 
-  const { data, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction, isEthnGrayBox } = params;
+  const { data, jurisCountData, currentTimeframe, currentDrug, currentYear, currentMonth, currentDataType, width, height, drugOptions, accessible, widthReduction, isEthnGrayBox } = params;
 
   const ageGroups = getAgeGroups(data, currentTimeframe, currentYear, currentMonth)
   const filteredData = getFilteredData(data, ageGroups, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
@@ -423,7 +423,7 @@ function SexAgeChart(params) {
     )
   }
 
-  if (!accessible && UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
+  if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
         return UtilityFunctions.getCovidGrayBox(height, width);
 
   return (
@@ -433,8 +433,8 @@ function SexAgeChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexAgeChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
-            'Age Group': !isSmallViewport ? 'By Age (In years) and Sex' : 'By Age and Sex',
+            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ? ' per 10,000 Total ED Visits' : '') : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
+            'Age Group': (!isSmallViewport ? 'By Age (In years) and Sex (' : 'By Age and Sex (') + ((jurisCountData != null && Object.keys(jurisCountData).length > 0) ? jurisCountData[currentYear + currentMonth.padStart(2, '0') + currentTimeframe] : '0') + ' Jurisdictions)',
             'Female': !isSmallViewport ? 'Female' : 'Female',
             'Male': !isSmallViewport ? 'Male' : 'Male',
             '0–14': '<15'
@@ -454,7 +454,7 @@ function SexAgeChart(params) {
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
           <tr>
             <td>
-              <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
+              <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
             </td>
           </tr>
           }
@@ -494,7 +494,7 @@ function SexAgeChart(params) {
             textAnchor: 'end',
             verticalAnchor: 'middle',
           })}
-          left={!isSmallViewport ? 30 : 10}
+          left={!isSmallViewport ? (currentDataType == 'rate' ? 30 : 10) : 10}
           hideTicks
           hideAxisLine
         />
@@ -542,7 +542,7 @@ function SexAgeChart(params) {
           {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{(currentDataType == 'rate' ?  '' : 'Involving ') + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ?  ' per 10,000 Total ED visits' : '')}</text>}
         </Group>
       </svg>
-      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : (currentDataType == 'rate' ? '100px' : '140px')) : (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : '300px'))}}>
+      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : (currentDataType == 'rate' ? '100px' : '140px')) : (isSmallViewport ? (currentDataType == 'rate' ? '180px' : '230px') : '320px'))}}>
         <table>
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>

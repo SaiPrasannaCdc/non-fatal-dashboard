@@ -418,7 +418,7 @@ const getEthnGroupsDummy = (data) => {
 
 function EthnicityChart(params) {
 
-  const { data, dataJurisExcl, currentTimeframe, currentDrug, currentYear, currentMonth, stateNames, currentDataType, width, height, drugOptions, accessible, widthReduction, isEthnGrayBox } = params;
+  const { data, dataJurisExcl, currentTimeframe, currentDrug, currentYear, currentMonth, stateNames, currentDataType, width, height, drugOptions, accessible, widthReduction, isEthnGrayBox, jurisCount } = params;
 
   const ethnGroupsReal = getEthnGroups(data, currentTimeframe, currentYear, currentMonth)
   const filteredDataReal = getFilteredData(data, ethnGroupsReal, currentDrug, currentTimeframe, currentYear, currentMonth, currentDataType);
@@ -434,7 +434,7 @@ function EthnicityChart(params) {
 
   const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 120 : 110, right: isSmallViewport ? 0 : 15 };
+  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 125 : 140, right: isSmallViewport ? 0 : 15 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
@@ -502,10 +502,10 @@ function EthnicityChart(params) {
     return (
       <g key={d[yKey]}>
 
-        {d[xKey] >= 0 && <path d={d[xKey] < 0.9 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
+        {d[xKey] >= 0 && <path d={d[xKey] < 0.9 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 65, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 65, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
         {Number(d[xKey]) >= 0 && 
         <Text 
-          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 13 : 5) : (Number(d[xKey]) >= 100 ? 60 : 50)) + (currentDataType == 'rate' ? 30 : 40)))} 
+          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 13 : 5) : (Number(d[xKey]) >= 100 ? 90 : 80)) + (currentDataType == 'rate' ? 30 : 40)))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="#000000"
@@ -515,7 +515,7 @@ function EthnicityChart(params) {
         }
           {Number(d[xKey])?.toFixed(1) == -3.0 &&
             <Text 
-            x={(isSmallViewport ? 10 : 40)}
+            x={(isSmallViewport ? 10 : 70)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
@@ -526,7 +526,7 @@ function EthnicityChart(params) {
         }
         {Number(d[xKey])?.toFixed(1) == -1.0 &&
             <Text 
-            x={(isSmallViewport ? 10 : 40)}
+            x={(isSmallViewport ? 10 : 70)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
@@ -537,7 +537,7 @@ function EthnicityChart(params) {
         }
         {Number(d[xKey])?.toFixed(1) == -9.0 &&
             <Text 
-            x={(isSmallViewport ? 20 : 50)}
+            x={(isSmallViewport ? 20 : 80)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
@@ -552,7 +552,7 @@ function EthnicityChart(params) {
     )
   }
 
-  if (Number(currentYear) < 2023 && !accessible)
+  if (Number(currentYear) < 2023)
   {
     if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
         return UtilityFunctions.getCovidGrayBox(height, width);
@@ -560,7 +560,7 @@ function EthnicityChart(params) {
       return UtilityFunctions.getNoDataGrayBoxForEthn(height + (currentDataType == 'percent' ? 80 : 40), width);
   }
 
-  if (Number(currentYear) == 2023 && Number(currentMonth) < 12 && currentTimeframe == 'Annual' && !accessible)
+  if (Number(currentYear) == 2023 && Number(currentMonth) < 12 && currentTimeframe == 'Annual')
   {
       return UtilityFunctions.getAnnualNoDataGrayBoxForEthn(height + (currentDataType == 'percent' ? 80 : 40), width);
   }
@@ -572,8 +572,8 @@ function EthnicityChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateEthnChartData(filteredData)}
           labelOverrides={{
-            'val': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
-            'Age Group': !isSmallViewport ? 'By Race/Ethnicity' : 'By Race/Ethnicity',
+            'val': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ? ' per 10,000 Total ED Visits' : '') : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
+            'Age Group': !isSmallViewport ? 'By Race/Ethnicity (' + jurisCount + ' Jurisdictions)*' : 'By Race/Ethnicity (' + jurisCount + ' Jurisdictions)*',
           }}
           xAxisKey={'Age Group'}
           transforms={{
@@ -595,8 +595,9 @@ function EthnicityChart(params) {
           {!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData) &&
           <tr>
             <td>
-              <div><span><small><i><sup>*</sup>{getMissingNote(missingData)}</i></small></span></div>
-              <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></span></div>
+              <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
+              <div><span><small><i><sup>*</sup>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></span></div>
+              <div><span><small><i>{'AI/AN, American Indian/Alaska Native. NH/PI, Native Hawaiian or other Pacific Islander.'}</i></small></span></div>
             </td>
           </tr>
           }
@@ -615,7 +616,9 @@ function EthnicityChart(params) {
                         {<br></br>}
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
                         {<br></br>}
-                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period.  ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></span></div>}
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i><sup>*</sup>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period.  ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></span></div>}
+                        {<br></br>}
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && <div><span><small><i>{'AI/AN, American Indian/Alaska Native. NH/PI, Native Hawaiian or other Pacific Islander.'}</i></small></span></div>}
                       </td>
                     </tr>
                 </table>
@@ -635,16 +638,16 @@ function EthnicityChart(params) {
               fill: '#000066',
               textAnchor: 'end',
               verticalAnchor: 'middle',
-              angle: (45),
+              angle: (isSmallViewport ? 45 : 0),
             })}
-            left={!isSmallViewport ? 35 : 5}
+            left={!isSmallViewport ? 65 : 5}
             hideTicks
             hideAxisLine
           />
           <AxisBottom
                 top={yMax}
                 scale={xScale}
-                left={!isSmallViewport ? 35 : 5}
+                left={!isSmallViewport ? 65 : 5}
                 numTicks={isSmallViewport ? 3 : 6}
                 tickStroke="none"
                 tickFormat={value => 
@@ -669,7 +672,7 @@ function EthnicityChart(params) {
           </Group>
         </svg>
         {!isEthnGrayBox &&
-        <div style={{height: !isSmallViewport ? '300px' : '520px'}}>
+        <div style={{height: !isSmallViewport ? '320px' : '540px'}}>
             <table>
               {Object.keys(filteredData).length > 0 &&
                 <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
@@ -682,6 +685,9 @@ function EthnicityChart(params) {
               }
               {Object.keys(filteredData).length > 0 &&
                 <tr><td><small><i><sup>§</sup>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period.  ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></td></tr>
+              }
+              {Object.keys(filteredData).length > 0 &&
+                <tr><td><small><i><sup>¶</sup>{'AI/AN, American Indian/Alaska Native. NH/PI, Native Hawaiian or other Pacific Islander.'}</i></small></td></tr>
               }
             </table>
           </div>

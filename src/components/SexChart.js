@@ -200,7 +200,7 @@ const getMaxValue = (fdata) => {
 
 function SexChart(params) {
 
-  const { data, width, height, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, currentDataType, accessible, widthReduction } = params;
+  const { data, jurisCountData, width, height, el, currentDrug, drugOptions, currentTimeLine, currentYear, currentMonth, currentDataType, accessible, widthReduction } = params;
 
   const isSmallViewport = width < 550 && !widthReduction;
   
@@ -214,7 +214,6 @@ function SexChart(params) {
   const adjustedWidth = width - margin.left - margin.right;
   const fontSize = 16;
 
-  
   const xScale = scaleBand({
     domain: filteredData.map(d => d.sex),
     range: [ 0, adjustedWidth ],
@@ -254,7 +253,7 @@ function SexChart(params) {
     setTimeout(onScroll, 50); // eslint-disable-next-line
   }, []);
 
-  if (!accessible && UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
+  if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
         return UtilityFunctions.getCovidGrayBox(height, width);
     
   return width > 0 && 
@@ -265,8 +264,8 @@ function SexChart(params) {
         <DataTable508
           data={AccessibilityFunctions.generateSexChartData(filteredData)}
           labelOverrides={{
-            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + ' per 10,000 Total ED Visits' : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
-            'Sex': 'By Sex'
+            'rate': !isSmallViewport ? (currentDataType == 'rate' ? 'Rate' : 'Percent') + ' of suspected nonfatal overdoses involving ' + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ? ' per 10,000 Total ED Visits' : '') : (currentDataType == 'rate' ? 'Rate' : 'Percent'),
+            'Sex': 'By Sex (' + ((jurisCountData != null && Object.keys(jurisCountData).length > 0) ? jurisCountData[currentYear + currentMonth.padStart(2, '0') + currentTimeLine] : '0') + ' Jurisdictions)'
           }}
           xAxisKey={'Sex'}
           transforms={{
@@ -327,6 +326,7 @@ function SexChart(params) {
                       getFormattedValue(value)
                   }
                   labelOffset={60}
+                  numTicks={5}
                 />
 
                 {filteredData.map(d => (

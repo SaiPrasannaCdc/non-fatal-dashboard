@@ -941,7 +941,7 @@ const adjustCrowdedLabels = () => {
             'opioids': !isSmallViewport ? 'All Opioids' : 'All Opioids',
             'stimulants': !isSmallViewport ? 'All Stimulants' : 'All Stimulants',
             'Overall': !isSmallViewport ? 'Overall' : 'Overall',
-            'Year/Month': 'Month Year',
+            'Year/Month': (currentTimeframe == 'Annual' ? '12 months ending in:' : 'Month Year'),
           }}
           xAxisKey={'Year/Month'}
           transforms={{
