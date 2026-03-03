@@ -450,8 +450,8 @@ function SexAgeChart(params) {
           drugName={drugOptions[currentDrug].titleAll}
           currentDataType={currentDataType}
         />
-        {/* {!isSmallViewport && <table>
-          {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
+        {!isSmallViewport && <table>
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'percent' &&
           <tr>
             <td>
               <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
@@ -459,7 +459,7 @@ function SexAgeChart(params) {
           </tr>
           }
         </table>
-        } */}
+        }
         {isSmallViewport && <table>
           <tr>
               <td>
@@ -470,7 +470,7 @@ function SexAgeChart(params) {
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        {/* {!UtilityFunctions.allDataIsSupressedSA(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> } */}
+                        {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'percent' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
                         <span></span>
                       </td>
                     </tr>
@@ -544,9 +544,9 @@ function SexAgeChart(params) {
       </svg>
       <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : (currentDataType == 'rate' ? '100px' : '140px')) : (isSmallViewport ? (currentDataType == 'rate' ? '180px' : '230px') : '340px'))}}>
         <table>
-          {/* {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'percent' &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
-          } */}
+          }
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
           }
