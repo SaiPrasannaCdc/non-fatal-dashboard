@@ -223,10 +223,10 @@ function EthnicityChart(params) {
     return (
       <g key={d[yKey]}>
 
-        {!isNaN(d[xKey]) && d[xKey] >= 0 && <path d={(d[xKey]/overallMax) < 0.01 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 35, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
+        {!isNaN(d[xKey]) && d[xKey] >= 0 && <path d={(d[xKey]/overallMax) < 0.01 ? Utils.horizontalBarPathDem_NR(isSmallViewport ? 5 : 65, yScale(d[yKey]), xPos, yScale.bandwidth()) : Utils.horizontalBarPathDem(true, isSmallViewport ? 5 : 65, yScale(d[yKey]), xPos, yScale.bandwidth(), 3, yScale.bandwidth() * .1)} fill={isNaN(d[xKey]) ? 'transparent' : drugOptions[currentDrug].color} stroke={drugOptions[currentDrug].color} opacity={1} data-tip={xTip} />}
         {!isNaN(d[xKey]) && Number(d[xKey]) >= 0 && 
         <Text 
-          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 13 : 5) : (Number(d[xKey]) >= 100 ? 60 : 50)) + (currentDataType == 'rate' ? 30 : 40)))} 
+          x={((xPos + (isSmallViewport ? (Number(d[xKey]) >= 100 ? 13 : 5) : (Number(d[xKey]) >= 100 ? 90 : 80)) + (currentDataType == 'rate' ? 30 : 40)))} 
           y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5} 
           textAnchor={'end'} 
           fill="#000000"
@@ -236,7 +236,7 @@ function EthnicityChart(params) {
         }
           {isNaN(d[xKey]) &&
             <Text 
-            x={(isSmallViewport ? 10 : 45)}
+            x={(isSmallViewport ? 10 : 75)}
             y={yScale(d[yKey]) + (yScale.bandwidth() / 2) + 5}
             textAnchor={'end'} 
             fill={drugOptions[currentDrug].color}
@@ -284,9 +284,9 @@ function EthnicityChart(params) {
               fontSize: 'medium',
               textAnchor: 'end',
               verticalAnchor: 'middle',
-              angle: (45),
+              angle: (isSmallViewport ? 45 : 0),
             })}
-            left={!isSmallViewport ? 35 : 5}
+            left={!isSmallViewport ? 65 : 5}
             hideTicks
             hideAxisLine
           />
@@ -294,7 +294,7 @@ function EthnicityChart(params) {
               <AxisBottom
                 top={yMax}
                 scale={xScale}
-                left={!isSmallViewport ? 35 : 5}
+                left={!isSmallViewport ? 65 : 5}
                 numTicks={isSmallViewport ? 3 : 6}
                 tickStroke="none"
                 tickLabelProps={(value) => {
@@ -321,7 +321,10 @@ function EthnicityChart(params) {
                 <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}<sup>4</sup></td></tr>
               }
               {Object.keys(filteredData).length > 0 &&
-                <tr><td style={{ textAlign: 'left', fontSize: '15px' }}>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
+                <tr><td style={{ textAlign: 'left', fontSize: '15px' }}>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-DIS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
+              }
+              {Object.keys(filteredData).length > 0 &&
+                <tr><td style={{ textAlign: 'left', fontSize: '15px' }}>{'¶ AI/AN, American Indian/Alaska Native. NH/PI, Native Hawaiian or other Pacific Islander.'}</td></tr>
               }
             </table>
             </div>

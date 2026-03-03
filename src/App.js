@@ -358,15 +358,15 @@ export default function App(params) {
 
         if (currentTimeframe === 'Monthly') {
           if (currentDataSource == 'ED')
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[selectedDrugsSexAge[0]].titleAll.toLowerCase() + ' overdoses by Sex, Age, Sex and Age, and Race/Ethnicity in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
           else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[selectedDrugsSexAge[0]].titleAll.toLowerCase() + ' overdoses by Sex, Age, Sex and Age, and Race/Ethnicity in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
         }
         else {
           if (currentDataSource == 'ED')
-            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
+            txt = 'What was the ' + currentDataType + ' of ED visits for nonfatal ' + drugOptions[selectedDrugsSexAge[0]].titleAll.toLowerCase() + ' overdoses by Sex, Age, Sex and Age, and Race/Ethnicity in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
           else if (currentDataSource == 'HOSP')
-            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[currentDrug].titleAll.toLowerCase() + ' overdoses in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
+            txt = 'What was the ' + currentDataType + ' of hospitalizations for ' + drugOptions[selectedDrugsSexAge[0]].titleAll.toLowerCase() + ' overdoses by Sex, Age, Sex and Age, and Race/Ethnicity in ' + (currentTimeframe === 'Monthly' ? monthNames[currentMonth] + ' ' : '') + currentYear + ', Overall (' + numStates + ' Jurisdictions)';
         }
 
         break;
@@ -1389,7 +1389,8 @@ export default function App(params) {
           <table style={{ width: '100%' }}>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'* Data suppressed'}<sup>3</sup></td></tr>
             <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'† Data not available/not reported'}</td></tr>
-            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'§ The race/ethnicity figure excludes data from jurisdictions that had ≥15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-DIS or who do not have data for this time period. This figure excludes data from [X, Y, and Z].'}</td></tr>
+            <tr style={{ textAlign: 'left', fontSize: '15px' }}><td>{'¶ AI/AN, American Indian/Alaska Native. NH/PI, Native Hawaiian or other Pacific Islander.'}</td></tr>
           </table>
         </div>
         )

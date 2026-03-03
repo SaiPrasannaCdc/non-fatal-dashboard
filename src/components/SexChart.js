@@ -138,6 +138,7 @@ function SexChart(params) {
                     textAnchor: 'middle'
                   })}
                   labelOffset={60}
+                  numTicks={5}
                 />
 
                 {filteredData.map(d => (
