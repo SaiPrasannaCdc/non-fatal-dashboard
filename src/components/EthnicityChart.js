@@ -595,7 +595,7 @@ function EthnicityChart(params) {
           {!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData) && 
           <tr>
             <td>
-              {currentDataType == 'percent' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>}
+              {currentDataType == 'rate' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>}
               <div><span><small><i><sup>*</sup>{'The race/ethnicity figure excludes data from jurisdictions that had >= 15% missing race/ethnicity data during the selected time period, as well as those who do not participate in DOSE-SYS or who do not have data for this time period. ' + (areJurisExcluded() ? 'This figure excludes data from ' : '') + getJurisExcluded() + (areJurisExcluded() ? '.' : '')}</i></small></span></div>
               <div><span><small><i><sup>¶</sup>{'AI/AN, American Indian/Alaska Native. NH/PI, Native Hawaiian or other Pacific Islander.'}</i></small></span></div>
             </td>
@@ -612,7 +612,7 @@ function EthnicityChart(params) {
             <br></br>
                     <tr>
                       <td>
-                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && currentDataType == 'percent' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                        {(!dummy && !UtilityFunctions.dataIsSupressedEthn(filteredData)) && currentDataType == 'rate' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
                         {<br></br>}
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
                         {<br></br>}
@@ -674,7 +674,7 @@ function EthnicityChart(params) {
         {!isEthnGrayBox &&
         <div style={{height: !isSmallViewport ? '340px' : '560px'}}>
             <table>
-              {Object.keys(filteredData).length > 0 && currentDataType == 'percent' &&
+              {Object.keys(filteredData).length > 0 && currentDataType == 'rate' &&
                 <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
               }
               {Object.keys(filteredData).length > 0 &&
