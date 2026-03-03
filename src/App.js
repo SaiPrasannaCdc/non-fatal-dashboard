@@ -3125,15 +3125,15 @@ const getYears = (startYrInp, endYrInp) => {
       </section>
 
         {/* State Chart Start */}
-        <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+        <div style={{'width':'100%', 'backgroundColor': drugOptions[selectedDrugsState[0]].color}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsState[0]].titleAll} per 10,000 Total ED visits by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsState[0]].titleAll} per 10,000 Total ED visits by Jurisdiction, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
           </h2>
           }
         </div>
