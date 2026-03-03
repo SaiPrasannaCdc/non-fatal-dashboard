@@ -450,7 +450,7 @@ function SexAgeChart(params) {
           drugName={drugOptions[currentDrug].titleAll}
           currentDataType={currentDataType}
         />
-        {!isSmallViewport && <table>
+        {/* {!isSmallViewport && <table>
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
           <tr>
             <td>
@@ -459,7 +459,7 @@ function SexAgeChart(params) {
           </tr>
           }
         </table>
-        }
+        } */}
         {isSmallViewport && <table>
           <tr>
               <td>
@@ -470,7 +470,7 @@ function SexAgeChart(params) {
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        {!UtilityFunctions.allDataIsSupressedSA(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                        {/* {!UtilityFunctions.allDataIsSupressedSA(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> } */}
                         <span></span>
                       </td>
                     </tr>
@@ -542,11 +542,11 @@ function SexAgeChart(params) {
           {<text x={!isSmallViewport ? xMax/2 : 80} y={yMax+ 90} fill={'#000066'} fontSize={fontSize * (isSmallViewport ? .8 : 1)} textAnchor="middle">{(currentDataType == 'rate' ?  '' : 'Involving ') + drugOptions[currentDrug].titleAll + (currentDataType == 'rate' ?  ' per 10,000 Total ED visits' : '')}</text>}
         </Group>
       </svg>
-      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : (currentDataType == 'rate' ? '100px' : '140px')) : (isSmallViewport ? (currentDataType == 'rate' ? '180px' : '230px') : '320px'))}}>
+      <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : (currentDataType == 'rate' ? '100px' : '140px')) : (isSmallViewport ? (currentDataType == 'rate' ? '180px' : '230px') : '340px'))}}>
         <table>
-          {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
+          {/* {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
-          }
+          } */}
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
             <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
           }

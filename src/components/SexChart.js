@@ -276,7 +276,7 @@ function SexChart(params) {
           isSmallViewport={isSmallViewport}
           currentDataType={currentDataType}
         />
-        {!isSmallViewport && <table>
+        {/* {!isSmallViewport && <table>
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
             <tr>
               <td>
@@ -286,7 +286,7 @@ function SexChart(params) {
             </tr>
             }
         </table>
-        }
+        } */}
         {isSmallViewport && <table>
           <tr>
               <td>
@@ -297,7 +297,7 @@ function SexChart(params) {
             <tr>
               <td>
                 <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                {!UtilityFunctions.allDataIsSupressed(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                {/* {!UtilityFunctions.allDataIsSupressed(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> } */}
                 <span></span>
               </td>
             </tr>
@@ -406,9 +406,9 @@ function SexChart(params) {
         </svg>
         <div>
           <table>
-            {!UtilityFunctions.allDataIsSupressed(filteredData) &&
+            {/* {!UtilityFunctions.allDataIsSupressed(filteredData) &&
               <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
-            }
+            } */}
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
               <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
             }

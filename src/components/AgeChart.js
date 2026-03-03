@@ -306,7 +306,7 @@ function AgeChart(params) {
           isSmallViewport={isSmallViewport}
           currentDataType={currentDataType}
         />
-        {!isSmallViewport && <table>
+        {/* {!isSmallViewport && <table>
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
             <tr>
               <td>
@@ -315,7 +315,7 @@ function AgeChart(params) {
             </tr>
             }
         </table>
-        }
+        } */}
         {isSmallViewport && <table>
           <tr>
               <td>
@@ -326,7 +326,7 @@ function AgeChart(params) {
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        {!UtilityFunctions.allDataIsSupressed(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                        {/* {!UtilityFunctions.allDataIsSupressed(filteredData) && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> } */}
                         <span></span>
                       </td>
                     </tr>
@@ -435,9 +435,9 @@ function AgeChart(params) {
         </svg>
         <div>
           <table>
-            {!UtilityFunctions.allDataIsSupressed(filteredData) &&
+           {/*  {!UtilityFunctions.allDataIsSupressed(filteredData) &&
               <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
-            }
+            } */}
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&
               <tr><td><small><i><sup>*</sup>{'Data suppressed.'}</i></small></td></tr>
             }
