@@ -277,7 +277,7 @@ function SexChart(params) {
           currentDataType={currentDataType}
         />
         {!isSmallViewport && <table>
-            {!UtilityFunctions.allDataIsSupressed(filteredData) && currentDataType == 'rate' &&
+            {!UtilityFunctions.allDataIsSupressed(filteredData) && currentDataType == 'placeHolder' &&
             <tr>
               <td>
                 <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
@@ -297,7 +297,7 @@ function SexChart(params) {
             <tr>
               <td>
                 <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                {!UtilityFunctions.allDataIsSupressed(filteredData) && currentDataType == 'rate' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                {!UtilityFunctions.allDataIsSupressed(filteredData) && currentDataType == 'placeHolder' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
                 <span></span>
               </td>
             </tr>
@@ -406,7 +406,7 @@ function SexChart(params) {
         </svg>
         <div>
           <table>
-            {!UtilityFunctions.allDataIsSupressed(filteredData) && currentDataType == 'rate' &&
+            {!UtilityFunctions.allDataIsSupressed(filteredData) && currentDataType == 'placeHolder' &&
               <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
             }
             {!UtilityFunctions.allDataIsSupressed(filteredData) &&

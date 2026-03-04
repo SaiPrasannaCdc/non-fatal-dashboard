@@ -198,6 +198,8 @@ function LineChart(params) {
 
   const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, accessible } = params;
 
+  const [highLightedDrug, setHighlightedDrug] = useState('');
+
   const currentYear = parseInt(currentYearUntyped);
 
   const isSmallViewport = width < 550;
@@ -222,6 +224,7 @@ function LineChart(params) {
     markYearsForTicks();
     adjustCrowdedLabels();
     adjustLinesForLabels();
+    
   });
 
   const inp = [];
@@ -753,6 +756,69 @@ const adjustCrowdedLabels = () => {
       ); 
   }
 
+  function isBold(element) {
+    const computedStyle = window.getComputedStyle(element);
+    const fontWeight = computedStyle.fontWeight;
+
+    if (fontWeight === 'bold' || parseInt(fontWeight, 10) >= 700) {
+      return true;
+    }
+    return false;
+}
+
+  const handleDrugLblClick = (event) => {
+    let elemen = document.getElementById(event.currentTarget.id);
+
+    setHighlightedDrug(event.currentTarget.id.replace('adjustCrowded-',''));
+    
+    if (isBold(elemen))
+    {
+      elemen.style.fontWeight = "normal";
+      elemen.style.fontSize = specs.fontSize;
+
+      const allGrps = document?.getElementsByClassName("grpClass");
+      Array.prototype.forEach.call(allGrps, function(el) {
+        const drg = el.classList[1].replace('grp-','')
+        const children = el.children;
+        for (const child of children) {
+          child.style.opacity  = '1';
+        }
+      });
+
+      return;
+    }
+    
+    const allLabels = document?.getElementsByClassName("adjustCrowded");
+    Array.prototype.forEach.call(allLabels, function(el) {
+      let elm = document.getElementById(el.id);
+      elm.style.fontWeight = "normal";
+      elm.style.fontSize = specs.fontSize;
+    });
+
+    const allGrps = document?.getElementsByClassName("grpClass");
+    Array.prototype.forEach.call(allGrps, function(el) {
+      const drg = event.currentTarget.id.replace('adjustCrowded-','');
+      if (!el.classList.contains('grp-' + drg)) {
+        const children = el.children;
+
+        for (const child of children) {
+          child.style.opacity  = '0.2';
+        }
+      }
+      else {
+        const children = el.children;
+
+        for (const child of children) {
+           child.style.opacity  = '1';
+        }
+      }
+    });
+
+    let elem = document.getElementById(event.currentTarget.id);
+    elem.style.fontWeight = "bold";
+    elem.style.fontSize = specs.fontSize + 2;
+  };
+
   const buildLineForDrug = (currentDrug) => {
 
     const sectionWidth = specs.xMax / specs.xValues.length;
@@ -781,7 +847,7 @@ const adjustCrowdedLabels = () => {
                       const dPrev = i > 0  ? inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i - 1]) || {} : {}
 
                       return (
-                        <Group key={`line-path-${key}-point-${i}`}>
+                        <Group key={`line-path-${key}-point-${i}`} class={`grpClass grp-${currentDrug}`}>
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && d[currentDrug] >= 0 && (dNext[currentDrug] >= 0 && !UtilityFunctions.isCovidPeriodNoLine(currentTimeframe, dNext['year'], d['year'])) && key == 'US' && (currentState == 'US' || (currentState != 'US' && showOverall))) && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={(d[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(d[currentDrug])) ?? 0} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={(dNext[currentDrug] == '0.0' ? specs.yScale(0) - 2 : specs.yScale(dNext[currentDrug])) ?? 0} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)} strokeWidth={3} />
                           }
@@ -868,11 +934,13 @@ const adjustCrowdedLabels = () => {
                                 stroke={colorScale[currentDrug]}
                                 strokeWidth={0.5}/>
                               <text
+                                id={`adjustCrowded-${currentDrug}`}
                                 class={'adjustCrowded'}
                                 x={specs.xMax + 28} 
                                 y={yPos}
                                 alignmentBaseline="middle" 
                                 fontSize={specs.fontSize} 
+                                onClick={handleDrugLblClick}
                                 fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
                                   {drugOptions[currentDrug].titleForDropDown}
                               </text>
@@ -893,11 +961,13 @@ const adjustCrowdedLabels = () => {
                                 stroke={colorScale[currentDrug]}
                                 strokeWidth={0.5}/>
                               <text
+                                id={`adjustCrowded-${currentDrug}`}
                                 class='adjustCrowded'
                                 x={specs.xMax + 28} 
                                 y={yPos}
                                 alignmentBaseline="middle" 
                                 fontSize={specs.fontSize} 
+                                onClick={handleDrugLblClick}
                                 fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
                                   {drugOptions[currentDrug].titleForDropDown}
                               </text>

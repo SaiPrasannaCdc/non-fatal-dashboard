@@ -451,7 +451,7 @@ function SexAgeChart(params) {
           currentDataType={currentDataType}
         />
         {!isSmallViewport && <table>
-          {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'rate' &&
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'placeHolder' &&
           <tr>
             <td>
               <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div>
@@ -470,7 +470,7 @@ function SexAgeChart(params) {
                     <tr>
                       <td>
                         <div><span><small><i><sup>*</sup>Data suppressed.</i></small></span></div>
-                        {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'rate' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
+                        {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'placeHolder' && <div><span><small><i>{getMissingNote(missingData)}</i></small></span></div> }
                         <span></span>
                       </td>
                     </tr>
@@ -544,7 +544,7 @@ function SexAgeChart(params) {
       </svg>
       <div style={{height: (isEthnGrayBox ? (isSmallViewport ? (currentDataType == 'rate' ? '160px' : '210px') : (currentDataType == 'rate' ? '100px' : '140px')) : (isSmallViewport ? (currentDataType == 'rate' ? '180px' : '230px') : '340px'))}}>
         <table>
-          {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'rate' &&
+          {!UtilityFunctions.allDataIsSupressedSA(filteredData) && currentDataType == 'placeHolder' &&
             <tr><td><small><i>{getMissingNote(missingData)}</i></small></td></tr>
           }
           {!UtilityFunctions.allDataIsSupressedSA(filteredData) &&
