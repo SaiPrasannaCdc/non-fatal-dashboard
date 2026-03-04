@@ -555,14 +555,14 @@ function EthnicityChart(params) {
   if (Number(currentYear) < 2023)
   {
     if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
-        return UtilityFunctions.getCovidGrayBox(height, width);
+        return UtilityFunctions.getCovidGrayBox(height, width, accessible ? 'By Race/Ethnicity: ' : '');
     else 
-      return UtilityFunctions.getNoDataGrayBoxForEthn(height + (currentDataType == 'percent' ? 80 : 40), width);
+      return UtilityFunctions.getNoDataGrayBoxForEthn(height + (currentDataType == 'percent' ? 80 : 40), width,  accessible ? 'By Race/Ethnicity: ' : '');
   }
 
   if (Number(currentYear) == 2023 && Number(currentMonth) < 12 && currentTimeframe == 'Annual')
   {
-      return UtilityFunctions.getAnnualNoDataGrayBoxForEthn(height + (currentDataType == 'percent' ? 80 : 40), width);
+      return UtilityFunctions.getAnnualNoDataGrayBoxForEthn(height + (currentDataType == 'percent' ? 80 : 40), width, accessible ? 'By Race/Ethnicity: ' : '');
   }
 
   return (

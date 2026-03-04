@@ -424,7 +424,7 @@ function SexAgeChart(params) {
   }
 
   if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeframe, currentYear, currentMonth))
-        return UtilityFunctions.getCovidGrayBox(height, width);
+        return UtilityFunctions.getCovidGrayBox(height, width, accessible ? 'By Age (In years) and Sex: ' : '');
 
   return (
     <>

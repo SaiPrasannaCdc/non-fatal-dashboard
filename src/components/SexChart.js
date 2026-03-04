@@ -254,7 +254,7 @@ function SexChart(params) {
   }, []);
 
   if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
-        return UtilityFunctions.getCovidGrayBox(height, width);
+        return UtilityFunctions.getCovidGrayBox(height, width, accessible ? 'By Sex: ' : '');
     
   return width > 0 && 
       (

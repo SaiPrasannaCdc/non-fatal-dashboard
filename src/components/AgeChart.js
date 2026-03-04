@@ -283,7 +283,7 @@ function AgeChart(params) {
   }, []);
 
   if (UtilityFunctions.isCovidPeriodGrayBox(currentTimeLine, currentYear, currentMonth))
-      return UtilityFunctions.getCovidGrayBox(height, width);
+      return UtilityFunctions.getCovidGrayBox(height, width, accessible ? 'By Age (In years): ' : '');
     
   return width > 0 && 
       (
