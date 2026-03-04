@@ -196,9 +196,7 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
 
 function LineChart(params) {
 
-  const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, accessible } = params;
-
-  const [highLightedDrug, setHighlightedDrug] = useState('');
+  const { data, dataOverall, jurisCountData, monthNames, stateNames, drugOptions, currentTimeframe, currentDrug, currentState, currentYear: currentYearUntyped, currentMonth, width, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, showPercent, showOverall, isPeriod, selectedDrugs, currentDataSource, accessible, highlightedDrug } = params;
 
   const currentYear = parseInt(currentYearUntyped);
 
@@ -224,7 +222,7 @@ function LineChart(params) {
     markYearsForTicks();
     adjustCrowdedLabels();
     adjustLinesForLabels();
-    
+    highLightDrug();
   });
 
   const inp = [];
@@ -254,7 +252,7 @@ function LineChart(params) {
   }
   
   const specs = [];
-  specs['width'] = width - 35; 
+  specs['width'] = width - 40; 
   specs['width'] = specs['width'];
   specs['isSmallViewport'] = specs['width'] < 550;
   specs['fontSize'] = !isSmallViewport ? 16 : 14;
@@ -756,20 +754,91 @@ const adjustCrowdedLabels = () => {
       ); 
   }
 
-  function isBold(element) {
-    const computedStyle = window.getComputedStyle(element);
-    const fontWeight = computedStyle.fontWeight;
+const highLightDrug = () => {
 
-    if (fontWeight === 'bold' || parseInt(fontWeight, 10) >= 700) {
-      return true;
+  const allGrps = document?.getElementsByClassName("grpClass");
+
+    if (highlightedDrug == 'none' || highlightedDrug == '' || highlightedDrug === undefined)
+    {
+      Array.prototype.forEach.call(allGrps, function(el) {
+
+            const children = el.children;
+            for (const child of children) {
+                child.style.opacity  = '1';
+            }
+          });
+
+      if (!isSmallViewport) {
+        const allLabels = document?.getElementsByClassName("adjustCrowded");
+        Array.prototype.forEach.call(allLabels, function(el) {
+          let elm = document.getElementById(el.id);
+          elm.style.fontWeight = "normal";
+          elm.style.fontSize = specs.fontSize;
+        });
+      }
     }
-    return false;
-}
+    else
+    {
+      if (!selectedDrugs.includes(highlightedDrug))
+      {
+        
+        Array.prototype.forEach.call(allGrps, function(el) {
 
-  const handleDrugLblClick = (event) => {
+            const children = el.children;
+            for (const child of children) {
+                child.style.opacity  = '1';
+            }
+          });
+
+          if (!isSmallViewport) {
+              const allLabels = document?.getElementsByClassName("adjustCrowded");
+              Array.prototype.forEach.call(allLabels, function(el) {
+                let elm = document.getElementById(el.id);
+                elm.style.fontWeight = "normal";
+                elm.style.fontSize = specs.fontSize;
+            });
+          }
+
+          return;
+      }
+
+      if (!isSmallViewport) {
+            const allLabels = document?.getElementsByClassName("adjustCrowded");
+            Array.prototype.forEach.call(allLabels, function(el) {
+              let elm = document.getElementById(el.id);
+              elm.style.fontWeight = "normal";
+              elm.style.fontSize = specs.fontSize;
+          });
+      }
+
+      Array.prototype.forEach.call(allGrps, function(el) {
+
+        const children = el.children;
+        for (const child of children) {
+            child.style.opacity  = '0.2';
+        }
+
+        if (el.classList.contains('grp-' + highlightedDrug)) {
+          const children = el.children;
+
+          for (const child of children) {
+            child.style.opacity  = '1';
+          }
+
+          if (!isSmallViewport) {
+            let elem = document.getElementById('adjustCrowded-' + highlightedDrug);
+            elem.style.fontWeight = "bold";
+            elem.style.fontSize = specs.fontSize + 2;
+          }
+        }
+        
+      });
+    }
+
+  };
+
+  const handleDrugLblClickTBD = (event) => {
     let elemen = document.getElementById(event.currentTarget.id);
-
-    setHighlightedDrug(event.currentTarget.id.replace('adjustCrowded-',''));
     
     if (isBold(elemen))
     {
@@ -940,7 +1009,6 @@ const adjustCrowdedLabels = () => {
                                 y={yPos}
                                 alignmentBaseline="middle" 
                                 fontSize={specs.fontSize} 
-                                onClick={handleDrugLblClick}
                                 fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
                                   {drugOptions[currentDrug].titleForDropDown}
                               </text>
@@ -967,7 +1035,6 @@ const adjustCrowdedLabels = () => {
                                 y={yPos}
                                 alignmentBaseline="middle" 
                                 fontSize={specs.fontSize} 
-                                onClick={handleDrugLblClick}
                                 fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall)}>
                                   {drugOptions[currentDrug].titleForDropDown}
                               </text>

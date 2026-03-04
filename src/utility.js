@@ -832,4 +832,13 @@ export const UtilityFunctions = {
        
   },
 
+  isBold : (element) => {
+    const computedStyle = window.getComputedStyle(element);
+    const fontWeight = computedStyle.fontWeight;
+
+    if (fontWeight === 'bold' || parseInt(fontWeight, 10) >= 700) {
+      return true;
+    }
+    return false;
+  },
 }

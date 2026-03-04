@@ -240,6 +240,8 @@ export default function App( params ) {
   const [selectedDrugsSexAge, setselectedDrugsSexAge] = useState(['all']);
   const [selectedDrugsState, setselectedDrugsState] = useState(['all']);
 
+  const [highlightedDrugLine, setHighlightedDrugLine] = useState('');
+
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [showFootNotes, setShowFootNotes] = useState(false);
   const [showLineChart, setShowLineChart] = useState(true);
@@ -1339,6 +1341,7 @@ const getYears = (startYrInp, endYrInp) => {
               selectedDrugs={selectedDrugsLine} 
               currentDataSource={'ED'}
               accessible={accessible}
+              highlightedDrug={highlightedDrugLine}
               />
             </div>
           </div>
@@ -1347,7 +1350,7 @@ const getYears = (startYrInp, endYrInp) => {
     
     </table>
   </>,
-  [timelineLine, currentDrug, currentStateLine, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM, lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA]);
+  [timelineLine, currentDrug, currentStateLine, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM, lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA, highlightedDrugLine]);
 
   const usaMapMemo = useMemo(() =>
       <>
@@ -1490,8 +1493,21 @@ const getYears = (startYrInp, endYrInp) => {
       <div className="loading-spinner"></div>
   </div>;
 
+  const cleanupLineLabels = () => {
+
+    const allLabels = document?.getElementsByClassName("linePanelDrug");
+    Array.prototype.forEach.call(allLabels, function(el) {
+      if (!selectedDrugsLine.includes(el.id.replace('line-panel-',''))) {
+        let elm = document.getElementById(el.id);
+        elm.style.fontWeight = "normal";
+        elm.style.fontSize = !isSmallViewport ? 16 : 14;
+      }
+    });
+  }
+
   useEffect(() => {
     ReactTooltip.rebuild();
+    cleanupLineLabels();
   });
  
   if (endUSMonthYearForSliderM == null || endUSMonthYearForSliderM?.length == 0) {
@@ -1601,6 +1617,7 @@ const getYears = (startYrInp, endYrInp) => {
       if (selectedDrugsLine.includes(drug)) {
         if (selectedDrugsLine.length > 1) {
           setselectedDrugsLine(selectedDrugsLine.filter(dr=>dr !== drug))
+          setHighlightedDrugLine('none');
         }
       }
       else
@@ -1613,6 +1630,37 @@ const getYears = (startYrInp, endYrInp) => {
       setselectedDrugsLine([drug])
     }
   }
+
+  const handleDrugLblMainClick = (event) => {
+
+    let elemen = document.getElementById(event.currentTarget.id);
+    let drg = event.currentTarget.id.replace('line-panel-','');
+
+    if (!selectedDrugsLine.includes(drg))
+      return;
+
+    if (UtilityFunctions.isBold(elemen))
+    {
+      elemen.style.fontWeight = "normal";
+      elemen.style.fontSize = !isSmallViewport ? 16 : 14;
+      setHighlightedDrugLine('none');
+      return;
+    }
+    else {
+      setHighlightedDrugLine(drg)
+    }
+    
+    const allLabels = document?.getElementsByClassName("linePanelDrug");
+    Array.prototype.forEach.call(allLabels, function(el) {
+      let elm = document.getElementById(el.id);
+      elm.style.fontWeight = "normal";
+      elm.style.fontSize = !isSmallViewport ? 16 : 14;
+    });
+
+    let elem = document.getElementById(event.currentTarget.id);
+    elem.style.fontWeight = "bold";
+    elem.style.fontSize = (!isSmallViewport ? 16 : 14) + 2;
+  };
 
   const getDrugControlsLine = () => {
     const entries = Object.entries(drugOptions);
@@ -1628,7 +1676,7 @@ const getYears = (startYrInp, endYrInp) => {
               index < 4 &&
                 <div class={`drugDiv-${drug[0]}`}>
                   <span class={(selectedDrugsLine.includes(drug[0])) ? drug[0] : 'notSelectedLine'} onClick={(event) => { handleDrugSelectionsLineChange(event, drug[0]) }}></span>
-                  <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                  <label key={drug[0]} id={`line-panel-${drug[0]}`} class={`lblDrug linePanelDrug linePanelDrug-${drug[0]}`} onClick={handleDrugLblMainClick}>{drug[1].titleForDropDown}</label>
                 </div>
                 
             ))
@@ -1642,7 +1690,7 @@ const getYears = (startYrInp, endYrInp) => {
               index >= 4 &&
               <div class={`drugDiv-${drug[0]}`}>
                       <span class={(selectedDrugsLine.includes(drug[0])) ? drug[0] : 'notSelectedLine'} onClick={(event) => { handleDrugSelectionsLineChange(event, drug[0]) }}></span>
-                      <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                      <label key={drug[0]} id={`line-panel-${drug[0]}`} class={`lblDrug linePanelDrug linePanelDrug-${drug[0]}`} onClick={handleDrugLblMainClick}>{drug[1].titleForDropDown}</label>
                     </div>
             ))
           }
@@ -1661,7 +1709,7 @@ const getYears = (startYrInp, endYrInp) => {
                     <div>
                       <div class={`drugDiv-${drug[0]}`}>
                         <span class={(selectedDrugsLine.includes(drug[0])) ? drug[0] : 'notSelectedLine'} onClick={(event) => { handleDrugSelectionsLineChange(event, drug[0]) }}></span>
-                        <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                        <label key={drug[0]} id={`line-panel-${drug[0]}`} class={`lblDrug linePanelDrug linePanelDrug-${drug[0]}`} onClick={handleDrugLblMainClick}>{drug[1].titleForDropDown}</label>
                       </div>
                       <br></br>
                       </div>
