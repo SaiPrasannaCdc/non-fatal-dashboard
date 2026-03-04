@@ -800,36 +800,45 @@ export const UtilityFunctions = {
     return (ret != fdata.length-1 && ret/yMax > 0.3) ? true : false;
   },
   
-  getCovidGrayBox : (hgt, wid) => {
+  getCovidGrayBox : (hgt, wid, forTitle) => {
     return (
       <Fragment>
         <>
-        <div style={{ height: hgt - 100, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents the COVID-19 pandemic and is distinct from data suppression for other reasons.</p></div>
+        <div style={{ height: hgt - 100, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>Grayed out figure represents the COVID-19 pandemic and is distinct from data suppression for other reasons.</p></div>
         </>
         </Fragment>
         )
   },
 
-  getNoDataGrayBoxForEthn : (hgt, wid) => {
+  getNoDataGrayBoxForEthn : (hgt, wid, forTitle) => {
     return (
       <Fragment>
         <>
-        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons. </p></div>
-        </>
-        </Fragment>
-        )
-       
-  },
-
-  getAnnualNoDataGrayBoxForEthn : (hgt, wid) => {
-    return (
-      <Fragment>
-        <>
-        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}>For annual rates, data are available starting with the 12-month period ending in December 2023. Race/ethnicity data prior to 2023 are not shown due to race/ethnicity missingness greater than 10%.</p></div>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons. </p></div>
         </>
         </Fragment>
         )
        
   },
 
+  getAnnualNoDataGrayBoxForEthn : (hgt, wid, forTitle) => {
+    return (
+      <Fragment>
+        <>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>For annual rates, data are available starting with the 12-month period ending in December 2023. Race/ethnicity data prior to 2023 are not shown due to race/ethnicity missingness greater than 10%.</p></div>
+        </>
+        </Fragment>
+        )
+       
+  },
+
+  isBold : (element) => {
+    const computedStyle = window.getComputedStyle(element);
+    const fontWeight = computedStyle.fontWeight;
+
+    if (fontWeight === 'bold' || parseInt(fontWeight, 10) >= 700) {
+      return true;
+    }
+    return false;
+  },
 }

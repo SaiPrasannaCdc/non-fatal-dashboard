@@ -240,6 +240,8 @@ export default function App( params ) {
   const [selectedDrugsSexAge, setselectedDrugsSexAge] = useState(['all']);
   const [selectedDrugsState, setselectedDrugsState] = useState(['all']);
 
+  const [highlightedDrugLine, setHighlightedDrugLine] = useState('');
+
   const [showConsiderations, setShowConsiderations] = useState(false);
   const [showFootNotes, setShowFootNotes] = useState(false);
   const [showLineChart, setShowLineChart] = useState(true);
@@ -1339,6 +1341,7 @@ const getYears = (startYrInp, endYrInp) => {
               selectedDrugs={selectedDrugsLine} 
               currentDataSource={'ED'}
               accessible={accessible}
+              highlightedDrug={highlightedDrugLine}
               />
             </div>
           </div>
@@ -1347,7 +1350,7 @@ const getYears = (startYrInp, endYrInp) => {
     
     </table>
   </>,
-  [timelineLine, currentDrug, currentStateLine, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM, lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA]);
+  [timelineLine, currentDrug, currentStateLine, currentYear, currentMonth, width, showPercent,showOverall, isPeriod, selectedDrugsLine, lookupPeriodStartYearM, lookupPeriodStartMonthM, lookupPeriodEndYearM, lookupPeriodEndMonthM, lookupPeriodStartYearA, lookupPeriodStartMonthA, lookupPeriodEndYearA, lookupPeriodEndMonthA, highlightedDrugLine]);
 
   const usaMapMemo = useMemo(() =>
       <>
@@ -1378,6 +1381,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div className="chartDivAllDem" ref={sexChartRef}>
             <SexChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+                jurisCountData={jurisCountData}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
                 height={!isSmallViewport ? (!UtilityFunctions.isCovidPeriodGrayBox(sexAgeMonthly, currentYearSexAge, currentMonthSexAge) ? 640 : 400) : 600}
@@ -1405,6 +1409,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div class={currentState === 'US' ? "chartDivAllDem" : "chartDivAllDem"} ref={ageChartRef}>
             <AgeChart
                 data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+                jurisCountData={jurisCountData}
                 maxes={{'month': 6150,'quarter': 17726}}
                 year={'2023'}
                 width={(!isSmallViewport && !accessible) ? (width * 0.5) : width}
@@ -1435,6 +1440,7 @@ const getYears = (startYrInp, endYrInp) => {
           <div class='chartDivAllDem' ref={sexAgeChartRef}>
             <SexAgeChart 
             data={sexAgeMonthly == 'Annual' ? keyedRawUSDataAnnual :  keyedRawUSDataMonthly}
+            jurisCountData={jurisCountData}
             currentTimeframe={sexAgeMonthly}
             currentYear={currentYearSexAge}
             currentMonth={currentMonthSexAge}
@@ -1474,6 +1480,7 @@ const getYears = (startYrInp, endYrInp) => {
             accessible={accessible}
             widthReduction={(!isSmallViewport && !accessible) ? true : false}
             isEthnGrayBox={isEthnGrayBox()}
+            jurisCount={Number(currentYearSexAge) > 2022 && jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] != null ? jurisEthnCountData[currentYearSexAge + String(currentMonthSexAge).padStart(2, '0') + sexAgeMonthly] : '0'}
             />
           </div>
         </div>
@@ -1486,8 +1493,21 @@ const getYears = (startYrInp, endYrInp) => {
       <div className="loading-spinner"></div>
   </div>;
 
+  const cleanupLineLabels = () => {
+
+    const allLabels = document?.getElementsByClassName("linePanelDrug");
+    Array.prototype.forEach.call(allLabels, function(el) {
+      if (!selectedDrugsLine.includes(el.id.replace('line-panel-',''))) {
+        let elm = document.getElementById(el.id);
+        elm.style.fontWeight = "normal";
+        elm.style.fontSize = !isSmallViewport ? 16 : 14;
+      }
+    });
+  }
+
   useEffect(() => {
     ReactTooltip.rebuild();
+    cleanupLineLabels();
   });
  
   if (endUSMonthYearForSliderM == null || endUSMonthYearForSliderM?.length == 0) {
@@ -1597,6 +1617,7 @@ const getYears = (startYrInp, endYrInp) => {
       if (selectedDrugsLine.includes(drug)) {
         if (selectedDrugsLine.length > 1) {
           setselectedDrugsLine(selectedDrugsLine.filter(dr=>dr !== drug))
+          setHighlightedDrugLine('none');
         }
       }
       else
@@ -1609,6 +1630,37 @@ const getYears = (startYrInp, endYrInp) => {
       setselectedDrugsLine([drug])
     }
   }
+
+  const handleDrugLblMainClick = (event) => {
+
+    let elemen = document.getElementById(event.currentTarget.id);
+    let drg = event.currentTarget.id.replace('line-panel-','');
+
+    if (!selectedDrugsLine.includes(drg))
+      return;
+
+    if (UtilityFunctions.isBold(elemen))
+    {
+      elemen.style.fontWeight = "normal";
+      elemen.style.fontSize = !isSmallViewport ? 16 : 14;
+      setHighlightedDrugLine('none');
+      return;
+    }
+    else {
+      setHighlightedDrugLine(drg)
+    }
+    
+    const allLabels = document?.getElementsByClassName("linePanelDrug");
+    Array.prototype.forEach.call(allLabels, function(el) {
+      let elm = document.getElementById(el.id);
+      elm.style.fontWeight = "normal";
+      elm.style.fontSize = !isSmallViewport ? 16 : 14;
+    });
+
+    let elem = document.getElementById(event.currentTarget.id);
+    elem.style.fontWeight = "bold";
+    elem.style.fontSize = (!isSmallViewport ? 16 : 14) + 2;
+  };
 
   const getDrugControlsLine = () => {
     const entries = Object.entries(drugOptions);
@@ -1624,7 +1676,7 @@ const getYears = (startYrInp, endYrInp) => {
               index < 4 &&
                 <div class={`drugDiv-${drug[0]}`}>
                   <span class={(selectedDrugsLine.includes(drug[0])) ? drug[0] : 'notSelectedLine'} onClick={(event) => { handleDrugSelectionsLineChange(event, drug[0]) }}></span>
-                  <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                  <label key={drug[0]} id={`line-panel-${drug[0]}`} class={`lblDrug linePanelDrug linePanelDrug-${drug[0]}`} onClick={handleDrugLblMainClick}>{drug[1].titleForDropDown}</label>
                 </div>
                 
             ))
@@ -1638,7 +1690,7 @@ const getYears = (startYrInp, endYrInp) => {
               index >= 4 &&
               <div class={`drugDiv-${drug[0]}`}>
                       <span class={(selectedDrugsLine.includes(drug[0])) ? drug[0] : 'notSelectedLine'} onClick={(event) => { handleDrugSelectionsLineChange(event, drug[0]) }}></span>
-                      <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                      <label key={drug[0]} id={`line-panel-${drug[0]}`} class={`lblDrug linePanelDrug linePanelDrug-${drug[0]}`} onClick={handleDrugLblMainClick}>{drug[1].titleForDropDown}</label>
                     </div>
             ))
           }
@@ -1657,7 +1709,7 @@ const getYears = (startYrInp, endYrInp) => {
                     <div>
                       <div class={`drugDiv-${drug[0]}`}>
                         <span class={(selectedDrugsLine.includes(drug[0])) ? drug[0] : 'notSelectedLine'} onClick={(event) => { handleDrugSelectionsLineChange(event, drug[0]) }}></span>
-                        <label key={drug[0]} class="lblDrug">{drug[1].titleForDropDown}</label>
+                        <label key={drug[0]} id={`line-panel-${drug[0]}`} class={`lblDrug linePanelDrug linePanelDrug-${drug[0]}`} onClick={handleDrugLblMainClick}>{drug[1].titleForDropDown}</label>
                       </div>
                       <br></br>
                       </div>
@@ -2545,7 +2597,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period [e.g., Feb 2024 - Jan 2025]</span>
+                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                 </td>
               </tr>
               <br></br>
@@ -2839,7 +2891,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearBar, currentMonthBar)}</span>
+                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                 </td>
               </tr>
               <br></br>
@@ -3107,7 +3159,7 @@ const getYears = (startYrInp, endYrInp) => {
               <table>
                 <tr>
                   <td style={{'textAlign': 'center'}}>
-                    <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}</span>
+                    <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                   </td>
                 </tr>
                 <br></br>
@@ -3121,15 +3173,15 @@ const getYears = (startYrInp, endYrInp) => {
       </section>
 
         {/* State Chart Start */}
-        <div style={{'width':'100%', 'backgroundColor': drugColor}}>
+        <div style={{'width':'100%', 'backgroundColor': drugOptions[selectedDrugsState[0]].color}}>
           {timeline == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsState[0]].titleAll} per 10,000 Total ED visits by Jurisdiction, {monthNames[Number(currentMonth)] + ' ' + currentYear}
           </h2>
           }
           {timeline == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[currentDrug].titleAll} per 10,000 Total ED visits by Jurisdiction, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
+            Suspected Nonfatal Overdose ED Visits Involving {drugOptions[selectedDrugsState[0]].titleAll} per 10,000 Total ED visits by Jurisdiction, {UtilityFunctions.getPeriod(currentYear, currentMonth)}
           </h2>
           }
         </div>
@@ -3325,7 +3377,7 @@ const getYears = (startYrInp, endYrInp) => {
             <table>
               <tr>
                 <td style={{'textAlign': 'center'}}>
-                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYear, currentMonth)}</span>
+                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                 </td>
               </tr>
             </table>
@@ -3340,12 +3392,12 @@ const getYears = (startYrInp, endYrInp) => {
         <div style={{'width':'100%', 'backgroundColor': getHeaderColor(selectedDrugsSexAge)}}>
           {sexAgeMonthly == 'Monthly' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, and Race/Ethnicity, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, Sex and Age, and Race/Ethnicity, {monthNames[Number(currentMonthSexAge)] + ' ' + currentYearSexAge}
           </h2>
           }
           {sexAgeMonthly == 'Annual' &&
           <h2 className="data-bite-header">
-            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, and by Sex and Age, and Race/Ethnicity, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
+            Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[selectedDrugsSexAge[0]].titleAll} per 10,000 Total ED Visits by Sex, Age, Sex and Age, and Race/Ethnicity, {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}
           </h2>
           }
         </div>
@@ -3425,7 +3477,7 @@ const getYears = (startYrInp, endYrInp) => {
                             <table>
                               <tr>
                                 <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
-                                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                                 </td>
                               </tr>
                               <br></br>
@@ -3546,7 +3598,7 @@ const getYears = (startYrInp, endYrInp) => {
                             <table>
                               <tr>
                                 <td style={{'textAlign': !isSmallViewport ? 'center' : 'left'}}>
-                                  <strong>Note: </strong><span>Annual option displays a 12-month rolling average ending at the selected time period {UtilityFunctions.getPeriod(currentYearSexAge, currentMonthSexAge)}</span>
+                                  <strong>Note: </strong><span>Annual option displays the 12-month rolling average ending at the selected month.</span>
                                 </td>
                               </tr>
                               <br></br>

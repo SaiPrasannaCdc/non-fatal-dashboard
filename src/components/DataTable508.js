@@ -113,7 +113,7 @@ function DataTable508(params) {
           <thead>
           <tr>
               <th className={'keepSticky'} scope="col" rowspan="2">{labelOverrides[xAxisKey] || formatLabel(xAxisKey)}</th>
-              {colSpan != null && <th key={'abcd'} scope="col" colspan={colSpan} className={'centerAlign'}>{(currentDataType == 'percent' ? 'Percent' : 'Rate') + ' of suspected nonfatal overdoses' + (drugName != null ? ' involving ' + drugName : '') + ' per 10,000 Total ED Visits'}</th>}
+              {colSpan != null && <th key={'abcd'} scope="col" colspan={colSpan} className={'centerAlign'}>{(currentDataType == 'percent' ? 'Percent' : 'Rate') + ' of suspected nonfatal overdoses' + (drugName != null ? ' involving ' + drugName : '') + (currentDataType == 'rate' ? ' per 10,000 Total ED Visits' : '')}</th>}
             </tr>
             <tr>
               {!isArray && data && [data].map((d, index) => 
