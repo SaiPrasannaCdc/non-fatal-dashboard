@@ -134,7 +134,7 @@ const getFilteredData = (data, currentState, lookupPeriodStartYear, lookupPeriod
       return finalData[currentState];
 };
 
-const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) => {
+const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, currentTimeframe) => {
 
   var allMonthsData = [];
 
@@ -151,14 +151,14 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
                 var monData = {}
                 monData['index'] = Number(index);
                 monData['year'] = monthsArray[j]
-                monData['all'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_drug_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Benzo_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['opioids'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_opioid_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['fentanyl'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Fentanyl_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['heroin'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_heroin_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['stimulants'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_stimulant_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['cocaine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Cocaine_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Methamphetamine_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['all'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_drug_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Benzo_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['opioids'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_opioid_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['fentanyl'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Fentanyl_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['heroin'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_heroin_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['stimulants'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_stimulant_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['cocaine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Cocaine_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Methamphetamine_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
 
                 allMonthsData.push(monData);
 
@@ -172,14 +172,14 @@ const getFilteredDataPeriod = (data, currentState, lookupPeriodStartYear, lookup
                 var monData = {}
                 monData['index'] = Number(index);
                 monData['year'] = monthsArray[j]
-                monData['all'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_drug_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Benzo_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['opioids'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_opioid_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['fentanyl'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Fentanyl_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['heroin'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_heroin_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['stimulants'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_stimulant_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['cocaine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Cocaine_OD_n, data[i].YYYYMM)).toFixed(1));
-                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Methamphetamine_OD_n, data[i].YYYYMM)).toFixed(1));
+                monData['all'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_drug_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['benzodiazepine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Benzo_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['opioids'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_opioid_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['fentanyl'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Fentanyl_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['heroin'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_heroin_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['stimulants'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_stimulant_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['cocaine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Cocaine_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
+                monData['methamphetamine'] = String(Number(UtilityFunctions.convertValueLine(data[i].total_Methamphetamine_OD_n, data[i].YYYYMM, currentTimeframe)).toFixed(1));
 
                 allMonthsData.push(monData);
 
@@ -205,11 +205,11 @@ function LineChart(params) {
   const currentDrugOnly = currentState != 'US' ? true : false;
 
   const filteredData = {
-    [currentState]: isPeriod ? getFilteredDataPeriod(currentState != 'US' ? data : dataOverall , currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(currentState != 'US' ? data : dataOverall, currentState, String(lookupPeriodStartYear), String(lookupPeriodEndYear))
+    [currentState]: isPeriod ? getFilteredDataPeriod(currentState != 'US' ? data : dataOverall , currentState, lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, currentTimeframe) : getFilteredData(currentState != 'US' ? data : dataOverall, currentState, String(lookupPeriodStartYear), String(lookupPeriodEndYear))
   }
 
   if (currentState !== 'US') {
-    filteredData['US'] = isPeriod ? getFilteredDataPeriod(dataOverall, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth) : getFilteredData(dataOverall, 'US', String(lookupPeriodStartYear), String(lookupPeriodEndYear))
+    filteredData['US'] = isPeriod ? getFilteredDataPeriod(dataOverall, 'US', lookupPeriodStartYear, lookupPeriodStartMonth, lookupPeriodEndYear, lookupPeriodEndMonth, currentTimeframe) : getFilteredData(dataOverall, 'US', String(lookupPeriodStartYear), String(lookupPeriodEndYear))
   }
 
   if (filteredData['US'].length == 0) //SKV TODO bug fix 
@@ -601,11 +601,11 @@ const adjustCrowdedLabels = () => {
   }
 
   const getTooltipCovid = () => {
-    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Grayed out area represents the COVID-19 pandemic </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>and is distinct from data suppression.</small></strong></td></tr></table>`;
+    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Data are suppressed because of decreases in ED visits</small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>during the COVID-19 pandemic.</small></strong></td></tr></table>`;
   }
 
   const getTooltipCovidSVP = () => {
-    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Grayed out area represents </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>the COVID-19 pandemic and is</small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small> distinct from data suppression.</small></strong></td></tr></table>`;
+    return `<table class='tooltipTableLC'><tr><td><span class='toolTipSpanLC'><strong><small><sup>‡</sup>Data are suppressed because </small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>of decreases in ED visits</small></strong></td></tr><tr><td><span class='toolTipSpanLC'><strong><small>during the COVID-19 pandemic.</small></strong></td></tr></table>`;
   }
 
   const getJurisCount = (yearmon) => {

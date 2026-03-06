@@ -105,6 +105,13 @@ function DataTable508(params) {
     return ret;
   }
 
+  const isFootNoteRace = (val) => {
+    if (val == 'AI/AN' || val == 'NH/PI')
+      return true;
+    else
+      return false;
+  }
+
   return (
     <>
       <div style={{'width': width, 'height': height}} className={`table-container-MY${customBackground ? ' custom-background' : ' non-custom-background'} ${extraClasses} ${!isSmallViewport ? 'borderCollapse' : ''}`} tabIndex="0">
@@ -126,7 +133,7 @@ function DataTable508(params) {
           <tbody>
             {!isArray && keys && keys.map((rowKey, rowIndex) => (
                 <tr key={`tr-${rowKey}-${rowIndex}`} className={rowKey === highlight ? 'highlight' : ''}>
-                  <th key={`th-${rowKey}-${rowIndex}`} scope="row">{labelOverrides[rowKey] || rowKey.split('_')[0]}</th>
+                  <th key={`th-${rowKey}-${rowIndex}`} scope="row">{labelOverrides[rowKey] || rowKey.split('_')[0]}{isFootNoteRace(labelOverrides[rowKey] || rowKey.split('_')[0]) ? <sup>¶</sup> : ''}</th>
                   {[data].map((d, i) => 
                     Object.keys(d[keys[0]]).map((colKey, colIndex) => (
                       <td key={`td-${d[rowKey][colKey]}-${rowIndex}-${colIndex}`}>{!isSmallViewport ? cleanUp(d[rowKey][colKey]) : cleanUpSVP(d[rowKey][colKey])}</td>
