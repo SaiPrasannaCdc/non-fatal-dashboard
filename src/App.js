@@ -2993,18 +2993,18 @@ const getYears = (startYrInp, endYrInp) => {
 
 <section>
         <div style={{'width':'100%', 'backgroundColor': drugOptions[hdrInfoFromMap].color}}>
-          {mapMonthly == 'Monthly' &&
+          {mapMonthly == 'Monthly' && !accessible &&
           <h2 className="data-bite-header">
             Geographic distribution of Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {monthNames[Number(currentMonthMap)] + ' ' + currentYearMap}
           </h2>
           }
-          {mapMonthly == 'Annual' &&
+          {mapMonthly == 'Annual' && !accessible &&
           <h2 className="data-bite-header">
              Geographic distribution of Suspected Nonfatal Overdose ED Visits{!accessible ? <sup>†</sup> : ''} Involving {drugOptions[hdrInfoFromMap].titleForDropDown} per 10,000 Total ED Visits in {jurisCountData[currentYearMap + String(currentMonthMap).padStart(2, '0') + mapMonthly]} Participating Jurisdictions, {UtilityFunctions.getPeriod(currentYearMap, currentMonthMap)}
           </h2>
           }
         </div>
-            {!isSmallViewport &&
+            {!isSmallViewport && !accessible &&
                   <table>
                     <tr>
                       <td style={{'width': '30%', 'textAlign': 'right'}}><div><strong>Select Time Period:</strong></div></td>
@@ -3092,7 +3092,7 @@ const getYears = (startYrInp, endYrInp) => {
                     </tr>
                   </table>
                   }
-                  {isSmallViewport &&
+                  {isSmallViewport && !accessible &&
                   <table>
                     <tr>
                       <td style={{'width': '100%', 'textAlign': 'left'}}><div><strong>Select Time Period:</strong></div></td>
@@ -3165,7 +3165,7 @@ const getYears = (startYrInp, endYrInp) => {
                 <br></br>
               </table>
             }
-          {usaMapMemo}
+          {!accessible && usaMapMemo}
 
         {accessible && isSmallViewport &&
           getFootNotesForData('', UtilityFunctions.isCovidPeriod(currentYearMap + String(currentMonthMap).padStart(2, '0')))

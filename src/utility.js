@@ -588,14 +588,14 @@ export const UtilityFunctions = {
       return val;
   },
 
-  convertValueLine: (val, yrmon) => {
+  convertValueLine: (val, yrmon, tframe) => {
     if (val == 8888) //data not available
       return -1;
     else if (val == 7777) //unfunded
       return -2;
    else if (val == 9999) //data supressed
    {
-     if (UtilityFunctions.isCovidPeriod(yrmon))
+     if ((tframe == 'Monthly' && UtilityFunctions.isCovidPeriod(yrmon)) || (tframe == 'Annual' && UtilityFunctions.isCovidPeriodAnnual(yrmon)))
       return 9;
      else
       return -3;
@@ -804,7 +804,7 @@ export const UtilityFunctions = {
     return (
       <Fragment>
         <>
-        <div style={{ height: hgt - 100, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>Grayed out figure represents the COVID-19 pandemic and is distinct from data suppression for other reasons.</p></div>
+        <div style={{ height: hgt - 100, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>Data are suppressed because of decreases in ED visits during the COVID-19 pandemic.</p></div>
         </>
         </Fragment>
         )
@@ -814,7 +814,7 @@ export const UtilityFunctions = {
     return (
       <Fragment>
         <>
-        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>Grayed out figure represents time periods where race/ethnicity data missingness is greater than 10% and is distinct from data suppression for other reasons. </p></div>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>Data are suppressed because more than 10% of race/ethnicity data are missing for this time period.</p></div>
         </>
         </Fragment>
         )
@@ -825,7 +825,7 @@ export const UtilityFunctions = {
     return (
       <Fragment>
         <>
-        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>For annual rates, data are available starting with the 12-month period ending in December 2023. Race/ethnicity data prior to 2023 are not shown due to race/ethnicity missingness greater than 10%.</p></div>
+        <div style={{ height: hgt + 40, width: wid, textAlign: 'left', display: 'flex', alignItems: 'center', backgroundColor: '#E7E7E7', fontWeight: 'bold', borderRadius: '30px'}}><p style={{ textAlign: 'left', fontWeight: 'bold', padding: '20px'}}><strong>{forTitle}</strong>For annual rates, data are available starting with the 12-month period ending in December 2023. Data prior to this period are suppressed because more than 10% of race/ethnicity data are missing for those time periods.</p></div>
         </>
         </Fragment>
         )
@@ -841,4 +841,5 @@ export const UtilityFunctions = {
     }
     return false;
   },
+
 }
