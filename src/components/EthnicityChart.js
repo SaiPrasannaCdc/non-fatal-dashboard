@@ -466,7 +466,7 @@ function EthnicityChart(params) {
 
     const chartsvg = document?.getElementById("ethnicitySVG");
 
-    if (chartsvg !== undefined || chartsvg != null)
+    if (chartsvg === undefined || chartsvg == null)
       return;
 
     const allRaces = chartsvg.childNodes[0].childNodes[1]?.childNodes;
