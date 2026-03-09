@@ -1227,7 +1227,29 @@ function LineChart({ params }) {
     else
       diff = stValF - compareStValF;
 
-    if (diff <= 15)
+    if (diff <= 22)
+      return true;
+    else
+      return false;
+  }
+
+  function narrowPointsOverall(xval) {
+
+    if (!showOverall)
+      return false;
+
+    const compareStVal = inp.filteredData['US'].find(d => d[specs.xKey] === xval) || {};
+    const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
+    const compareStValF = parseFloat(specs.yScale(parseFloat(compareStVal[currentDrug])));
+    const stValF = parseFloat(specs.yScale(parseFloat(stVal[currentDrug])));
+
+    var diff;
+    if (compareStValF > stValF)
+      diff = compareStValF - stValF;
+    else
+      diff = stValF - compareStValF;
+
+    if (diff <= 22)
       return true;
     else
       return false;
@@ -1255,6 +1277,58 @@ function LineChart({ params }) {
       return compareState;
     else
       return currentState;
+  }
+
+  function valueHighOrLow(xval) {
+    if (!showCompare)
+      return false;
+
+    const compareStVal = inp.filteredData[compareState].find(d => d[specs.xKey] === xval) || {};
+    const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
+
+    if (parseFloat(compareStVal[currentDrug]) > parseFloat(stVal[currentDrug]))
+      return 'H';
+    else
+      return 'L';
+  }
+
+  function valueHighOrLowRev(xval) {
+    if (!showCompare)
+      return false;
+
+    const compareStVal = inp.filteredData[compareState].find(d => d[specs.xKey] === xval) || {};
+    const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
+
+    if (parseFloat(compareStVal[currentDrug]) > parseFloat(stVal[currentDrug]))
+      return 'L';
+    else
+      return 'H';
+  }
+
+  function valueHighOrLowOverall(xval) {
+    if (!showOverall)
+      return false;
+
+    const compareStVal = inp.filteredData['US'].find(d => d[specs.xKey] === xval) || {};
+    const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
+
+    if (parseFloat(compareStVal[currentDrug]) > parseFloat(stVal[currentDrug]))
+      return 'H';
+    else
+      return 'L';
+  }
+
+  function valueHighOrLowRevOverall(xval) {
+    if (!showOverall)
+      return false;
+
+    const compareStVal = inp.filteredData['US'].find(d => d[specs.xKey] === xval) || {};
+    const stVal = inp.filteredData[currentState].find(d => d[specs.xKey] === xval) || {};
+
+    if (parseFloat(compareStVal[currentDrug]) > parseFloat(stVal[currentDrug]))
+      return 'L';
+    else
+      return 'H';
   }
   
   const buildLineForDrug = (currentDrug) => {
@@ -1298,13 +1372,13 @@ function LineChart({ params }) {
                           {(!isNaN(d[currentDrug]) && key == 'US') && currentState != 'US' && showLabels && 
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
-                              y={!narrowPoints(xVal) ? specs.yScale(d[currentDrug])-8 : (higherValue(xVal) == 'US' ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)} 
+                              y={valueHighOrLowOverall(xVal) == 'H' ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+26}
                               stroke={''} fill={''} 
                               fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>
                                 {showLabels ? d[currentDrug] : ''}
                             </text>
                           }
-                          {(!isNaN(d[currentDrug]) && key == 'US' && currentState != 'US' && narrowPoints(xVal)) && showLabels && 
+                          {/* {(!isNaN(d[currentDrug]) && key == 'US' && currentState != 'US' && narrowPoints(xVal)) && showLabels && 
                             <line
                               x1={specs.xScale(d[specs.xKey])}
                               y1={specs.yScale(d[currentDrug])}
@@ -1315,7 +1389,7 @@ function LineChart({ params }) {
                               strokeDasharray="2,2"
                               opacity={0.6}
                           />
-                          }
+                          } */}
                           {(isNaN(d[currentDrug]) && key == 'US') && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'], key)}</text>}
                           {(!isNaN(d[currentDrug]) && key == 'US') && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} />}
                           {(!isNaN(d[currentDrug]) && key != 'US') && currentState == 'US' &&
@@ -1331,15 +1405,15 @@ function LineChart({ params }) {
                           {(!isNaN(d[currentDrug]) && key != 'US') && currentState != 'US' && showLabels && 
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
-                              y={!narrowPoints(xVal) ? (d[currentDrug] == '0.0' ? specs.yScale(d[currentDrug])-22 : specs.yScale(d[currentDrug])-8) : (higherValue(xVal) == currentState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)}
-                              stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} 
+                              y={valueHighOrLowRevOverall(xVal) == 'H' ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+26}
+                              stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} fill={narrowPointsOverall(xVal) ? 'red' : UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} 
                               strokeWidth={0.25}
                               fontSize={12} 
                               textAnchor={i == 0 ? 'right' : 'middle'}>
                               {showLabels ? d[currentDrug] : ''}
                             </text>
                           }
-                          {(!isNaN(d[currentDrug]) && key != 'US' & narrowPoints(xVal)) && currentState != 'US' && showLabels && 
+                          {/* {(!isNaN(d[currentDrug]) && key != 'US' & narrowPoints(xVal)) && currentState != 'US' && showLabels && 
                             <line
                               x1={specs.xScale(d[specs.xKey])}
                               y1={specs.yScale(d[currentDrug])}
@@ -1350,7 +1424,7 @@ function LineChart({ params }) {
                               strokeDasharray="2,2"
                               opacity={0.6}
                           />
-                          }
+                          } */}
                           {(isNaN(d[currentDrug]) && key != 'US') && 
                           <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'], key)}</text>}
                           {(!isNaN(d[currentDrug]) && key != 'US') && 
@@ -1462,33 +1536,33 @@ function LineChart({ params }) {
                       const dNext = i === specs.xValues.length - 1 ? {} : inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i + 1]) || {}
                       const dPrev = i > 0  ? inp.filteredData[key].find(d => d[specs.xKey] === specs.xValues[i - 1]) || {} : {}
 
+                      if (currentState == compareState)
+                        alert('Katti mama')
+
                       return (
                         <Group key={`line-path-${key}-point-${i}`}>
                           {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key == compareState) && 
                             <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} strokeWidth={3} />
-                          }
-                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key != compareState) && 
-                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} strokeWidth={3} />
                           }
                           {(!isNaN(d[currentDrug]) && key == compareState) && currentState == compareState &&
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
                               y={specs.yScale(d[currentDrug])-8}
                               stroke={''} fill={''} 
-                              fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>
+                              fontSize={18} textAnchor={i == 0 ? 'right' : 'middle'}>
                                 {showLabels ? d[currentDrug] : ''}
                             </text>
                           }
                           {(!isNaN(d[currentDrug]) && key == compareState) && currentState != compareState && showLabels && 
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
-                              y={!narrowPointsCompareState(xVal) ? specs.yScale(d[currentDrug])-8 : (higherValueCompareState(xVal) == compareState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)} 
+                              y={valueHighOrLow(xVal) == 'H' ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+26}
                               stroke={''} fill={''} 
                               fontSize={12} textAnchor={i == 0 ? 'right' : 'middle'}>
                                 {showLabels ? d[currentDrug] : ''}
                             </text>
                           }
-                          {(!isNaN(d[currentDrug]) && key == compareState && currentState != compareState && narrowPointsCompareState(xVal)) && showLabels && 
+                          {/* {(!isNaN(d[currentDrug]) && key == compareState && currentState != compareState && narrowPointsCompareState(xVal)) && showLabels && 
                             <line
                               x1={specs.xScale(d[specs.xKey])}
                               y1={specs.yScale(d[currentDrug])}
@@ -1499,15 +1573,19 @@ function LineChart({ params }) {
                               strokeDasharray="2,2"
                               opacity={0.6}
                           />
-                          }
+                          } */}
                           {(isNaN(d[currentDrug]) && key == compareState) && <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} stroke={''} fill={''} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'], key)}</text>}
                           {(!isNaN(d[currentDrug]) && key == compareState) && <Circle cx={specs.xScale(d[specs.xKey])} cy={Number(d[currentDrug]) == 0 ? (specs.yScale(0)-14) : (specs.yScale(d[currentDrug]))} r={currentTimeframe === 'Monthly' ? 4: 5} fill={currentTimeframe === 'Monthly' && d[specs.xKey] == currentMonth ? 'orange' : UtilityFunctions.getSeriesColorLine(currentDrug, key, showOverall ? true :false)} />}
+                          
+                          {(!isNaN(d[currentDrug]) && !isNaN(dNext[currentDrug]) && key != compareState) && 
+                            <line x1={specs.xScale(d[specs.xKey]) ?? 0} y1={getYValue(d, currentDrug)} x2={specs.xScale(dNext[specs.xKey]) ?? 0} y2={getYValue(dNext, currentDrug)} stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} strokeWidth={3} />
+                          }
                           {(!isNaN(d[currentDrug]) && key != compareState) && currentState == compareState &&
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
                               y={specs.yScale(d[currentDrug])-8}
                               stroke={'lightblue'} fill={'lightblue'} 
-                              fontSize={12} 
+                              fontSize={18} 
                               textAnchor={i == 0 ? 'right' : 'middle'}>
                               {showLabels ? d[currentDrug] : ''}
                             </text>
@@ -1515,7 +1593,7 @@ function LineChart({ params }) {
                           {(!isNaN(d[currentDrug]) && key != compareState) && currentState != compareState && showLabels && 
                             <text 
                               x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} 
-                              y={!narrowPoints(xVal) ? (d[currentDrug] == '0.0' ? specs.yScale(d[currentDrug])-22 : specs.yScale(d[currentDrug])-8) : (higherValue(xVal) == currentState ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+28)}
+                              y={(d[currentDrug] == '0.0' ? specs.yScale(d[currentDrug])-22 : (valueHighOrLowRev(xVal) == 'H' ? specs.yScale(d[currentDrug])-16 : specs.yScale(d[currentDrug])+26))}
                               stroke={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} fill={UtilityFunctions.getSeriesColorLine(currentDrug, key, false)} 
                               strokeWidth={0.25}
                               fontSize={12} 
@@ -1523,7 +1601,7 @@ function LineChart({ params }) {
                               {showLabels ? d[currentDrug] : ''}
                             </text>
                           }
-                          {(!isNaN(d[currentDrug]) && key != compareState & narrowPoints(xVal)) && currentState != compareState && showLabels && 
+                          {/* {(!isNaN(d[currentDrug]) && key != compareState & narrowPoints(xVal)) && currentState != compareState && showLabels && 
                             <line
                               x1={specs.xScale(d[specs.xKey])}
                               y1={specs.yScale(d[currentDrug])}
@@ -1534,7 +1612,7 @@ function LineChart({ params }) {
                               strokeDasharray="2,2"
                               opacity={0.6}
                           />
-                          }
+                          } */}
                           {(isNaN(d[currentDrug]) && key != compareState) && 
                           <text x={i == 0 ? specs.xScale(d[specs.xKey]) :  specs.xScale(d[specs.xKey])} y={specs.yScale(0)-8} fontSize={16} textAnchor={'middle'}>{getSymbol(d[currentDrug], d['year'], key)}</text>}
                           {(!isNaN(d[currentDrug]) && key != compareState) && 

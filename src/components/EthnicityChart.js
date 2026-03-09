@@ -192,6 +192,7 @@ function EthnicityChart(params) {
   useEffect(() => {
     window.addEventListener('scroll', onScroll);
     setTimeout(onScroll, 50); // eslint-disable-next-line
+    addFootNoteToTicks();
   }, []);
 
   useEffect(() => {
@@ -212,6 +213,30 @@ function EthnicityChart(params) {
       else
         return ''
   }
+
+  const addFootNoteToTicks = () => {
+
+    const chartsvg = document?.getElementById("ethnicitySVG");
+
+    if (chartsvg === undefined || chartsvg == null)
+      return;
+
+    const allRaces = chartsvg.childNodes[0].childNodes[1]?.childNodes;
+    Array.prototype.forEach.call(allRaces, function(el) {
+    let elm = el.childNodes[0]?.childNodes[0];
+      if ((elm !== undefined && elm != null) && (elm.textContent == 'AI/AN' || elm.textContent == 'NH/PI'))
+      {
+        const svgNamespace = "http://www.w3.org/2000/svg";
+        const tspanElement = document.createElementNS(svgNamespace, "tspan");
+        tspanElement.textContent = "¶";
+        tspanElement.style.fontSize = 'small';
+        tspanElement.setAttribute("x", "-2");
+        tspanElement.setAttribute("dy", "-0.995em");
+        const elmText = elm?.parentElement.children[0];
+        elmText.appendChild(tspanElement);
+      }
+    }); 
+  };
 
   const getBar = (d) => {
 
@@ -273,7 +298,7 @@ function EthnicityChart(params) {
         </>  
       ) : (
         <Group>
-        <svg style={{ height: height - 30 }}> 
+        <svg id='ethnicitySVG' style={{ height: height - 30 }}> 
             <Group top={margin.top} left={margin.left}>
               <Group>
               {filteredData.map((d) => getBar(d, false))}
