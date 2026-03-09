@@ -439,7 +439,7 @@ function EthnicityChart(params) {
 
   const isSmallViewport = width < 550 && !widthReduction;
   const fontSize = 16;
-  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 145 : 140, right: isSmallViewport ? 0 : 15 };
+  const margin = { top: 15, bottom: 145, left: isSmallViewport ? 170 : 140, right: isSmallViewport ? 0 : 15 };
 
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom - (isSmallViewport ? 10 : 0);
@@ -478,7 +478,7 @@ function EthnicityChart(params) {
         const tspanElement = document.createElementNS(svgNamespace, "tspan");
         tspanElement.textContent = "¶";
         tspanElement.style.fontSize = 'small';
-        tspanElement.setAttribute("x", "-4");
+        tspanElement.setAttribute("x", "-2");
         tspanElement.setAttribute("dy", "-0.995em");
         const elmText = elm?.parentElement.children[0];
         elmText.appendChild(tspanElement);
@@ -667,9 +667,9 @@ function EthnicityChart(params) {
               fill: '#000066',
               textAnchor: 'end',
               verticalAnchor: 'middle',
-              angle: (isSmallViewport ? 45 : 0),
+              /* angle: (isSmallViewport ? 0 : 0), */
             })}
-            left={!isSmallViewport ? 65 : -5}
+            left={!isSmallViewport ? 65 : 0}
             hideTicks
             hideAxisLine
           />
@@ -677,7 +677,7 @@ function EthnicityChart(params) {
                 top={yMax}
                 scale={xScale}
                 left={!isSmallViewport ? 65 : 5}
-                numTicks={isSmallViewport ? 3 : 6}
+                numTicks={isSmallViewport ? 2 : 6}
                 tickStroke="none"
                 tickFormat={value => 
                       getFormattedValue(value)
@@ -685,7 +685,7 @@ function EthnicityChart(params) {
                 tickLabelProps={(value) => {
                   return {
                     style: {
-                      transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''),
+                      /* transform: (isSmallViewport && currentDataType == 'percent' ? 'rotate(-60deg)' : ''), */
                       transformOrigin: `${xScale(value)}px ${18}px`,
                       textAnchor: 'middle',
                       fontSize: fontSize,
